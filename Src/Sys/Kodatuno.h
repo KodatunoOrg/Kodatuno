@@ -3,7 +3,6 @@
 #ifndef _KODATUNO_H_
 #define _KODATUNO_H_
 
-
 #include "IGES_Parser.h"
 #include "STL_Parser.h"
 #include "VRML_Parser.h"
@@ -317,6 +316,9 @@ public:
 // 選択されている曲面のU，V方向を表示する
 	void DispUVdirection();					
 
+// Function: DispUVinfo
+// 選択されている曲面のU，V平面情報を表示する
+    void DispUVinfo();
 
 private:
 // Function: Describe_Main
@@ -422,6 +424,9 @@ public:
 // UV方向表示フラグ
 	int  UVDirFlag;				
 
+// Function: UVviewFlag
+// UV平面情報表示フラグ
+    int  UVviewFlag;
 
 private:
 // Function: User
@@ -690,5 +695,9 @@ void CmdMeshInf(int,char *[]);
 // Function: CmdUVdir
 // コマンド(U,Vの方向を描画)
 void CmdUVdir(int,char *[]);			
+
+// Function: CmdUVdir
+// コマンド(U,Vの方向を描画)
+void CmdUVview(int,char *[]);
 
 #endif

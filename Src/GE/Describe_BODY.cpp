@@ -408,11 +408,20 @@ void Describe_BODY::SetNurbsStat()
 {
 	NurbsCurve = gluNewNurbsRenderer();
 	gluNurbsProperty(NurbsCurve,GLU_SAMPLING_TOLERANCE,20);	
-	gluNurbsCallback(NurbsCurve, GLU_ERROR, (void (CALLBACK *) (void))NURBS_Err);	// NURBS関連のエラーのコールバック関数を登録
+#ifdef _GLUfuncptr
+    gluNurbsCallback(NurbsCurve, GLU_ERROR, (_GLUfuncptr)NURBS_Err);	// NURBS関連のエラーのコールバック関数を登録
+#else
+    gluNurbsCallback(NurbsCurve, GLU_ERROR, (void (CALLBACK *) (void))NURBS_Err);	// NURBS関連のエラーのコールバック関数を登録
+#endif
 
-	NurbsSurf = gluNewNurbsRenderer();
-	gluNurbsProperty(NurbsSurf,GLU_SAMPLING_TOLERANCE,20);
-	gluNurbsCallback(NurbsSurf, GLU_ERROR, (void (CALLBACK *) (void))NURBS_Err);	// NURBS関連のエラーのコールバック関数を登録
+
+    NurbsSurf = gluNewNurbsRenderer();
+    gluNurbsProperty(NurbsSurf,GLU_SAMPLING_TOLERANCE,20);
+#ifdef _GLUfuncptr
+    gluNurbsCallback(NurbsSurf, GLU_ERROR, (_GLUfuncptr)NURBS_Err);	// NURBS関連のエラーのコールバック関数を登録
+#else
+    gluNurbsCallback(NurbsSurf, GLU_ERROR, (void (CALLBACK *) (void))NURBS_Err);	// NURBS関連のエラーのコールバック関数を登録
+#endif
 }
 
 // Function: SetNurbsSProperty

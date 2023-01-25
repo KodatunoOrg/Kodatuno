@@ -406,62 +406,166 @@ int NURBS_Func::GenNurbsS(NURBSS *Nurbs,NURBSS nurb)
 
 // Function: GenRotNurbsS
 // NurbsCを原点を通るAxis回りにdegだけ回転させた回転サーフェスNurbsSを生成する
-// 現時点ではdeg = 360°のみ対応．
 //
 // Parameter:
 // *NurbsS - 生成される回転サーフェス(NURBS曲面)へのポインタ
 // NurbsC - 基線となるNURBS曲線
 // Axis - 回転軸ベクトル
-// deg - 回転角度（deg)（ただし，360°のみ対応）
+// deg - 回転角度（deg)
 //
 // Return:
 // 成功：KOD_TRUE, 失敗：KOD_ERR
 int NURBS_Func::GenRotNurbsS(NURBSS *NurbsS,NURBSC NurbsC,Coord Axis,double deg)
 {
-	// 360度以外は未実装
-	if(deg != 360){
-        GuiIF.SetMessage("Unsupported");
-		return KOD_ERR;
-	}
+    Axis = NormalizeVec(Axis);		// 正規化
 
-	Axis = NormalizeVec(Axis);		// 正規化
+    // 回転角度によって，いくつのセグメントで円弧を生成するか判断する
+    // 回転角度が180度未満の場合，1セグメントで円弧を表現する
+    if(fabs(deg) < 180 ){
+        double S[6] = {0,0,0,1,1,1};	// u方向ノットベクトル
+        double **W;	// ウエイト
+        Coord **Cp;	// コントロールポイント
+        double rad = DegToRad(deg);
+        if((W = NewMatrix(3,NurbsC.K)) == NULL){
+            GuiIF.SetMessage("NURBS_Func KOD_ERROR:fail to allocate memory");
+            return KOD_ERR;
+        }
+        if((Cp = NewCoord2(3,NurbsC.K)) == NULL){
+            GuiIF.SetMessage("NURBS_Func KOD_ERROR:fail to allocate memory");
+            FreeMatrix(W,3);
+            return KOD_ERR;
+        }
+        for(int i=0;i<3;i++){
+            for(int j=0;j<NurbsC.K;j++){
+                Coord Q_ = CalcRotVec(NurbsC.cp[j],Axis,(double)i*rad/2);	// 元々のNURBS曲線上のコントロールポイントをAxis周りに0,deg/2,deg度回転
+                Coord P = CalcNormalLine(NurbsC.cp[j],SetCoord(0,0,0),Axis);	// Axis上の回転中心の座標
+                Coord PQ_ = SubCoord(Q_,P);	// PQ_ベクトルを生成
+                if(i%2 == 0){		// i=0,2のとき
+                    W[i][j] = NurbsC.W[j];
+                    Cp[i][j] = SetCoord(Q_);
+                }
+                else{
+                    W[i][j] = NurbsC.W[j]*cos(rad/2);
+                    Cp[i][j] = AddCoord(MulCoord(PQ_,1/cos(rad/2)),P);
+                }
+            }
+        }
+        GenNurbsS(NurbsS,3,NurbsC.M,3,NurbsC.K,S,NurbsC.T,W,Cp,0,1,0,1);		// NURBS曲面生成
 
-	// NurbsSを生成
-	double S[12] = {0,0,0,0.25,0.25,0.5,0.5,0.75,0.75,1,1,1};		// u方向ノットベクトル
-	double **W;			// ウエイト
-	Coord  **Cp;		// コントロールポイント
-	if((W = NewMatrix(9,NurbsC.K)) == NULL){
-        GuiIF.SetMessage("NURBS_Func KOD_ERROR:fail to allocate memory");
-		return KOD_ERR;
-	}
-	if((Cp = NewCoord2(9,NurbsC.K)) == NULL){
-        GuiIF.SetMessage("NURBS_Func KOD_ERROR:fail to allocate memory");
-		FreeMatrix(W,9);
-		return KOD_ERR;
-	}
-	for(int i=0;i<9;i++){		// u方向
-		for(int j=0;j<NurbsC.K;j++){		// v方向
-			Coord Q_ = CalcRotVec(NurbsC.cp[j],Axis,(double)i*PI/4);		// 元々のNURBS曲線上のコントロールポイントをAxis周りに45度回転
-			Coord P = CalcNormalLine(NurbsC.cp[j],SetCoord(0,0,0),Axis);	// Axis上の回転中心の座標
-			Coord PQ_ = SubCoord(Q_,P);										// PQ_ベクトルを生成
-			if(i%2 == 0){													// i=0,2,4,6のとき
-				W[i][j] = NurbsC.W[j];										// ウエイト
-				Cp[i][j] = SetCoord(Q_);									// Q_がそのままコントロールポイントになる
-			}
-			else{															// i=1,3,5,7のとき
-				W[i][j] = NurbsC.W[j]*cos(PI/4);							// ウエイト計算
-				Cp[i][j] = AddCoord(MulCoord(PQ_,1/cos(PI/4)),P);			// コントロールポイント計算
-			}
-		}
-	}
+        FreeMatrix(W,3);
+        FreeCoord2(Cp,3);
+    }
 
-	GenNurbsS(NurbsS,3,NurbsC.M,9,NurbsC.K,S,NurbsC.T,W,Cp,0,1,0,1);		// NURBS曲面生成
+    // 回転角度が270未満の場合，2セグメントで円弧を表現する
+    else if(fabs(deg) < 270){
+        double S[8] = {0,0,0,0.5,0.5,1,1,1};
+        double **W;	// ウエイト
+        Coord **Cp;	// コントロールポイント
+        double rad = DegToRad(deg);
+        if((W = NewMatrix(5,NurbsC.K)) == NULL){
+            GuiIF.SetMessage("NURBS_Func KOD_ERROR:fail to allocate memory");
+            return KOD_ERR;
+        }
+        if((Cp = NewCoord2(5,NurbsC.K)) == NULL){
+            GuiIF.SetMessage("NURBS_Func KOD_ERROR:fail to allocate memory");
+            FreeMatrix(W,5);
+            return KOD_ERR;
+        }
+        for(int i=0;i<5;i++){
+            for(int j=0;j<NurbsC.K;j++){
+                Coord Q_ = CalcRotVec(NurbsC.cp[j],Axis,(double)i*rad/4);	// 元々のNURBS曲線上のコントロールポイントをAxis周りに0,deg/2,deg度回転
+                Coord P = CalcNormalLine(NurbsC.cp[j],SetCoord(0,0,0),Axis);	// Axis上の回転中心の座標
+                Coord PQ_ = SubCoord(Q_,P);	// PQ_ベクトルを生成
+                if(i%2 ==  1){	// i=1,3のとき
+                    W[i][j] = NurbsC.W[j]*cos(rad/4);
+                    Cp[i][j] = AddCoord(MulCoord(PQ_,1/cos(rad/4)),P);
+                }
+                else{		// i=0,2,4のとき
+                    W[i][j] = NurbsC.W[j];
+                    Cp[i][j] = SetCoord(Q_);
+                }
+            }
+        }
+        GenNurbsS(NurbsS,3,NurbsC.M,5,NurbsC.K,S,NurbsC.T,W,Cp,0,1,0,1);		// NURBS曲面生成
 
-	FreeMatrix(W,2);
-	FreeCoord2(Cp,2);
+        FreeMatrix(W,5);
+        FreeCoord2(Cp,5);
+    }
 
-	return KOD_TRUE;
+    // 回転角度が360度未満の場合，3セグメントで円弧を表現する
+    else if(fabs(deg) < 360){
+        double S[10] = {0,0,0,0.33,0.33,0.66,0.66,1,1,1};
+        double **W;	// ウエイト
+        Coord **Cp;	// コントロールポイント
+        double rad = DegToRad(deg);
+        if((W = NewMatrix(7,NurbsC.K)) == NULL){
+            GuiIF.SetMessage("NURBS_Func KOD_ERROR:fail to allocate memory");
+            return KOD_ERR;
+        }
+        if((Cp = NewCoord2(7,NurbsC.K)) == NULL){
+            GuiIF.SetMessage("NURBS_Func KOD_ERROR:fail to allocate memory");
+            FreeMatrix(W,7);
+            return KOD_ERR;
+        }
+        for(int i=0;i<7;i++){
+            for(int j=0;j<NurbsC.K;j++){
+                Coord Q_ = CalcRotVec(NurbsC.cp[j],Axis,(double)i*rad/6);	// 元々のNURBS曲線上のコントロールポイントをAxis周りに0,deg/2,deg度回転
+                Coord P = CalcNormalLine(NurbsC.cp[j],SetCoord(0,0,0),Axis);	// Axis上の回転中心の座標
+                Coord PQ_ = SubCoord(Q_,P);	// PQ_ベクトルを生成
+                if(i%2 ==  0){	// i=0,2,4,6のとき
+                    W[i][j] = NurbsC.W[j];
+                    Cp[i][j] = SetCoord(Q_);
+                }
+                else{		// i=1,3,5のとき
+                    W[i][j] = NurbsC.W[j]*cos(rad/6);
+                    Cp[i][j] = AddCoord(MulCoord(PQ_,1/cos(rad/6)),P);
+                }
+            }
+        }
+        GenNurbsS(NurbsS,3,NurbsC.M,7,NurbsC.K,S,NurbsC.T,W,Cp,0,1,0,1);		// NURBS曲面生成
+        DebugForNurbsS(NurbsS);
+        FreeMatrix(W,7);
+        FreeCoord2(Cp,7);
+    }
+    // 360度以上
+    else{
+        // NurbsSを生成
+        double S[12] = {0,0,0,0.25,0.25,0.5,0.5,0.75,0.75,1,1,1};		// u方向ノットベクトル
+        double **W;			// ウエイト
+        Coord  **Cp;		// コントロールポイント
+        if((W = NewMatrix(9,NurbsC.K)) == NULL){
+            GuiIF.SetMessage("NURBS_Func KOD_ERROR:fail to allocate memory");
+            return KOD_ERR;
+        }
+        if((Cp = NewCoord2(9,NurbsC.K)) == NULL){
+            GuiIF.SetMessage("NURBS_Func KOD_ERROR:fail to allocate memory");
+            FreeMatrix(W,9);
+            return KOD_ERR;
+        }
+        for(int i=0;i<9;i++){		// u方向
+            for(int j=0;j<NurbsC.K;j++){		// v方向
+                Coord Q_ = CalcRotVec(NurbsC.cp[j],Axis,(double)i*PI/4);		// 元々のNURBS曲線上のコントロールポイントをAxis周りに45度回転
+                Coord P = CalcNormalLine(NurbsC.cp[j],SetCoord(0,0,0),Axis);	// Axis上の回転中心の座標
+                Coord PQ_ = SubCoord(Q_,P);										// PQ_ベクトルを生成
+                if(i%2 == 0){													// i=0,2,4,6のとき
+                    W[i][j] = NurbsC.W[j];										// ウエイト
+                    Cp[i][j] = SetCoord(Q_);									// Q_がそのままコントロールポイントになる
+                }
+                else{															// i=1,3,5,7のとき
+                    W[i][j] = NurbsC.W[j]*cos(PI/4);							// ウエイト計算
+                    Cp[i][j] = AddCoord(MulCoord(PQ_,1/cos(PI/4)),P);			// コントロールポイント計算
+                }
+            }
+        }
+
+        GenNurbsS(NurbsS,3,NurbsC.M,9,NurbsC.K,S,NurbsC.T,W,Cp,0,1,0,1);		// NURBS曲面生成
+
+        FreeMatrix(W,9);
+        FreeCoord2(Cp,9);
+    }
+    return KOD_TRUE;
 }
+
 // Function: GenSweepNurbsS
 // 1つのNURBS曲線からある軸方向にある距離だけスイープさせたスイープサーフェスを生成する
 //
@@ -3361,8 +3465,89 @@ int NURBS_Func::CalcIntersecPtsNurbsCNurbsCParam(NURBSC *NurbA,NURBSC *NurbB,int
 	FreeMatrix(A_,2);
 
 	return anscount;
+}
 
+// Function: ClacIntersecPtsNurbsCLine
+// 2次元NURBS曲線と直線との交点を求める
+//
+// Parameters:
+// *C - NURBS曲線
+// P - 直線上の1点
+// r - 直線の方向ベクトル
+// *t1 - 交点におけるNURBS曲線パラメータ
+// *t2 - 交点における直線パラメータ
+//
+// return:
+// 交点の有無（KOD_TRUE：交点あり， KOD_FALSE：交点なし）
+int NURBS_Func::ClacIntersecPtsNurbsCLine(NURBSC *C, Coord P, Coord r, double *t1,double *t2)
+{
+    Matrix A = NewMatrix(2,2);
+    Matrix A_ = NewMatrix(2,2);
+    bool conv_flag = false;
 
+    *t1 = (C->V[0]+C->V[1])/2;
+    *t2 = 0;
+
+    while(1){
+        Coord Ct = CalcDiffNurbsC(C,*t1);
+        Coord Lt = SetCoord(r);
+        Coord B = SubCoord(AddCoord(P,MulCoord(r,*t2)),CalcNurbsCCoord(C,*t1));
+        A[0][0] = Ct.x;
+        A[1][0] = Ct.y;
+        A[0][1] = -Lt.x;
+        A[1][1] = -Lt.y;
+        double det = MatInv2(A,A_);
+        if(det == 0) break;
+        double dt1 = A_[0][0]*B.x + A_[0][1]*B.y;
+        double dt2 = A_[1][0]*B.x + A_[1][1]*B.y;
+        //fprintf(stderr,"    %lf,%lf,%lf,%lf,%lf\n",*t1,*t2,dt1,dt2,det);		// fro debug
+        if(CheckZero(dt1,LOW_ACCURACY) == KOD_TRUE && CheckZero(dt2,LOW_ACCURACY) == KOD_TRUE){		// 交点に収束したらwhile break
+            conv_flag = true;
+            break;
+        }
+        else{
+            *t1 += dt1/3;
+            *t2 += dt2/3;
+        }
+        if(*t1 < C->V[0] || *t1 > C->V[1])	// 現在注目中のエッジの範囲を超えたらbreak
+            break;
+    }
+
+    FreeMatrix(A,2);
+    FreeMatrix(A_,2);
+
+    if(conv_flag == true)
+        return KOD_TRUE;
+    else
+        return KOD_ERR;
+}
+
+// Function: ClacIntersecPtsNurbsCLineSeg
+// 2次元NURBS曲線と線分との交点を求める
+//
+// Parameters:
+// *C - NURBS曲線
+// P - 線分上の1点
+// r - 線分の方向ベクトル
+// ts - 線分の始点パラメータ
+// te - 線分の終点パラメータ
+// *t1 - 交点におけるNURBS曲線パラメータ
+// *t2 - 交点における直線パラメータ
+//
+// return:
+// 交点の有無（KOD_TRUE：交点あり， KOD_FALSE：交点なし）
+int NURBS_Func::ClacIntersecPtsNurbsCLineSeg(NURBSC *C, Coord P, Coord r, double ts, double te, double *t1,double *t2)
+{
+    if(ClacIntersecPtsNurbsCLine(C,P,r,t1,t2) == KOD_TRUE){
+        if(*t2 >= ts && *t2 <= te){
+            return KOD_TRUE;
+        }
+        else{
+            return KOD_FALSE;
+        }
+    }
+
+    return KOD_FALSE;
 }
 
 // Function: CalcIntersecCurve
@@ -6904,6 +7089,7 @@ void NURBS_Func::ReverseNurbsC(NURBSC *C)
 	Reverse(C->T,C->N);
 	for(int i=0;i<C->N;i++)
 		C->T[i] *= -1;
+    ChangeKnotVecRange(C->T,C->N,C->M,C->K,0,1);
 }
 
 // Function: SetKnotVecC_ConnectC

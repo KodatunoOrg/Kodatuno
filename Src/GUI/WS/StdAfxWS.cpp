@@ -34,6 +34,18 @@ int GUI_Interface::SetCommand(char *cmd)
 	return len;
 }
 
+// Function: ExecCommand
+// コマンドを実行する
+// Parameters:
+// 実行するコマンド文字列
+void GUI_Interface::ExecCommand(char *cmd)
+{
+	Console_Form->addString(cmd);					// メッセージを出力
+	WSDkeyboard *key=WSGIappKeyboard();
+	key->setKey(WSK_KP_Enter);
+	Console_Form->execProcedure(WSEV_KEY_HOOK);		// 入力されたキーを取得
+}
+
 // Function: AddBodyNameToWin
 // 新たに登録したBODYの名前をウィンドウリストに表示する
 //

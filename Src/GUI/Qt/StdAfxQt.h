@@ -2,6 +2,7 @@
 #define _STD_AFX_QT_H_
 
 //GEで使用するQt関連のヘッダ
+#include <QApplication>
 #include <QTextEdit>
 #include <QListWidget>
 #include <QListWidgetItem>
@@ -34,6 +35,10 @@ public:
 // コンソールにコマンドを出力
     int SetCommand( const char *);              
 	
+// Function: ExecCommand
+// コマンド実行
+    int ExecCommand(const char *);
+
 // Function: AddBodyNameToWin
 // 新たに登録したBODYの名前をウィンドウリストに表示する
     void AddBodyNameToWin(const char *);        

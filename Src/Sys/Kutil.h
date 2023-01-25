@@ -15,9 +15,8 @@
 #define USE_QT
 
 // GLUヘッダファイルのインクルード
-// 各OSに合わせて適切にGL/GLU.hのファイル位置を指定してください
+// 各OSに合わせて適切にGLU.hのファイル位置を指定してください
 #include <GL/glu.h>
-
 
 #ifdef USE_WIDE_STUDIO
 #include "StdAfxWS.h"

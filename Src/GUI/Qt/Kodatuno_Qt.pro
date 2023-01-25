@@ -4,11 +4,12 @@
 #
 #-------------------------------------------------
 
-QT       += core gui \
-		opengl
+QT       += core gui opengl
 
 TARGET = KOD_TEST
 TEMPLATE = app
+
+RC_FILE = mainicon.rc
 
 INCLUDEPATH += \
     ../../GE/ \
@@ -43,7 +44,8 @@ SOURCES += \
     ../../Sys/Command.cpp \
     ../../UA/UserFunc.cpp \
     ../../UA/SampleFunc2.cpp \
-    ../../UA/SampleFunc1.cpp
+    ../../UA/SampleFunc1.cpp \
+    ../../UA/SampleFunc3.cpp
 
 HEADERS  += \
     StdAfxQt.h \
@@ -69,9 +71,9 @@ HEADERS  += \
     ../../GE/BODY.h \
     ../../Sys/Kutil.h \
     ../../Sys/Kodatuno.h \
-    ../../Sys/Command.h \
+     ../../Sys/Command.h \
     ../../UA/UserFunc.h \
-    ../../UA/SampleFunc.h
+    ../../UA/SampleFunc.h \
 
 FORMS    += \
     QtUserStatDialog.ui \
@@ -81,12 +83,12 @@ FORMS    += \
     QtNurbsCurveDialog.ui \
     QtMainWindow.ui
 
-LIBS        += -lfreeglut
-
 RESOURCES += \
     icons.qrc
 
 QMAKE_CXXFLAGS += -fopenmp
 LIBS += -fopenmp
+
+LIBS += -lopengl32 -lglu32
 
 

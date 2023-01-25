@@ -426,3 +426,14 @@ void CmdUVdir(int argc,char *argv[])
 {
 	Kodatuno.UVDirFlag = KOD_TRUE;
 }
+
+// Function: CmdUVview
+// コマンド(UV平面上のトリム情報をX,Y平面に描画)
+//
+// Prameters:
+// argc - コマンド引数の数
+// *argv[] - コマンド引数文字列
+void CmdUVview(int argc,char *argv[])
+{
+    Kodatuno.UVviewFlag = KOD_TRUE;
+}

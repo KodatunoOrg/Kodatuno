@@ -38,3 +38,6 @@ int SmpIntersectSurfs(BODYList *,OBJECTList *,int,double []);
 // Sample8: 平均曲率法線ベクトルを算出する
 int SmpMeanCurvature(BODYList *,OBJECTList *,int,double []);
 
+// Function: Smp3xCAM
+// Sample9: スキャンパスを生成するシンプルな3xCAM
+void Smp3xCAM(NURBSS *,NURBSC *,double,int,double,int);

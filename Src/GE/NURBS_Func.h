@@ -249,8 +249,16 @@ public:
 	int CalcIntersecPtsNurbsSSearch(NURBSS *,NURBSS *,int,double,Coord *,Coord *,int);	
 
 	// Function: CalcIntersecPtsNurbsCNurbsCParam
-	// 2DパラメトリックNURBS曲線同士の交点を求める
+    // 2次元NURBS曲線同士の交点を求める
 	int CalcIntersecPtsNurbsCNurbsCParam(NURBSC *,NURBSC *,int,Coord *,int);	
+
+    // Function: CalcIntersecPtsNurbsCLine
+    // 2次元NURBS曲線と直線との交点を求める
+    int ClacIntersecPtsNurbsCLine(NURBSC *, Coord, Coord, double *, double *);
+
+    // Function: CalcIntersecPtsNurbsCLineSeg
+    // 2次元NURBS曲線と線分との交点を求める
+    int ClacIntersecPtsNurbsCLineSeg(NURBSC *, Coord, Coord, double, double, double *, double *);
 
 	// Function: SearchExtremum_BS
 	// Bulirsch-Stoer法により極地探索を行う

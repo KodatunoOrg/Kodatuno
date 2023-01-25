@@ -7,7 +7,7 @@ Kodatunoで点列からNURBS曲線/曲面を生成するために必要なファイルです。
 
 【ファイル内容】
 NurbsC
-	+--- Sample.inp				自由曲線デバッグ用ファイル(高杉さんが作成なさったファイルです)
+	+--- Sample.inp				自由曲線デバッグ用ファイル
 	+--- Polygonal.inp		折れ線デバッグ用ファイル
 NurbsS
 	+--- ensui.inp				板厚計測システムOrthrosで計測した点列(円錐台形状)

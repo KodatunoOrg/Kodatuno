@@ -27,6 +27,10 @@ public:
 	// コンソールにコマンド出力
 	int SetCommand(char *);
 
+	// Function: ExecCommand
+	// コマンド実行
+	void ExecCommand(char *);
+
 	// Function: AddBodyNameToWin
 	// 新たに登録したBODYの名前をウィンドウリストに表示する
 	void AddBodyNameToWin(const char *);

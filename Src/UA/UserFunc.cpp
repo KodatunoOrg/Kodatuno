@@ -48,39 +48,38 @@ USER::USER()
 // KOD_TRUE
 int USER::ExecSampleFunc0(BODYList *BodyList,OBJECTList *ObjList,int PickCount)
 {
-	char mes[256];
+    char mes[256];
 
-	// ユーザーステータスでの選択されたモード番号をコンソール出力
-	sprintf(mes,"Selected Mode : %d",UserStat.Mode);
+    // ユーザーステータスでの選択されたモード番号をコンソール出力
+    sprintf(mes,"Selected Mode : %d",UserStat.Mode);
     GuiIF.SetMessage(mes);
 
-	// ユーザーステータスでのプロパティ値(最初の2つ)をコンソール出力
-	sprintf(mes,"User Property 1: %lf",UserStat.Prop[0]);
+    // ユーザーステータスでのプロパティ値(最初の2つ)をコンソール出力
+    sprintf(mes,"User Property 1: %lf",UserStat.Prop[0]);
     GuiIF.SetMessage(mes);
-	sprintf(mes,"User Property 2: %lf",UserStat.Prop[1]);
+    sprintf(mes,"User Property 2: %lf",UserStat.Prop[1]);
     GuiIF.SetMessage(mes);
 
     GuiIF.SetMessage("....");
 
-	// セレクション数をコンソール出力
-	sprintf(mes,"All Pick Count : %d",PickCount);
+    // セレクション数をコンソール出力
+    sprintf(mes,"All Pick Count : %d",PickCount);
     GuiIF.SetMessage(mes);
 
-	for(int i=0;i<PickCount;i++){
-		OBJECT *obj = (OBJECT *)ObjList->getData(i);			// i番目にセレクションされたエンティティの情報を得る
-		sprintf(mes,"#%d",i+1);
+    for(int i=0;i<PickCount;i++){
+        OBJECT *obj = (OBJECT *)ObjList->getData(i);			// i番目にセレクションされたエンティティの情報を得る
+        sprintf(mes,"#%d",i+1);
         GuiIF.SetMessage(mes);
-		sprintf(mes,"Body No. : %d",obj->Body);
+        sprintf(mes,"Body No. : %d",obj->Body);
         GuiIF.SetMessage(mes);
-		sprintf(mes,"Selected Object Type : %d",obj->Type);
+        sprintf(mes,"Selected Object Type : %d",obj->Type);
         GuiIF.SetMessage(mes);
-		sprintf(mes,"Selected Object No. : %d",obj->Num);
+        sprintf(mes,"Selected Object No. : %d",obj->Num);
         GuiIF.SetMessage(mes);
-	}
+    }
 
-	return KOD_TRUE;
+    return KOD_TRUE;
 }
-	
 
 // Function: ExecSampleFunc1
 // Userボタン登録関数1の実体を記述
@@ -153,7 +152,7 @@ int USER::ExecSampleFunc2(BODYList *BodyList,OBJECTList *ObjList,int pickcount)
 }
 
 // Function: ExecSampleFunc3
-// Userボタン登録関数3の実体を記述
+// Userボタン登録関数0の実体を記述
 //
 // Parameter:
 // *BodyList - BODYの実体が登録順にリストされている
@@ -162,9 +161,23 @@ int USER::ExecSampleFunc2(BODYList *BodyList,OBJECTList *ObjList,int pickcount)
 //
 // Return:
 // KOD_TRUE
-int USER::ExecSampleFunc3(BODYList *BodyList,OBJECTList *ObjList,int pickcount)
+int USER::ExecSampleFunc3(BODYList *BodyList,OBJECTList *ObjList,int PickCount)
 {
-    GuiIF.SetMessage("aaaaaaa");
+    NURBSS *S;
+    NURBSC *C;
+
+    // 一つ目に加工面，二つ目にガイドカーブを選択
+    for(int i=0;i<PickCount;i++){
+        OBJECT *obj = (OBJECT *)ObjList->getData(i);			// 一番最初にセレクションされたエンティティの情報を得る
+        BODY *body = (BODY *)BodyList->getData(obj->Body);		// 一番最初にセレクションされたBODYの実体を得る
+        if(i==0)
+            S = body->TrmS[obj->Num].pts;
+        else if(i==1)
+            C = &body->NurbsC[obj->Num];
+    }
+
+    Smp3xCAM(S,C,UserStat.Prop[0],UserStat.Prop[1],UserStat.Prop[2],UserStat.Prop[3]);  // 経路生成
+
     return KOD_TRUE;
 }
 

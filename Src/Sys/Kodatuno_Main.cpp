@@ -37,6 +37,7 @@ void KODatUNO::InitializeWin(int width, int height)
 	SetCmdList(CmdMap,"chbkcol","r",15,CmdChBkCol);			// Command 背景の色を変更する
 	SetCmdList(CmdMap,"meshinf","",16,CmdMeshInf);			// Command 指定したMeshの情報を出力
 	SetCmdList(CmdMap,"uvdir","",17,CmdUVdir);				// Command U,Vの方向を表示する
+    SetCmdList(CmdMap,"uvview","",18,CmdUVview);			// Command UV平面上のトリム情報をX,Y平面に描画する
 
 	// Userコマンドの登録
 	User.RegistUserCommand(CmdMap);
@@ -67,6 +68,7 @@ void KODatUNO::InitializeWin(int width, int height)
 	BlendViewFlag = KOD_FALSE;
 	CPViewFlag = KOD_FALSE;
 	UVDirFlag = KOD_FALSE;
+    UVviewFlag = KOD_FALSE;
 	InitCmdFlags();
 	CmdStackNum = 0;
 	CmdStackNow = 0;
@@ -174,6 +176,8 @@ void KODatUNO::ReDraw(int x,int y)
 		DescribeCP();
 	if(UVDirFlag == KOD_TRUE)						// U,V方向の描画
 		DispUVdirection();
+    if(UVviewFlag == KOD_TRUE)						// U,V平面情報の描画
+        DispUVinfo();
 
 }
 
@@ -861,6 +865,7 @@ void KODatUNO::MouseMotionEvent(long Btn, long Key, short x,short y)
 		TargetQ = QFunc.QMult(dq, StartQ);					// 回転の初期値StartQにdqを掛けて回転を合成
 		QFunc.QtoR(RotMx, TargetQ);							// クォータニオンから回転の変換行列を求める
         GuiIF.UpdateDescribeWidget();                       // 再描画指令
+		ReDrawBODYFlag = KOD_FALSE;							// 再描画指令
     }
 
 	// 左ボタンドラッグ中-->ラバーバンド
@@ -1417,6 +1422,7 @@ void KODatUNO::InitCmdFlags()
 	UVWireFlameViewFlag = KOD_FALSE;
 	CPViewFlag = KOD_FALSE;
 	UVDirFlag = KOD_FALSE;
+    UVviewFlag = KOD_FALSE;
 }
 
 // Function: ExecuteUserFuncMain
@@ -2255,6 +2261,63 @@ void KODatUNO::DispUVdirection()
 	glEnable(GL_LIGHTING);
 }
 
+// Function: DispUVinfo
+// 選択されている曲面のUV平面上のトリム情報をX,Y平面に描画する
+void KODatUNO::DispUVinfo()
+{
+    if(!BodyList.getNum())	return;
+
+    char buf[256];
+    BODY *body;
+    OBJECT *obj;
+    NURBS_Func NFunc;
+    COMPC *CompC;
+
+    glDisable(GL_LIGHTING);
+
+    glLineWidth(1);
+    glColor3f(0.8,0.8,0.8);
+    glBegin(GL_LINE_STRIP);
+        glVertex3d(0,0,0);
+        glVertex3d(0,1,0);
+        glVertex3d(1,1,0);
+        glVertex3d(1,0,0);
+        glVertex3d(0,0,0);
+    glEnd();
+
+    glLineWidth(2);
+    for(int pnum=0;pnum<SeldEntList.getNum();pnum++){
+        obj = (OBJECT *)SeldEntList.getData(pnum);
+        body = (BODY *)BodyList.getData(obj->Body);
+        if(obj->Type == _NURBSS){
+            sprintf(buf,"ERROR: Selected Surface Type is NURBS Surface.");
+            GuiIF.SetMessage(buf);
+            continue;
+        }
+        else if(obj->Type == _TRIMMED_SURFACE){
+            // 外周面上線
+            glColor3f(1,0,0);	// 赤
+            CompC = (COMPC *)body->TrmS[obj->Num].pTO->pB;
+            //fprintf(stderr,"Nuber of Outer Trim Curve : %d\n",CompC->N);	// debug
+            for(int i=0;i<CompC->N;i++){
+                DrawNurbsCurve(*(NURBSC *)CompC->pDE[i]);
+            }
+
+            // 内周面上線
+            glColor3f(0,0,1);	// 青
+            for(int i=0;i< body->TrmS[obj->Num].n2;i++){
+                CompC = (COMPC *)body->TrmS[obj->Num].pTI[i]->pB;
+                //fprintf(stderr,"Nuber of Inner Trim Curve : %d\n",CompC->N);	// debug
+                for(int j=0;j<CompC->N;j++){
+                    DrawNurbsCurve(*(NURBSC *)CompC->pDE[j]);
+                }
+            }
+        }
+    }
+
+    glEnable(GL_LIGHTING);
+
+}
 
 // Function: ChangeRank
 // 選択されている曲面のRankを変更する

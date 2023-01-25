@@ -189,6 +189,19 @@ int GUI_Interface::SetCommand(const char *cmd)
     return len;
 }
 
+// Function: ExecCommand
+// コマンドを実行する
+// Parameters:
+// 実行するコマンド文字列
+int GUI_Interface::ExecCommand(const char *cmd)
+{
+    QString text = consoleText->toPlainText() + QString(cmd);
+    consoleText->setText(text);
+
+    QKeyEvent keyevent(QEvent::KeyPress,Qt::Key_Enter,Qt::NoModifier);
+    QApplication::sendEvent(consoleText,&keyevent);
+}
+
 // Function: AddBodyNameToWin
 // 新たに登録したBODYの名前をウィンドウリストに表示する
 //
