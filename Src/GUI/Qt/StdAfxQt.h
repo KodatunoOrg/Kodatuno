@@ -2,14 +2,14 @@
 #define _STD_AFX_QT_H_
 
 //GEで使用するQt関連のヘッダ
-#include <QApplication>
+#include <QtWidgets/QApplication>
 #include <QTextEdit>
 #include <QListWidget>
 #include <QListWidgetItem>
 #include <QFileDialog>
 #include <QLabel>
 #include <QAction>
-#include <QGLWidget>
+#include <QOpenGLWidget>
 #include <QStatusBar>
 #include <QScrollBar>
 #include <QTextCursor>
@@ -141,7 +141,7 @@ public:
 	
 // Function: SetDescribeWidget
 // OpenGl描画用GUIのオブジェクトのインスタンスをセット
-    void SetDescribeWidget(QGLWidget* widget);		
+    void SetDescribeWidget(QOpenGLWidget* widget);
 	
 // Function: SetStatusBarObject
 // ステータスバー用GUIのオブジェクトのインスタンスをセット
@@ -214,7 +214,7 @@ private:
 
 // Variable: *glWidget
 // OpenGL描画用GUIオブジェクト
-    QGLWidget* glWidget;            
+    QOpenGLWidget* glWidget;
 	
 // Variable: *statusBar
 // ステータスバー用GUIのオブジェクト

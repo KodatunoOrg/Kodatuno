@@ -51,7 +51,7 @@ void GUI_Interface::SetDelBodyActionObject(QAction *action)
 //
 // Parameters:
 // *widget - descriveウィジェットのオブジェクトを取得する
-void GUI_Interface::SetDescribeWidget(QGLWidget *widget)
+void GUI_Interface::SetDescribeWidget(QOpenGLWidget *widget)
 {
     glWidget = widget;
 }

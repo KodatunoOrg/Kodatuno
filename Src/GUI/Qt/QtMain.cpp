@@ -1,6 +1,7 @@
 ﻿#include <QApplication>
-#include <QTextCodec>
+//#include <QTextCodec>
 #include "QtMainWindow.h"
+
 
 // Function: main
 // QApplicationオブジェクトを生成，アプリケーションはイベントループ開始
