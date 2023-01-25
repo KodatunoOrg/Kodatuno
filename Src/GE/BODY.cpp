@@ -468,7 +468,7 @@ CIRA *BODY::NewCirA(int N)
 
 	for(int i=0;i<N;i++){
 		CirA[i].zt = 0;
-		CirA[i].cp[0] = CirA[i].cp[1] = CirA[i].cp[3] = SetCoord(0,0,0);
+		CirA[i].cp[0] = CirA[i].cp[1] = CirA[i].cp[2] = SetCoord(0,0,0);
 		CirA[i].R = 0;
 		CirA[i].t[0] = CirA[i].t[1] = 0;
 		CirA[i].U = CirA[i].V = SetCoord(0,0,0);
