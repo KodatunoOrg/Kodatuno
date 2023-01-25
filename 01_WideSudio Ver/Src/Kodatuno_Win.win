@@ -1463,7 +1463,7 @@ User_Prop3
  #RES      emboss
 1
  #RES      labelString
-0
+-10
  #RES      vis
 1
  #RES      x
@@ -1545,7 +1545,7 @@ User_Prop4
  #RES      emboss
 1
  #RES      labelString
-0
+1
  #RES      vis
 1
  #RES      x
@@ -1573,7 +1573,7 @@ User_Prop5
  #RES      emboss
 1
  #RES      labelString
-0
+0.1
  #RES      vis
 1
  #RES      x

@@ -7,11 +7,12 @@
 #include "KodListFunc.h"
 
 #define ALL_ENTITY_TYPE_NUM	20		// 全エンティティタイプの数
-#define CTLPNUMMAX  256		// NURBSで用いられるコントロールポイントの数の上限
-#define KNOTNUMMAX  256		// NURBSで用いられるノットシーケンスの数の上限
+#define CTLPNUMMAX  512		// NURBSで用いられるコントロールポイントの数の上限
+#define KNOTNUMMAX  512		// NURBSで用いられるノットシーケンスの数の上限
 #define GEOMTRYELEM 0		// IGESディレクトリ部"Entity Use Flag"より、幾何要素を示す
 #define PARAMETRICELEM 5	// IGESディレクトリ部"Entity Use Flag"より、2Dパラメトリック要素を示す
-#define NORM_KNOT_VAL	10	// ノットベクトルを正規化するときの範囲の最大値
+#define NORM_KNOT_VAL	1	// ノットベクトルを正規化するときの範囲の最大値
+#define MIN_KNOT_RANGE	0.0002	// 隣り合うノットベクトルの差がこの値以上であること
 
 typedef KODlistData BODYList;	// 汎用データリストの型をBODYListとして再登録
 typedef KODlistData OBJECTList;	// 汎用データリストの型をOBJECTListとして再登録
@@ -27,8 +28,8 @@ typedef KODlistData OBJECTList;	// 汎用データリストの型をOBJECTListとして再登録
 #define	PARAMETRIC_SPLINE_SURFACE	114		// パラメトリックスプライン曲面
 #define	POINT						116		// 点
 #define	TRANSFORMATION_MATRIX		124		// 変換行列
-#define	NURBS_CURVE					126		// 有理Bスプライン曲線
-#define	NURBS_SURFACE				128		// 有理Bスプライン曲面
+#define	NURBS_CURVE					126		// NURBS曲線
+#define	NURBS_SURFACE				128		// NURBS曲面
 #define	CURVE_ON_PARAMETRIC_SURFACE 142		// 面上線
 #define	TRIMMED_SURFACE				144		// トリム面
 #define	SUBFIGURE_DEFINITION		308		// 子図の定義
@@ -187,7 +188,7 @@ typedef struct{
 
 typedef TRMS TRIMD_NURBSS;	// トリム面に対してNurbs曲面を想起させる名称を与えておく
 
-// パス生成対象エンティティを示す構造体
+// セレクションされたエンティティの情報を示す構造体
 typedef struct{
 	int Body;		// BODYオブジェクトの番号
 	int Type;		// エンティティタイプのシンボル(NURBS曲線:126 , NURBS曲面:128 , トリム面:144)

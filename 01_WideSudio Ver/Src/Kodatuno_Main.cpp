@@ -29,6 +29,7 @@ void KODatUNO::InitializeWin()
 	SetCmdList(CmdMap,"cpview","",11,CmdCPView);			// Command コントロールポイントを描画
 	SetCmdList(CmdMap,"surfinfo","",12,CmdSurfInfo);		// Command 曲面情報を出力
 	SetCmdList(CmdMap,"exp","r",13,CmdExpand);				// Command Bodyを拡大する
+	SetCmdList(CmdMap,"chrank","r",14,CmdChRank);			// Command 指定したNURBS曲面のRankを変更する
 
 	// Userコマンドの登録
 	User.RegistUserCommand(CmdMap);
@@ -393,7 +394,7 @@ int KODatUNO::OpenFile()
 		if(ext == ext_igs){				// 拡張子が"igs"
 			IGES_PARSER Iges;
 			flag = Iges.IGES_Parser_Main(body,full_name);			// IGESデータを読み込んで、bodyに格納
-			if(flag == KOD_TRUE)	Iges.NormalizeKnotRange(body);	// ノットベクトルの正規化
+			if(flag == KOD_TRUE)	Iges.ExpandKnotRange(body);		// ノットベクトルの正規化
 			if(flag == KOD_TRUE)	Iges.CheckDegenracy(body);		// 縮退(2Dパラメトリック曲線の始点と終点が一致しているか)のチェック
 			if(flag == KOD_TRUE)	Iges.ModifyParamConect(body);	// パラメトリック平面内のトリム曲線同士のつながりをチェック、修正する
 		}
@@ -1224,8 +1225,8 @@ void KODatUNO::ReDrawUserCommand()
 			glNewList(COMMAND_DRAW_USER_COMMAND+i,GL_COMPILE_AND_EXECUTE);		// User関数iをメモリーリストに登録
 			User.Command(&BodyList,&SeldEntList,SeldEntList.getNum(),i+SYSCOMMANDNUM,argc,argv);	// Userコマンドを実行
 			glEndList();												// メモリーリスト登録終了
-			//ReDrawBODYFlag = KOD_FALSE;		// BODY描画メモリリスト再設定フラグON
-			//Describe_Form->redraw();		// 描画領域に再描画を指示
+			ReDrawBODYFlag = KOD_FALSE;		// BODY描画メモリリスト再設定フラグON
+			Describe_Form->redraw();		// 描画領域に再描画を指示
 			OpenDelBtn();					// Delボタン属性の変更
 			return;
 		}
@@ -1253,8 +1254,8 @@ void KODatUNO::ReDrawUserFunc()
 				ExecUserFuncFlag[i]  = KOD_DONE;
 			}
 			glEndList();												// メモリーリスト登録終了
-			//ReDrawBODYFlag = KOD_FALSE;	// BODY描画メモリリスト再設定フラグON
-			//Describe_Form->redraw();		// 描画領域に再描画を指示
+			ReDrawBODYFlag = KOD_FALSE;	// BODY描画メモリリスト再設定フラグON
+			Describe_Form->redraw();		// 描画領域に再描画を指示
 			OpenDelBtn();					// Delボタン属性の変更
 			return;
 		}
@@ -1367,16 +1368,18 @@ void KODatUNO::UVWireView()
 				NurbsS = body->TrmS[i].pts;
 			else
 				NurbsS = &body->NurbsS[i];
+			double du = NurbsS->U[1] - NurbsS->U[0];
+			double dv = NurbsS->V[1] - NurbsS->V[0];
 			for(int j=0;j<11;j++){
 				glBegin(GL_LINE_STRIP);
 				for(int k=0;k<51;k++){		// v方向パラメータライン描画
-					p = NFunc.CalcNurbsSCoord(NurbsS,0.1*(double)j,0.02*(double)k);
+					p = NFunc.CalcNurbsSCoord(NurbsS,0.1*(double)j*du,0.02*(double)k*dv);
 					glVertex3d(p.x,p.y,p.z);
 				}
 				glEnd();
 				glBegin(GL_LINE_STRIP);
 				for(int k=0;k<51;k++){		// u方向パラメータライン描画
-					p = NFunc.CalcNurbsSCoord(NurbsS,0.02*(double)k,0.1*(double)j);
+					p = NFunc.CalcNurbsSCoord(NurbsS,0.02*(double)k*du,0.1*(double)j*dv);
 					glVertex3d(p.x,p.y,p.z);
 				}
 				glEnd();
@@ -1809,3 +1812,81 @@ void KODatUNO::GetSurfInfo()
 		SetMessage(buf);
 	}
 }
+
+// 選択されている曲面のRankを変更する
+void KODatUNO::ChangeRank(int Newrank[2])
+{
+	if(!BodyList.getNum())	return;
+
+	char buf[256];
+
+	if(Newrank[0] < 2 || Newrank[1] < 2){
+		sprintf(buf,"ERROR:Specified few rank");
+		SetMessage(buf);
+		return;
+	}
+
+	NURBS_Func NFunc;
+	BODY *body;
+	OBJECT *obj;
+	NURBSS *ns;
+
+	for(int pnum=0;pnum<SeldEntList.getNum();pnum++){
+		obj = (OBJECT *)SeldEntList.getData(pnum);
+		body = (BODY *)BodyList.getData(obj->Body);
+		if(obj->Type == _NURBSS){
+			ns=&body->NurbsS[obj->Num];
+		}
+		else if(obj->Type == _TRIMMED_SURFACE){
+			ns=body->TrmS[obj->Num].pts;
+		}
+		else
+			continue;
+
+		// rankがコントロールポイント数より大きい場合はエラー
+		if(Newrank[0] > ns->K[0] || Newrank[1] > ns->K[1]){
+			sprintf(buf,"ERROR:Specified rank exceeds number of control points");
+			SetMessage(buf);
+			return;
+		}
+		int oldrank[2];
+		oldrank[0] = ns->M[0];		// 今までのrankを保存しておく
+		oldrank[1] = ns->M[1];
+		ns->M[0] = Newrank[0];		// 新しいrankを登録
+		ns->M[1] = Newrank[1];
+		ns->N[0] = ns->K[0] + ns->M[0];	// ノットの数を再指定
+		ns->N[1] = ns->K[1] + ns->M[1];
+
+		// Newrankがoldrankよりも大きい場合はノットベクトル配列を再確保
+		double *tmp1,*tmp2;
+		bool flag = false;
+		if(Newrank[0] > oldrank[0]){
+			if((tmp1 = (double *)realloc(ns->S,sizeof(double)*ns->N[0])) == NULL){
+				goto EXIT;
+			}
+			ns->S = tmp1;
+			flag = true;
+		}
+		if(Newrank[1] > oldrank[1]){
+			if((tmp2 = (double *)realloc(ns->T,sizeof(double)*ns->N[1])) == NULL){
+				goto EXIT;
+			}
+			ns->T = tmp2;
+			flag = true;
+		}
+
+		NFunc.GetEqIntervalKont(ns->K[0],ns->M[0],ns->S);	// ノットベクトルを再設定
+		NFunc.GetEqIntervalKont(ns->K[1],ns->M[1],ns->T);
+		ns->U[0] = ns->V[0] = 0;		// ノットベクトルの範囲を指定
+		ns->U[1] = ns->V[1] = NORM_KNOT_VAL;		
+	}
+
+	DrawBODYFlag = KOD_TRUE;				// BODY描画してもOKフラグON
+	ReDrawBODYFlag = KOD_FALSE;				// BODYのメモリリストを再取得
+	return;
+
+EXIT:			
+	sprintf(buf,"ERROR:Fail to malloc");
+	SetMessage(buf);
+}
+

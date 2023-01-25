@@ -22,14 +22,14 @@ void CmdVerInf(int argc,char *argv[])
 		do{
 			switch(*p){
 			case 'f':		// "-f"オプションでフルネーム出力
-				SetMessage("Kanazawa univ's Open Developed Alternative Trajectory Utility Nucleus Obuject");
+				SetMessage("Kodatuno is Open Developed Alternative Trajectory Utility Nucleus Obuject");
 				break;
 			case 'F':		// "-F (数値)"でその数値分文字列を出力(意味なし)
 				if(argc==1) return;
 				argc--; argv++;
 				for(int i=0;i<atoi(argv[0]);i++){
 					char mes[256];
-					sprintf(mes,"%d:Kodatuno 1.2",i+1);
+					sprintf(mes,"%d:Kodatuno 2.0",i+1);
 					SetMessage(mes);
 				}
 				break;
@@ -251,6 +251,38 @@ void CmdExpand(int argc,char *argv[])
 				}
 				Kodatuno.ExpandBody(SetCoord(axd[0],axd[1],axd[2]));
 			break;
+			}
+		}while(*++p);
+		argv++; argc--;
+	}
+}
+
+// NURBS Rnakの変更
+void CmdChRank(int argc, char *argv[])
+{
+	char *p;
+
+	// オプションなし
+	if(!argc){
+		SetMessage("Command Error: Set -r (u-val) (v-val)");
+		return;
+	}
+
+	int r[2];
+
+	argv++;
+	while(argc > 0 && (p=argv[0])[0] == '-' && *++p != '\0'){
+		do{
+			switch(*p){
+			case 'R':		// "-r (数値)"で、トレランスをセット
+			case 'r':
+				if(argc==1) return;
+				for(int i=0;i<2;i++){
+					argc--; argv++;
+					r[i] = atoi(argv[0]);
+				}
+				Kodatuno.ChangeRank(r);
+				break;
 			}
 		}while(*++p);
 		argv++; argc--;

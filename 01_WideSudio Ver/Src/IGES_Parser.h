@@ -99,7 +99,8 @@ class IGES_PARSER
 {
 public:
 	int IGES_Parser_Main(BODY *,char []);	// IGESファイルのパーサmain
-	int NormalizeKnotRange(BODY *);			// ノットベクトルの範囲が0～1でなかった場合は、強制的に0～1にする(ノットの正規化)
+	int NormalizeKnotRange(BODY *,double);	// ノットベクトルの範囲を0～valへ(ノットの正規化)
+	int ExpandKnotRange(BODY *);			// 隣り合うノットベクトルの差がMIN_KNOT_RANGE以上になるよう範囲を変更する
 	int ModifyParamConect(BODY *);			// パラメトリック平面内のトリム曲線同士のつながりをチェック、修正する
 	int CheckDegenracy(BODY *);				// 縮退(2Dパラメトリック曲線の始点と終点が一致しているか)のチェック
 	IGES_PARSER();					// コンストラクタ
@@ -136,8 +137,9 @@ private:
 	int CirAToNurbsC_seg3(int,int,BODY,Coord [],double);	// Type100が3セグメントの場合
 	int CirAToNurbsC_seg4(int,int,BODY,Coord [],double);	// Type100が4セグメントの場合
 	int TransformNurbsC(int,int,BODY);						// NURBS曲線を座標変換する
-	int ChangeKnotVecRange(double [],double [],int,int,int);	// ノットベクトルの正規化sub1
-	double ChangeKnot(double ,double ,double);				// ノットベクトルの正規化sub2
+	int ChangeKnotVecRange(double [],double [],int,int,int,double);	// ノットベクトルの正規化sub1
+	double ChangeKnot(double ,double ,double,double);				// ノットベクトルの正規化sub2
+	double SearchMinVecRange(double [],int,int);			// ノットベクトルの最小間隔を探索
 
 private:
 	BODY *body;

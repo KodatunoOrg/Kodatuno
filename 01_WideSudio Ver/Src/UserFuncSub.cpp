@@ -55,12 +55,11 @@ int ContourLine(NURBSS *NurbsS,double upper_z,double under_z,double delta,double
 
 	for(int i=0;i<step;i++){
 		double z = under_z + delta*(double)i;
-		if(z == 0.0) continue;			// z=0の時は特異点なので計算しない
 		pt = SetCoord(0,0,z);			// 平面をZ方向に徐々にシフトしていく
 		char mes[256];
 		sprintf(mes,"z=%.3lf  calculating...",z);
 		SetMessage(mes);
-		num = NFunc.CalcIntersecPtsPlaneSearch(NurbsS,pt,nvec,roughness,10,t,5000);		// NURBS曲面と平面との交点群を交線追跡法で求める
+		num = NFunc.CalcIntersecPtsPlaneSearch(NurbsS,pt,nvec,roughness,10,t,5000,BULIRSH_STOER);		// NURBS曲面と平面との交点群を交線追跡法で求める
 		sprintf(mes,"num = %d",num);
 		SetMessage(mes);
 

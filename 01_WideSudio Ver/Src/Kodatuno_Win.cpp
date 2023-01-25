@@ -967,7 +967,7 @@ WSCbase* _create_win_Kodatuno_Win(){
   User_Prop2->setPropertyV(WSNemboss,(WSCbool)1);
   User_Prop2->setPropertyV(WSNshadowType,(char)1);
   User_Prop2->setPropertyV(WSNemboss,(WSCbool)1);
-  User_Prop2->setPropertyV(WSNlabelString,"0");
+  User_Prop2->setPropertyV(WSNlabelString,"-10");
   User_Prop2->setPropertyV(WSNname,"User_Prop2");
   User_Prop2->setPropertyV(WSNvis,(WSCbool)1);
   User_Prop2->setPropertyV(WSNx,(short)55);
@@ -1016,7 +1016,7 @@ WSCbase* _create_win_Kodatuno_Win(){
   User_Prop3->setPropertyV(WSNemboss,(WSCbool)1);
   User_Prop3->setPropertyV(WSNshadowType,(char)1);
   User_Prop3->setPropertyV(WSNemboss,(WSCbool)1);
-  User_Prop3->setPropertyV(WSNlabelString,"0");
+  User_Prop3->setPropertyV(WSNlabelString,"1");
   User_Prop3->setPropertyV(WSNname,"User_Prop3");
   User_Prop3->setPropertyV(WSNvis,(WSCbool)1);
   User_Prop3->setPropertyV(WSNx,(short)55);
@@ -1032,7 +1032,7 @@ WSCbase* _create_win_Kodatuno_Win(){
   User_Prop4->setPropertyV(WSNemboss,(WSCbool)1);
   User_Prop4->setPropertyV(WSNshadowType,(char)1);
   User_Prop4->setPropertyV(WSNemboss,(WSCbool)1);
-  User_Prop4->setPropertyV(WSNlabelString,"0");
+  User_Prop4->setPropertyV(WSNlabelString,"0.1");
   User_Prop4->setPropertyV(WSNname,"User_Prop4");
   User_Prop4->setPropertyV(WSNvis,(WSCbool)1);
   User_Prop4->setPropertyV(WSNx,(short)55);

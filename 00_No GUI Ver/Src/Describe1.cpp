@@ -851,7 +851,7 @@ int DESCRIBE::OpenFile()
 		if(ext_flag == EXT_IGES){				// 拡張子が"igs"
 			IGES_PARSER Iges;
 			flag = Iges.IGES_Parser_Main(body,fname);				// IGESデータを読み込んで、bodyに格納
-			if(flag == KOD_TRUE)	Iges.NormalizeKnotRange(body);	// ノットベクトルの正規化
+			if(flag == KOD_TRUE)	Iges.ExpandKnotRange(body);		// ノットベクトルの正規化
 			if(flag == KOD_TRUE)	Iges.CheckDegenracy(body);		// 縮退(2Dパラメトリック曲線の始点と終点が一致しているか)のチェック
 			if(flag == KOD_TRUE)	Iges.ModifyParamConect(body);	// パラメトリック平面内のトリム曲線同士のつながりをチェック、修正する
 		}
@@ -861,7 +861,7 @@ int DESCRIBE::OpenFile()
 		}
 		if(flag == KOD_ERR){
 			delete body;					// エラーの場合はBODYのメモリー解放
-			SetMessage("This file was not able to be read normaly.");
+			SetMessage("This file was not read normaly.");
 			return KOD_ERR;
 		}
 		strcpy(body->Name,fname);				// ファイル名をbody名として登録
@@ -963,5 +963,5 @@ void DESCRIBE::SelectionCanncel()
 // バージョン情報を出力
 void DESCRIBE::VersionInfo()
 {
-	fprintf(stderr,"KODATUNO R1.0\n");
+	fprintf(stderr,"KODATUNO R2.1\n");
 }

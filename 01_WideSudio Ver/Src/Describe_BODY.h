@@ -41,7 +41,7 @@ public:
 	void DrawLine_Param(LINE_ *);				// 2Dパラメトリック直線要素の描画
 
 
-public:
+protected:
 	GLUnurbsObj *NurbsSurf;						// NURBS曲面用オブジェクト
 	GLUnurbsObj *NurbsCurve;					// NURBS曲線用オブジェクト
 };

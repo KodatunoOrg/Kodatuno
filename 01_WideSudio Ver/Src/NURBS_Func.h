@@ -18,6 +18,8 @@
 #define OUTTER_TRIM			0				// 外周トリミング領域
 #define INNER_TRIM			1				// 内周トリミング領域
 #define PARAMDIVNUM			10				// 初期値探索用のパラメータ分割数
+#define RUNGE_KUTTA			0				// Runge-Kutta法のシンボル
+#define BULIRSH_STOER		1				// Bulirsch-Stoer法のシンボル
 
 
 // NURBSの操作を集めたクラスを定義
@@ -50,16 +52,24 @@ public:
 	Coord CalcDiffvNurbsS(NURBSS *,double,double);				// NURBS曲面のv方向1階微分係数を求める
 	Coord CalcDiffNNurbsS(NURBSS *,int,int,double,double);		// NURBS曲面の各方向を任意階微分したときの微分係数を求める
 	Coord CalcNormVecOnNurbsS(NURBSS *,double,double);			// NURBS曲面上の(u,v)における法線ベクトルをもとめる
-	Coord CalcAveCurvatureNormVec(NURBSS *,double,double);		// NURBS曲面上の(u,v)における平均曲率法線ベクトルを求める
-	int CalcuIntersecPtNurbsLine(NURBSS *,Coord ,Coord ,int,Coord *,int);	// NURBS曲面と直線の交点を算出
+	Coord CalcDiffuNormVecOnNurbsS(NURBSS *,double,double);		// NURBS曲面上の(u,v)における法線ベクトルのu方向1階微分をもとめる
+	Coord CalcDiffvNormVecOnNurbsS(NURBSS *,double,double);		// NURBS曲面上の(u,v)における法線ベクトルのv方向1階微分をもとめる
+	double CalcMeanCurvature(NURBSS *,double,double);			// NURBS曲面上の(u,v)における平均曲率を求める
+	Coord CalcMeanCurvatureNormVec(NURBSS *,double,double);		// NURBS曲面上の(u,v)における平均曲率法線ベクトルを求める
+	double CalcGaussCurvature(NURBSS *,double,double);			// NURBS曲面上の(u,v)におけるガウス曲率を求める
+	Coord CalcGaussCurvatureNormVec(NURBSS *,double,double);	// NURBS曲面上の(u,v)におけるガウス曲率法線ベクトルを求める
+	int CalcuIntersecPtNurbsLine(NURBSS *,Coord,Coord,int,Coord *,int);	// NURBS曲面と直線の交点を算出
+	int CalcIntersecPtNurbsPt(NURBSS *,Coord,int,Coord *);		// NURBS曲面上における空間上の1点からの最近傍点を求める(ニュートン法)
 	int CalcIntersecCurve(NURBSC *,Coord,Coord,int,double *,int);	// NURBS曲線と平面との交点を求める(ニュートン法)
 	int CalcIntersecCurve3(NURBSC *,Coord,Coord,double *,int);	// 3次以下のNURBS曲線と平面との交点を求める
-	int CalcIntersecPtsPlaneV3(NURBSS *,Coord,Coord,int,Coord *,int);	// 3次以下のNURBS曲面と平面との交点群を代数計算で求める(vパラメータ分割)
-	int CalcIntersecPtsPlaneU3(NURBSS *,Coord,Coord,int,Coord *,int);	// 3次以下のNURBS曲面と平面との交点群を代数計算で求める(uパラメータ分割)
-	int CalcIntersecPtsPlaneSearch(NURBSS *,Coord,Coord,double,int,Coord *,int);	// NURBS曲面と平面との交点群を交線追跡法で求める
+	int CalcIntersecPtsPlaneV3(NURBSS *,Coord,Coord,int,Coord *,int);	// V方向のアイソパラ曲線を指定した分割数で生成し，各3次以下の曲線とNURBS曲面との交点を代数計算で算出する
+	int CalcIntersecPtsPlaneU3(NURBSS *,Coord,Coord,int,Coord *,int);	// V方向のアイソパラ曲線を指定した分割数で生成し，各3次以下の曲線とNURBS曲面との交点を代数計算で算出する
+	int CalcIntersecPtsPlaneV(NURBSS *,Coord,Coord,int,Coord *,int);	// V方向のアイソパラ曲線を指定した分割数で生成し，各曲線とNURBS曲面との交点を算出する
+	int CalcIntersecPtsPlaneU(NURBSS *,Coord,Coord,int,Coord *,int);	// U方向のアイソパラ曲線を指定した分割数で生成し，各曲線とNURBS曲面との交点を算出する
+	int CalcIntersecPtsPlaneSearch(NURBSS *,Coord,Coord,double,int,Coord *,int,int);	// NURBS曲面と平面との交点群を交線追跡法で求める
 	int CalcIntersecPtsNurbsSNurbsC(NURBSS *,NURBSC *,int,Coord *,int);	// NURBS曲面とNURBS曲線との交点を求める(ニュートン法)
 	int CalcIntersecPtsNurbsSGeom(NURBSS *,NURBSS *,int,int,Coord *,Coord *,int);		// NURBS曲面同士の交線上の点を幾何学的にいくつか求める
-	int CalcIntersecPtsNurbsSSearch(NURBSS *,NURBSS *,int,double,Coord *,Coord *,int);		// NURBS曲面同士の交線(交点群)を交線追跡法で求める
+	int CalcIntersecPtsNurbsSSearch(NURBSS *,NURBSS *,int,double,Coord *,Coord *,int);	// NURBS曲面同士の交線(交点群)を交線追跡法で求める
 	int CalcIntersecPtsNurbsCNurbsCParam(NURBSC *,NURBSC *,int,Coord *,int);	// 2DパラメトリックNURBS曲線同士の交点を求める
 	int GetBSplCoef3(int,int,int,double *,double **);			// 3次のBスプライン曲線の各係数を求める　(at^3 + bt^2 + ct + dの係数a,b,c,dを返す)
 	int GetBSplCoef2(int,int,int,double *,double **);			// 2次のBスプライン曲線の各係数を求める　(at^2 + bt + cの係数a,b,cを返す)
@@ -88,6 +98,7 @@ public:
 	double CalcNurbsCLength(NURBSC *,double,double);			// NURBS曲線の指定区間の線分長を求める
 	int CalcDeltaPtsOnNurbsC(NURBSC *,double,Coord *);			// 指定した間隔でNURBS曲線上の座標値を出力する
 	int CalcExtremumNurbsC(NURBSC *,Coord,double *,int);		// NURBS曲線の指定した方向における極値の座標値を得る
+	void GetEqIntervalKont(int,int,Vector);						// 曲線/曲面パラメータから等間隔なノットベクトルを算出
 
 	int CalcExtSearchCurve(NURBSS *,Coord,Coord,double,NURBSC *,NURBSC *);			// 極地探索線を得る(準備中)
 	int CalcExtGradCurve(NURBSS *,Coord,Coord,double,NURBSC *,NURBSC *);			// 極地傾斜線を得る(準備中)
@@ -114,12 +125,13 @@ private:
 	void GetIntersecEquation(int,Coord *,double *,Coord,Coord,double *);		// NURBS曲線と平面の交線導出用3次方程式を得る
 	int SearchIntersectPt(NURBSS *,Coord,Coord,double,double *,double *,int);	// ニュートン法により交点を収束させる(NURBS曲面と平面)
 	int SearchIntersectPt_RKM(NURBSS *,Coord,Coord,double,double *,double *,int);	// 4次のルンゲクッタ法により交点を収束させる(NURBS曲面と平面)
+	int SearchIntersectPt_BS(NURBSS *,Coord,Coord,double,double *,double *,int);	// Bulirsch-Stoer法により交点を収束させる(NURBS曲面と平面)
+	int GetSIPParam1(NURBSS *,double ,double ,Coord ,Coord ,int ,Coord *);		// NURBS曲面と平面の交点を表す微分方程式の右辺の値を得る
 	int SearchIntersectPt(NURBSS *,NURBSS *,double,double *,double *,double *,double *,int);		// ニュートン法により交点を収束させる(NURBS曲面同士)
-	int DetermPtOnTRMSurf_sub(CONPS *,double,double);						// トリム境界線が複合曲線の場合のトリミング領域内外判定
+	int DetermPtOnTRMSurf_sub(CONPS *,double,double);				// トリム境界線が複合曲線の場合のトリミング領域内外判定
 	void GetCurveKnotParam1(Coord *,int,Vector);					// 各通過点の曲線パラメータを算出(コード長の比から算出)
 	void GetCurveKnotParam2(Coord *,int,Vector);					// 各通過点の曲線パラメータを算出(コード長の平方根の比から算出)
 	void GetSurfaceKnotParam(Vector,Vector,Coord **,int,int);		// 各通過点の曲面パラメータを算出
-	void GetEqIntervalKont(int,int,Vector);							// 曲線/曲面パラメータから等間隔なノットベクトルを算出
 	void GetInterpolatedKnot(Vector,int,int,int,Vector);			// 曲線/曲面パラメータから補間用ノットベクトルを算出
 	void GetApproximatedKnot(Vector,int,int,int,Vector);			// 曲線/曲面パラメータから近似用ノットベクトルを算出
 	int SetApproximationCPnum(int);									// 点列数から生成するコントロールポイント数を算定する

@@ -80,6 +80,7 @@ public:
 	int GenNurbsCurve(int,char *,int);		// 指定したファイルを読み込み,NURBS曲線を生成
 	int GenNurbsSurface(int,char *,int);	// 指定したファイルを読み込み,NURBS曲面を生成
 	void GetSurfInfo();						// 選択されている曲面の情報をコンソール出力する
+	void ChangeRank(int []);				// 選択されている曲面のRankを変更する
 
 // private関数の定義
 private:
@@ -182,4 +183,5 @@ void CmdRotateBody(int ,char *[]);		// コマンド(BODYの回転)
 void CmdCPView(int ,char *[]);			// コマンド(コントロールポイント描画)
 void CmdSurfInfo(int,char *[]);			// コマンド(曲面情報を出力)
 void CmdExpand(int,char *[]);			// コマンド(BODYの拡大)
+void CmdChRank(int,char *[]);			// コマンド(NURBS Rnakの変更)
 #endif

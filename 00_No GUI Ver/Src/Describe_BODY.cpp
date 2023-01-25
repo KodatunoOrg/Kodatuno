@@ -58,8 +58,8 @@ void Describe_BODY::DrawLine(LINE_ Line)
 void Describe_BODY::DrawNurbsCurve(NURBSC NurbsC)
 {
 	int i,j;
-	GLfloat	uKnot[KNOTNUMMAX];					// NURBS描画用バッファ
-	GLfloat	CCtlp[CTLPNUMMAX][4];				// NURBS描画用バッファ
+	static GLfloat	uKnot[KNOTNUMMAX];					// NURBS描画用バッファ
+	static GLfloat	CCtlp[CTLPNUMMAX][4];				// NURBS描画用バッファ
 
 	for(i=0;i<NurbsC.K;i++){			// コントロールポイント取り出し
 		CCtlp[i][0] = NurbsC.cp[i].x*NurbsC.W[i];
@@ -87,9 +87,9 @@ void Describe_BODY::DrawNurbsCurve(NURBSC NurbsC)
 void Describe_BODY::DrawTrimdNurbsSurfe(NURBSS *NurbsS)
 {
 	int j,k;
-	GLfloat	uKnot[KNOTNUMMAX];					// NURBS描画用バッファ
-	GLfloat	vKnot[KNOTNUMMAX];					// NURBS描画用バッファ
-	GLfloat	SCtlp[CTLPNUMMAX][CTLPNUMMAX][4];	// NURBS描画用バッファ
+	static GLfloat	uKnot[KNOTNUMMAX];					// NURBS描画用バッファ
+	static GLfloat	vKnot[KNOTNUMMAX];					// NURBS描画用バッファ
+	static GLfloat	SCtlp[CTLPNUMMAX][CTLPNUMMAX][4];	// NURBS描画用バッファ
 
 	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT,NurbsS->Dstat.Color);
 	for(k=0;k<NurbsS->K[1];k++){
@@ -117,9 +117,9 @@ void Describe_BODY::DrawTrimdNurbsSurfe(NURBSS *NurbsS)
 void Describe_BODY::DrawNurbsSurfe(NURBSS NurbsS)
 {
 	int j,k;
-	GLfloat	uKnot[KNOTNUMMAX];					// NURBS描画用バッファ
-	GLfloat	vKnot[KNOTNUMMAX];					// NURBS描画用バッファ
-	GLfloat	SCtlp[CTLPNUMMAX][CTLPNUMMAX][4];	// NURBS描画用バッファ
+	static GLfloat	uKnot[KNOTNUMMAX];					// NURBS描画用バッファ
+	static GLfloat	vKnot[KNOTNUMMAX];					// NURBS描画用バッファ
+	static GLfloat	SCtlp[CTLPNUMMAX][CTLPNUMMAX][4];	// NURBS描画用バッファ
 
 	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT,NurbsS.Dstat.Color);
 	for(k=0;k<NurbsS.K[1];k++){
@@ -213,8 +213,8 @@ void Describe_BODY::DrawTrimdSurf(TRMS TrmS)
 void Describe_BODY::DrawNurbsCurve_Param(NURBSC *NurbsC)
 {
 	int i;
-	GLfloat	uKnot[KNOTNUMMAX];					// NURBS描画用バッファ
-	GLfloat	CCtlp[CTLPNUMMAX][4];				// NURBS描画用バッファ
+	static GLfloat	uKnot[KNOTNUMMAX];					// NURBS描画用バッファ
+	static GLfloat	CCtlp[CTLPNUMMAX][4];				// NURBS描画用バッファ
 
 	for(i=0;i<NurbsC->K;i++){			// コントロールポイント取り出し
 		CCtlp[i][0] = NurbsC->cp[i].x*NurbsC->W[i];

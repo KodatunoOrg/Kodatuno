@@ -7,11 +7,12 @@
 #include "KodListFunc.h"
 
 #define ALL_ENTITY_TYPE_NUM	20		// 全エンティティタイプの数
-#define CTLPNUMMAX  256		// NURBSで用いられるコントロールポイントの数の上限
-#define KNOTNUMMAX  256		// NURBSで用いられるノットシーケンスの数の上限
+#define CTLPNUMMAX  512		// NURBSで用いられるコントロールポイントの数の上限
+#define KNOTNUMMAX  512		// NURBSで用いられるノットシーケンスの数の上限
 #define GEOMTRYELEM 0		// IGESディレクトリ部"Entity Use Flag"より、幾何要素を示す
 #define PARAMETRICELEM 5	// IGESディレクトリ部"Entity Use Flag"より、2Dパラメトリック要素を示す
-#define NORM_KNOT_VAL	10	// ノットベクトルを正規化するときの範囲の最大値
+#define NORM_KNOT_VAL	1	// ノットベクトルを正規化するときの範囲の最大値
+#define MIN_KNOT_RANGE	0.0002	// 隣り合うノットベクトルの差がこの値以上であること
 
 typedef KODlistData BODYList;	// 汎用データリストの型をBODYListとして再登録
 typedef KODlistData OBJECTList;	// 汎用データリストの型をOBJECTListとして再登録

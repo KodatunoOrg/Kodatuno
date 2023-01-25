@@ -22,7 +22,7 @@ int IGES_PARSER::IGES_Parser_Main(BODY *body,char IGES_fname[])
 		SetMessage(mes);
 		return(KOD_ERR);
 	}
-	sprintf(mes,"Open %s",IGES_fname);
+	sprintf(mes,"%s Opening",IGES_fname);
 	SetMessage(mes);
 
 	// 各セクションの行数をあらかじめ取得
@@ -150,25 +150,25 @@ int IGES_PARSER::ModifyParamConect(BODY *body)
 }
 
 // ノットベクトルの正規化Sub1
-int IGES_PARSER::ChangeKnotVecRange(double Range[],double Knot[],int N,int M,int K)
+int IGES_PARSER::ChangeKnotVecRange(double Range[],double Knot[],int N,int M,int K,double val)
 {
 	double _t[KNOTNUMMAX];
 	for(int i=0;i<N;i++){
-		_t[i] = ChangeKnot(Knot[i],Knot[M-1],Knot[K]);
+		_t[i] = ChangeKnot(Knot[i],Knot[M-1],Knot[K],val);
 	}
 	for(int i=0;i<N;i++){
 		Knot[i] = _t[i];
 	}
 	Range[0] = 0;
-	Range[1] = NORM_KNOT_VAL;
+	Range[1] = val;
 
 	return KOD_TRUE;
 }
 
 // ノットベクトルの正規化Sub2
-double IGES_PARSER::ChangeKnot(double Knot,double M_,double K_)
+double IGES_PARSER::ChangeKnot(double Knot,double M_,double K_,double val)
 {
-	return NORM_KNOT_VAL*(Knot - M_)/(K_-M_);
+	return val*(Knot - M_)/(K_-M_);
 }
 
 
@@ -176,7 +176,8 @@ double IGES_PARSER::ChangeKnot(double Knot,double M_,double K_)
 // 0.0001以下くらいの微小変化をOpenGLが認識しないため、ノット間隔を広く取り、0.0001以上の間隔
 // になるようにする。ただし現時点では全てのノット間隔を一律0～NORM_KNOT_VALしており、無駄である。
 // 今後ノット間隔が0.0001以下の場合のみノット間隔を広げるようにするべき。(2011/10)
-int IGES_PARSER::NormalizeKnotRange(BODY *body)
+// 隣り合うノットベクトルの差がMIN_KNOT_RANGE以上になるよう範囲を変更する
+int IGES_PARSER::NormalizeKnotRange(BODY *body,double val)
 {
 	// トリム面
 	for(int i=0;i<body->TypeNum[_TRIMMED_SURFACE];i++){
@@ -184,35 +185,109 @@ int IGES_PARSER::NormalizeKnotRange(BODY *body)
 		int M1 = body->TrmS[i].pts->M[1];
 		int K0 = body->TrmS[i].pts->K[0];
 		int K1 = body->TrmS[i].pts->K[1];
-		// トリム面のパラメトリック平面における外側トリム曲線の正規化
+		// トリム面のパラメトリック平面における外側トリム曲線の変更
 		for(int j=0;j<body->TrmS[i].pTO->pB->CompC.N;j++){
 			NURBSC *nc = (NURBSC *)body->TrmS[i].pTO->pB->CompC.pDE[j];
-			for(int k=0;k<nc->K;k++){
-				nc->cp[k].x = ChangeKnot(nc->cp[k].x,body->TrmS[i].pts->S[M0-1],body->TrmS[i].pts->S[K0]);
-				nc->cp[k].y = ChangeKnot(nc->cp[k].y,body->TrmS[i].pts->T[M1-1],body->TrmS[i].pts->T[K1]);
+			for(int k=0;k<nc->K;k++){	// パラメトリック平面上のNURBS曲線のコントロールポイントをノットの変更に合わせて変更
+				nc->cp[k].x = ChangeKnot(nc->cp[k].x,body->TrmS[i].pts->S[M0-1],body->TrmS[i].pts->S[K0],val);
+				nc->cp[k].y = ChangeKnot(nc->cp[k].y,body->TrmS[i].pts->T[M1-1],body->TrmS[i].pts->T[K1],val);
 			}
-			ChangeKnotVecRange(nc->V,nc->T,nc->N,nc->M,nc->K);
+			ChangeKnotVecRange(nc->V,nc->T,nc->N,nc->M,nc->K,val);
 		}
-		// トリム面のパラメトリック平面における内側トリム曲線の正規化
+		// トリム面のパラメトリック平面における内側トリム曲線の変更
 		for(int j=0;j<body->TrmS[i].n2;j++){
 			for(int k=0;k<body->TrmS[i].pTI[j]->pB->CompC.N;k++){
 				NURBSC *nc = (NURBSC *)body->TrmS[i].pTI[j]->pB->CompC.pDE[k];
 				for(int l=0;l<nc->K;l++){
-					nc->cp[l].x = ChangeKnot(nc->cp[l].x,body->TrmS[i].pts->S[M0-1],body->TrmS[i].pts->S[K0]);
-					nc->cp[l].y = ChangeKnot(nc->cp[l].y,body->TrmS[i].pts->T[M1-1],body->TrmS[i].pts->T[K1]);
+					nc->cp[l].x = ChangeKnot(nc->cp[l].x,body->TrmS[i].pts->S[M0-1],body->TrmS[i].pts->S[K0],val);
+					nc->cp[l].y = ChangeKnot(nc->cp[l].y,body->TrmS[i].pts->T[M1-1],body->TrmS[i].pts->T[K1],val);
 				}
-				ChangeKnotVecRange(nc->V,nc->T,nc->N,nc->M,nc->K);
+				ChangeKnotVecRange(nc->V,nc->T,nc->N,nc->M,nc->K,val);
 			}
 		}
-		// ノットベクトルの範囲を正規化する
-		ChangeKnotVecRange(body->TrmS[i].pts->U,body->TrmS[i].pts->S,body->TrmS[i].pts->N[0],M0,K0);
-		ChangeKnotVecRange(body->TrmS[i].pts->V,body->TrmS[i].pts->T,body->TrmS[i].pts->N[1],M1,K1);
+		// ノットベクトルの範囲を変更する
+		ChangeKnotVecRange(body->TrmS[i].pts->U,body->TrmS[i].pts->S,body->TrmS[i].pts->N[0],M0,K0,val);
+		ChangeKnotVecRange(body->TrmS[i].pts->V,body->TrmS[i].pts->T,body->TrmS[i].pts->N[1],M1,K1,val);
 	}
 
 	// NURBS曲線
 	for(int i=0;i<body->TypeNum[_NURBSC];i++){
 		if(body->NurbsC[i].EntUseFlag == 5) continue;	// 実空間上の曲線のみ変更
-		ChangeKnotVecRange(body->NurbsC[i].V,body->NurbsC[i].T,body->NurbsC[i].N,body->NurbsC[i].M,body->NurbsC[i].K);
+		ChangeKnotVecRange(body->NurbsC[i].V,body->NurbsC[i].T,body->NurbsC[i].N,body->NurbsC[i].M,body->NurbsC[i].K,val);
+	}
+
+	return KOD_TRUE;
+}
+
+// ノットベクトル列から隣り合うノットベクトルの最小値を探索し返す
+double IGES_PARSER::SearchMinVecRange(double Knot[],int M,int K)
+{
+	double min = 1.0E+6;
+	for(int i=M;i<=K;i++){
+		double d = Knot[i]-Knot[i-1];
+		if(!CheckZero(d,MID_ACCURACY) && d < min){
+			min = d;
+		}
+	}
+
+	return min;
+}
+
+// 隣り合うノットベクトルの差がMIN_KNOT_RANGE以上になるよう範囲を変更する
+int IGES_PARSER::ExpandKnotRange(BODY *body)
+{
+	NormalizeKnotRange(body,NORM_KNOT_VAL);		// ノットを0-1に正規化
+	
+	double min;
+
+	// トリム面
+	for(int i=0;i<body->TypeNum[_TRIMMED_SURFACE];i++){
+		int M0 = body->TrmS[i].pts->M[0];
+		int M1 = body->TrmS[i].pts->M[1];
+		int K0 = body->TrmS[i].pts->K[0];
+		int K1 = body->TrmS[i].pts->K[1];
+
+		double uval = NORM_KNOT_VAL;
+		double vval = NORM_KNOT_VAL;
+		min = SearchMinVecRange(body->TrmS[i].pts->S,M0,K0);	// u方向ノットベクトルの最小レンジを調べる
+		if(min < MIN_KNOT_RANGE) {
+			uval = MIN_KNOT_RANGE/min;			// 最小レンジがMIN_KNOT_RANGEになる倍率を得る
+		}
+
+		min = SearchMinVecRange(body->TrmS[i].pts->T,M1,K1);	// v方向ノットベクトルの最小レンジを調べる
+		if(min < MIN_KNOT_RANGE){
+			vval = MIN_KNOT_RANGE/min;			// 最小レンジがMIN_KNOT_RANGEになる倍率を得る
+		}
+
+		// トリム面のパラメトリック平面における外側トリム曲線の変更
+		for(int j=0;j<body->TrmS[i].pTO->pB->CompC.N;j++){
+			NURBSC *nc = (NURBSC *)body->TrmS[i].pTO->pB->CompC.pDE[j];
+			for(int k=0;k<nc->K;k++){	// パラメトリック平面上のNURBS曲線のコントロールポイントをノットの変更に合わせて変更
+				nc->cp[k].x = ChangeKnot(nc->cp[k].x,body->TrmS[i].pts->S[M0-1],body->TrmS[i].pts->S[K0],uval);
+				nc->cp[k].y = ChangeKnot(nc->cp[k].y,body->TrmS[i].pts->T[M1-1],body->TrmS[i].pts->T[K1],vval);
+			}
+			ChangeKnotVecRange(nc->V,nc->T,nc->N,nc->M,nc->K,NORM_KNOT_VAL);
+		}
+		// トリム面のパラメトリック平面における内側トリム曲線の変更
+		for(int j=0;j<body->TrmS[i].n2;j++){
+			for(int k=0;k<body->TrmS[i].pTI[j]->pB->CompC.N;k++){
+				NURBSC *nc = (NURBSC *)body->TrmS[i].pTI[j]->pB->CompC.pDE[k];
+				for(int l=0;l<nc->K;l++){
+					nc->cp[l].x = ChangeKnot(nc->cp[l].x,body->TrmS[i].pts->S[M0-1],body->TrmS[i].pts->S[K0],uval);
+					nc->cp[l].y = ChangeKnot(nc->cp[l].y,body->TrmS[i].pts->T[M1-1],body->TrmS[i].pts->T[K1],vval);
+				}
+				ChangeKnotVecRange(nc->V,nc->T,nc->N,nc->M,nc->K,NORM_KNOT_VAL);
+			}
+		}
+		// ノットベクトルの範囲を変更する
+		ChangeKnotVecRange(body->TrmS[i].pts->U,body->TrmS[i].pts->S,body->TrmS[i].pts->N[0],M0,K0,uval);
+		ChangeKnotVecRange(body->TrmS[i].pts->V,body->TrmS[i].pts->T,body->TrmS[i].pts->N[1],M1,K1,vval);
+	}
+
+	// NURBS曲線
+	for(int i=0;i<body->TypeNum[_NURBSC];i++){
+		if(body->NurbsC[i].EntUseFlag == 5) continue;	// 実空間上の曲線のみ変更
+		ChangeKnotVecRange(body->NurbsC[i].V,body->NurbsC[i].T,body->NurbsC[i].N,body->NurbsC[i].M,body->NurbsC[i].K,NORM_KNOT_VAL);
 	}
 
 	return KOD_TRUE;
@@ -345,9 +420,9 @@ int IGES_PARSER::GetParameterSection(FILE *fp,DirectoryParam *dpara,BODY body,in
 		}
 		// サポートしていないEntity Typeの場合
 		else{
-			char mes[256];
-			sprintf(mes,"Entity Type #%d:Unsupported",dpara[i].entity_type);
-			SetMessage(mes);
+			//char mes[256];
+			//sprintf(mes,"Entity Type #%d:Unsupported",dpara[i].entity_type);
+			//SetMessage(mes);
 			continue;
 		}
 	}

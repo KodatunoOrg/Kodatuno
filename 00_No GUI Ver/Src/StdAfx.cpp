@@ -1,6 +1,37 @@
 #include <stdlib.h>
 #include "StdAfx.h"
 
+
+// Coordクラスのオペレータのオーバーロード
+Coord Coord::operator +(Coord a)
+{
+	return(AddCoord(*this,a));
+}
+Coord Coord::operator -(Coord a)
+{
+	return(SubCoord(*this,a));
+}
+Coord Coord::operator *(Coord a)
+{
+	return(MulCoord(*this,a));
+}
+Coord Coord::operator *(double a)
+{
+	return(MulCoord(*this,a));
+}
+Coord Coord::operator /(Coord a)
+{
+	return(DivCoord(*this,a));
+}
+double Coord::operator &(Coord a)
+{
+	return(CalcInnerProduct(*this,a));
+}
+Coord Coord::operator &&(Coord a)
+{
+	return(CalcOuterProduct(*this,a));
+}
+
 // 座標値の初期化
 void InitCoord(Coord *a)
 {
@@ -58,6 +89,35 @@ Coord AddCoord(Coord a,double x,double y,double z)
 	return ans;
 }
 
+// 座標値同士の足し算 (2D Ver.)
+Coord AddCoord2D(Coord a,Coord b)
+{
+	Coord ans;
+
+	ans.x = a.x + b.x;
+	ans.y = a.y + b.y;
+
+	return ans;
+}
+Coord AddCoord2D(Coord a,double b)
+{
+	Coord ans;
+
+	ans.x = a.x + b;
+	ans.y = a.y + b;
+
+	return ans;
+}
+Coord AddCoord2D(Coord a,double x,double y)
+{
+	Coord ans;
+
+	ans.x = a.x + x;
+	ans.y = a.y + y;
+
+	return ans;
+}
+
 // 座標値同士の割り算
 Coord DivCoord(Coord a,Coord b)
 {
@@ -98,6 +158,43 @@ Coord DivCoord(Coord a,double x,double y,double z)
 	return ans;
 }
 
+// 座標値同士の割り算 (2D Ver.)
+Coord DivCoord2D(Coord a,Coord b)
+{
+	if(b.x == 0.0 || b.y == 0.0)
+		return SetCoord2D(0.0,0.0);
+
+	Coord ans;
+
+	ans.x = a.x / b.x;
+	ans.y = a.y / b.y;
+
+	return ans;
+}
+Coord DivCoord2D(Coord a,double b)
+{
+	if(b == 0.0)	return SetCoord2D(0.0,0.0);
+
+	Coord ans;
+
+	ans.x = a.x / b;
+	ans.y = a.y / b;
+
+	return ans;
+}
+Coord DivCoord2D(Coord a,double x,double y)
+{
+	if(x == 0.0 || y == 0.0)
+		return SetCoord2D(0.0,0.0);
+
+	Coord ans;
+
+	ans.x = a.x/x;
+	ans.y = a.y/y;
+
+	return ans;
+}
+
 // 座標値同士の引き算
 Coord SubCoord(Coord a,Coord b)
 {
@@ -130,6 +227,35 @@ Coord SubCoord(Coord a,double x,double y,double z)
 	return ans;
 }
 
+// 座標値同士の引き算 (2D Ver.)
+Coord SubCoord2D(Coord a,Coord b)
+{
+	Coord ans;
+
+	ans.x = a.x - b.x;
+	ans.y = a.y - b.y;
+
+	return ans;
+}
+Coord SubCoord2D(Coord a,double b)
+{
+	Coord ans;
+
+	ans.x = a.x - b;
+	ans.y = a.y - b;
+
+	return ans;
+}
+Coord SubCoord2D(Coord a,double x,double y)
+{
+	Coord ans;
+
+	ans.x = a.x - x;
+	ans.y = a.y - y;
+
+	return ans;
+}
+
 // 座標値同士の掛け算
 Coord MulCoord(Coord a,Coord b)
 {
@@ -158,6 +284,35 @@ Coord MulCoord(Coord a,double x,double y,double z)
 	ans.x = a.x * x;
 	ans.y = a.y * y;
 	ans.z = a.z * z;
+
+	return ans;
+}
+
+// 座標値同士の掛け算 (2D Ver.)
+Coord MulCoord2D(Coord a,Coord b)
+{
+	Coord ans;
+
+	ans.x = a.x * b.x;
+	ans.y = a.y * b.y;
+
+	return ans;
+}
+Coord MulCoord2D(Coord a,double b)
+{
+	Coord ans;
+
+	ans.x = a.x * b;
+	ans.y = a.y * b;
+
+	return ans;
+}
+Coord MulCoord2D(Coord a,double x,double y)
+{
+	Coord ans;
+
+	ans.x = a.x * x;
+	ans.y = a.y * y;
 
 	return ans;
 }
@@ -210,6 +365,15 @@ Coord AbsCoord(Coord a)
 
 	return ans;
 }
+Coord AbsCoord2D(Coord a)
+{
+	Coord ans;
+
+	ans.x = fabs(a.x);
+	ans.y = fabs(a.y);
+
+	return ans;
+}
 
 // 座標値を代入する
 Coord SetCoord(Coord a)
@@ -226,6 +390,19 @@ Coord SetCoord(double x,double y,double z)
 
 	return ans;
 }
+Coord SetCoord2D(Coord a)
+{
+	return a;
+}
+Coord SetCoord2D(double x,double y)
+{
+	Coord ans;
+
+	ans.x = x;
+	ans.y = y;
+
+	return ans;
+}
 
 // 座標値群のコピー(b<--a)
 void CopyCoord(Coord *a,int n,Coord *b)
@@ -233,11 +410,23 @@ void CopyCoord(Coord *a,int n,Coord *b)
 	for(int i=0;i<n;i++)
 		b[i] = SetCoord(a[i]);
 }
+void CopyCoord2D(Coord *a,int n,Coord *b)
+{
+	for(int i=0;i<n;i++)
+		b[i] = SetCoord2D(a[i]);
+}
 
 // (0,0,0)のときKOD_FALSEを返す
 int ZoroCoord(Coord a)
 {
 	if(a.x == 0.0 && a.y == 0.0 && a.z == 0.0)
+		return KOD_FALSE;
+
+	return KOD_TRUE;
+}
+int ZoroCoord2D(Coord a)
+{
+	if(a.x == 0.0 && a.y == 0.0)
 		return KOD_FALSE;
 
 	return KOD_TRUE;

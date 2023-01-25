@@ -4,7 +4,8 @@
 // コンソールにメッセージを出力
 int SetMessage(char *mes)
 {
-	Console_Form->addString(mes);					// メッセージを出力
+	fprintf(stderr,"%s\n",mes);						// メッセージを標準出力
+	Console_Form->addString(mes);					// メッセージをコンソール出力
 	Console_Form->addString("\n>");					// 次のコマンド位置へ移動
 	int len = Console_Form->getString().getChars();	// 文字数カウント
 	Console_Form->setProperty(WSNuserValue,len);	// 現在までの文字数を保持

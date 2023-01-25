@@ -1,6 +1,8 @@
 #ifndef _STD_AFX_H_
 #define _STD_AFX_H_
 
+// #define USE_WIDE_STUDIO	
+
 // コールバックに関するWindowsとUNIXの互換性を保つマクロ
 #ifdef _MSC_VER
 #ifndef CALLBACK
@@ -54,10 +56,28 @@ typedef double **Matrix;	// double形の2次元配列をMatrixとして定義
 typedef double *Vector;		// double形の1次元配列をVectorとして定義
 
 // 座標用構造体を定義
-typedef struct{
+//typedef struct{
+//	double x,y,z;	// x,y,z座標値
+//	double dmy;		// 汎用
+//}Coord;
+
+// 座標値用クラスを定義
+class Coord
+{
+public:
+
 	double x,y,z;	// x,y,z座標値
 	double dmy;		// 汎用
-}Coord;
+
+	// オペレータのオーバーロード
+	Coord operator +(Coord);	// 座標値同士の足し算(AddCoord())
+	Coord operator -(Coord);	// 座標値同士の引き算(SubCoord())
+	Coord operator *(Coord);	// 座標値同士の掛け算(MulCoord())
+	Coord operator *(double);	// オーバーロード
+	Coord operator /(Coord);	// 座標値同士の割り算(DivCoord())
+	double operator &(Coord);	// 座標値同士の内積(CalcInnerProduct())
+	Coord operator &&(Coord);	// 座標値同士の外積(CalcOuterProduct())
+};
 
 // 同次変換行列用構造体
 typedef struct{
@@ -73,7 +93,7 @@ typedef struct{
 
 // グローバルな関数の定義 ///////////////////////////////////////////////////////////////////////////
 
-// 幾何,3次元ベクトル演算
+// 幾何 2,3次元ベクトル演算
 void InitCoord(Coord *);						// 座標値の初期化
 void InitCoord(Coord *,int);					// オーバーロード
 Coord InitCoord();								// オーバーロード
@@ -94,28 +114,49 @@ Coord SetCoord(double,double,double);			// オーバーロード
 void CopyCoord(Coord *,int,Coord *);			// 座標値群をコピー
 int DiffCoord(Coord,Coord);						// 座標値が同じならKOD_TRUE、異なっているならKOD_FALSEを返す
 int DiffCoord(Coord,Coord,double);				// オーバーロード(精度指定)
-int DiffCoord2D(Coord,Coord);					// 座標値が同じならKOD_TRUE、異なっているならKOD_FALSEを返す(2D)
-int DiffCoord2D(Coord,Coord,double);			// オーバーロード(精度指定)
 Coord AbsCoord(Coord);							// 座標値の絶対値を返す
 int ZoroCoord(Coord);							// (0,0,0)の場合にKOD_TRUEを返す
+double CalcEuclid(Coord);						// ユークリッド距離をもとめる
+double CalcDistance(Coord,Coord);				// 2点間のユークリッド距離を求める
+double CalcVecAngle(Coord,Coord);				// 2つのベクトルのなす角を求める
+Coord CalcRotVec(Coord,Coord,double);			// 任意のベクトルを原点を通る任意軸周りに回転させたベクトルを求める(3D平面)
+
+Coord AddCoord2D(Coord,Coord);					// 座標値の足し算 (2D Ver.)
+Coord AddCoord2D(Coord,double);					// オーバーロード (2D Ver.)
+Coord AddCoord2D(Coord,double,double);			// オーバーロード (2D Ver.)
+Coord DivCoord2D(Coord,Coord);					// 座標値の割り算 (2D Ver.)
+Coord DivCoord2D(Coord,double);					// オーバーロード (2D Ver.)
+Coord DivCoord2D(Coord,double,double);			// オーバーロード (2D Ver.)
+Coord MulCoord2D(Coord,Coord);					// 座標値の掛け算(ベクトルの内積,外積ではないので注意) (2D Ver.)
+Coord MulCoord2D(Coord,double);					// オーバーロード (2D Ver.)
+Coord MulCoord2D(Coord,double,double);			// オーバーロード (2D Ver.)
+Coord SubCoord2D(Coord,Coord);					// 座標値の引き算 (2D Ver.)
+Coord SubCoord2D(Coord,double);					// オーバーロード (2D Ver.)
+Coord SubCoord2D(Coord,double,double);			// オーバーロード (2D Ver.)
+Coord SetCoord2D(Coord);						// 座標値を代入 (2D Ver.)
+Coord SetCoord2D(double,double);				// オーバーロード (2D Ver.)
+void CopyCoord2D(Coord *,int,Coord *);			// 座標値群をコピー (2D Ver.)
+int DiffCoord2D(Coord,Coord);					// 座標値が同じならKOD_TRUE、異なっているならKOD_FALSEを返す (2D Ver.)
+int DiffCoord2D(Coord,Coord,double);			// オーバーロード(精度指定) (2D Ver.)
+int DiffCoord2D(Coord,Coord);					// 座標値が同じならKOD_TRUE、異なっているならKOD_FALSEを返す (2D Ver.)
+int DiffCoord2D(Coord,Coord,double);			// オーバーロード(精度指定) (2D Ver.)
+Coord AbsCoord2D(Coord);						// 座標値の絶対値を返す (2D Ver.)
+int ZoroCoord2D(Coord);							// (0,0,0)の場合にKOD_TRUEを返す (2D Ver.)
+double CalcEuclid2D(double,double);				// ユークリッド距離をもとめる (2D Ver.)
+double CalcDistance2D(Coord,Coord);				// 2次元座標上での2点間のユークリッド距離を算出 (2D Ver.)
+double CalcEuclidPnts2D(Coord,Coord);			// 2次元座標上での2点間のユークリッド距離を算出 (2D Ver.)
+double CalcVecAngle2D(Coord,Coord);				// 2つのベクトルのなす角を求める (2D Ver.)
+Coord CalcRotVec2D(Coord,double);				// 任意のベクトルを回転させたベクトルを求める(2D平面)
+
 Coord NormalizeVec(Coord);						// 3次元ベクトルを正規化(単位ベクトル化)
 Coord NormalizeVec(double,double,double);		// オーバーロード
-double CalcEuclid(Coord);						// ユークリッド距離をもとめる
-double CalcEuclid2D(double,double);				// 2次元ユークリッド距離をもとめる
-double CalcDistance(Coord,Coord);				// 2点間のユークリッド距離を求める
-double CalcDistance2D(Coord,Coord);				// 2次元座標上での2点間のユークリッド距離を算出
-double CalcEuclidPnts2D(Coord,Coord);			// 2次元座標上での2点間のユークリッド距離を算出
 double CalcInnerProduct(Coord,Coord);			// 内積を求める
-double CalcinnerProduct(Coord,double,double,double);	// オーバーロード
+double CalcInnerProduct(Coord,double,double,double);	// オーバーロード
 Coord CalcOuterProduct(Coord,Coord);			// 外積を求める
-double CalcVecAngle(Coord,Coord);				// 2つのベクトルのなす角を求める
-double CalcVecAngle2D(Coord,Coord);				// 2つのベクトルのなす角を求める(2D平面)
 Coord CalcInterDivPt(Coord,Coord,double);		// 2点間の内分点を求める
 Coord CalcOrthoProjection(Coord,Coord,Coord);	// 任意の点を任意の平面へ正射影する
 double CalcDistPtToPlane(Coord,Coord,Coord);	// 任意の点から任意の平面までの距離を求める
 double CalcScalarTriProduct(Coord,Coord,Coord);	// スカラー三重積を求める
-Coord CalcRotVec2D(Coord,double);				// 任意のベクトルを回転させたベクトルを求める(2D平面)
-Coord CalcRotVec(Coord,Coord,double);			// 任意のベクトルを原点を通る任意軸周りに回転させたベクトルを求める(3D平面)
 Coord CalcNormalLine(Coord,Coord,Coord);		// 任意の点から任意の直線へ下ろした点を求める
 Coord Arc_CP(Coord,Coord,double);				// 円の中心点(vec[0])から円上に接する任意の2本の接線が交わる点へのベクトル(中心角0<θ<π)
 int IsPointInPolygon(Coord,Coord *,int);		// 注目点の多角形内外判別
