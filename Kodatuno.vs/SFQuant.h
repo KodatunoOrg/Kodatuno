@@ -1,53 +1,48 @@
-#ifndef _SFQUANT_H_
+ï»¿#ifndef _SFQUANT_H_
 #define _SFQUANT_H_
 
-//#include "BODY.h"
-#include "NURBS_Func.h"
+#include "BODY.h"
 
 // Constants: General Defines
 // Non
 
 // Class: SFQuant
-// ‹È–Ê‚Ì‘æˆêC‘æ“ñŠî–{—Ê‚ğŠi”[‚·‚éƒNƒ‰ƒX‚ğ’è‹`
+// æ›²é¢ã®ç¬¬ä¸€ï¼Œç¬¬äºŒåŸºæœ¬é‡ã‚’æ ¼ç´ã™ã‚‹ã‚¯ãƒ©ã‚¹ã‚’å®šç¾©
 class SFQuant
 {
 public:
 	// Constructor: SFQuant
-	// •Ï”‰Šú‰»
+	// å¤‰æ•°åˆæœŸåŒ–
 	SFQuant();
 
 	// Constructor: SFQuant
-	// S(u,v)‚Å‚ÌŠî–{—Ê‚ğ“¾‚é
+	// S(u,v)ã§ã®åŸºæœ¬é‡ã‚’å¾—ã‚‹
 	SFQuant(NURBSS *S,double u, double v);
 
 	// Function: SetSFQ
-	// S(u,v)‚Å‚ÌŠî–{—Ê‚ğ“¾‚é
+	// S(u,v)ã§ã®åŸºæœ¬é‡ã‚’å¾—ã‚‹
 	int SetSFQ(NURBSS *S,double u, double v);
 
-	// Function: CalcMeanCurvature
-	// ƒI[ƒo[ƒ[ƒh
-	double CalcMeanCurvature(void);							
-
-	// Function: CalcGaussCurvature
-	// ƒI[ƒo[ƒ[ƒh
-	double CalcGaussCurvature(void);							
+    // Function: SetSFQ1
+    // S(u,v)ã§ã®ç¬¬ä¸€åŸºæœ¬é‡ã‚’å¾—ã‚‹
+    int SetSFQ1(NURBSS *S,double u, double v);
 
 public:
 
 	// Variables: U,V
-	// ‹È–Êƒpƒ‰ƒ[ƒ^
+	// æ›²é¢ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
 	double U,V;			
 
 	// Variables: n
-	// –@üƒxƒNƒgƒ‹
+	// æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«
 	Coord  n;		
 
 	// Variables:  E,F,G
-	// ‘æˆêŠî–{—Ê
+	// ç¬¬ä¸€åŸºæœ¬é‡
 	double E,F,G;		
 
 	// Variables: L,M,N
-	// ‘æ“ñŠî–{—Ê
+	// ç¬¬äºŒåŸºæœ¬é‡
 	double L,M,N;		
 };
 

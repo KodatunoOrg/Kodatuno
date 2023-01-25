@@ -2,6 +2,7 @@
 * DXFファイルを読み込む  *
 **************************/
 
+#include "stdafx.h"			// Add by K.Magara
 #include "DXF_Parser.h"
 
 // Function: DXF_PARSER
@@ -36,8 +37,8 @@ int DXF_PARSER::DXF_Parser_Main(BODY *body,const char *DXF_fname)
 		GuiIF.SetMessage(mes);
 		return(KOD_ERR);
 	}
-	sprintf(mes,"Open %s",DXF_fname);
-	GuiIF.SetMessage(mes);
+//	sprintf(mes,"Open %s",DXF_fname);
+//	GuiIF.SetMessage(mes);
 
 	// ファイル読み込み
 	while(fgets(Buf,sizeof(Buf),fp) != NULL){
@@ -135,6 +136,8 @@ int DXF_PARSER::ChangeEntityforNurbs(BODY *body)
 		InitDisplayStat(&body->NurbsC[ncount].Dstat);								// 表示属性の初期化
 		ncount++;
 	}
+
+	return KOD_TRUE;	// Add by K.Magara
 }
 
 // Function: GetArcData
@@ -185,6 +188,7 @@ int DXF_PARSER::GetArcData(FILE *fp,BODY *body)
 	CalcUVvec(&body->CirA[Count[_CIRCLE_ARC]]);					// CIRAのUV直交座標を設定する
 
 	InitDisplayStat(&body->CirA[Count[_CIRCLE_ARC]].Dstat);		// 色指定
+    body->CirA[Count[_CIRCLE_ARC]].BlankStat = DISPLAY;         // 描画対象であることを宣言
 	body->CirA[Count[_CIRCLE_ARC]].EntUseFlag = GEOMTRYELEM;	// 幾何要素であることを宣言
 	body->CirA[Count[_CIRCLE_ARC]].pD = NULL;					// IGESでないので関係なし
 
@@ -276,6 +280,7 @@ int DXF_PARSER::GetCircleData(FILE *fp,BODY *body)
 	CalcUVvec(&body->CirA[Count[_CIRCLE_ARC]]);					// CIRAのUV直交座標を設定する
 
 	InitDisplayStat(&body->CirA[Count[_CIRCLE_ARC]].Dstat);
+    body->CirA[Count[_CIRCLE_ARC]].BlankStat = DISPLAY;         // 描画対象であることを宣言
 	body->CirA[Count[_CIRCLE_ARC]].EntUseFlag = GEOMTRYELEM;
 	body->CirA[Count[_CIRCLE_ARC]].pD = NULL;
 
@@ -329,6 +334,7 @@ int DXF_PARSER::GetLineData(FILE *fp,BODY *body)
 	//	body->Line[Count[_LINE]].cp[1].z);
 
 	InitDisplayStat(&body->Line[Count[_LINE]].Dstat);
+    body->Line[Count[_LINE]].BlankStat = DISPLAY;
 	body->Line[Count[_LINE]].EntUseFlag = GEOMTRYELEM;
 	body->Line[Count[_LINE]].pD = NULL;
 

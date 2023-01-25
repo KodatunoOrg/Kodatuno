@@ -1,29 +1,29 @@
-#ifndef _NURBS_FUNC_H_
+ï»¿#ifndef _NURBS_FUNC_H_
 #define _NURBS_FUNC_H_
 
 #include "BODY.h"
-//#include "Quaternion.h"
+#include "Quaternion.h"
 #include "SFQuant.h"
 
 // Constants: General Defines
-// PTNUMMAX -			NURBS‚Ì“_—ñ‚ÌÅ‘å”(10000)
-// RANKMAX -			NURBS‚ÌŠK”‚ÌÅ‘å’l(9)
-// INTERSECPTNUMMAX -	Œğ“_Ši”[”z—ñ’·(1000)
-// NEAREST_GAP -		2“_‚ª“¯ˆê“_‚Æ‚İ‚È‚·‹——£(0.01)
-// CONVERG_GAP -		ƒjƒ…[ƒgƒ“–@‚Ìû‘©‚ğ”»•Ê‚·‚éè‡’l(0.00001)
-// CONVDIVNUM -			û‘©ŒvZ—p‚Ìƒpƒ‰ƒ[ƒ^•ªŠ„”(100)
-// TRM_BORDERDIVNUM -	ƒgƒŠƒ€‹«ŠEüã‚É¶¬‚·‚é“_‚Ì”(100)
-// FORWARD -			Œğü’ÇÕ‚Ì•ûŒü(‡)(1)
-// INVERSE -			Œğü’ÇÕ‚Ì•ûŒü(‹t)(-1)
-// PARAM_U -			u•ûŒü‚ğ•\‚·ƒVƒ“ƒ{ƒ‹(0)
-// PARAM_V -			v•ûŒü‚ğ•\‚·ƒVƒ“ƒ{ƒ‹(1)
-// OUTTER_TRIM -		ŠOüƒgƒŠƒ~ƒ“ƒO—Ìˆæ(0)
-// INNER_TRIM -			“àüƒgƒŠƒ~ƒ“ƒO—Ìˆæ(1)
-// PARAMDIVNUM -		‰Šú’l’Tõ—p‚Ìƒpƒ‰ƒ[ƒ^•ªŠ„”(10)
-// RUNGE_KUTTA -		Runge-Kutta–@‚ÌƒVƒ“ƒ{ƒ‹(0)
-// BULIRSH_STOER -		Bulirsch-Stoer–@‚ÌƒVƒ“ƒ{ƒ‹(1)
-// CALC_OFFSET -		ƒIƒtƒZƒbƒg‹È–ÊŒvZ‚ÌƒVƒ“ƒ{ƒ‹(2)
-// BS_DIV -				Bulirsch-Stoer–@‚Ì‚İ”(11)
+// PTNUMMAX -			NURBSã®ç‚¹åˆ—ã®æœ€å¤§æ•°(10000)
+// RANKMAX -			NURBSã®éšæ•°ã®æœ€å¤§å€¤(9)
+// INTERSECPTNUMMAX -	äº¤ç‚¹æ ¼ç´é…åˆ—é•·(1000)
+// NEAREST_GAP -		2ç‚¹ãŒåŒä¸€ç‚¹ã¨ã¿ãªã™è·é›¢(0.01)
+// CONVERG_GAP -		ãƒ‹ãƒ¥ãƒ¼ãƒˆãƒ³æ³•ã®åæŸã‚’åˆ¤åˆ¥ã™ã‚‹é–¾å€¤(0.00001)
+// CONVDIVNUM -			åæŸè¨ˆç®—ç”¨ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿åˆ†å‰²æ•°(100)
+// TRM_BORDERDIVNUM -	ãƒˆãƒªãƒ å¢ƒç•Œç·šä¸Šã«ç”Ÿæˆã™ã‚‹ç‚¹ã®æ•°(100)
+// FORWARD -			äº¤ç·šè¿½è·¡ã®æ–¹å‘(é †)(1)
+// INVERSE -			äº¤ç·šè¿½è·¡ã®æ–¹å‘(é€†)(-1)
+// PARAM_U -			uæ–¹å‘ã‚’è¡¨ã™ã‚·ãƒ³ãƒœãƒ«(0)
+// PARAM_V -			væ–¹å‘ã‚’è¡¨ã™ã‚·ãƒ³ãƒœãƒ«(1)
+// OUTTER_TRIM -		å¤–å‘¨ãƒˆãƒªãƒŸãƒ³ã‚°é ˜åŸŸ(0)
+// INNER_TRIM -			å†…å‘¨ãƒˆãƒªãƒŸãƒ³ã‚°é ˜åŸŸ(1)
+// PARAMDIVNUM -		åˆæœŸå€¤æ¢ç´¢ç”¨ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿åˆ†å‰²æ•°(10)
+// RUNGE_KUTTA -		Runge-Kuttaæ³•ã®ã‚·ãƒ³ãƒœãƒ«(0)
+// BULIRSH_STOER -		Bulirsch-Stoeræ³•ã®ã‚·ãƒ³ãƒœãƒ«(1)
+// CALC_OFFSET -		ã‚ªãƒ•ã‚»ãƒƒãƒˆæ›²é¢è¨ˆç®—ã®ã‚·ãƒ³ãƒœãƒ«(2)
+// BS_DIV -				Bulirsch-Stoeræ³•ã®åˆ»ã¿æ•°(11)
 #define PTNUMMAX			10000
 #define RANKMAX				9
 #define INTERSECPTNUMMAX	1000
@@ -43,617 +43,630 @@
 #define CALC_OFFSET			2
 #define BS_DIV				11
 
-
-//////////////////////////////////////////////////////////////////////////////////////
 // Class: NURBS_Func
-// NURBS‹Èü/‹È–Ê‚Ì‘€ì‚ğW‚ß‚½ƒNƒ‰ƒX
+// NURBSæ›²ç·š/æ›²é¢ã®æ“ä½œã‚’é›†ã‚ãŸã‚¯ãƒ©ã‚¹
 class NURBS_Func
 {
 public:
 	// Function: CalcNurbsCCoord
-	// w’è‚µ‚½t‚Å‚ÌNURBS‹Èü‚ÌÀ•W’l‚ğ‹‚ß‚é
-//	Coord CalcNurbsCCoord(NURBSC *,double);
+	// æŒ‡å®šã—ãŸtã§ã®NURBSæ›²ç·šã®åº§æ¨™å€¤ã‚’æ±‚ã‚ã‚‹
+	Coord CalcNurbsCCoord(NURBSC *,double);
 
 	// Function: CalcNurbsCCoords
-	// w’è‚µ‚½tŒQ‚Å‚ÌNURBS‹Èü‚ÌÀ•W’lŒQ‚ğ‹‚ß‚é
-//	void CalcNurbsCCoords(NURBSC *,int,double *,Coord *);		
+	// æŒ‡å®šã—ãŸtç¾¤ã§ã®NURBSæ›²ç·šã®åº§æ¨™å€¤ç¾¤ã‚’æ±‚ã‚ã‚‹
+	void CalcNurbsCCoords(NURBSC *,int,double *,Coord *);		
 
 	// Function: CalcNurbsSCoord
-	// w’è‚µ‚½u,v‚Å‚ÌNURBS‹È–Ê‚ÌÀ•W“_‚ğ‹‚ß‚é
-//	Coord CalcNurbsSCoord(NURBSS *,double,double);				
+	// æŒ‡å®šã—ãŸu,vã§ã®NURBSæ›²é¢ã®åº§æ¨™ç‚¹ã‚’æ±‚ã‚ã‚‹
+	Coord CalcNurbsSCoord(NURBSS *,double,double);				
 
 	// Function: CalcNurbsSCoords
-	// w’è‚µ‚½u,vŒQ‚Å‚ÌNURBS‹È–Ê‚ÌÀ•W’lŒQ‚ğ‹‚ß‚é
-//	void CalcNurbsSCoords(NURBSS *,int,Coord *,Coord *);		
+	// æŒ‡å®šã—ãŸu,vç¾¤ã§ã®NURBSæ›²é¢ã®åº§æ¨™å€¤ç¾¤ã‚’æ±‚ã‚ã‚‹
+	void CalcNurbsSCoords(NURBSS *,int,Coord *,Coord *);		
 
 	// Function: GenNurbsC
-	// 1‚Â‚ÌNURBS‹Èü‚ğ¶¬‚·‚é
+	// 1ã¤ã®NURBSæ›²ç·šã‚’ç”Ÿæˆã™ã‚‹
 	int GenNurbsC(NURBSC *,int,int,int,double [],double [],Coord [],double [],int[],int);	
 
 	// Function: GenNurbsC
-	// 1‚Â‚ÌNURBS‹Èü‚ğ¶¬‚·‚é(NURBS‹Èü‚ÌƒRƒs[)(ƒI[ƒo[ƒ[ƒh)
+	// 1ã¤ã®NURBSæ›²ç·šã‚’ç”Ÿæˆã™ã‚‹(NURBSæ›²ç·šã®ã‚³ãƒ”ãƒ¼)(ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰)
 //	int GenNurbsC(NURBSC *,NURBSC);								
-	int GenNurbsC(NURBSC *,NURBSC*);	// unionƒƒ“ƒo•ÏX‚Ì‰e‹¿
+	int GenNurbsC(NURBSC *,NURBSC*);	// Update by K.Magara
 
 	// Function: GenNurbsS
-	// 1‚Â‚ÌNURBS‹È–Ê‚ğ¶¬‚·‚é
+	// 1ã¤ã®NURBSæ›²é¢ã‚’ç”Ÿæˆã™ã‚‹
 	int GenNurbsS(NURBSS *,int,int,int,int,double *,double *,double **,Coord **,double,double,double,double);	
 
 	// Function: GenNurbsS
-	// 1‚Â‚ÌNURBS‹È–Ê‚ğ¶¬‚·‚é(NURBS‹È–Ê‚ÌƒRƒs[)(ƒI[ƒo[ƒ[ƒh)
+	// 1ã¤ã®NURBSæ›²é¢ã‚’ç”Ÿæˆã™ã‚‹(NURBSæ›²é¢ã®ã‚³ãƒ”ãƒ¼)(ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰)
 	int GenNurbsS(NURBSS *,NURBSS);								
 
 	// Function: GenRotNurbsS
-	// 1‚Â‚ÌNURBS‹Èü‚ğ‚ ‚é²‰ñ‚è‚É‚ ‚éŠp“x‚¾‚¯‰ñ“]‚³‚¹‚½‰ñ“]ƒT[ƒtƒFƒX‚ğ¶¬‚·‚é
+	// 1ã¤ã®NURBSæ›²ç·šã‚’ã‚ã‚‹è»¸å›ã‚Šã«ã‚ã‚‹è§’åº¦ã ã‘å›è»¢ã•ã›ãŸå›è»¢ã‚µãƒ¼ãƒ•ã‚§ã‚¹ã‚’ç”Ÿæˆã™ã‚‹
 //	int GenRotNurbsS(NURBSS *,NURBSC,Coord,double);				
-	int GenRotNurbsS(NURBSS *,const NURBSC&,Coord,double);				
+	int GenRotNurbsS(NURBSS *,const NURBSC&,Coord,double);
 
 	// Function: GenSweepNurbsS
-	// 1‚Â‚ÌNURBS‹Èü‚©‚ç‚ ‚é²•ûŒü‚É‚ ‚é‹——£‚¾‚¯ƒXƒC[ƒv‚³‚¹‚½ƒXƒC[ƒvƒT[ƒtƒFƒX‚ğ¶¬‚·‚é
+	// 1ã¤ã®NURBSæ›²ç·šã‹ã‚‰ã‚ã‚‹è»¸æ–¹å‘ã«ã‚ã‚‹è·é›¢ã ã‘ã‚¹ã‚¤ãƒ¼ãƒ—ã•ã›ãŸã‚¹ã‚¤ãƒ¼ãƒ—ã‚µãƒ¼ãƒ•ã‚§ã‚¹ã‚’ç”Ÿæˆã™ã‚‹
 //	int GenSweepNurbsS(NURBSS *,NURBSC,Coord,double);			
-	int GenSweepNurbsS(NURBSS *,const NURBSC&,Coord,double);			
+	int GenSweepNurbsS(NURBSS *,const NURBSC&,Coord,double);
 
 	// Function: GenIsoparamCurveU
-	// NURBS‹È–Êã‚Ìu•ûŒüƒpƒ‰ƒ[ƒ^’l‚ğŒÅ’è‚µ‚½‚Æ‚«‚ÌƒAƒCƒ\ƒpƒ‰ƒƒgƒŠƒbƒNNURBS‹Èü‚ğ¶¬
+	// NURBSæ›²é¢ä¸Šã®uæ–¹å‘ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å€¤ã‚’å›ºå®šã—ãŸã¨ãã®ã‚¢ã‚¤ã‚½ãƒ‘ãƒ©ãƒ¡ãƒˆãƒªãƒƒã‚¯NURBSæ›²ç·šã‚’ç”Ÿæˆ
 	int GenIsoparamCurveU(NURBSS *,double,NURBSC *);			
 
 	// Function: GenIsoparamCurveV
-	// NURBS‹È–Êã‚Ìv•ûŒüƒpƒ‰ƒ[ƒ^’l‚ğŒÅ’è‚µ‚½‚Æ‚«‚ÌƒAƒCƒ\ƒpƒ‰ƒƒgƒŠƒbƒNNURBS‹Èü‚ğ¶¬
+	// NURBSæ›²é¢ä¸Šã®væ–¹å‘ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å€¤ã‚’å›ºå®šã—ãŸã¨ãã®ã‚¢ã‚¤ã‚½ãƒ‘ãƒ©ãƒ¡ãƒˆãƒªãƒƒã‚¯NURBSæ›²ç·šã‚’ç”Ÿæˆ
 	int GenIsoparamCurveV(NURBSS *,double,NURBSC *);			
 
 	// Function: GenTrimdNurbsS
-	// ƒgƒŠƒ€–Ê‚ğ¶¬‚·‚é
+	// ãƒˆãƒªãƒ é¢ã‚’ç”Ÿæˆã™ã‚‹
 	int GenTrimdNurbsS(TRIMD_NURBSS *,TRIMD_NURBSS);			
 
 	// Function: DelTrimdNurbsS
-	// ƒgƒŠƒ€–Ê‚ğíœ(ƒƒ‚ƒŠ[‰ğ•ú)‚·‚é
+	// ãƒˆãƒªãƒ é¢ã‚’å‰Šé™¤(ãƒ¡ãƒ¢ãƒªãƒ¼è§£æ”¾)ã™ã‚‹
 	int DelTrimdNurbsS(TRIMD_NURBSS *);							
 
 	// Function: DelNurbsC
-	// NURBS‹Èü‚ğíœ‚·‚é
+	// NURBSæ›²ç·šã‚’å‰Šé™¤ã™ã‚‹
 	void DelNurbsC(NURBSC *);									
 
 	// Function: DelNurbsS
-	// NURBS‹È–Ê‚ğíœ‚·‚é
+	// NURBSæ›²é¢ã‚’å‰Šé™¤ã™ã‚‹
 	void DelNurbsS(NURBSS *);									
-/*	-- member function -> static function
+
 	// Function: CalcBSbasis
-	// BƒXƒvƒ‰ƒCƒ“Šî’êŠÖ”‚ğŒvZ‚µAŒvZŒ‹‰Ê‚ğ•Ô‚·
+	// Bã‚¹ãƒ—ãƒ©ã‚¤ãƒ³åŸºåº•é–¢æ•°ã‚’è¨ˆç®—ã—ã€è¨ˆç®—çµæœã‚’è¿”ã™
 	double CalcBSbasis(double,double [],int,int,int);			
 
 	// Function: CalcDiffBSbasis
-	// BƒXƒvƒ‰ƒCƒ“Šî’êŠÖ”‚Ì1ŠK”÷•ªŒW”‚ğ‹‚ß‚é
+	// Bã‚¹ãƒ—ãƒ©ã‚¤ãƒ³åŸºåº•é–¢æ•°ã®1éšå¾®åˆ†ä¿‚æ•°ã‚’æ±‚ã‚ã‚‹
 	double CalcDiffBSbasis(double,double [],int,int,int);		
 
 	// Function: CalcDiffBSbasisN
-	// BƒXƒvƒ‰ƒCƒ“Šî’êŠÖ”‚ÌNŠK”÷•ªŒW”‚ğ‹‚ß‚é
+	// Bã‚¹ãƒ—ãƒ©ã‚¤ãƒ³åŸºåº•é–¢æ•°ã®Néšå¾®åˆ†ä¿‚æ•°ã‚’æ±‚ã‚ã‚‹
 	double CalcDiffBSbasisN(double,double [],int,int,int,int);	
 
-	// Function: GetBSplCoef3
-	// 3Ÿ‚ÌBƒXƒvƒ‰ƒCƒ“‹Èü‚ÌŠeŒW”‚ğ‹‚ß‚é@(at^3 + bt^2 + ct + d‚ÌŒW”a,b,c,d‚ğ•Ô‚·)
-	int GetBSplCoef3(int,int,int,double *,double **);			
-
-	// Function: GetBSplCoef2
-	// 2Ÿ‚ÌBƒXƒvƒ‰ƒCƒ“‹Èü‚ÌŠeŒW”‚ğ‹‚ß‚é@(at^2 + bt + c‚ÌŒW”a,b,c‚ğ•Ô‚·)
-	int GetBSplCoef2(int,int,int,double *,double **);			
-
-	// Function: GetBSplCoef1
-	// 1Ÿ‚ÌBƒXƒvƒ‰ƒCƒ“‹Èü‚ÌŠeŒW”‚ğ‹‚ß‚é@(at + b‚ÌŒW”a,b‚ğ•Ô‚·)
-	int GetBSplCoef1(int,int,int,double *,double **);			
-
-	// Function: ChangeKnotVecRange
-	// ƒmƒbƒgƒxƒNƒgƒ‹‚Ìƒpƒ‰ƒ[ƒ^’è‹`ˆæ‚ğ•ÏX‚·‚é
-	void ChangeKnotVecRange(Vector,int,int,int,double,double);	
-
-	// Function: GetEqIntervalKont
-	// ‹Èü/‹È–Êƒpƒ‰ƒ[ƒ^‚©‚ç“™ŠÔŠu‚ÈƒmƒbƒgƒxƒNƒgƒ‹‚ğZo
-	void GetEqIntervalKont(int,int,Vector);						
-*/
 	// Function: CalcDiffNurbsC
-	// NURBS‹Èü‚Ì1ŠK”÷•ªŒW”‚ğ‹‚ß‚é
-//	Coord CalcDiffNurbsC(NURBSC *,double);						
+	// NURBSæ›²ç·šã®1éšå¾®åˆ†ä¿‚æ•°ã‚’æ±‚ã‚ã‚‹
+	Coord CalcDiffNurbsC(NURBSC *,double);						
 
 	// Function: CalcDiff2NurbsC
-	// NURBS‹Èü‚Ì2ŠK”÷•ªŒW”‚ğ‹‚ß‚é
-//	Coord CalcDiff2NurbsC(NURBSC *,double);						
+	// NURBSæ›²ç·šã®2éšå¾®åˆ†ä¿‚æ•°ã‚’æ±‚ã‚ã‚‹
+	Coord CalcDiff2NurbsC(NURBSC *,double);						
 
 	// Function: CalcDiffNNurbsC
-	// NURBS‹Èü‚ÌrŠK”÷•ªŒW”‚ğ‹‚ß‚é
-//	Coord CalcDiffNNurbsC(NURBSC *,int,double);					
+	// NURBSæ›²ç·šã®réšå¾®åˆ†ä¿‚æ•°ã‚’æ±‚ã‚ã‚‹
+	Coord CalcDiffNNurbsC(NURBSC *,int,double);					
 
 	// Function: CalcDiffuNurbsS
-	// NURBS‹È–Ê‚Ìu•ûŒü1ŠK”÷•ªŒW”‚ğ‹‚ß‚é
-//	Coord CalcDiffuNurbsS(NURBSS *,double,double);				
+	// NURBSæ›²é¢ã®uæ–¹å‘1éšå¾®åˆ†ä¿‚æ•°ã‚’æ±‚ã‚ã‚‹
+	Coord CalcDiffuNurbsS(NURBSS *,double,double);				
 
 	// Function: CalcDiffvNurbsS
-	// NURBS‹È–Ê‚Ìv•ûŒü1ŠK”÷•ªŒW”‚ğ‹‚ß‚é
-//	Coord CalcDiffvNurbsS(NURBSS *,double,double);				
+	// NURBSæ›²é¢ã®væ–¹å‘1éšå¾®åˆ†ä¿‚æ•°ã‚’æ±‚ã‚ã‚‹
+	Coord CalcDiffvNurbsS(NURBSS *,double,double);				
 
 	// Function: CalcDiffNNurbsS
-	// NURBS‹È–Ê‚ÌŠe•ûŒü‚ğ”CˆÓŠK”÷•ª‚µ‚½‚Æ‚«‚Ì”÷•ªŒW”‚ğ‹‚ß‚é
-//	Coord CalcDiffNNurbsS(NURBSS *,int,int,double,double);		
+	// NURBSæ›²é¢ã®å„æ–¹å‘ã‚’ä»»æ„éšå¾®åˆ†ã—ãŸã¨ãã®å¾®åˆ†ä¿‚æ•°ã‚’æ±‚ã‚ã‚‹
+	Coord CalcDiffNNurbsS(NURBSS *,int,int,double,double);		
 
 	// Function: CalcNormVecOnNurbsS
-	// NURBS‹È–Êã‚Ì(u,v)‚É‚¨‚¯‚é–@üƒxƒNƒgƒ‹‚ğ‚à‚Æ‚ß‚é
-//	Coord CalcNormVecOnNurbsS(NURBSS *,double,double);			
+	// NURBSæ›²é¢ä¸Šã®(u,v)ã«ãŠã‘ã‚‹æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã‚’ã‚‚ã¨ã‚ã‚‹
+	Coord CalcNormVecOnNurbsS(NURBSS *,double,double);			
 
 	// Function: CalcDiffuNormVecOnNurbsS
-	// NURBS‹È–Êã‚Ì(u,v)‚É‚¨‚¯‚é–@üƒxƒNƒgƒ‹‚Ìu•ûŒü1ŠK”÷•ª‚ğ‚à‚Æ‚ß‚é
-//	Coord CalcDiffuNormVecOnNurbsS(NURBSS *,double,double);		
+	// NURBSæ›²é¢ä¸Šã®(u,v)ã«ãŠã‘ã‚‹æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã®uæ–¹å‘1éšå¾®åˆ†ã‚’ã‚‚ã¨ã‚ã‚‹
+	Coord CalcDiffuNormVecOnNurbsS(NURBSS *,double,double);		
 
 	// Function: CalcDiffvNormVecOnNurbsS
-	// NURBS‹È–Êã‚Ì(u,v)‚É‚¨‚¯‚é–@üƒxƒNƒgƒ‹‚Ìv•ûŒü1ŠK”÷•ª‚ğ‚à‚Æ‚ß‚é
-//	Coord CalcDiffvNormVecOnNurbsS(NURBSS *,double,double);		
+	// NURBSæ›²é¢ä¸Šã®(u,v)ã«ãŠã‘ã‚‹æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã®væ–¹å‘1éšå¾®åˆ†ã‚’ã‚‚ã¨ã‚ã‚‹
+	Coord CalcDiffvNormVecOnNurbsS(NURBSS *,double,double);		
 
 	// Function: CalcMeanCurvature
-	// NURBS‹È–Êã‚Ì(u,v)‚É‚¨‚¯‚é•½‹Ï‹È—¦‚ğ‹‚ß‚é
-//	double CalcMeanCurvature(NURBSS *,double,double);			
+	// NURBSæ›²é¢ä¸Šã®(u,v)ã«ãŠã‘ã‚‹å¹³å‡æ›²ç‡ã‚’æ±‚ã‚ã‚‹
+	double CalcMeanCurvature(NURBSS *,double,double);			
 
 	// Function: CalcMeanCurvature
-	// ƒI[ƒo[ƒ[ƒh
-//	double CalcMeanCurvature(SFQuant);							
+	// ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰
+	double CalcMeanCurvature(SFQuant);							
 
 	// Function: CalcMeanCurvatureNormVec
-	// NURBS‹È–Êã‚Ì(u,v)‚É‚¨‚¯‚é•½‹Ï‹È—¦–@üƒxƒNƒgƒ‹‚ğ‹‚ß‚é
-//	Coord CalcMeanCurvatureNormVec(NURBSS *,double,double);		
+	// NURBSæ›²é¢ä¸Šã®(u,v)ã«ãŠã‘ã‚‹å¹³å‡æ›²ç‡æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã‚’æ±‚ã‚ã‚‹
+	Coord CalcMeanCurvatureNormVec(NURBSS *,double,double);		
 
 	// Function: CalcGaussCurvature
-	// NURBS‹È–Êã‚Ì(u,v)‚É‚¨‚¯‚éƒKƒEƒX‹È—¦‚ğ‹‚ß‚é
-//	double CalcGaussCurvature(NURBSS *,double,double);			
+	// NURBSæ›²é¢ä¸Šã®(u,v)ã«ãŠã‘ã‚‹ã‚¬ã‚¦ã‚¹æ›²ç‡ã‚’æ±‚ã‚ã‚‹
+	double CalcGaussCurvature(NURBSS *,double,double);			
 
 	// Function: CalcGaussCurvature
-	// ƒI[ƒo[ƒ[ƒh
-//	double CalcGaussCurvature(SFQuant);							
+	// ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰
+	double CalcGaussCurvature(SFQuant);							
 
 	// Function: CalcGaussCurvatureNormVec
-	// NURBS‹È–Êã‚Ì(u,v)‚É‚¨‚¯‚éƒKƒEƒX‹È—¦–@üƒxƒNƒgƒ‹‚ğ‹‚ß‚é
-//	Coord CalcGaussCurvatureNormVec(NURBSS *,double,double);	
+	// NURBSæ›²é¢ä¸Šã®(u,v)ã«ãŠã‘ã‚‹ã‚¬ã‚¦ã‚¹æ›²ç‡æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã‚’æ±‚ã‚ã‚‹
+	Coord CalcGaussCurvatureNormVec(NURBSS *,double,double);	
 
 	// Function: CalcuIntersecPtNurbsLine
-	// NURBS‹È–Ê‚Æ’¼ü‚ÌŒğ“_‚ğZo
-//	int CalcuIntersecPtNurbsLine(NURBSS *,Coord,Coord,int,Coord *,int,int);	
+	// NURBSæ›²é¢ã¨ç›´ç·šã®äº¤ç‚¹ã‚’ç®—å‡º
+	int CalcuIntersecPtNurbsLine(NURBSS *,Coord,Coord,int,Coord *,int,int);	
 
 	// Function: CalcIntersecPtNurbsPt
-	// ‹óŠÔã‚Ì1“_‚©‚çNURBS‹È–Êã‚ÌÅ‹ß–T“_‚ğ‹‚ß‚é(ƒjƒ…[ƒgƒ“–@)
-//	int CalcIntersecPtNurbsPt(NURBSS *,Coord,int,int,Coord *);		
+	// ç©ºé–“ä¸Šã®1ç‚¹ã‹ã‚‰NURBSæ›²é¢ä¸Šã®æœ€è¿‘å‚ç‚¹ã‚’æ±‚ã‚ã‚‹(ãƒ‹ãƒ¥ãƒ¼ãƒˆãƒ³æ³•)
+	int CalcIntersecPtNurbsPt(NURBSS *,Coord,int,int,Coord *);		
 
 	// Function: CalcIntersecPtNurbsPt
-	// ‹óŠÔã‚Ì1“_‚©‚çNURBS‹Èüã‚ÌÅ‹ß–T“_‚ğ‹‚ß‚é(ƒjƒ…[ƒgƒ“–@)(ƒI[ƒo[ƒ[ƒh)
-//	int CalcIntersecPtNurbsPt(NURBSC *,Coord,int,int,double *);			
+	// ç©ºé–“ä¸Šã®1ç‚¹ã‹ã‚‰NURBSæ›²ç·šä¸Šã®æœ€è¿‘å‚ç‚¹ã‚’æ±‚ã‚ã‚‹(ãƒ‹ãƒ¥ãƒ¼ãƒˆãƒ³æ³•)(ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰)
+	int CalcIntersecPtNurbsPt(NURBSC *,Coord,int,int,double *);			
+
+    // Function: CalcIntersecPtNurbsPtDescrete
+    // ç©ºé–“ä¸Šã®1ç‚¹ã‹ã‚‰NURBSæ›²é¢ä¸Šã®æœ€è¿‘å‚ç‚¹ã‚’æ±‚ã‚ã‚‹(é›¢æ•£çš„)
+    void CalcIntersecPtNurbsPtDescrete(NURBSS *,Coord ,int ,int ,double ,double ,double ,double , Coord *);
+
+    // Function: CalcIntersecPtNurbsPtDescrete
+    // ç©ºé–“ä¸Šã®1ç‚¹ã‹ã‚‰NURBSæ›²ç·šä¸Šã®æœ€è¿‘å‚ç‚¹ã‚’æ±‚ã‚ã‚‹(é›¢æ•£çš„)
+    void CalcIntersecPtNurbsPtDescrete(NURBSC *,Coord ,int ,int ,double ,double ,double *);
 
 	// Function: CalcIntersecIsparaCurveU
-	// u•ûŒüƒAƒCƒ\ƒpƒ‰‹Èü‚Æ•½–Ê‚Æ‚ÌŒğ“_‚ğ‹‚ß‚é(ƒjƒ…[ƒgƒ“–@)
-//	int CalcIntersecIsparaCurveU(NURBSS *,double,Coord,Coord,int,double *,int);	
+	// uæ–¹å‘ã‚¢ã‚¤ã‚½ãƒ‘ãƒ©æ›²ç·šã¨å¹³é¢ã¨ã®äº¤ç‚¹ã‚’æ±‚ã‚ã‚‹(ãƒ‹ãƒ¥ãƒ¼ãƒˆãƒ³æ³•)
+	int CalcIntersecIsparaCurveU(NURBSS *,double,Coord,Coord,int,double *,int);	
 
 	// Function: CalcIntersecIsparaCurveV
-	// v•ûŒüƒAƒCƒ\ƒpƒ‰‹Èü‚Æ•½–Ê‚Æ‚ÌŒğ“_‚ğ‹‚ß‚é(ƒjƒ…[ƒgƒ“–@)
-//	int CalcIntersecIsparaCurveV(NURBSS *,double,Coord,Coord,int,double *,int); 
+	// væ–¹å‘ã‚¢ã‚¤ã‚½ãƒ‘ãƒ©æ›²ç·šã¨å¹³é¢ã¨ã®äº¤ç‚¹ã‚’æ±‚ã‚ã‚‹(ãƒ‹ãƒ¥ãƒ¼ãƒˆãƒ³æ³•)
+	int CalcIntersecIsparaCurveV(NURBSS *,double,Coord,Coord,int,double *,int); 
 
 	// Function: CalcIntersecCurve
-	// NURBS‹Èü‚Æ•½–Ê‚Æ‚ÌŒğ“_‚ğ‹‚ß‚é(ƒjƒ…[ƒgƒ“–@)
-//	int CalcIntersecCurve(NURBSC *,Coord,Coord,int,double *,int,int);	
+	// NURBSæ›²ç·šã¨å¹³é¢ã¨ã®äº¤ç‚¹ã‚’æ±‚ã‚ã‚‹(ãƒ‹ãƒ¥ãƒ¼ãƒˆãƒ³æ³•)
+	int CalcIntersecCurve(NURBSC *,Coord,Coord,int,double *,int,int);	
 
 	// Function: CalcIntersecCurve3
-	// 3ŸˆÈ‰º‚ÌNURBS‹Èü‚Æ•½–Ê‚Æ‚ÌŒğ“_‚ğ‹‚ß‚é
-//	int CalcIntersecCurve3(NURBSC *,Coord,Coord,double *,int);	
+	// 3æ¬¡ä»¥ä¸‹ã®NURBSæ›²ç·šã¨å¹³é¢ã¨ã®äº¤ç‚¹ã‚’æ±‚ã‚ã‚‹
+	int CalcIntersecCurve3(NURBSC *,Coord,Coord,double *,int);	
 
 	// Function: CalcIntersecPtsPlaneV3
-	// V•ûŒü‚ÌƒAƒCƒ\ƒpƒ‰‹Èü‚ğw’è‚µ‚½•ªŠ„”‚Å¶¬‚µCŠe3ŸˆÈ‰º‚Ì‹Èü‚ÆNURBS‹È–Ê‚Æ‚ÌŒğ“_‚ğ‘ã”ŒvZ‚ÅZo‚·‚é
-//	int CalcIntersecPtsPlaneV3(NURBSS *,Coord,Coord,int,Coord *,int);	
+	// Væ–¹å‘ã®ã‚¢ã‚¤ã‚½ãƒ‘ãƒ©æ›²ç·šã‚’æŒ‡å®šã—ãŸåˆ†å‰²æ•°ã§ç”Ÿæˆã—ï¼Œå„3æ¬¡ä»¥ä¸‹ã®æ›²ç·šã¨NURBSæ›²é¢ã¨ã®äº¤ç‚¹ã‚’ä»£æ•°è¨ˆç®—ã§ç®—å‡ºã™ã‚‹
+	int CalcIntersecPtsPlaneV3(NURBSS *,Coord,Coord,int,Coord *,int);	
 
 	// Function: CalcIntersecPtsPlaneU3
-	// V•ûŒü‚ÌƒAƒCƒ\ƒpƒ‰‹Èü‚ğw’è‚µ‚½•ªŠ„”‚Å¶¬‚µCŠe3ŸˆÈ‰º‚Ì‹Èü‚ÆNURBS‹È–Ê‚Æ‚ÌŒğ“_‚ğ‘ã”ŒvZ‚ÅZo‚·‚é
-//	int CalcIntersecPtsPlaneU3(NURBSS *,Coord,Coord,int,Coord *,int);	
+	// Væ–¹å‘ã®ã‚¢ã‚¤ã‚½ãƒ‘ãƒ©æ›²ç·šã‚’æŒ‡å®šã—ãŸåˆ†å‰²æ•°ã§ç”Ÿæˆã—ï¼Œå„3æ¬¡ä»¥ä¸‹ã®æ›²ç·šã¨NURBSæ›²é¢ã¨ã®äº¤ç‚¹ã‚’ä»£æ•°è¨ˆç®—ã§ç®—å‡ºã™ã‚‹
+	int CalcIntersecPtsPlaneU3(NURBSS *,Coord,Coord,int,Coord *,int);	
 
 	// Function: CalcIntersecPtsPlaneV
-	// V•ûŒü‚ÌƒAƒCƒ\ƒpƒ‰‹Èü‚ğw’è‚µ‚½•ªŠ„”‚Å¶¬‚µCŠe‹Èü‚ÆNURBS‹È–Ê‚Æ‚ÌŒğ“_‚ğZo‚·‚é
-//	int CalcIntersecPtsPlaneV(NURBSS *,Coord,Coord,int,Coord *,int);	
+	// Væ–¹å‘ã®ã‚¢ã‚¤ã‚½ãƒ‘ãƒ©æ›²ç·šã‚’æŒ‡å®šã—ãŸåˆ†å‰²æ•°ã§ç”Ÿæˆã—ï¼Œå„æ›²ç·šã¨NURBSæ›²é¢ã¨ã®äº¤ç‚¹ã‚’ç®—å‡ºã™ã‚‹
+	int CalcIntersecPtsPlaneV(NURBSS *,Coord,Coord,int,Coord *,int);	
 
 	// Function: CalcIntersecPtsPlaneU
-	// U•ûŒü‚ÌƒAƒCƒ\ƒpƒ‰‹Èü‚ğw’è‚µ‚½•ªŠ„”‚Å¶¬‚µCŠe‹Èü‚ÆNURBS‹È–Ê‚Æ‚ÌŒğ“_‚ğZo‚·‚é
-//	int CalcIntersecPtsPlaneU(NURBSS *,Coord,Coord,int,Coord *,int);	
+	// Uæ–¹å‘ã®ã‚¢ã‚¤ã‚½ãƒ‘ãƒ©æ›²ç·šã‚’æŒ‡å®šã—ãŸåˆ†å‰²æ•°ã§ç”Ÿæˆã—ï¼Œå„æ›²ç·šã¨NURBSæ›²é¢ã¨ã®äº¤ç‚¹ã‚’ç®—å‡ºã™ã‚‹
+	int CalcIntersecPtsPlaneU(NURBSS *,Coord,Coord,int,Coord *,int);	
 
 	// Function: CalcIntersecPtsPlaneSearch
-	// NURBS‹È–Ê‚Æ•½–Ê‚Æ‚ÌŒğ“_ŒQ‚ğŒğü’ÇÕ–@‚Å‹‚ß‚é
-//	int CalcIntersecPtsPlaneSearch(NURBSS *,Coord,Coord,double,int,Coord *,int,int);	
+	// NURBSæ›²é¢ã¨å¹³é¢ã¨ã®äº¤ç‚¹ç¾¤ã‚’äº¤ç·šè¿½è·¡æ³•ã§æ±‚ã‚ã‚‹
+	int CalcIntersecPtsPlaneSearch(NURBSS *,Coord,Coord,double,int,Coord *,int,int);	
 
 	// Function: CalcIntersecPtsOffsetPlaneSearch
-	// ƒIƒtƒZƒbƒgNURBS‹È–Ê‚Æ•½–Ê‚Æ‚ÌŒğ“_ŒQ‚ğŒğü’ÇÕ–@‚Å‹‚ß‚é(€”õ’†)
-//	int CalcIntersecPtsOffsetPlaneSearch(NURBSS *,double,Coord,Coord,double,int,Coord *,int);
+	// ã‚ªãƒ•ã‚»ãƒƒãƒˆNURBSæ›²é¢ã¨å¹³é¢ã¨ã®äº¤ç‚¹ç¾¤ã‚’äº¤ç·šè¿½è·¡æ³•ã§æ±‚ã‚ã‚‹(æº–å‚™ä¸­)
+	int CalcIntersecPtsOffsetPlaneSearch(NURBSS *,double,Coord,Coord,double,int,Coord *,int);
 
 	// Function: CalcIntersecPtsNurbsSNurbsC
-	// NURBS‹È–Ê‚ÆNURBS‹Èü‚Æ‚ÌŒğ“_‚ğ‹‚ß‚é(ƒjƒ…[ƒgƒ“–@)
+	// NURBSæ›²é¢ã¨NURBSæ›²ç·šã¨ã®äº¤ç‚¹ã‚’æ±‚ã‚ã‚‹(ãƒ‹ãƒ¥ãƒ¼ãƒˆãƒ³æ³•)
 	int CalcIntersecPtsNurbsSNurbsC(NURBSS *,NURBSC *,int,Coord *,int);	
 
 	// Function: CalcIntersecPtsNurbsSGeom
-	// NURBS‹È–Ê“¯m‚ÌŒğüã‚Ì“_‚ğŠô‰½Šw“I‚É‚¢‚­‚Â‚©‹‚ß‚é
+	// NURBSæ›²é¢åŒå£«ã®äº¤ç·šä¸Šã®ç‚¹ã‚’å¹¾ä½•å­¦çš„ã«ã„ãã¤ã‹æ±‚ã‚ã‚‹
 	int CalcIntersecPtsNurbsSGeom(NURBSS *,NURBSS *,int,int,Coord *,Coord *,int);		
 
 	// Function: CalcIntersecPtsNurbsSSearch
-	// NURBS‹È–Ê“¯m‚ÌŒğü(Œğ“_ŒQ)‚ğŒğü’ÇÕ–@‚Å‹‚ß‚é
+	// NURBSæ›²é¢åŒå£«ã®äº¤ç·š(äº¤ç‚¹ç¾¤)ã‚’äº¤ç·šè¿½è·¡æ³•ã§æ±‚ã‚ã‚‹
 	int CalcIntersecPtsNurbsSSearch(NURBSS *,NURBSS *,int,double,Coord *,Coord *,int);	
 
 	// Function: CalcIntersecPtsNurbsCNurbsCParam
-    // 2ŸŒ³NURBS‹Èü“¯m‚ÌŒğ“_‚ğ‹‚ß‚é
+    // 2æ¬¡å…ƒNURBSæ›²ç·šåŒå£«ã®äº¤ç‚¹ã‚’æ±‚ã‚ã‚‹
 	int CalcIntersecPtsNurbsCNurbsCParam(NURBSC *,NURBSC *,int,Coord *,int);	
 
     // Function: CalcIntersecPtsNurbsCLine
-    // 2ŸŒ³NURBS‹Èü‚Æ’¼ü‚Æ‚ÌŒğ“_‚ğ‹‚ß‚é
-//	int ClacIntersecPtsNurbsCLine(NURBSC *, Coord, Coord, double *, double *);
+    // 2æ¬¡å…ƒNURBSæ›²ç·šã¨ç›´ç·šã¨ã®äº¤ç‚¹ã‚’æ±‚ã‚ã‚‹
+    int ClacIntersecPtsNurbsCLine(NURBSC *, Coord, Coord, double *, double *);
 
     // Function: CalcIntersecPtsNurbsCLineSeg
-    // 2ŸŒ³NURBS‹Èü‚Æü•ª‚Æ‚ÌŒğ“_‚ğ‹‚ß‚é
-//	int ClacIntersecPtsNurbsCLineSeg(NURBSC *, Coord, Coord, double, double, double *, double *);
+    // 2æ¬¡å…ƒNURBSæ›²ç·šã¨ç·šåˆ†ã¨ã®äº¤ç‚¹ã‚’æ±‚ã‚ã‚‹
+    int ClacIntersecPtsNurbsCLineSeg(NURBSC *, Coord, Coord, double, double, double *, double *);
 
 	// Function: SearchExtremum_BS
-	// Bulirsch-Stoer–@‚É‚æ‚è‹É’n’Tõ‚ğs‚¤
-//	int SearchExtremum_BS(NURBSS *,Coord,double,double,double,int,int,Coord *);	
+	// Bulirsch-Stoeræ³•ã«ã‚ˆã‚Šæ¥µåœ°æ¢ç´¢ã‚’è¡Œã†
+	int SearchExtremum_BS(NURBSS *,Coord,double,double,double,int,int,Coord *);	
+
+	// Function: GetBSplCoef3
+	// 3æ¬¡ã®Bã‚¹ãƒ—ãƒ©ã‚¤ãƒ³æ›²ç·šã®å„ä¿‚æ•°ã‚’æ±‚ã‚ã‚‹ã€€(at^3 + bt^2 + ct + dã®ä¿‚æ•°a,b,c,dã‚’è¿”ã™)
+	int GetBSplCoef3(int,int,int,double *,double **);			
+
+	// Function: GetBSplCoef2
+	// 2æ¬¡ã®Bã‚¹ãƒ—ãƒ©ã‚¤ãƒ³æ›²ç·šã®å„ä¿‚æ•°ã‚’æ±‚ã‚ã‚‹ã€€(at^2 + bt + cã®ä¿‚æ•°a,b,cã‚’è¿”ã™)
+	int GetBSplCoef2(int,int,int,double *,double **);			
+
+	// Function: GetBSplCoef1
+	// 1æ¬¡ã®Bã‚¹ãƒ—ãƒ©ã‚¤ãƒ³æ›²ç·šã®å„ä¿‚æ•°ã‚’æ±‚ã‚ã‚‹ã€€(at + bã®ä¿‚æ•°a,bã‚’è¿”ã™)
+	int GetBSplCoef1(int,int,int,double *,double **);			
 
 	// Function: ShiftNurbsS
-	// NURBS‹È–Ê‚ÌƒVƒtƒg
-//	void ShiftNurbsS(NURBSS *,Coord);							
+	// NURBSæ›²é¢ã®ã‚·ãƒ•ãƒˆ
+	void ShiftNurbsS(NURBSS *,Coord);							
 
 	// Function: ShiftNurbsC
-	// NURBS‹Èü‚ÌƒVƒtƒg
-//	void ShiftNurbsC(NURBSC *,Coord);							
+	// NURBSæ›²ç·šã®ã‚·ãƒ•ãƒˆ
+	void ShiftNurbsC(NURBSC *,Coord);							
 
 	// Function: ChRatioNurbsS
-	// NURBS‹È–Ê‚Ì”{—¦‚ğ•ÏX‚·‚é
-//	void ChRatioNurbsS(NURBSS *,Coord);							
+	// NURBSæ›²é¢ã®å€ç‡ã‚’å¤‰æ›´ã™ã‚‹
+	void ChRatioNurbsS(NURBSS *,Coord);							
 
 	// Function: ChRatioNurbsC
-	// NURBS‹Èü‚Ì”{—¦‚ğ•ÏX‚·‚é
-//	void ChRatioNurbsC(NURBSC *,Coord);							
+	// NURBSæ›²ç·šã®å€ç‡ã‚’å¤‰æ›´ã™ã‚‹
+	void ChRatioNurbsC(NURBSC *,Coord);							
 
 	// Function: RotNurbsS
-	// NURBS‹È–Ê‚ğ‰ñ“]
-//	void RotNurbsS(NURBSS *,Coord,double);						
+	// NURBSæ›²é¢ã‚’å›è»¢
+	void RotNurbsS(NURBSS *,Coord,double);						
 
 	// Function: RotNurbsC
-	// NURBS‹Èü‚ğ‰ñ“]
-//	void RotNurbsC(NURBSC *,Coord,double);						
+	// NURBSæ›²ç·šã‚’å›è»¢
+	void RotNurbsC(NURBSC *,Coord,double);						
 
 	// Function: SetCPNurbsS
-	// ƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒg‚ğ‘ã“ü‚·‚é
+	// ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆã‚’ä»£å…¥ã™ã‚‹
 	int SetCPNurbsS(NURBSS *,NURBSS);							
 
 	// Function: GenInterpolatedNurbsC1
-	// —^‚¦‚ç‚ê‚½“_—ñ‚ğ•âŠÔ‚·‚énŠK‚ÌNURBS‹Èü‚ğ¶¬‚·‚é
+	// ä¸ãˆã‚‰ã‚ŒãŸç‚¹åˆ—ã‚’è£œé–“ã™ã‚‹néšã®NURBSæ›²ç·šã‚’ç”Ÿæˆã™ã‚‹
 	int GenInterpolatedNurbsC1(NURBSC *,Coord *,int,int);		
 
 	// Function: GenInterpolatedNurbsC2
-	// —^‚¦‚ç‚ê‚½“_—ñ‚ğ•âŠÔ‚·‚énŠK‚ÌNURBS‹Èü‚ğ¶¬‚·‚é(•Â‚¶‚½‹Èü)
+	// ä¸ãˆã‚‰ã‚ŒãŸç‚¹åˆ—ã‚’è£œé–“ã™ã‚‹néšã®NURBSæ›²ç·šã‚’ç”Ÿæˆã™ã‚‹(é–‰ã˜ãŸæ›²ç·š)
 	int GenInterpolatedNurbsC2(NURBSC *,Coord *,int,int);		
 
 	// Function: GenApproximationNurbsC
-	// —^‚¦‚ç‚ê‚½“_—ñ‚ğ‹ß—‚·‚énŠK‚ÌNURBS‹Èü‚ğ¶¬‚·‚é
+	// ä¸ãˆã‚‰ã‚ŒãŸç‚¹åˆ—ã‚’è¿‘ä¼¼ã™ã‚‹néšã®NURBSæ›²ç·šã‚’ç”Ÿæˆã™ã‚‹
 	int GenApproximationNurbsC(NURBSC *,Coord *,int,int);		
 
 	// Function: GenNurbsCfromCP
-	// ƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒg‚©‚çNURBS‹Èü‚ğ¶¬‚·‚é
+	// ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆã‹ã‚‰NURBSæ›²ç·šã‚’ç”Ÿæˆã™ã‚‹
 	int GenNurbsCfromCP(NURBSC *,Coord *,int,int);				
 
 	// Function: GenPolygonalLine
-	// Ü‚êü‚ğ¶¬‚·‚é
+	// æŠ˜ã‚Œç·šã‚’ç”Ÿæˆã™ã‚‹
 	int GenPolygonalLine(NURBSC *,Coord *,int);					
 
 	// Function: GenInterpolatedNurbsS1
-	// —^‚¦‚ç‚ê‚½“_—ñ‚ğ•âŠÔ‚·‚énŠKNURBS‹È–Ê‚ğ¶¬‚·‚é
+	// ä¸ãˆã‚‰ã‚ŒãŸç‚¹åˆ—ã‚’è£œé–“ã™ã‚‹néšNURBSæ›²é¢ã‚’ç”Ÿæˆã™ã‚‹
 	int GenInterpolatedNurbsS1(NURBSS *,Coord **,int,int,int,int);	
 
 	// Function: GenPolygonalSurface
-	// Ü‚ê–Ê‚ğ¶¬‚·‚é
+	// æŠ˜ã‚Œé¢ã‚’ç”Ÿæˆã™ã‚‹
 	int GenPolygonalSurface(NURBSS *,Coord **,int,int);				
 
 	// Function: GenApproximationNurbsS
-	// —^‚¦‚ç‚ê‚½“_—ñ‚ğ‹ß—‚·‚énŠK‚ÌNURBS‹È–Ê‚ğ¶¬‚·‚é
+	// ä¸ãˆã‚‰ã‚ŒãŸç‚¹åˆ—ã‚’è¿‘ä¼¼ã™ã‚‹néšã®NURBSæ›²é¢ã‚’ç”Ÿæˆã™ã‚‹
 	int GenApproximationNurbsS(NURBSS *,Coord **,int,int,int,int);	
 
 	// Function: GenNurbsSfromCP
-	// —^‚¦‚ç‚ê‚½ƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒg‚©‚çnŠK‚ÌNURBS‹È–Ê‚ğ¶¬‚·‚é
+	// ä¸ãˆã‚‰ã‚ŒãŸã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆã‹ã‚‰néšã®NURBSæ›²é¢ã‚’ç”Ÿæˆã™ã‚‹
 	int GenNurbsSfromCP(NURBSS *,Coord **,int,int,int,int);			
 
 	// Function: DetermPtOnTRMSurf
-	// ’–Ú’†‚ÌNURBS‹È–Êã‚Ì1“_(u,v)‚ªƒgƒŠƒ~ƒ“ƒO—Ìˆæ“à‚É‚ ‚é‚Ì‚©‚ğ”»’è‚·‚é
+	// æ³¨ç›®ä¸­ã®NURBSæ›²é¢ä¸Šã®1ç‚¹(u,v)ãŒãƒˆãƒªãƒŸãƒ³ã‚°é ˜åŸŸå†…ã«ã‚ã‚‹ã®ã‹ã‚’åˆ¤å®šã™ã‚‹
 	int DetermPtOnTRMSurf(TRMS *,double,double);					
 
 	// Function: GetPtsOnOuterTRMSurf
-	// ŠOüƒgƒŠƒ€–Ê“à‚Ì“_‚Ì‚İc‚·
+	// å¤–å‘¨ãƒˆãƒªãƒ é¢å†…ã®ç‚¹ã®ã¿æ®‹ã™
 	int GetPtsOnOuterTRMSurf(TRMS *,Coord *,int);					
 
 	// Function: GetPtsOnInnerTRMSurf
-	// “àüƒgƒŠƒ€–ÊŠO‚Ì“_‚Ì‚İc‚·
+	// å†…å‘¨ãƒˆãƒªãƒ é¢å¤–ã®ç‚¹ã®ã¿æ®‹ã™
 	int GetPtsOnInnerTRMSurf(TRMS *,Coord *,int);					 
 
 	// Function: GetPtsOnInnerOuterTRMSurf
-	// “àŠOüƒgƒŠƒ€–Ê“à‚Ì“_‚Ì‚İc‚·
+	// å†…å¤–å‘¨ãƒˆãƒªãƒ é¢å†…ã®ç‚¹ã®ã¿æ®‹ã™
 	int GetPtsOnInnerOuterTRMSurf(TRMS *,Coord *,int);				
 
 	// Function: DetectInterfereNurbsS
-	// NURBS‹È–Ê(ƒgƒŠƒ€–³)“¯m‚ÌŠ±ÂŒŸo
+	// NURBSæ›²é¢(ãƒˆãƒªãƒ ç„¡)åŒå£«ã®å¹²æ¸‰æ¤œå‡º
 	int DetectInterfereNurbsS(NURBSS *,NURBSS *,int);				
 
 	// Function: DetectInterfereTrmS
-	// NURBS‹È–Ê(ƒgƒŠƒ€—L)“¯m‚ÌŠ±ÂŒŸo
+	// NURBSæ›²é¢(ãƒˆãƒªãƒ æœ‰)åŒå£«ã®å¹²æ¸‰æ¤œå‡º
 	int DetectInterfereTrmS(TRIMD_NURBSS *,TRIMD_NURBSS *,int);		
 
 	// Function: CalcIntersecPtsPlaneGeom
-	// NURBS‹È–Ê‚Æ•½–Ê‚ÆŒğ“_’ÇÕ—p‰Šú“_‚ğ“¾‚é(•â••½–Ê‚ğ—p‚¢‚½•û–@)
-//	int CalcIntersecPtsPlaneGeom(NURBSS *,Coord,Coord,int,int,Coord *,int);			
+	// NURBSæ›²é¢ã¨å¹³é¢ã¨äº¤ç‚¹è¿½è·¡ç”¨åˆæœŸç‚¹ã‚’å¾—ã‚‹(è£œåŠ©å¹³é¢ã‚’ç”¨ã„ãŸæ–¹æ³•)
+	int CalcIntersecPtsPlaneGeom(NURBSS *,Coord,Coord,int,int,Coord *,int);			
 
 	// Function: CalcNurbsCLength
-	// NURBS‹Èü‚Ìü•ª’·‚ğ‹‚ß‚é
-//	double CalcNurbsCLength(NURBSC *);							
+	// NURBSæ›²ç·šã®ç·šåˆ†é•·ã‚’æ±‚ã‚ã‚‹
+	double CalcNurbsCLength(NURBSC *);							
 
 	// Function: CalcNurbsCLength
-	// NURBS‹Èü‚Ìw’è‹æŠÔ‚Ìü•ª’·‚ğ‹‚ß‚é
-//	double CalcNurbsCLength(NURBSC *,double,double);			
+	// NURBSæ›²ç·šã®æŒ‡å®šåŒºé–“ã®ç·šåˆ†é•·ã‚’æ±‚ã‚ã‚‹
+	double CalcNurbsCLength(NURBSC *,double,double);			
 
 	// Function: CalcDeltaPtsOnNurbsC
-	// w’è‚µ‚½•ªŠ„”‚ÅNURBS‹Èüã‚ÌÀ•W’l‚ğ‹‚ß‚é
-//	int CalcDeltaPtsOnNurbsC(NURBSC *,int,Coord *);				
+	// æŒ‡å®šã—ãŸåˆ†å‰²æ•°ã§NURBSæ›²ç·šä¸Šã®åº§æ¨™å€¤ã‚’æ±‚ã‚ã‚‹
+	int CalcDeltaPtsOnNurbsC(NURBSC *,int,Coord *);				
 
 	// Function: CalcDeltaPtsOnNurbsS
-	// w’è‚µ‚½•ªŠ„”‚ÅNURBS‹È–Êã‚ÌÀ•W’l‚ğ‹‚ß‚é
-//	int CalcDeltaPtsOnNurbsS(NURBSS *,int,int,Coord **);		
+	// æŒ‡å®šã—ãŸåˆ†å‰²æ•°ã§NURBSæ›²é¢ä¸Šã®åº§æ¨™å€¤ã‚’æ±‚ã‚ã‚‹
+	int CalcDeltaPtsOnNurbsS(NURBSS *,int,int,Coord **);		
 
 	// Function: CalcExtremumNurbsC
-	// NURBS‹Èü‚Ìw’è‚µ‚½•ûŒü‚É‚¨‚¯‚é‹É’l‚ÌÀ•W’l‚ğ“¾‚é
-//	int CalcExtremumNurbsC(NURBSC *,Coord,double *,int);		
+	// NURBSæ›²ç·šã®æŒ‡å®šã—ãŸæ–¹å‘ã«ãŠã‘ã‚‹æ¥µå€¤ã®åº§æ¨™å€¤ã‚’å¾—ã‚‹
+	int CalcExtremumNurbsC(NURBSC *,Coord,double *,int);		
+
+	// Function: GetEqIntervalKont
+	// æ›²ç·š/æ›²é¢ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‹ã‚‰ç­‰é–“éš”ãªãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«ã‚’ç®—å‡º
+	void GetEqIntervalKont(int,int,Vector);						
+
+	// Function: ChangeKnotVecRange
+	// ãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å®šç¾©åŸŸã‚’å¤‰æ›´ã™ã‚‹
+	void ChangeKnotVecRange(Vector,int,int,int,double,double);	
 
 
-	int CalcExtSearchCurve(NURBSS *,Coord,Coord,double,NURBSC *,NURBSC *);			// ‹É’n’Tõü‚ğ“¾‚é(€”õ’†)
-	int CalcExtGradCurve(NURBSS *,Coord,Coord,double,NURBSC *,NURBSC *);			// ‹É’nŒXÎü‚ğ“¾‚é(€”õ’†)
-	int TrimNurbsSPlane(TRMS *,Coord,Coord);										// NURBS‹È–Ê‚ğ•½–Ê‚ÅƒgƒŠƒ€‚·‚é(€”õ’†)
+	int CalcExtSearchCurve(NURBSS *,Coord,Coord,double,NURBSC *,NURBSC *);			// æ¥µåœ°æ¢ç´¢ç·šã‚’å¾—ã‚‹(æº–å‚™ä¸­)
+	int CalcExtGradCurve(NURBSS *,Coord,Coord,double,NURBSC *,NURBSC *);			// æ¥µåœ°å‚¾æ–œç·šã‚’å¾—ã‚‹(æº–å‚™ä¸­)
+	int TrimNurbsSPlane(TRMS *,Coord,Coord);										// NURBSæ›²é¢ã‚’å¹³é¢ã§ãƒˆãƒªãƒ ã™ã‚‹(æº–å‚™ä¸­)
 
 	// Function: New_NurbsC
-	// NURBS‹Èü‚Ìƒƒ‚ƒŠ[Šm•Û
+	// NURBSæ›²ç·šã®ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿
 	int New_NurbsC(NURBSC *,int,int);			
 
 	// Function: Free_NurbsC_1DArray
-	// NURBS‹Èü”z—ñ‚Ìƒƒ‚ƒŠ[‰ğ•ú
+	// NURBSæ›²ç·šé…åˆ—ã®ãƒ¡ãƒ¢ãƒªãƒ¼è§£æ”¾
 	void Free_NurbsC_1DArray(NURBSC *,int);		
 
 	// Function: Free_NurbsC
-	// NURBS‹Èü‚Ìƒƒ‚ƒŠ[‰ğ•ú
+	// NURBSæ›²ç·šã®ãƒ¡ãƒ¢ãƒªãƒ¼è§£æ”¾
 	void Free_NurbsC(NURBSC *);					
 
 	// Function: New_NurbsS
-	// NURBS‹È–Ê‚Ìƒƒ‚ƒŠ[Šm•Û
+	// NURBSæ›²é¢ã®ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿
 	int New_NurbsS(NURBSS *,int [],int []);		
 
 	// Function: Free_NurbsS_1DArray
-	// NURBS‹È–Ê”z—ñ‚Ìƒƒ‚ƒŠ[‰ğ•ú
+	// NURBSæ›²é¢é…åˆ—ã®ãƒ¡ãƒ¢ãƒªãƒ¼è§£æ”¾
 	void Free_NurbsS_1DArray(NURBSS *,int);		
 
 	// Function: Free_NurbsS
-	// NURBS‹È–Ê‚Ìƒƒ‚ƒŠ[‰ğ•ú
+	// NURBSæ›²é¢ã®ãƒ¡ãƒ¢ãƒªãƒ¼è§£æ”¾
 	void Free_NurbsS(NURBSS *);					
 
 	// Function: New_TrmS
-	// ƒgƒŠƒ€–Ê‚Ìƒƒ‚ƒŠ[Šm•Û
+	// ãƒˆãƒªãƒ é¢ã®ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿
 	int New_TrmS(TRMS *,int);					
 
 	// Function: Free_TrmS_1DArray
-	// ƒgƒŠƒ€–Ê”z—ñ‚Ìƒƒ‚ƒŠ[‰ğ•ú
+	// ãƒˆãƒªãƒ é¢é…åˆ—ã®ãƒ¡ãƒ¢ãƒªãƒ¼è§£æ”¾
 	void Free_TrmS_1DArray(TRMS *,int);			
 
 	// Function: Free_TrmS
-	// ƒgƒŠƒ€–Ê‚Ìƒƒ‚ƒŠ[‰ğ•ú
+	// ãƒˆãƒªãƒ é¢ã®ãƒ¡ãƒ¢ãƒªãƒ¼è§£æ”¾
 	void Free_TrmS(TRMS *);						
 
 	// Function: New_CompC
-	// •¡‡‹Èü‚Ìƒƒ‚ƒŠ[Šm•Û
+	// è¤‡åˆæ›²ç·šã®ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿
 	int New_CompC(COMPC *,int);					
 
 	// Function: Free_CompC_1DArray
-	// •¡‡‹Èü”z—ñ‚Ìƒƒ‚ƒŠ[‰ğ•ú
+	// è¤‡åˆæ›²ç·šé…åˆ—ã®ãƒ¡ãƒ¢ãƒªãƒ¼è§£æ”¾
 	void Free_CompC_1DArray(COMPC *,int);		
 
 	// Function: Free_CompC
-	// •¡‡‹Èü‚Ìƒƒ‚ƒŠ[‰ğ•ú
+	// è¤‡åˆæ›²ç·šã®ãƒ¡ãƒ¢ãƒªãƒ¼è§£æ”¾
 	void Free_CompC(COMPC *);					
 
 	// Function: DebugForNurbsC
-	// NURBS‹Èüî•ñ‚ğƒfƒoƒbƒOƒvƒŠƒ“ƒg
-//	void DebugForNurbsC(NURBSC *);				
+	// NURBSæ›²ç·šæƒ…å ±ã‚’ãƒ‡ãƒãƒƒã‚°ãƒ—ãƒªãƒ³ãƒˆ
+	void DebugForNurbsC(NURBSC *);				
 
 	// Function: DebugForNurbsS
-	// NURBS‹È–Êî•ñ‚ğƒfƒoƒbƒOƒvƒŠƒ“ƒg
-//	void DebugForNurbsS(NURBSS *);				
+	// NURBSæ›²é¢æƒ…å ±ã‚’ãƒ‡ãƒãƒƒã‚°ãƒ—ãƒªãƒ³ãƒˆ
+	void DebugForNurbsS(NURBSS *);				
 
 	// Function: CalcIntersecPtsOffsetPlaneGeom
-	// ƒIƒtƒZƒbƒgNURBS‹È–Ê‚Æ•½–Ê‚ÆŒğ“_’ÇÕ—p‰Šú“_‚ğ“¾‚é(•â••½–Ê‚ğ—p‚¢‚½•û–@)(€”õ’†)
-//	int CalcIntersecPtsOffsetPlaneGeom(NURBSS *,double,Coord,Coord,int,Coord *,int);	
+	// ã‚ªãƒ•ã‚»ãƒƒãƒˆNURBSæ›²é¢ã¨å¹³é¢ã¨äº¤ç‚¹è¿½è·¡ç”¨åˆæœŸç‚¹ã‚’å¾—ã‚‹(è£œåŠ©å¹³é¢ã‚’ç”¨ã„ãŸæ–¹æ³•)(æº–å‚™ä¸­)
+	int CalcIntersecPtsOffsetPlaneGeom(NURBSS *,double,Coord,Coord,int,Coord *,int);	
 
 	// Function: CalcTanVecOnNurbsC
-	// NURBS‹Èüã‚Ìt‚É‚¨‚¯‚é’PˆÊÚƒxƒNƒgƒ‹‚ğ‚à‚Æ‚ß‚é
-//	Coord CalcTanVecOnNurbsC(NURBSC *,double);					
+	// NURBSæ›²ç·šä¸Šã®tã«ãŠã‘ã‚‹å˜ä½æ¥ãƒ™ã‚¯ãƒˆãƒ«ã‚’ã‚‚ã¨ã‚ã‚‹
+	Coord CalcTanVecOnNurbsC(NURBSC *,double);					
 
 	// Function: ConnectNurbsSU
-	// 2–‡‚ÌNURBS‹È–Ê‚ğ˜AŒ‹‚·‚é(U•ûŒü‚É’·‚­‚È‚é)(S1_U1‚ÆS2_U0‚ğ˜AŒ‹)
+	// 2æšã®NURBSæ›²é¢ã‚’é€£çµã™ã‚‹(Uæ–¹å‘ã«é•·ããªã‚‹)(S1_U1ã¨S2_U0ã‚’é€£çµ)
 	int ConnectNurbsSU(NURBSS *,NURBSS *,NURBSS *);				
 
 	// Function: ConnectNurbsSV
-	// 2–‡‚ÌNURBS‹È–Ê‚ğ˜AŒ‹‚·‚é(V•ûŒü‚É’·‚­‚È‚é)(S1_V1‚ÆS2_V0‚ğ˜AŒ‹)
+	// 2æšã®NURBSæ›²é¢ã‚’é€£çµã™ã‚‹(Væ–¹å‘ã«é•·ããªã‚‹)(S1_V1ã¨S2_V0ã‚’é€£çµ)
 	int ConnectNurbsSV(NURBSS *,NURBSS *,NURBSS *);				
 
 	// Function: CalcCurvatureNurbsC
-	// NURBS‹Èü‚Ì‹È—¦‚ğ‹‚ß‚é
-//	double CalcCurvatureNurbsC(NURBSC *,double);				
+	// NURBSæ›²ç·šã®æ›²ç‡ã‚’æ±‚ã‚ã‚‹
+	double CalcCurvatureNurbsC(NURBSC *,double);				
 
 
-//	double CalcTorsionNurbsC(NURBSC *,double);					// NURBS‹Èü‚Ì€—¦‚ğ‹‚ß‚é
+//	double CalcTorsionNurbsC(NURBSC *,double);					// NURBSæ›²ç·šã®æ©ç‡ã‚’æ±‚ã‚ã‚‹
 
 	// Function: DivNurbsCParam
-	// NURBS‹Èü‚ğw’è‚µ‚½ƒpƒ‰ƒ[ƒ^’l‚Å•ªŠ„‚·‚é
+	// NURBSæ›²ç·šã‚’æŒ‡å®šã—ãŸãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å€¤ã§åˆ†å‰²ã™ã‚‹
 	int DivNurbsCParam(NURBSC *, NURBSC *, NURBSC *, double);	
 
 	// Function: DivNurbsC
-	// NURBS‹Èü‚ğw’è‚µ‚½ˆÊ’ui’[‚©‚ç‚Ì‹——£j‚Å•ªŠ„‚·‚é
+	// NURBSæ›²ç·šã‚’æŒ‡å®šã—ãŸä½ç½®ï¼ˆç«¯ã‹ã‚‰ã®è·é›¢ï¼‰ã§åˆ†å‰²ã™ã‚‹
 	int DivNurbsC(NURBSC *, NURBSC *, NURBSC *, double);		
 
 	// Function: ConnectNurbsC
-	// NURBS‹Èü‚Ì˜AŒ‹
+	// NURBSæ›²ç·šã®é€£çµ
 	int ConnectNurbsC(NURBSC *, NURBSC *, NURBSC *);			
 
 	// Function: ReverseNurbsC
-	// NURBS‹Èü‚ÌƒmƒbƒgƒxƒNƒgƒ‹Œü‚«‚ğ”½“]‚·‚é
-//	void ReverseNurbsC(NURBSC *);								
+	// NURBSæ›²ç·šã®ãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«å‘ãã‚’åè»¢ã™ã‚‹
+	void ReverseNurbsC(NURBSC *);								
 
 	// Function: CalcParamLengthOnNurbsC
-	// NURBS‹Èü‚É‚¨‚¢‚Äˆê’[‚©‚ç‚Ìw’è‹——£‚É‚¨‚¯‚éƒpƒ‰ƒ[ƒ^’l‚ğ•Ô‚·
-//	double CalcParamLengthOnNurbsC(NURBSC *,double,double);		
+	// NURBSæ›²ç·šã«ãŠã„ã¦ä¸€ç«¯ã‹ã‚‰ã®æŒ‡å®šè·é›¢ã«ãŠã‘ã‚‹ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å€¤ã‚’è¿”ã™
+	double CalcParamLengthOnNurbsC(NURBSC *,double,double);		
 
 
-	//int CalcDeltaParamsOnNurbsC(NURBSC *,double,Coord *);		// w’è‚µ‚½ƒpƒ‰ƒ[ƒ^‚ÌŠÔŠu‚ÅNURBS‹Èüã‚ÌÀ•W’l‚ğo—Í‚·‚é
+	//int CalcDeltaParamsOnNurbsC(NURBSC *,double,Coord *);		// æŒ‡å®šã—ãŸãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®é–“éš”ã§NURBSæ›²ç·šä¸Šã®åº§æ¨™å€¤ã‚’å‡ºåŠ›ã™ã‚‹
 
 	// Function: CalcDeltaPtsOnNurbsC
-	// w’è‚µ‚½ŠÔŠu‚ÅNURBS‹Èüã‚ÌÀ•W’l‚ğ‹‚ß‚é
-//	int CalcDeltaPtsOnNurbsC(NURBSC *,double,Coord *);			
+	// æŒ‡å®šã—ãŸé–“éš”ã§NURBSæ›²ç·šä¸Šã®åº§æ¨™å€¤ã‚’æ±‚ã‚ã‚‹
+	int CalcDeltaPtsOnNurbsC(NURBSC *,double,Coord *);			
+
+    // Function: CalcConstScallop
+    // ç­‰ã‚¹ã‚­ãƒ£ãƒ­ãƒƒãƒ—ç‚¹ã‚’ç®—å‡º
+    int CalcConstScallop(NURBSS *, NURBSC *, double, double, double *, double *, int);
+
+    // Function: CalcConstPitch
+    // ç­‰ãƒ”ãƒƒãƒç‚¹ã‚’ç®—å‡º
+    int CalcConstPitch(NURBSS *,NURBSC *, double, double, double *, int);
 
 private:
 
 
 	// Function: GetNurbsCCoef
-	// (private)NURBS‹Èü‚ÌŒW”‚ğ‹‚ß‚é(Å‚3Ÿ)
-//	int GetNurbsCCoef(NURBSC *,double **,int,Coord *,double *);	
+	// (private)NURBSæ›²ç·šã®ä¿‚æ•°ã‚’æ±‚ã‚ã‚‹(æœ€é«˜3æ¬¡)
+	int GetNurbsCCoef(NURBSC *,double **,int,Coord *,double *);	
 
-/*	-- member function -> static function
+	// Function: CalcEquation
+	// (private)3æ¬¡æ–¹ç¨‹å¼ã¾ã§ã‚’åˆ¤åˆ¥ã—ã¦è§£ã
+	int CalcEquation(double *,double *,int);					
+
 	// Function: GetNurbsSCoef
-	// (private)NURBS‹È–Ê‚É‚¨‚¢‚Äu‚Ü‚½‚Ív‚ğŒÅ’è‚µ‚½ê‡‚É“¾‚ç‚ê‚éNURBS‹ÈüC(u) or C(v)‚Ì•ª•ê•ªq‚ÌŒW”‚ğ‹‚ß‚é
+	// (private)NURBSæ›²é¢ã«ãŠã„ã¦uã¾ãŸã¯vã‚’å›ºå®šã—ãŸå ´åˆã«å¾—ã‚‰ã‚Œã‚‹NURBSæ›²ç·šC(u) or C(v)ã®åˆ†æ¯åˆ†å­ã®ä¿‚æ•°ã‚’æ±‚ã‚ã‚‹
 	void GetNurbsSCoef(int,double **,double *,Coord *,int,Coord *,double *);	
 
 	// Function: GetIntersecEquation
-	// (private)NURBS‹Èü‚Æ•½–Ê‚ÌŒğü“±o—p3Ÿ•û’ö®‚ğ“¾‚é
+	// (private)NURBSæ›²ç·šã¨å¹³é¢ã®äº¤ç·šå°å‡ºç”¨3æ¬¡æ–¹ç¨‹å¼ã‚’å¾—ã‚‹
 	void GetIntersecEquation(int,Coord *,double *,Coord,Coord,double *);		
 
-	// Function: CalcEquation
-	// (private)3Ÿ•û’ö®‚Ü‚Å‚ğ”»•Ê‚µ‚Ä‰ğ‚­
-	int CalcEquation(double *,double *,int);					
-
-	// Function: TrimNurbsSPlaneSub1
-	// (private)TrimNurbsSPlane‚ÌƒTƒuŠÖ”(2’¼ü‚ÌŒğ“_‚ğ‚à‚Æ‚ß‚é)
-	Coord TrimNurbsSPlaneSub1(double,double,double,double,double,double); 
-
-	// Function: GetMinDistance
-	// (private)Å¬‹——£‚ğ‚ÂÀ•W’l‚ğ•Ô‚·
-	Coord GetMinDistance(Coord,Coord *,int);						
-
-	// Function: CheckClossedPoints
-	// (private)w’è‚µ‚½“_‚ª‘¼‚Ì2“_‚ğ‘ÎŠp‚Æ‚·‚é—§•û‘Ì‚Ì’†‚É‘¶İ‚·‚é‚©‚ğ’²‚×‚é
-	int CheckClossedPoints(Coord,Coord,Coord);				
-
-	// Function: CalcApproximationCP_LSM
-	// (private)Å¬2æ–@‚Å‹ß—ƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒg‚ğ‹‚ß‚é
-	void CalcApproximationCP_LSM(Coord *,Vector,Vector,int,int,int,int,Coord *);	
-
-	// Function: SetApproximationCPnum
-	// (private)“_—ñ”‚©‚ç¶¬‚·‚éƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒg”‚ğZ’è‚·‚é
-	int SetApproximationCPnum(int);									
-
-	// Function: GetApproximatedKnot
-	// (private)‹Èü/‹È–Êƒpƒ‰ƒ[ƒ^‚©‚ç‹ß——pƒmƒbƒgƒxƒNƒgƒ‹‚ğZo
-	void GetApproximatedKnot(Vector,int,int,int,Vector);			
-
-	// Function: GetInterpolatedKnot
-	// (private)‹Èü/‹È–Êƒpƒ‰ƒ[ƒ^‚©‚ç•âŠÔ—pƒmƒbƒgƒxƒNƒgƒ‹‚ğZo
-	void GetInterpolatedKnot(Vector,int,int,int,Vector);			
-
-	// Function: GetSurfaceKnotParam
-	// (private)Še’Ê‰ß“_‚Ì‹È–Êƒpƒ‰ƒ[ƒ^‚ğZo
-	void GetSurfaceKnotParam(Vector,Vector,Coord **,int,int);		
-
-	// Function: GetCurveKnotParam1
-	// (private)Še’Ê‰ß“_‚Ì‹Èüƒpƒ‰ƒ[ƒ^‚ğZo(ƒR[ƒh’·‚Ì”ä‚©‚çZo)
-	void GetCurveKnotParam1(Coord *,int,Vector);					
-
-	// Function: GetCurveKnotParam2
-	// (private)Še’Ê‰ß“_‚Ì‹Èüƒpƒ‰ƒ[ƒ^‚ğZo(ƒR[ƒh’·‚Ì•½•ûª‚Ì”ä‚©‚çZo)
-	void GetCurveKnotParam2(Coord *,int,Vector);					
-*/
 	// Function: SearchIntersectPt
-	// (private)ƒjƒ…[ƒgƒ“–@‚É‚æ‚èŒğ“_‚ğû‘©‚³‚¹‚é(NURBS‹È–Ê‚Æ•½–Ê)
-//	int SearchIntersectPt(NURBSS *,Coord,Coord,double,double *,double *,int);	
+	// (private)ãƒ‹ãƒ¥ãƒ¼ãƒˆãƒ³æ³•ã«ã‚ˆã‚Šäº¤ç‚¹ã‚’åæŸã•ã›ã‚‹(NURBSæ›²é¢ã¨å¹³é¢)
+	int SearchIntersectPt(NURBSS *,Coord,Coord,double,double *,double *,int);	
 
 	// Function: SearchIntersectPt_RKM
-	// (private)4Ÿ‚Ìƒ‹ƒ“ƒQƒNƒbƒ^–@‚É‚æ‚èŒğ“_‚ğû‘©‚³‚¹‚é(NURBS‹È–Ê‚Æ•½–Ê)
-//	int SearchIntersectPt_RKM(NURBSS *,Coord,Coord,double,double *,double *,int);	
+	// (private)4æ¬¡ã®ãƒ«ãƒ³ã‚²ã‚¯ãƒƒã‚¿æ³•ã«ã‚ˆã‚Šäº¤ç‚¹ã‚’åæŸã•ã›ã‚‹(NURBSæ›²é¢ã¨å¹³é¢)
+	int SearchIntersectPt_RKM(NURBSS *,Coord,Coord,double,double *,double *,int);	
 
 	// Function: SearchIntersectPt_BS
-	// (private)Bulirsch-Stoer–@‚É‚æ‚èŒğ“_‚ğû‘©‚³‚¹‚é(NURBS‹È–Ê‚Æ•½–Ê)
-//	int SearchIntersectPt_BS(NURBSS *,Coord,Coord,double,double *,double *,int);	
+	// (private)Bulirsch-Stoeræ³•ã«ã‚ˆã‚Šäº¤ç‚¹ã‚’åæŸã•ã›ã‚‹(NURBSæ›²é¢ã¨å¹³é¢)
+	int SearchIntersectPt_BS(NURBSS *,Coord,Coord,double,double *,double *,int);	
 
 	// Function: SearchIntersectPt_OS
-	// (private)4Ÿ‚Ìƒ‹ƒ“ƒQƒNƒbƒ^–@‚É‚æ‚èŒğ“_‚ğû‘©‚³‚¹‚é(ƒIƒtƒZƒbƒgNURBS‹È–Ê‚Æ•½–Ê)
-//	int SearchIntersectPt_OS(NURBSS *,Coord,Coord,double,double *,double *,int);		
+	// (private)4æ¬¡ã®ãƒ«ãƒ³ã‚²ã‚¯ãƒƒã‚¿æ³•ã«ã‚ˆã‚Šäº¤ç‚¹ã‚’åæŸã•ã›ã‚‹(ã‚ªãƒ•ã‚»ãƒƒãƒˆNURBSæ›²é¢ã¨å¹³é¢)
+	int SearchIntersectPt_OS(NURBSS *,Coord,Coord,double,double *,double *,int);		
 
 	// Function: GetSIPParam1
-	// (private)NURBS‹È–Ê‚Æ•½–Ê‚ÌŒğ“_‚ğ•\‚·”÷•ª•û’ö®‚Ì‰E•Ó‚Ì’l‚ğ“¾‚é
-//	int GetSIPParam1(NURBSS *,double ,double ,Coord ,Coord ,int ,Coord *);		
+	// (private)NURBSæ›²é¢ã¨å¹³é¢ã®äº¤ç‚¹ã‚’è¡¨ã™å¾®åˆ†æ–¹ç¨‹å¼ã®å³è¾ºã®å€¤ã‚’å¾—ã‚‹
+	int GetSIPParam1(NURBSS *,double ,double ,Coord ,Coord ,int ,Coord *);		
 
 	// Function: SearchIntersectPt
-	// (private)ƒjƒ…[ƒgƒ“–@‚É‚æ‚èŒğ“_‚ğû‘©‚³‚¹‚é(NURBS‹È–Ê“¯m)
+	// (private)ãƒ‹ãƒ¥ãƒ¼ãƒˆãƒ³æ³•ã«ã‚ˆã‚Šäº¤ç‚¹ã‚’åæŸã•ã›ã‚‹(NURBSæ›²é¢åŒå£«)
 	int SearchIntersectPt(NURBSS *,NURBSS *,double,double *,double *,double *,double *,int);		
 
 	// Function: DetermPtOnTRMSurf_sub
-	// (private)ƒgƒŠƒ€‹«ŠEü‚ª•¡‡‹Èü‚Ìê‡‚ÌƒgƒŠƒ~ƒ“ƒO—Ìˆæ“àŠO”»’è
+	// (private)ãƒˆãƒªãƒ å¢ƒç•Œç·šãŒè¤‡åˆæ›²ç·šã®å ´åˆã®ãƒˆãƒªãƒŸãƒ³ã‚°é ˜åŸŸå†…å¤–åˆ¤å®š
 	int DetermPtOnTRMSurf_sub(CONPS *,double,double);				
 
 	// Function: ApproxTrimBorder
-	// (private)ƒgƒŠƒ€‹«ŠEü‚ğ“_ŒQ‚Å‹ß—‚·‚é
+	// (private)ãƒˆãƒªãƒ å¢ƒç•Œç·šã‚’ç‚¹ç¾¤ã§è¿‘ä¼¼ã™ã‚‹
 	int ApproxTrimBorder(COMPC *,Coord *);							
 
+	// Function: GetCurveKnotParam1
+	// (private)å„é€šéç‚¹ã®æ›²ç·šãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’ç®—å‡º(ã‚³ãƒ¼ãƒ‰é•·ã®æ¯”ã‹ã‚‰ç®—å‡º)
+	void GetCurveKnotParam1(Coord *,int,Vector);					
+
+	// Function: GetCurveKnotParam2
+	// (private)å„é€šéç‚¹ã®æ›²ç·šãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’ç®—å‡º(ã‚³ãƒ¼ãƒ‰é•·ã®å¹³æ–¹æ ¹ã®æ¯”ã‹ã‚‰ç®—å‡º)
+	void GetCurveKnotParam2(Coord *,int,Vector);					
+
+	// Function: GetSurfaceKnotParam
+	// (private)å„é€šéç‚¹ã®æ›²é¢ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’ç®—å‡º
+	void GetSurfaceKnotParam(Vector,Vector,Coord **,int,int);		
+
+	// Function: GetInterpolatedKnot
+	// (private)æ›²ç·š/æ›²é¢ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‹ã‚‰è£œé–“ç”¨ãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«ã‚’ç®—å‡º
+	void GetInterpolatedKnot(Vector,int,int,int,Vector);			
+
+	// Function: GetApproximatedKnot
+	// (private)æ›²ç·š/æ›²é¢ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‹ã‚‰è¿‘ä¼¼ç”¨ãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«ã‚’ç®—å‡º
+	void GetApproximatedKnot(Vector,int,int,int,Vector);			
+
+	// Function: SetApproximationCPnum
+	// (private)ç‚¹åˆ—æ•°ã‹ã‚‰ç”Ÿæˆã™ã‚‹ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆæ•°ã‚’ç®—å®šã™ã‚‹
+	int SetApproximationCPnum(int);									
+
+	// Function: CalcApproximationCP_LSM
+	// (private)æœ€å°2ä¹—æ³•ã§è¿‘ä¼¼ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆã‚’æ±‚ã‚ã‚‹
+	void CalcApproximationCP_LSM(Coord *,Vector,Vector,int,int,int,int,Coord *);	
+
 	// Function: RemoveTheSamePoints
-	// (private)NURBS‹È–Êã‚Ì“¯ˆê“_‚ğœ‹‚·‚é
-//	int RemoveTheSamePoints(NURBSS *,Coord *,int);					
+	// (private)NURBSæ›²é¢ä¸Šã®åŒä¸€ç‚¹ã‚’é™¤å»ã™ã‚‹
+	int RemoveTheSamePoints(NURBSS *,Coord *,int);					
 
 	// Function: CalcDiffNurbsSDenom
-	// (private)NURBS‹È–Ê•ª•ê‚ÌŠe•ûŒü‚ğ”CˆÓŠK”÷•ª‚µ‚½‚Æ‚«‚Ì”÷•ªŒW”‚ğ‹‚ß‚é
-//	double CalcDiffNurbsSDenom(NURBSS *,int,int,double,double);		
+	// (private)NURBSæ›²é¢åˆ†æ¯ã®å„æ–¹å‘ã‚’ä»»æ„éšå¾®åˆ†ã—ãŸã¨ãã®å¾®åˆ†ä¿‚æ•°ã‚’æ±‚ã‚ã‚‹
+	double CalcDiffNurbsSDenom(NURBSS *,int,int,double,double);		
 
 	// Function: CalcDiffNurbsSNumer
-	// (private)NURBS‹È–Ê•ªq‚ÌŠe•ûŒü‚ğ”CˆÓŠK”÷•ª‚µ‚½‚Æ‚«‚Ì”÷•ªŒW”‚ğ‹‚ß‚é
-//	Coord CalcDiffNurbsSNumer(NURBSS *,int,int,double,double);		
+	// (private)NURBSæ›²é¢åˆ†å­ã®å„æ–¹å‘ã‚’ä»»æ„éšå¾®åˆ†ã—ãŸã¨ãã®å¾®åˆ†ä¿‚æ•°ã‚’æ±‚ã‚ã‚‹
+	Coord CalcDiffNurbsSNumer(NURBSS *,int,int,double,double);		
+
+	// Function: TrimNurbsSPlaneSub1
+	// (private)TrimNurbsSPlaneã®ã‚µãƒ–é–¢æ•°(2ç›´ç·šã®äº¤ç‚¹ã‚’ã‚‚ã¨ã‚ã‚‹)
+	Coord TrimNurbsSPlaneSub1(double,double,double,double,double,double); 
 
 	// Function: CalcIntersecPtsPlaneSearch_Sub
-	// (private)–Ê‚©‚ç”ò‚Ño‚µ‚½(u,v)‚ğQl‚É–Ê‚ÌƒGƒbƒW•”(new_u,new_v)‚ğ“¾‚é
-//	Coord CalcIntersecPtsPlaneSearch_Sub(NURBSS *,double,double,Coord,Coord);	
+	// (private)é¢ã‹ã‚‰é£›ã³å‡ºã—ãŸ(u,v)ã‚’å‚è€ƒã«é¢ã®ã‚¨ãƒƒã‚¸éƒ¨(new_u,new_v)ã‚’å¾—ã‚‹
+	Coord CalcIntersecPtsPlaneSearch_Sub(NURBSS *,double,double,Coord,Coord);	
+
+	// Function: GetMinDistance
+	// (private)æœ€å°è·é›¢ã‚’æŒã¤åº§æ¨™å€¤ã‚’è¿”ã™
+	Coord GetMinDistance(Coord,Coord *,int);						
+
+	// Function: CheckClossedPoints
+	// (private)æŒ‡å®šã—ãŸç‚¹ãŒä»–ã®2ç‚¹ã‚’å¯¾è§’ã¨ã™ã‚‹ç«‹æ–¹ä½“ã®ä¸­ã«å­˜åœ¨ã™ã‚‹ã‹ã‚’èª¿ã¹ã‚‹
+	int CheckClossedPoints(Coord,Coord,Coord);				
 
 	// Function: GetSECParam1
-	// (private)‹É’l’TõüSubŠÖ”1
-//	int GetSECParam1(NURBSS *,double,double,Coord,int,int,Coord *);	
+	// (private)æ¥µå€¤æ¢ç´¢ç·šSubé–¢æ•°1
+	int GetSECParam1(NURBSS *,double,double,Coord,int,int,Coord *);	
 
 	// Function: GetMinDist
-	// (private)Å¬‹——£‚ğ’²‚×‚é
-//	int GetMinDist(NURBSS *,Coord ,Coord *,int ,Coord *);			
+	// (private)æœ€å°è·é›¢ã‚’èª¿ã¹ã‚‹
+	int GetMinDist(NURBSS *,Coord ,Coord *,int ,Coord *);			
 
 	// Function: SetKnotVecSU_ConnectS
-	// (private)NURBS‹È–Ê˜AŒ‹—pSUBŠÖ”(˜AŒ‹Œã‚Ì‹È–Ê‚ÌU•ûŒüƒmƒbƒg’è‹`ˆæ‚ğİ’è‚·‚é)
+	// (private)NURBSæ›²é¢é€£çµç”¨SUBé–¢æ•°(é€£çµå¾Œã®æ›²é¢ã®Uæ–¹å‘ãƒãƒƒãƒˆå®šç¾©åŸŸã‚’è¨­å®šã™ã‚‹)
 	void SetKnotVecSU_ConnectS(NURBSS *,NURBSS *,NURBSS *);			
 
 	// Function: SetKnotVecSV_ConnectS
-	// (private)NURBS‹È–Ê˜AŒ‹—pSUBŠÖ”(˜AŒ‹Œã‚Ì‹È–Ê‚ÌV•ûŒüƒmƒbƒg’è‹`ˆæ‚ğİ’è‚·‚é)
+	// (private)NURBSæ›²é¢é€£çµç”¨SUBé–¢æ•°(é€£çµå¾Œã®æ›²é¢ã®Væ–¹å‘ãƒãƒƒãƒˆå®šç¾©åŸŸã‚’è¨­å®šã™ã‚‹)
 	void SetKnotVecSV_ConnectS(NURBSS *,NURBSS *,NURBSS *);			
 
 	// Function: SetCPSU_ConnectS
-	// (private)NURBS‹È–Ê˜AŒ‹—pSUBŠÖ”(˜AŒ‹Œã‚Ì‹È–Ê‚ÌU•ûŒüƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒg‚ÆƒEƒFƒCƒg‚ğİ’è‚·‚é)
+	// (private)NURBSæ›²é¢é€£çµç”¨SUBé–¢æ•°(é€£çµå¾Œã®æ›²é¢ã®Uæ–¹å‘ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆã¨ã‚¦ã‚§ã‚¤ãƒˆã‚’è¨­å®šã™ã‚‹)
 	void SetCPSU_ConnectS(NURBSS *,NURBSS *,NURBSS *);				
 
 	// Function: SetCPSV_ConnectS
-	// (private)NURBS‹È–Ê˜AŒ‹—pSUBŠÖ”(˜AŒ‹Œã‚Ì‹È–Ê‚ÌV•ûŒüƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒg‚ÆƒEƒFƒCƒg‚ğİ’è‚·‚é)
+	// (private)NURBSæ›²é¢é€£çµç”¨SUBé–¢æ•°(é€£çµå¾Œã®æ›²é¢ã®Væ–¹å‘ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆã¨ã‚¦ã‚§ã‚¤ãƒˆã‚’è¨­å®šã™ã‚‹)
 	void SetCPSV_ConnectS(NURBSS *,NURBSS *,NURBSS *);				
 
 	// Function: InsertNewKnotOnNurbsC
-	// (private)NURBS‹Èü‚ÉV‚½‚Èƒmƒbƒg‚ğ‘}“ü‚·‚é
+	// (private)NURBSæ›²ç·šã«æ–°ãŸãªãƒãƒƒãƒˆã‚’æŒ¿å…¥ã™ã‚‹
 	int InsertNewKnotOnNurbsC(NURBSC *,NURBSC *,double,int);		
 
 	// Function: SetKnotVecC_ConnectC
-	// (private)NURBS‹Èü˜AŒ‹—pSUBŠÖ”(˜AŒ‹Œã‚Ì‹Èü‚Ìƒmƒbƒg’è‹`ˆæ‚ğİ’è‚·‚é)
+	// (private)NURBSæ›²ç·šé€£çµç”¨SUBé–¢æ•°(é€£çµå¾Œã®æ›²ç·šã®ãƒãƒƒãƒˆå®šç¾©åŸŸã‚’è¨­å®šã™ã‚‹)
 	void SetKnotVecC_ConnectC(NURBSC *,NURBSC *,NURBSC *);			
 
 	// Function: SetCPC_ConnectC
-	// (private)NURBS‹Èü˜AŒ‹—pSUBŠÖ”(˜AŒ‹Œã‚Ì‹Èü‚ÌƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒg‚ÆƒEƒFƒCƒg‚ğİ’è‚·‚é)
+	// (private)NURBSæ›²ç·šé€£çµç”¨SUBé–¢æ•°(é€£çµå¾Œã®æ›²ç·šã®ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆã¨ã‚¦ã‚§ã‚¤ãƒˆã‚’è¨­å®šã™ã‚‹)
 	void SetCPC_ConnectC(NURBSC *,NURBSC *,NURBSC *);				
 
 };

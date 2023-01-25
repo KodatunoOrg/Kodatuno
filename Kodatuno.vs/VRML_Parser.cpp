@@ -3,6 +3,7 @@
 * 2012/4 K.Takasugi                                      *
 **********************************************************/
 
+#include "stdafx.h"			// Add by K.Magara
 #include "VRML_Parser.h"
 
 // Function: Vrml_Parser_Main
@@ -192,7 +193,8 @@ int VRML_PARSER::GetFacets(FILE *fp,MESH *mesh)
 void VRML_PARSER::SetMesh(MESH *mesh,int vindex[],int edgecount)
 {
 	int vcount=MAXVERTNUMINFACE;
-	HEface *f;
+//	HEface *f;
+	HEface *f = nullptr;	// Update by K.Magara
 	HEvert *v;
 
 	// 頂点数を認識

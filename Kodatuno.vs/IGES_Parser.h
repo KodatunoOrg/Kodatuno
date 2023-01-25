@@ -1,4 +1,4 @@
-// IGES�p�[�T
+﻿// IGESパーサ
 
 #ifndef _IGES_PARSER_MAIN_H_
 #define _IGES_PARSER_MAIN_H_
@@ -6,21 +6,21 @@
 #include "BODY.h"
 
 // Constants: General Defines
-//#define SECTION_NUM -				�Z�N�V�����̐�(S,G,D,P,T)(5)
-//#define COLUMN_MAX_ -				1�s�̃J������('\n'��'\0'���܂�)(82)
-//#define COLUMN_MAX -				1�s�̃J������('\n'��'\0'�͊܂܂Ȃ�)(80)
-//#define COL_CHAR -				�Z�N�V�������ʕ����̃J����(73)
-//#define COL_P_DIRECTORY -			�p�����[�^���ł̃f�B���N�g�����ւ̋t�|�C���^������J����(65)
-//#define GLOBALPARAMNUM -			�O���[�o�����̃p�����[�^��(25)
-//#define FIELD_NUM -				�f�B���N�g������1�t�B�[���h�̕�����(8)
-//#define DIRECTORYPARANUM -		�f�B���N�g�����̃p�����[�^��(20)
-//#define SECTION_START -			�X�^�[�g���Z�N�V�������ʗp�V���{��(0)
-//#define SECTION_GLOBAL -			�O���[�o���Z�N�V�������ʗp�V���{��(1)
-//#define SECTION_DIRECTORY -		�f�B���N�g���Z�N�V�������ʗp�V���{��(2)
-//#define SECTION_PARAMETER -		�p�����[�^�Z�N�V�������ʗp�V���{��(3)
-//#define SECTION_TERMINATE -		�^�[�~�l�[�g�Z�N�V�������ʗp�V���{��(4)
-//#define MAIN_ENTITY_TYPE_NUM -	�ǂݍ��ݑΏۂƂȂ�G���e�B�e�B�^�C�v�̐�(9)
-//#define NRBS_PARAM_MAX -			NRBS�ȖʁE�Ȑ��Œ�`�����p�����[�^�̍ő�l(200)
+//#define SECTION_NUM -				セクションの数(S,G,D,P,T)(5)
+//#define COLUMN_MAX_ -				1行のカラム数('\n'と'\0'を含む)(82)
+//#define COLUMN_MAX -				1行のカラム数('\n'と'\0'は含まない)(80)
+//#define COL_CHAR -				セクション判別文字のカラム(73)
+//#define COL_P_DIRECTORY -			パラメータ部でのディレクトリ部への逆ポインタがあるカラム(65)
+//#define GLOBALPARAMNUM -			グローバル部のパラメータ数(25)
+//#define FIELD_NUM -				ディレクトリ部の1フィールドの文字数(8)
+//#define DIRECTORYPARANUM -		ディレクトリ部のパラメータ数(20)
+//#define SECTION_START -			スタートルセクション判別用シンボル(0)
+//#define SECTION_GLOBAL -			グローバルセクション判別用シンボル(1)
+//#define SECTION_DIRECTORY -		ディレクトリセクション判別用シンボル(2)
+//#define SECTION_PARAMETER -		パラメータセクション判別用シンボル(3)
+//#define SECTION_TERMINATE -		ターミネートセクション判別用シンボル(4)
+//#define MAIN_ENTITY_TYPE_NUM -	読み込み対象となるエンティティタイプの数(9)
+//#define NRBS_PARAM_MAX -			NRBS曲面・曲線で定義されるパラメータの最大値(200)
 #define SECTION_NUM		 5			
 #define COLUMN_MAX_	     82			
 #define COLUMN_MAX       80			
@@ -38,33 +38,33 @@
 #define NRBS_PARAM_MAX  200			
 
 
-// �O���[�o�����p�����[�^�̃V���{�����`
+// グローバル部パラメータのシンボルを定義
 // Enum: Enum Symbol of Global Section's Parameter
-//PARAM_DELIMITER=1 -		�p�����[�^�f���~�^
-//RECORD_DELIMITER -		���R�[�h�f���~�^
-//SEND_PRODUCT_ID -			���葤���i�h�c
-//FILE_NAME -				�t�@�C����
-//SEND_SYSTEM_ID -			���葤�V�X�e���h�c
-//PRIRPO_VERSION -			�v���v���Z�b�T�o�[�W����
-//INT_LENGTH -				�����l�̒���
-//FLOAT_PNT_LENGTH -		�P���x���������_�w���̍ő�l
-//FLOAT_PNT_FIGURE -		�P���x���������_�L������
-//DOUBLE_PNT_LENGTH -		�{���x���������_�w���̍ő�l
-//DOUBLE_PNT_FIGURE -		�{���x���������_�L������
-//RECIVE_PRODUCT_ID -		�󂯎�葤���i�h�c
-//MODEL_SCALE -				���f���X�P�[��
-//UNIT_FLAG -				�P�ʃt���O
-//UNIT -					�P��
-//LINE_THICKNESS_NUMBER -	�����̍ő�ޕʐ�
-//LINE_THICKNESS -			�����̍ő�l
-//DATE_MAKE_FILE -			�t�@�C���쐬����
-//MIN_ACCRACY -				�ŏ����x
-//MODEL_SPACE_SIZE -		���f����Ԃ̑傫��
-//FILE_MAKER_NAME -			�t�@�C���쐬��
-//BELONG -					����
-//IGES_VERSION -			�o�[�W����
-//DRAFTING_STANDARD -		���}�K�i
-//DATE_MAKE_MODEL -			���f���쐬��
+//PARAM_DELIMITER=1 -		パラメータデリミタ
+//RECORD_DELIMITER -		レコードデリミタ
+//SEND_PRODUCT_ID -			送り側製品ＩＤ
+//FILE_NAME -				ファイル名
+//SEND_SYSTEM_ID -			送り側システムＩＤ
+//PRIRPO_VERSION -			プリプロセッサバージョン
+//INT_LENGTH -				整数値の長さ
+//FLOAT_PNT_LENGTH -		単精度浮動小数点指数の最大値
+//FLOAT_PNT_FIGURE -		単精度浮動小数点有効桁数
+//DOUBLE_PNT_LENGTH -		倍精度浮動小数点指数の最大値
+//DOUBLE_PNT_FIGURE -		倍精度浮動小数点有効桁数
+//RECIVE_PRODUCT_ID -		受け取り側製品ＩＤ
+//MODEL_SCALE -				モデルスケール
+//UNIT_FLAG -				単位フラグ
+//UNIT -					単位
+//LINE_THICKNESS_NUMBER -	線幅の最大類別数
+//LINE_THICKNESS -			線幅の最大値
+//DATE_MAKE_FILE -			ファイル作成日時
+//MIN_ACCRACY -				最小精度
+//MODEL_SPACE_SIZE -		モデル空間の大きさ
+//FILE_MAKER_NAME -			ファイル作成者
+//BELONG -					所属
+//IGES_VERSION -			バージョン
+//DRAFTING_STANDARD -		製図規格
+//DATE_MAKE_MODEL -			モデル作成日
 enum GlobalParamType{
 	PARAM_DELIMITER=1,
 	RECORD_DELIMITER,
@@ -93,28 +93,28 @@ enum GlobalParamType{
 	DATE_MAKE_MODEL		
 };
 
-// �f�B���N�g�����p�����[�^�̃V���{�����`
+// ディレクトリ部パラメータのシンボルを定義
 // Enum: Enum Symbol of Directory Section's Parameter
-	//ENTITY_TYPE_NUM -			�v�f�ԍ�
-	//PARAM_DATA -				�p�����[�^���ւ̃|�C���^
-	//STRUCTURE -				�X�g���N�`��
-	//LINE_FONT_PATTERN -		����
-	//LEVEL -					���x��
-	//VIEW_ -					�r���[
-	//TRAN_MATRIX -				�}�g���b�N�X�ւ̃|�C���^
-	//LABEL_DISP_ASSOC -		���x���\��
-	//STATUS_NUM -				�X�e�C�^�X
-	//SEQUENCE_NUM -			�V�[�P���X�ԍ�
-	//ENTITY_TYPE_NUM_ -		�v�f�ԍ�
-	//LINE_WEIGHT_NUM -			����
-	//COLOR_NUM -				�F
-	//PARAM_LINE_COUNT -		�p�����[�^���̃��C����
-	//FORM_NUM -				�`���ԍ�
-	//RESERVED1 -				�\��
-	//RESERVED2 -				�\��
-	//ENTITY_LABEL -			�v�f�̃��x��
-	//ENTITY_SUBSCRIPT_NUM -	�T�u�X�N���v�g
-	//SEQUENCE_NUM_ -			�V�[�P���X�ԍ�
+	//ENTITY_TYPE_NUM -			要素番号
+	//PARAM_DATA -				パラメータ部へのポインタ
+	//STRUCTURE -				ストラクチャ
+	//LINE_FONT_PATTERN -		線種
+	//LEVEL -					レベル
+	//VIEW_ -					ビュー
+	//TRAN_MATRIX -				マトリックスへのポインタ
+	//LABEL_DISP_ASSOC -		ラベル表示
+	//STATUS_NUM -				ステイタス
+	//SEQUENCE_NUM -			シーケンス番号
+	//ENTITY_TYPE_NUM_ -		要素番号
+	//LINE_WEIGHT_NUM -			線幅
+	//COLOR_NUM -				色
+	//PARAM_LINE_COUNT -		パラメータ部のライン数
+	//FORM_NUM -				形式番号
+	//RESERVED1 -				予備
+	//RESERVED2 -				予備
+	//ENTITY_LABEL -			要素のラベル
+	//ENTITY_SUBSCRIPT_NUM -	サブスクリプト
+	//SEQUENCE_NUM_ -			シーケンス番号
 enum DirectoryParamType{
 	ENTITY_TYPE_NUM,
 	PARAM_DATA,		
@@ -139,12 +139,12 @@ enum DirectoryParamType{
 };
 
 // Structure: GlobalParam
-// �O���[�o�����̕K�v�p�����[�^�\����
+// グローバル部の必要パラメータ構造体
 //
 // Variables:
-// double	scale -			���f���̃X�P�[��
-// int		unit_flag -		�P�ʃt���O
-// double	space_size -	���f����Ԃ̑傫��
+// double	scale -			モデルのスケール
+// int		unit_flag -		単位フラグ
+// double	space_size -	モデル空間の大きさ
 typedef struct{
 	double scale;
 	int    unit_flag;
@@ -152,18 +152,18 @@ typedef struct{
 }GlobalParam;
 
 // Structure: DirectoryParam
-// �f�B���N�g�����̕K�v�p�����[�^�\����
+// ディレクトリ部の必要パラメータ構造体
 //
 // Variables:
-// int entity_type -		�v�f�ԍ�
-// int entity_count -		���Ԗڂ�entity_type����\��
-// int p_param -			�p�����[�^���ւ̃|�C���^
-// int p_tm -				�}�g���b�N�X�ւ̃|�C���^
-// int blank_stat -			�\������
-// int subordinate_stat -	�]������
-// int useflag_stat -		entity�g�p�Ӑ}
-// int seq_num -			�V�[�P���X�ԍ�
-// int param_line_count -	�p�����[�^���̃��C����
+// int entity_type -		要素番号
+// int entity_count -		何番目のentity_typeかを表す
+// int p_param -			パラメータ部へのポインタ
+// int p_tm -				マトリックスへのポインタ
+// int blank_stat -			表示属性
+// int subordinate_stat -	従属属性
+// int useflag_stat -		entity使用意図
+// int seq_num -			シーケンス番号
+// int param_line_count -	パラメータ部のライン数
 typedef struct{
 	int entity_type;
 	int entity_count;
@@ -177,184 +177,184 @@ typedef struct{
 }DirectoryParam;
 
 // Class: IGES_PARSER
-// IGES�p�[�T�[�p�N���X
+// IGESパーサー用クラス
 class IGES_PARSER
 {
 public:
 	// Constructor: IGES_PARSER
-	// IGES_PARSER�N���X�̃R���X�g���N�^
+	// IGES_PARSERクラスのコンストラクタ
 	IGES_PARSER();	
 
 	//  Function: IGES_Parser_Main
-	// IGES�t�@�C���̃p�[�Tmain
+	// IGESファイルのパーサmain
 	int IGES_Parser_Main(BODY *, const char *);	
 
 	//  Function: Optimize4OpenGL
-	// �ǂݍ���IGES�t�@�C����OpenGL�p�ɍœK������(ExpandKnotRange(), ModifyParamConect(), CheckDegenracy(), CheckCWforTrim()�����s)
+	// 読み込んだIGESファイルをOpenGL用に最適化する(ExpandKnotRange(), ModifyParamConect(), CheckDegenracy(), CheckCWforTrim()を実行)
 	int Optimize4OpenGL(BODY *);			
 
 	//  Function: ExpandKnotRange
-	// �ׂ荇���m�b�g�x�N�g���̍���MIN_KNOT_RANGE�ȏ�ɂȂ�悤�͈͂�ύX����
+	// 隣り合うノットベクトルの差がMIN_KNOT_RANGE以上になるよう範囲を変更する
 	int ExpandKnotRange(BODY *);			
 
 	//  Function: ModifyParamConect
-	// �p�����g���b�N���ʓ��̃g�����Ȑ����m�̂Ȃ�����`�F�b�N�A�C������
+	// パラメトリック平面内のトリム曲線同士のつながりをチェック、修正する
 	int ModifyParamConect(BODY *);			
 
 	//  Function: CheckDegenracy
-	// �k��(2D�p�����g���b�N�Ȑ��̎n�_�ƏI�_����v���Ă��邩)�̃`�F�b�N
+	// 縮退(2Dパラメトリック曲線の始点と終点が一致しているか)のチェック
 	int CheckDegenracy(BODY *);				
 
 	//  Function: CheckCWforTrim
-	// �g�����Ɏg���Ă��镡���Ȑ�����Ȃ鑽�p�`�����v��肩�����v��肩�𒲂ׁA�O���g�����͔����v���A�����g�����͎��v����ɂȂ�悤�ɕύX����
+	// トリムに使われている複合曲線からなる多角形が時計回りか反時計回りかを調べ、外周トリムは反時計回り、内周トリムは時計周りになるように変更する
 	int CheckCWforTrim(BODY *);				
 
 	//  Function: NormalizeKnotRange
-	// �m�b�g�x�N�g���͈̔͂�0�`val��(�m�b�g�̐��K��)
+	// ノットベクトルの範囲を0～valへ(ノットの正規化)
 	int NormalizeKnotRange(BODY *,double);	
 
 
 private:
 	// Function: GetSectionLine
-	// �e�Z�N�V�����̃��C�����𒲂ׂ�
+	// 各セクションのライン数を調べる
 	void GetSectionLine(FILE *,int []);								
 
 	// Function: GetStartSection
-	// �X�^�[�g���̓ǂݍ���
+	// スタート部の読み込み
 	int GetStartSection(FILE *,int);								
 
 	// Function: GetGlobalSection
-	// �O���[�o�����̓ǂݍ���
+	// グローバル部の読み込み
 	int GetGlobalSection(FILE *,GlobalParam *,int);					
 
 	// Function: GetDirectorySection
-	// �f�B���N�g�����̓ǂݍ���
+	// ディレクトリ部の読み込み
 	int GetDirectorySection(FILE *,DirectoryParam *,int [],int);	
 
 	// Function: GetStatusNumber
-	// �f�B���N�g�����̏��#9���擾
+	// ディレクトリ部の情報#9を取得
 	void GetStatusNumber(char [],DirectoryParam *);					
 
 	// Function: GetParameterSection
-	// �p�����[�^���̓ǂݍ���
+	// パラメータ部の読み込み
 	int GetParameterSection(FILE *,DirectoryParam *,BODY,int);		
 
 	// Function: GetTerminateSection
-	// �^�[�~�l�[�g���̓ǂݍ��݁i�X�P���g���j
+	// ターミネート部の読み込み（スケルトン）
 	int GetTerminateSection(FILE *);								
 
 	// Function: GetType
-	// �e�G���e�B�e�B�^�C�v�̐����L������
+	// 各エンティティタイプの数を記憶する
 	void GetType(int,int []);										
 
 	// Function: GetCirAPara
-	// Type100 �~�E�~�ʂ̓ǂݍ���
+	// Type100 円・円弧の読み込み
 	int GetCirAPara(char [],int,DirectoryParam *,BODY);				
 
 	// Function: GetCompCPara
-	// Type102 �����Ȑ��̓ǂݍ���
+	// Type102 複合曲線の読み込み
 	int GetCompCPara(char [],int,DirectoryParam *,int,BODY);		
 
 	// Function: GetConAPara
-	// Type104 �~���Ȑ��̓ǂݍ���
+	// Type104 円錐曲線の読み込み
 	int GetConAPara(char [],int,DirectoryParam *,BODY);				
 
 	// Function: GetLinePara
-	// Type110 �����̓ǂݍ���
+	// Type110 線分の読み込み
 	int GetLinePara(char [],int,DirectoryParam *,BODY);				
 
 	// Function: GetTMatPara
-	// Type124 �ϊ��s��̓ǂݍ���
+	// Type124 変換行列の読み込み
 	int GetTMatPara(char [],int,DirectoryParam *,BODY);				
 
 	// Function: GetNurbsCPara
-	// Type126 NRBS�Ȑ��̓ǂݍ���
+	// Type126 NRBS曲線の読み込み
 	int GetNurbsCPara(char [],int,DirectoryParam *,BODY);			
 
 	// Function: GetNurbsSPara
-	// Type128 NRBS�Ȗʂ̓ǂݍ���
+	// Type128 NRBS曲面の読み込み
 	int GetNurbsSPara(char [],int,DirectoryParam *,BODY);			
 
 	// Function: GeConpSPara
-	// Type142 �ʏ���̓ǂݍ���
+	// Type142 面上線の読み込み
 	int GeConpSPara(char [],int,DirectoryParam *,int,BODY);			
 
 	// Function: GetTrmSPara
-	// Type144 �g�����ʂ̓ǂݍ���
+	// Type144 トリム面の読み込み
 	int GetTrmSPara(char [],int,DirectoryParam *,BODY);				
 
 	// Function: CatchStringI
-	// �J���}�܂ł̐��l��ǂݍ���ŕԂ�(int)
+	// カンマまでの数値を読み込んで返す(int)
 	int CatchStringI(char **);										
 
 	// Function: CatchStringD
-	// �J���}�܂ł̐��l��ǂݍ���ŕԂ�(double)
+	// カンマまでの数値を読み込んで返す(double)
 	double CatchStringD(char **);									
 
 	// Function: ChangeEntityforNurbs
-	// �G���e�B�e�B��S��NURBS�֕ύX����
+	// エンティティを全てNURBSへ変更する
 	int ChangeEntityforNurbs(DirectoryParam *,BODY,int);			
 
 	// Function: SearchMaxCoord
-	// �S�ẴG���e�B�e�B�ɂ�������W�l�̍ő�l�𒲂ׂ�
+	// 全てのエンティティにおける座標値の最大値を調べる
 	int SearchMaxCoord(BODY *,int []);	
 
 	// Function: GetDEPointer
-	// DE���ւ̃|�C���^���������ۂ̍\���̂ւ̃|�C���^��Ԃ�
+	// DE部へのポインタが示す実際の構造体へのポインタを返す
 	void *GetDEPointer(int ,BODY);		
 
 	// Function: SearchEntType
-	// DE���ւ̃|�C���^�̒l����G���e�B�e�B�̃^�C�v�𒲂ׂĕԂ�
+	// DE部へのポインタの値からエンティティのタイプを調べて返す
 	int SearchEntType(DirectoryParam *,int,int);	
 
 	// Function: InitDisplayStat
-	// �e�G���e�B�e�B�̕\��������ݒ�
+	// 各エンティティの表示属性を設定
 	void InitDisplayStat(DispStat *);	
 
 	// Function: TransformNurbsC
-	// NURBS�Ȑ������W�ϊ�����
+	// NURBS曲線を座標変換する
 	int TransformNurbsC(int,int,BODY);
 
 	// Function: ChangeKnotVecRange
-	// �m�b�g�x�N�g���̐��K��sub1
+	// ノットベクトルの正規化sub1
 	int ChangeKnotVecRange(double [],double [],int,int,int,double);
 
 	// Function: ChangeKnot
-	// �m�b�g�x�N�g���̐��K��sub2
+	// ノットベクトルの正規化sub2
 	double ChangeKnot(double ,double ,double,double);	
 
 	// Function: SearchMinVecRange
-	// �m�b�g�x�N�g���̍ŏ��Ԋu��T��
+	// ノットベクトルの最小間隔を探索
 	double SearchMinVecRange(double [],int,int);	
 
 	// Function: ReverseCOMPELEM
-	// COMPELEM�z��𔽓]
+	// COMPELEM配列を反転
 	void ReverseCOMPELEM(COMPC *);
 
 
 private:
 	// Variable: *body
-	// (private)BODY�N���X�ւ̃|�C���^(IGES�f�[�^�͂���BODY�\���̂ɑS�Ċi�[�����)
+	// (private)BODYクラスへのポインタ(IGESデータはこのBODY構造体に全て格納される)
 	BODY *body;
 
 	// Variable: NFunc
-	// (private)NURBS_Func�N���X�̃C���X�^���X
+	// (private)NURBS_Funcクラスのインスタンス
 	NURBS_Func NFunc;
 
 	// Variable: *TypeNum
-	// (private)�ǂ�BODY�I�u�W�F�N�g������邩������
+	// (private)どのBODYオブジェクトが幾つあるかを示す
 	int *TypeNum;
 
 	// Variable: buf[COLUMN_MAX_]
-	// (private)�ėp������o�b�t�@
+	// (private)汎用文字列バッファ
 	char buf[COLUMN_MAX_];				 
 
 	// Variable: entity[ALL_ENTITY_TYPE_NUM]
-	// (private)�G���e�B�e�B�̔ԍ����i�[�����z��
+	// (private)エンティティの番号を格納した配列
 	int  entity[ALL_ENTITY_TYPE_NUM];	 
 
 	// Variable: TypeCount[ALL_ENTITY_TYPE_NUM]
-	// (private)�e�G���e�B�e�B�^�C�v�̐��탁�����[�m�ې����i�[
+	// (private)各エンティティタイプの正常メモリー確保数を格納
 	int  TypeCount[ALL_ENTITY_TYPE_NUM]; 
 };
 

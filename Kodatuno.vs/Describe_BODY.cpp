@@ -1,96 +1,79 @@
-/***************
-* BODY•`‰æƒRƒA *
+ï»¿/***************
+* BODYæç”»ã‚³ã‚¢ *
 ****************/
 
-#include "stdafx.h"
+#include "stdafx.h"			// Add by K.Magara
 #include "Describe_BODY.h"
 
-#if defined(_DEBUG) && defined(_MSC_VER)
-#define new DEBUG_NEW
-#endif
-
-GLUnurbsObj *Describe_BODY::NurbsSurf;		// NURBS‹È–Ê—pƒIƒuƒWƒFƒNƒg
-GLUnurbsObj *Describe_BODY::NurbsCurve;		// NURBS‹Èü—pƒIƒuƒWƒFƒNƒg
+GLUnurbsObj *Describe_BODY::NurbsSurf;		// NURBSæ›²é¢ç”¨ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+GLUnurbsObj *Describe_BODY::NurbsCurve;		// NURBSæ›²ç·šç”¨ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 
 // Function: Describe_BODY
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^. NURBS•`‰æƒXƒe[ƒ^ƒX‚Ìİ’è
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿. NURBSæç”»ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã®è¨­å®š
 Describe_BODY::Describe_BODY()
 {
 	SetNurbsStat();
 }
 
 // Function: ~Describe_BODY
-// ƒfƒXƒgƒ‰ƒNƒ^DƒXƒPƒ‹ƒgƒ“‚Å‚·D
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ã‚¹ã‚±ãƒ«ãƒˆãƒ³ã§ã™ï¼
 Describe_BODY::~Describe_BODY()
 {
 }
 
 // Function: DrawBody
-// Body‚ğ•`‰æ
+// Bodyã‚’æç”»
 //
 // Parameters:
-// *Body - •`‰æ‚·‚éBODY‚Ö‚Ìƒ|ƒCƒ“ƒ^
+// *Body - æç”»ã™ã‚‹BODYã¸ã®ãƒã‚¤ãƒ³ã‚¿
 void Describe_BODY::DrawBody(BODY *Body)
 {
 	for(int i=0;i<ALL_ENTITY_TYPE_NUM;i++){
-/*
-		if(i == _CIRCLE_ARC){						// ‰~E‰~ŒÊ
-			// ‰~E‰~ŒÊ‚ÍNRBS‹Èü‚É•ÏŠ·‚³‚ê‚é
+		if(i == _CIRCLE_ARC){						// å††ãƒ»å††å¼§
+			// å††ãƒ»å††å¼§ã¯NRBSæ›²ç·šã«å¤‰æ›ã•ã‚Œã‚‹
 			//Draw_CircleArc();
 		}
-		else if(i == _CONIC_ARC){					// ‰~‹Èü
+		else if(i == _CONIC_ARC){					// å††éŒæ›²ç·š
 			//Draw_ConicArc();
 		}
-		else if(i == _LINE){						// ü•ª
-			// ü•ª‚ÍNURBS‹Èü‚É•ÏŠ·‚³‚ê‚é
+		else if(i == _LINE){						// ç·šåˆ†
+			// ç·šåˆ†ã¯NURBSæ›²ç·šã«å¤‰æ›ã•ã‚Œã‚‹
 			//Draw_Line();
 		}
-		else if(i == _NURBSC){						// NURBS‹Èü
+		else if(i == _NURBSC){						// NURBSæ›²ç·š
 			Draw_NurbsCurves(Body);
 		}
 		else if(i == _NURBSS){
 			Draw_NurbsSurfaces(Body);
 		}
-		else if(i == _TRIMMED_SURFACE){				// ƒgƒŠƒ€–Ê(NURBS‹È–Ê)
+		else if(i == _TRIMMED_SURFACE){				// ãƒˆãƒªãƒ é¢(NURBSæ›²é¢)
 			Draw_TrimSurfes(Body);
-		}
-*/
-		switch ( i ) {
-		case _NURBSC:
-			Draw_NurbsCurves(Body);
-			break;
-		case _NURBSS:
-			Draw_NurbsSurfaces(Body);
-			break;
-		case _TRIMMED_SURFACE:
-			Draw_TrimSurfes(Body);
-			break;
 		}
 	}
 }
 
 // Function: DrawLine
-// ü•ª‚Ì•`‰æ
+// ç·šåˆ†ã®æç”»
 //
 // Parameters:
-// Line - •`‰æ‚·‚éü•ª\‘¢‘Ì
+// Line - æç”»ã™ã‚‹ç·šåˆ†æ§‹é€ ä½“
 //void Describe_BODY::DrawLine(LINE_ Line)
 void Describe_BODY::DrawLine(const LINE_& Line)
 {
 	glLineWidth(1);
 
 	glBegin(GL_LINE_STRIP);
-	glVertex3d(Line.cp[0].x,Line.cp[0].y,Line.cp[0].z);	// n“_
-	glVertex3d(Line.cp[1].x,Line.cp[1].y,Line.cp[1].z);	// I“_
+	glVertex3d(Line.cp[0].x,Line.cp[0].y,Line.cp[0].z);	// å§‹ç‚¹
+	glVertex3d(Line.cp[1].x,Line.cp[1].y,Line.cp[1].z);	// çµ‚ç‚¹
 	glEnd();
 
 }
 
 // Function: DrawCircleArc
-// ‰~E‰~ŒÊ‚Ì•`‰æ
+// å††ãƒ»å††å¼§ã®æç”»
 //
 // Parameters:
-// Cira - •`‰æ‚·‚é‰~E‰~ŒÊ\‘¢‘Ì
+// Cira - æç”»ã™ã‚‹å††ãƒ»å††å¼§æ§‹é€ ä½“
 //void Describe_BODY::DrawCircleArc(CIRA Cira)
 void Describe_BODY::DrawCircleArc(const CIRA& Cira)
 {
@@ -100,8 +83,8 @@ void Describe_BODY::DrawCircleArc(const CIRA& Cira)
 	int d = (int)fabs(delta);
 
 	for(int i=0;i<d;i++){
-		double sth = (Cira.t[0] + delta/(double)d*(double)i)*PAI/180;
-		double eth = (Cira.t[0] + delta/(double)d*(double)(i+1))*PAI/180;
+		double sth = (Cira.t[0] + delta/(double)d*(double)i)*PI/180;
+		double eth = (Cira.t[0] + delta/(double)d*(double)(i+1))*PI/180;
 		double sx = Cira.R*cos(sth) + Cira.cp[0].x;
 		double sy = Cira.R*sin(sth) + Cira.cp[0].y;
 		double ex = Cira.R*cos(eth) + Cira.cp[0].x;
@@ -115,48 +98,48 @@ void Describe_BODY::DrawCircleArc(const CIRA& Cira)
 }
 
 // Function: DrawNurbsCurve
-// NURBS‹Èü‚Ì•`‰æ
+// NURBSæ›²ç·šã®æç”»
 //
 // Parameters:
-// NurbsC - •`‰æ‚·‚éNURBS‹Èü\‘¢‘Ì
+// NurbsC - æç”»ã™ã‚‹NURBSæ›²ç·šæ§‹é€ ä½“
 //void Describe_BODY::DrawNurbsCurve(NURBSC NurbsC)
 void Describe_BODY::DrawNurbsCurve(const NURBSC& NurbsC)
 {
 	int i,j;
-	static GLfloat	uKnot[KNOTNUMMAX];					// NURBS•`‰æ—pƒoƒbƒtƒ@
-	static GLfloat	CCtlp[CTLPNUMMAX][4];				// NURBS•`‰æ—pƒoƒbƒtƒ@
+	static GLfloat	uKnot[KNOTNUMMAX];					// NURBSæç”»ç”¨ãƒãƒƒãƒ•ã‚¡
+	static GLfloat	CCtlp[CTLPNUMMAX][4];				// NURBSæç”»ç”¨ãƒãƒƒãƒ•ã‚¡
 
-	for(i=0;i<NurbsC.K;i++){			// ƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒgæ‚èo‚µ
+	for(i=0;i<NurbsC.K;i++){			// ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆå–ã‚Šå‡ºã—
 		CCtlp[i][0] = NurbsC.cp[i].x*NurbsC.W[i];
 		CCtlp[i][1] = NurbsC.cp[i].y*NurbsC.W[i];
 		CCtlp[i][2] = NurbsC.cp[i].z*NurbsC.W[i];
 		CCtlp[i][3] = NurbsC.W[i];
 	}
 
-	for(j=0;j<NurbsC.N;j++){			// ƒmƒbƒgƒxƒNƒgƒ‹æ‚èo‚µ
+	for(j=0;j<NurbsC.N;j++){			// ãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«å–ã‚Šå‡ºã—
 		uKnot[j] = NurbsC.T[j];
 	}
 
 	glDisable(GL_LIGHTING);
 	gluBeginCurve(NurbsCurve);
-	gluNurbsCurve(NurbsCurve,NurbsC.N,uKnot,4,&CCtlp[0][0],NurbsC.M,GL_MAP1_VERTEX_4);	// ƒmƒbƒgƒxƒNƒgƒ‹‚Ì’l‚Ì”ÍˆÍ‚ª0`1‚Å‚È‚¢‚ÆA
-	gluEndCurve(NurbsCurve);															// "ƒmƒbƒg”‚ªƒXƒvƒ‰ƒCƒ“–½—ß‚æ‚è‘½‚­‚ ‚è‚Ü‚·‚Æ“{‚ç‚ê‚é"
-	glFlush();																			// ƒmƒbƒgƒxƒNƒgƒ‹‚Ì³‹K‰»‚ª•K—v(pp111)
+	gluNurbsCurve(NurbsCurve,NurbsC.N,uKnot,4,&CCtlp[0][0],NurbsC.M,GL_MAP1_VERTEX_4);	// ãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«ã®å€¤ã®ç¯„å›²ãŒ0ï½1ã§ãªã„ã¨ã€
+	gluEndCurve(NurbsCurve);															// "ãƒãƒƒãƒˆæ•°ãŒã‚¹ãƒ—ãƒ©ã‚¤ãƒ³å‘½ä»¤ã‚ˆã‚Šå¤šãã‚ã‚Šã¾ã™ã¨æ€’ã‚‰ã‚Œã‚‹"
+	glFlush();																			// ãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«ã®æ­£è¦åŒ–ãŒå¿…è¦(pp111)
 	glEnable(GL_LIGHTING);
 
 }
 
 // Function: DrawTrimdNurbsSurfe
-// ƒgƒŠƒ€–Ê‚ğ‚ÂNURBS‹È–Ê‚ğ•`‰æ‚·‚é
+// ãƒˆãƒªãƒ é¢ã‚’æŒã¤NURBSæ›²é¢ã‚’æç”»ã™ã‚‹
 //
 // Parameters:
-// *NurbsS - •`‰æ‚·‚éNURBS‹È–Ê‚Ìƒ|ƒCƒ“ƒ^
+// *NurbsS - æç”»ã™ã‚‹NURBSæ›²é¢ã®ãƒã‚¤ãƒ³ã‚¿
 void Describe_BODY::DrawTrimdNurbsSurfe(NURBSS *NurbsS)
 {
 	int j,k;
-	static GLfloat	uKnot[KNOTNUMMAX];					// NURBS•`‰æ—pƒoƒbƒtƒ@
-	static GLfloat	vKnot[KNOTNUMMAX];					// NURBS•`‰æ—pƒoƒbƒtƒ@
-	static GLfloat	SCtlp[CTLPNUMMAX][CTLPNUMMAX][4];	// NURBS•`‰æ—pƒoƒbƒtƒ@
+	static GLfloat	uKnot[KNOTNUMMAX];					// NURBSæç”»ç”¨ãƒãƒƒãƒ•ã‚¡
+	static GLfloat	vKnot[KNOTNUMMAX];					// NURBSæç”»ç”¨ãƒãƒƒãƒ•ã‚¡
+	static GLfloat	SCtlp[CTLPNUMMAX][CTLPNUMMAX][4];	// NURBSæç”»ç”¨ãƒãƒƒãƒ•ã‚¡
 
 	//NURBS_Func NFunc;					// for debug
 	//NFunc.DebugForNurbsS(NurbsS);		// for debug
@@ -164,55 +147,55 @@ void Describe_BODY::DrawTrimdNurbsSurfe(NURBSS *NurbsS)
 	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT,NurbsS->Dstat.Color);
 	for(k=0;k<NurbsS->K[1];k++){
 		for(j=0;j<NurbsS->K[0];j++){
-			SCtlp[j][k][0] = NurbsS->cp[j][k].x*NurbsS->W[j][k];	// ƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒgæ‚èo‚µ
+			SCtlp[j][k][0] = NurbsS->cp[j][k].x*NurbsS->W[j][k];	// ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆå–ã‚Šå‡ºã—
 			SCtlp[j][k][1] = NurbsS->cp[j][k].y*NurbsS->W[j][k];
 			SCtlp[j][k][2] = NurbsS->cp[j][k].z*NurbsS->W[j][k];
 			SCtlp[j][k][3] = NurbsS->W[j][k];
 		}
 	}
 	for(j=0;j<NurbsS->N[0];j++){
-		uKnot[j] = NurbsS->S[j];		// uƒmƒbƒgƒxƒNƒgƒ‹æ‚èo‚µ
+		uKnot[j] = NurbsS->S[j];		// uãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«å–ã‚Šå‡ºã—
 		//fprintf(stderr,"U:%d-%.12lf\n",j+1,uKnot[j]);
 	}
 	for(j=0;j<NurbsS->N[1];j++){
-		vKnot[j] = NurbsS->T[j];		// vƒmƒbƒgƒxƒNƒgƒ‹æ‚èo‚µ
+		vKnot[j] = NurbsS->T[j];		// vãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«å–ã‚Šå‡ºã—
 		//fprintf(stderr,"V:%d-%.12lf\n",j+1,vKnot[j]);
 	}
 
-	// NURBS‹È–Ê‚Ì•`‰æ
+	// NURBSæ›²é¢ã®æç”»
 	gluNurbsSurface(NurbsSurf,(GLdouble)NurbsS->N[0],uKnot,(GLdouble)NurbsS->N[1],vKnot,CTLPNUMMAX*4,4,&SCtlp[0][0][0],NurbsS->M[0],NurbsS->M[1],GL_MAP2_VERTEX_4);
 }
 
 // Function: DrawNurbsSurfe
-// NURBS‹È–Ê‚Ì•`‰æ(ƒgƒŠƒ€‚È‚µ)
+// NURBSæ›²é¢ã®æç”»(ãƒˆãƒªãƒ ãªã—)
 //
 // Parameters:
-// NurbsS - •`‰æ‚·‚éNURBS‹È–Ê\‘¢‘Ì
+// NurbsS - æç”»ã™ã‚‹NURBSæ›²é¢æ§‹é€ ä½“
 //void Describe_BODY::DrawNurbsSurfe(NURBSS NurbsS)
 void Describe_BODY::DrawNurbsSurfe(const NURBSS& NurbsS)
 {
 	int j,k;
-	static GLfloat	uKnot[KNOTNUMMAX];					// NURBS•`‰æ—pƒoƒbƒtƒ@
-	static GLfloat	vKnot[KNOTNUMMAX];					// NURBS•`‰æ—pƒoƒbƒtƒ@
-	static GLfloat	SCtlp[CTLPNUMMAX][CTLPNUMMAX][4];	// NURBS•`‰æ—pƒoƒbƒtƒ@
+	static GLfloat	uKnot[KNOTNUMMAX];					// NURBSæç”»ç”¨ãƒãƒƒãƒ•ã‚¡
+	static GLfloat	vKnot[KNOTNUMMAX];					// NURBSæç”»ç”¨ãƒãƒƒãƒ•ã‚¡
+	static GLfloat	SCtlp[CTLPNUMMAX][CTLPNUMMAX][4];	// NURBSæç”»ç”¨ãƒãƒƒãƒ•ã‚¡
 
 	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT,NurbsS.Dstat.Color);
 	for(k=0;k<NurbsS.K[1];k++){
 		for(j=0;j<NurbsS.K[0];j++){
-			SCtlp[j][k][0] = NurbsS.cp[j][k].x*NurbsS.W[j][k];	// ƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒgæ‚èo‚µ
+			SCtlp[j][k][0] = NurbsS.cp[j][k].x*NurbsS.W[j][k];	// ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆå–ã‚Šå‡ºã—
 			SCtlp[j][k][1] = NurbsS.cp[j][k].y*NurbsS.W[j][k];
 			SCtlp[j][k][2] = NurbsS.cp[j][k].z*NurbsS.W[j][k];
 			SCtlp[j][k][3] = NurbsS.W[j][k];
 		}
 	}
 	for(j=0;j<NurbsS.N[0];j++){
-		uKnot[j] = NurbsS.S[j];		// uƒmƒbƒgƒxƒNƒgƒ‹æ‚èo‚µ
+		uKnot[j] = NurbsS.S[j];		// uãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«å–ã‚Šå‡ºã—
 	}
 	for(j=0;j<NurbsS.N[1];j++){
-		vKnot[j] = NurbsS.T[j];		// vƒmƒbƒgƒxƒNƒgƒ‹æ‚èo‚µ
+		vKnot[j] = NurbsS.T[j];		// vãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«å–ã‚Šå‡ºã—
 	}
 
-	// NURBS‹È–Ê‚Ì•`‰æ
+	// NURBSæ›²é¢ã®æç”»
 	gluBeginSurface(NurbsSurf);
 	gluNurbsSurface(NurbsSurf,NurbsS.N[0],uKnot,NurbsS.N[1],vKnot,CTLPNUMMAX*4,4,&SCtlp[0][0][0],NurbsS.M[0],NurbsS.M[1],GL_MAP2_VERTEX_4);
 	gluEndSurface(NurbsSurf);
@@ -220,78 +203,78 @@ void Describe_BODY::DrawNurbsSurfe(const NURBSS& NurbsS)
 }
 
 // Function: DrawCompositeCurve
-// •¡‡‹Èü‚Ì•`‰æ
+// è¤‡åˆæ›²ç·šã®æç”»
 //
 // Parameters:
-// *CompC - •`‰æ‚·‚é•¡‡‹Èü‚Ö‚Ìƒ|ƒCƒ“ƒ^
+// *CompC - æç”»ã™ã‚‹è¤‡åˆæ›²ç·šã¸ã®ãƒã‚¤ãƒ³ã‚¿
 void Describe_BODY::DrawCompositeCurve(COMPC *CompC)
 {
 	int i;
 
 	for(i=0;i<CompC->N;i++){
 		if(CompC->DEType[i] == NURBS_CURVE){
-//			DrawNurbsCurve_Param((NURBSC *)CompC->pDE[i]);	// NURBS‹Èü
-			DrawNurbsCurve_Param(CompC->pDE[i].NurbsC);	// NURBS‹Èü
+//			DrawNurbsCurve_Param((NURBSC *)CompC->pDE[i]);	// NURBSæ›²ç·š
+			DrawNurbsCurve_Param(CompC->pDE[i].NurbsC);	// NURBSæ›²ç·š
 		}
 		//else if(CompC->DEType[i] == CIRCLE_ARC){
-		//	glDraw_CircleArc_Param((CIRA *)CompC->pDE[i]);		// ‰~E‰~ŒÊ
+		//	glDraw_CircleArc_Param((CIRA *)CompC->pDE[i]);		// å††ãƒ»å††å¼§
 		//}
 		//else if(CompC->DEType[i] == CONIC_ARC){
-		//	glDraw_ConicArc_Param((CONA *)CompC->pDE[i]);		// ‰~‹Èü
+		//	glDraw_ConicArc_Param((CONA *)CompC->pDE[i]);		// å††éŒæ›²ç·š
 		//}
 		//else if(CompC->DEType[i] == LINE){
-		//	glDraw_Line_Param((LINE_ *)CompC->pDE[i]);			// ü•ª
+		//	glDraw_Line_Param((LINE_ *)CompC->pDE[i]);			// ç·šåˆ†
 		//}
 	}
 
 	if(CompC->DegeFlag == KOD_FALSE)
-		DrawNurbsCurve_Param(&CompC->DegeNurbs);		// k‘Ş‚ª‚ ‚éê‡Ak‘Ş—pNurbs‹Èü‚ğƒgƒŠƒ€ƒGƒ“ƒeƒBƒeƒB‚Æ‚µ‚Ä’Ç‰Á
+		DrawNurbsCurve_Param(&CompC->DegeNurbs);		// ç¸®é€€ãŒã‚ã‚‹å ´åˆã€ç¸®é€€ç”¨Nurbsæ›²ç·šã‚’ãƒˆãƒªãƒ ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã¨ã—ã¦è¿½åŠ 
 }
 
 // Function: DrawCurveOnParamSurfe
-// –Êãü‚Ì•`‰æ
+// é¢ä¸Šç·šã®æç”»
 //
 // Parameters:
-// *ConpS - •`‰æ‚·‚é–Êãü‚Ö‚Ìƒ|ƒCƒ“ƒ^
+// *ConpS - æç”»ã™ã‚‹é¢ä¸Šç·šã¸ã®ãƒã‚¤ãƒ³ã‚¿
 void Describe_BODY::DrawCurveOnParamSurfe(CONPS *ConpS)
 {
-	// 2Dƒpƒ‰ƒƒgƒŠƒbƒN‹Èü
+	// 2Dãƒ‘ãƒ©ãƒ¡ãƒˆãƒªãƒƒã‚¯æ›²ç·š
 	if(ConpS->BType == COMPOSITE_CURVE){
-//		DrawCompositeCurve((COMPC *)ConpS->pB);	// •¡‡‹Èü
-		DrawCompositeCurve(ConpS->pB.CompC);	// •¡‡‹Èü
+//		DrawCompositeCurve((COMPC *)ConpS->pB);	// è¤‡åˆæ›²ç·š
+		DrawCompositeCurve(ConpS->pB.CompC);	// è¤‡åˆæ›²ç·š
 	}
 //	else if(ConpS->BType == NURBS_SURFACE){
-//		glDraw_NurbsCurve(ConpS->pB);		// NURBS‹Èü
+//		glDraw_NurbsCurve(ConpS->pB);		// NURBSæ›²ç·š
 //	}
 //	else if(ConpS->BType == CIRCLE_ARC){
-//		glDraw_CircleArc(ConpS->pB);		// ‰~E‰~ŒÊ
+//		glDraw_CircleArc(ConpS->pB);		// å††ãƒ»å††å¼§
 //	}
 //	else if(ConpS->BType == CONIC_ARC){
-//		glDraw_ConicArc();					// ‰~‹Èü
+//		glDraw_ConicArc();					// å††éŒæ›²ç·š
 //	}
 }
 
 // Function: DrawTrimdSurf
-// ƒgƒŠƒ€–Ê‚Ì•`‰æ
+// ãƒˆãƒªãƒ é¢ã®æç”»
 //
 // Parameters:
-// TrmS - •`‰æ‚·‚éƒgƒŠƒ€–Ê\‘¢‘Ì
+// TrmS - æç”»ã™ã‚‹ãƒˆãƒªãƒ é¢æ§‹é€ ä½“
 //void Describe_BODY::DrawTrimdSurf(TRMS TrmS)
 void Describe_BODY::DrawTrimdSurf(const TRMS& TrmS)
 {
 	gluBeginSurface(NurbsSurf);
 
-	DrawTrimdNurbsSurfe(TrmS.pts);				// NURBS‹È–Ê‚Ì•`‰æ
+	DrawTrimdNurbsSurfe(TrmS.pts);				// NURBSæ›²é¢ã®æç”»
 
-	// ŠOüƒgƒŠƒ€(”½Œv‰ñ‚è‚Å‚ ‚é‚±‚Æ)
+	// å¤–å‘¨ãƒˆãƒªãƒ (åæ™‚è¨ˆå›ã‚Šã§ã‚ã‚‹ã“ã¨)
 	gluBeginTrim(NurbsSurf);
-	DrawCurveOnParamSurfe(TrmS.pTO);			// –Êãü
+	DrawCurveOnParamSurfe(TrmS.pTO);			// é¢ä¸Šç·š
 	gluEndTrim(NurbsSurf);
 
-	// “àüƒgƒŠƒ€(Œv‰ñ‚è‚Å‚ ‚é‚±‚Æ)
+	// å†…å‘¨ãƒˆãƒªãƒ (æ™‚è¨ˆå›ã‚Šã§ã‚ã‚‹ã“ã¨)
 	for(int j=0;j<TrmS.n2;j++){
 		gluBeginTrim(NurbsSurf);
-		DrawCurveOnParamSurfe(TrmS.pTI[j]);		// –Êãü
+		DrawCurveOnParamSurfe(TrmS.pTI[j]);		// é¢ä¸Šç·š
 		gluEndTrim(NurbsSurf);
 	}
 
@@ -300,96 +283,99 @@ void Describe_BODY::DrawTrimdSurf(const TRMS& TrmS)
 }
 
 // Function: DrawNurbsCurve_Param
-// 2Dƒpƒ‰ƒƒgƒŠƒbƒNNURBS‹Èü—v‘f‚Ì•`‰æ
+// 2Dãƒ‘ãƒ©ãƒ¡ãƒˆãƒªãƒƒã‚¯NURBSæ›²ç·šè¦ç´ ã®æç”»
 //
 // Parameters:
-// *NurbsC - •`‰æ‚·‚é2Dƒpƒ‰ƒƒgƒŠƒbƒNNURBS‹Èü‚Ìƒ|ƒCƒ“ƒ^
+// *NurbsC - æç”»ã™ã‚‹2Dãƒ‘ãƒ©ãƒ¡ãƒˆãƒªãƒƒã‚¯NURBSæ›²ç·šã®ãƒã‚¤ãƒ³ã‚¿
 void Describe_BODY::DrawNurbsCurve_Param(NURBSC *NurbsC)
 {
 	int i;
-	static GLfloat	uKnot[KNOTNUMMAX];					// NURBS•`‰æ—pƒoƒbƒtƒ@
-	static GLfloat	CCtlp[CTLPNUMMAX][4];				// NURBS•`‰æ—pƒoƒbƒtƒ@
+	static GLfloat	uKnot[KNOTNUMMAX];					// NURBSæç”»ç”¨ãƒãƒƒãƒ•ã‚¡
+	static GLfloat	CCtlp[CTLPNUMMAX][4];				// NURBSæç”»ç”¨ãƒãƒƒãƒ•ã‚¡
 
-	for(i=0;i<NurbsC->K;i++){			// ƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒgæ‚èo‚µ
+	for(i=0;i<NurbsC->K;i++){			// ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆå–ã‚Šå‡ºã—
 		CCtlp[i][0] = NurbsC->cp[i].x*NurbsC->W[i];
 		CCtlp[i][1] = NurbsC->cp[i].y*NurbsC->W[i];
 		CCtlp[i][2] = NurbsC->W[i];
 	}
-	for(i=0;i<NurbsC->N;i++){			// ƒmƒbƒgƒxƒNƒgƒ‹æ‚èo‚µ
+	for(i=0;i<NurbsC->N;i++){			// ãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«å–ã‚Šå‡ºã—
 		uKnot[i] = NurbsC->T[i];
 	}
 
-	// ƒgƒŠƒ€–Ê‚ğ\¬‚·‚éNURBS‹Èü‚ğw’è
+	// ãƒˆãƒªãƒ é¢ã‚’æ§‹æˆã™ã‚‹NURBSæ›²ç·šã‚’æŒ‡å®š
 	gluNurbsCurve(NurbsSurf,NurbsC->N,uKnot,4,&CCtlp[0][0],NurbsC->M,GLU_MAP1_TRIM_3);
 
 }
 
 // Function: Draw_Lines
-// BODY‚ÉŠÜ‚Ü‚ê‚éü•ª‚ğ‘S‚Ä•`‰æ
+// BODYã«å«ã¾ã‚Œã‚‹ç·šåˆ†ã‚’å…¨ã¦æç”»
 //
 // Parameters:
-// *Body - BODY‚Ö‚Ìƒ|ƒCƒ“ƒ^
+// *Body - BODYã¸ã®ãƒã‚¤ãƒ³ã‚¿
 void Describe_BODY::Draw_Lines(BODY *Body)
 {
 	for(int i=0;i<Body->TypeNum[_LINE];i++){
 		glColor3f(Body->Line[i].Dstat.Color[0],Body->Line[i].Dstat.Color[1],Body->Line[i].Dstat.Color[2]);
-		if(Body->Line[i].EntUseFlag == GEOMTRYELEM){				// IGESƒfƒBƒŒƒNƒgƒŠ•”‚Ì"Entity Use Flag"‚ª0‚Ìê‡‚ÍÀÛ‚Ìƒ‚ƒfƒ‹—v‘f‚Æ‚µ‚Ä•`‰æ‚·‚é
+        // IGESãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªéƒ¨ã®"Entity Use Flag"ãŒ0ã‹ã¤ï¼Œ"Blank Status"ãŒ0ã®å ´åˆã¯å®Ÿéš›ã®ãƒ¢ãƒ‡ãƒ«è¦ç´ ã¨ã—ã¦æç”»ã™ã‚‹
+        if(Body->Line[i].EntUseFlag == GEOMTRYELEM && Body->Line[i].BlankStat == DISPLAY){
 			DrawLine(Body->Line[i]);
 		}
 	}
 }
 
 // Function: Draw_CircleArcs
-// BODY‚ÉŠÜ‚Ü‚ê‚é‰~C‰~ŒÊ‚ğ‘S‚Ä•`‰æ
+// BODYã«å«ã¾ã‚Œã‚‹å††ï¼Œå††å¼§ã‚’å…¨ã¦æç”»
 //
 // Parameters:
-// *Body - BODY‚Ö‚Ìƒ|ƒCƒ“ƒ^
+// *Body - BODYã¸ã®ãƒã‚¤ãƒ³ã‚¿
 void Describe_BODY::Draw_CircleArcs(BODY *Body)
 {
 	for(int i=0;i<Body->TypeNum[_CIRCLE_ARC];i++){
 		glColor3f(Body->CirA[i].Dstat.Color[0],Body->CirA[i].Dstat.Color[1],Body->CirA[i].Dstat.Color[2]);
-		if(Body->CirA[i].EntUseFlag == GEOMTRYELEM){				// IGESƒfƒBƒŒƒNƒgƒŠ•”‚Ì"Entity Use Flag"‚ª0‚Ìê‡‚ÍÀÛ‚Ìƒ‚ƒfƒ‹—v‘f‚Æ‚µ‚Ä•`‰æ‚·‚é
+        // IGESãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªéƒ¨ã®"Entity Use Flag"ãŒ0ã‹ã¤ï¼Œ"Blank Status"ãŒ0ã®å ´åˆã¯å®Ÿéš›ã®ãƒ¢ãƒ‡ãƒ«è¦ç´ ã¨ã—ã¦æç”»ã™ã‚‹
+        if(Body->CirA[i].EntUseFlag == GEOMTRYELEM && Body->CirA[i].BlankStat == DISPLAY){
 			DrawCircleArc(Body->CirA[i]);
 		}
 	}
 }
 
 // Function: Draw_NurbsCurves
-// BODY‚ÉŠÜ‚Ü‚ê‚éNURBS‹Èü‚ğ‘S‚Ä•`‰æ
+// BODYã«å«ã¾ã‚Œã‚‹NURBSæ›²ç·šã‚’å…¨ã¦æç”»
 //
 // Parameters:
-// *Body - BODY‚Ö‚Ìƒ|ƒCƒ“ƒ^
+// *Body - BODYã¸ã®ãƒã‚¤ãƒ³ã‚¿
 void Describe_BODY::Draw_NurbsCurves(BODY *Body)
 {
 	for(int i=0;i<Body->TypeNum[_NURBSC];i++){
 		glColor3f(Body->NurbsC[i].Dstat.Color[0],Body->NurbsC[i].Dstat.Color[1],Body->NurbsC[i].Dstat.Color[2]);
-		if(Body->NurbsC[i].EntUseFlag == GEOMTRYELEM){				// IGESƒfƒBƒŒƒNƒgƒŠ•”‚Ì"Entity Use Flag"‚ª0‚Ìê‡‚ÍÀÛ‚Ìƒ‚ƒfƒ‹—v‘f‚Æ‚µ‚Ä•`‰æ‚·‚é
-			DrawNurbsCurve(Body->NurbsC[i]);						// •`‰æ
+        // IGESãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªéƒ¨ã®"Entity Use Flag"ãŒ0ã‹ã¤ï¼Œ"Blank Status"ãŒ0ã®å ´åˆã¯å®Ÿéš›ã®ãƒ¢ãƒ‡ãƒ«è¦ç´ ã¨ã—ã¦æç”»ã™ã‚‹
+        if(Body->NurbsC[i].EntUseFlag == GEOMTRYELEM && Body->NurbsC[i].BlankStat == DISPLAY){
+			DrawNurbsCurve(Body->NurbsC[i]);						// æç”»
 		}
 	}
 }
 
 // Function: Draw_NurbsSurfaces
-// BODY‚ÉŠÜ‚Ü‚ê‚éNURBS‹È–Ê‚ğ‘S‚Ä•`‰æ
+// BODYã«å«ã¾ã‚Œã‚‹NURBSæ›²é¢ã‚’å…¨ã¦æç”»
 //
 // Parameters:
-// *Body - BODY‚Ö‚Ìƒ|ƒCƒ“ƒ^
+// *Body - BODYã¸ã®ãƒã‚¤ãƒ³ã‚¿
 void Describe_BODY::Draw_NurbsSurfaces(BODY *Body)
 {
 	for(int i=0;i<Body->TypeNum[_NURBSS];i++){
-		if(Body->NurbsS[i].TrmdSurfFlag == KOD_TRUE)	// ƒgƒŠƒ€–Ê‚Æ‚µ‚ÄNURBS‹È–Ê‚ª“o˜^‚³‚ê‚Ä‚¢‚é‚È‚ç
-			continue;		// •`‰æ‚µ‚È‚¢
+		if(Body->NurbsS[i].TrmdSurfFlag == KOD_TRUE)	// ãƒˆãƒªãƒ é¢ã¨ã—ã¦NURBSæ›²é¢ãŒç™»éŒ²ã•ã‚Œã¦ã„ã‚‹ãªã‚‰
+			continue;		// æç”»ã—ãªã„
 		else{
-			DrawNurbsSurfe(Body->NurbsS[i]);	// NURBS‹È–Ê•`‰æ
+			DrawNurbsSurfe(Body->NurbsS[i]);	// NURBSæ›²é¢æç”»
 		}
 	}
 }
 		
 // Function: Draw_TrimSurfes
-// BODY‚ÉŠÜ‚Ü‚ê‚éƒgƒŠƒ€–Ê‚ğ‘S‚Ä•`‰æ
+// BODYã«å«ã¾ã‚Œã‚‹ãƒˆãƒªãƒ é¢ã‚’å…¨ã¦æç”»
 //
 // Parameters:
-// *Body - BODY‚Ö‚Ìƒ|ƒCƒ“ƒ^
+// *Body - BODYã¸ã®ãƒã‚¤ãƒ³ã‚¿
 void Describe_BODY::Draw_TrimSurfes(BODY *Body)
 {
 	for(int i=0;i<Body->TypeNum[_TRIMMED_SURFACE];i++){
@@ -398,18 +384,18 @@ void Describe_BODY::Draw_TrimSurfes(BODY *Body)
 }
 
 // Function: DrawMesh
-// ƒƒbƒVƒ…‚Ì•`‰æ
+// ãƒ¡ãƒƒã‚·ãƒ¥ã®æç”»
 //
 // Parameters:
-// *mesh - MeshƒNƒ‰ƒX‚ÌƒIƒuƒWƒFƒNƒg‚Ö‚Ìƒ|ƒCƒ“ƒ^
-// flag - KOD_TRUEFƒXƒPƒ‹ƒgƒ“•\¦D KOD_FALSEF–Ê•\¦
+// *mesh - Meshã‚¯ãƒ©ã‚¹ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ãƒã‚¤ãƒ³ã‚¿
+// flag - KOD_TRUEï¼šã‚¹ã‚±ãƒ«ãƒˆãƒ³è¡¨ç¤ºï¼ KOD_FALSEï¼šé¢è¡¨ç¤º
 void Describe_BODY::DrawMesh(MESH *mesh,int flag)
 {
 	//mesh->Face.setSentinel(0);
 	for(int i=0;i<mesh->FaceNum;i++){
-		HEface *f = (HEface *)mesh->Face.getData(i);	// i”Ô–Ú‚ÌFaceƒŠƒXƒg‚ÌÀ‘Ì‚ğ“¾‚é
+		HEface *f = (HEface *)mesh->Face.getData(i);	// iç•ªç›®ã®Faceãƒªã‚¹ãƒˆã®å®Ÿä½“ã‚’å¾—ã‚‹
 		//HEface *f = (HEface *)mesh->Face.getSentinelData();
-		glPushName(f->index);		// ƒtƒ@ƒZƒbƒg1–‡1–‡‚ÉƒZƒŒƒNƒVƒ‡ƒ“”Ô†‚ğŠ„‚è“–‚Ä‚é
+		glPushName(f->index);		// ãƒ•ã‚¡ã‚»ãƒƒãƒˆ1æš1æšã«ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ç•ªå·ã‚’å‰²ã‚Šå½“ã¦ã‚‹
 		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT,f->Dstat.Color);
 		HEedge *e = f->edge;
 		if(flag == KOD_TRUE)	glBegin(GL_LINE_LOOP);
@@ -428,39 +414,39 @@ void Describe_BODY::DrawMesh(MESH *mesh,int flag)
 }
 
 // Function: SetNurbsStat
-// NURBS•`‰æƒXƒe[ƒ^ƒX‚Ìİ’è
+// NURBSæç”»ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã®è¨­å®š
 void Describe_BODY::SetNurbsStat()
 {
 	NurbsCurve = gluNewNurbsRenderer();
 	gluNurbsProperty(NurbsCurve,GLU_SAMPLING_TOLERANCE,20);	
 #ifdef _GLUfuncptr
-    gluNurbsCallback(NurbsCurve, GLU_ERROR, (_GLUfuncptr)NURBS_Err);	// NURBSŠÖ˜A‚ÌƒGƒ‰[‚ÌƒR[ƒ‹ƒoƒbƒNŠÖ”‚ğ“o˜^
+    gluNurbsCallback(NurbsCurve, GLU_ERROR, (_GLUfuncptr)NURBS_Err);	// NURBSé–¢é€£ã®ã‚¨ãƒ©ãƒ¼ã®ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°ã‚’ç™»éŒ²
 #else
-    gluNurbsCallback(NurbsCurve, GLU_ERROR, (void (CALLBACK *) (void))NURBS_Err);	// NURBSŠÖ˜A‚ÌƒGƒ‰[‚ÌƒR[ƒ‹ƒoƒbƒNŠÖ”‚ğ“o˜^
+    gluNurbsCallback(NurbsCurve, GLU_ERROR, (void (CALLBACK *) (void))NURBS_Err);	// NURBSé–¢é€£ã®ã‚¨ãƒ©ãƒ¼ã®ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°ã‚’ç™»éŒ²
 #endif
 
 
     NurbsSurf = gluNewNurbsRenderer();
     gluNurbsProperty(NurbsSurf,GLU_SAMPLING_TOLERANCE,20);
 #ifdef _GLUfuncptr
-    gluNurbsCallback(NurbsSurf, GLU_ERROR, (_GLUfuncptr)NURBS_Err);	// NURBSŠÖ˜A‚ÌƒGƒ‰[‚ÌƒR[ƒ‹ƒoƒbƒNŠÖ”‚ğ“o˜^
+    gluNurbsCallback(NurbsSurf, GLU_ERROR, (_GLUfuncptr)NURBS_Err);	// NURBSé–¢é€£ã®ã‚¨ãƒ©ãƒ¼ã®ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°ã‚’ç™»éŒ²
 #else
-    gluNurbsCallback(NurbsSurf, GLU_ERROR, (void (CALLBACK *) (void))NURBS_Err);	// NURBSŠÖ˜A‚ÌƒGƒ‰[‚ÌƒR[ƒ‹ƒoƒbƒNŠÖ”‚ğ“o˜^
+    gluNurbsCallback(NurbsSurf, GLU_ERROR, (void (CALLBACK *) (void))NURBS_Err);	// NURBSé–¢é€£ã®ã‚¨ãƒ©ãƒ¼ã®ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°ã‚’ç™»éŒ²
 #endif
 }
 
 // Function: SetNurbsSProperty
-// NURBS‹È–Ê‚Ì•`‰æŒ`®‚ğ•ÏX‚·‚é
+// NURBSæ›²é¢ã®æç”»å½¢å¼ã‚’å¤‰æ›´ã™ã‚‹
 void Describe_BODY::SetNurbsSProperty(GLenum prop,GLfloat val)
 {
 	gluNurbsProperty(NurbsSurf,prop,val);
 }
 
 // Function: SetNurbsSTolerance
-// NURBS‹È–Ê/‹Èü‚Ì‘e‚³‚ğw’è
+// NURBSæ›²é¢/æ›²ç·šã®ç²—ã•ã‚’æŒ‡å®š
 //
 // Parameters:
-// t - ƒgƒŒƒ‰ƒ“ƒX’lDgluNurbsProperty()ŠÖ”‚ÌProperty‚ÉGLU_SAMPLING_TOLERANCE‚ğw’è‚µ‚½ê‡‚Ìvalue’l‚ğ¦‚·. ’l‚ª¬‚³‚¢‚Ù‚ÇŠŠ‚ç‚©‚È•`‰æ‚Æ‚È‚é.ƒfƒtƒHƒ‹ƒg‚Å‚Í20‚ªw’è‚³‚ê‚Ä‚¢‚é.
+// t - ãƒˆãƒ¬ãƒ©ãƒ³ã‚¹å€¤ï¼gluNurbsProperty()é–¢æ•°ã®Propertyã«GLU_SAMPLING_TOLERANCEã‚’æŒ‡å®šã—ãŸå ´åˆã®valueå€¤ã‚’ç¤ºã™. å€¤ãŒå°ã•ã„ã»ã©æ»‘ã‚‰ã‹ãªæç”»ã¨ãªã‚‹.ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã§ã¯20ãŒæŒ‡å®šã•ã‚Œã¦ã„ã‚‹.
 void Describe_BODY::SetNurbsSTolerance(GLfloat t)
 {
 	gluNurbsProperty(NurbsSurf,GLU_SAMPLING_TOLERANCE,t);
@@ -468,10 +454,10 @@ void Describe_BODY::SetNurbsSTolerance(GLfloat t)
 }
 
 // Function: NURBS_Err
-// NURBSƒtƒ@ƒ“ƒNƒVƒ‡ƒ“ƒGƒ‰[‚ÌƒR[ƒ‹ƒoƒbƒN‚ğ“o˜^
+// NURBSãƒ•ã‚¡ãƒ³ã‚¯ã‚·ãƒ§ãƒ³ã‚¨ãƒ©ãƒ¼ã®ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã‚’ç™»éŒ²
 // 
 // Parameters:
-// error_code - OpenGL‚ª’ñ‹Ÿ‚·‚éNURBS•`‰æŠÖ”“à‚Å”­¶‚µ‚½ƒGƒ‰[ƒR[ƒh
+// error_code - OpenGLãŒæä¾›ã™ã‚‹NURBSæç”»é–¢æ•°å†…ã§ç™ºç”Ÿã—ãŸã‚¨ãƒ©ãƒ¼ã‚³ãƒ¼ãƒ‰
 void Describe_BODY::NURBS_Err(GLenum error_code)
 {
 	fprintf(stderr,"%s\n",gluErrorString(error_code));
@@ -479,32 +465,32 @@ void Describe_BODY::NURBS_Err(GLenum error_code)
 	//exit(1);
 }
 
-// ‰~E‰~ŒÊ‚Ì•`‰æ
+// å††ãƒ»å††å¼§ã®æç”»
 void Describe_BODY::DrawCircleArc()
 {
-	// –¢À‘•
+	// æœªå®Ÿè£…
 }
 
-// ‰~‹Èü‚Ì•`‰æ
+// å††éŒæ›²ç·šã®æç”»
 void Describe_BODY::DrawConicArc()
 {
-	// –¢À‘•
+	// æœªå®Ÿè£…
 }
 
-// 2Dƒpƒ‰ƒƒgƒŠƒbƒN‰~—v‘f‚Ì•`‰æ
+// 2Dãƒ‘ãƒ©ãƒ¡ãƒˆãƒªãƒƒã‚¯å††è¦ç´ ã®æç”»
 void Describe_BODY::DrawCircleArc_Param(CIRA *CirA)
 {
-	// –¢À‘•
+	// æœªå®Ÿè£…
 }
 
-// 2Dƒpƒ‰ƒƒgƒŠƒbƒN‰~‹Èü—v‘f‚Ì•`‰æ
+// 2Dãƒ‘ãƒ©ãƒ¡ãƒˆãƒªãƒƒã‚¯å††éŒæ›²ç·šè¦ç´ ã®æç”»
 void Describe_BODY::DrawConicArc_Param(CONA *ConA)
 {
-	// –¢À‘•
+	// æœªå®Ÿè£…
 }
 
-// 2Dƒpƒ‰ƒƒgƒŠƒbƒN’¼ü—v‘f‚Ì•`‰æ
+// 2Dãƒ‘ãƒ©ãƒ¡ãƒˆãƒªãƒƒã‚¯ç›´ç·šè¦ç´ ã®æç”»
 void Describe_BODY::DrawLine_Param(LINE_ *Line)
 {
-	// –¢À‘•
+	// æœªå®Ÿè£…
 }

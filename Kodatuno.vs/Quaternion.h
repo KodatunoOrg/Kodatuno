@@ -1,69 +1,69 @@
-#ifndef _QUATERNION_H_
+ï»¿#ifndef _QUATERNION_H_
 #define _QUATERNION_H_
 
-//#include "StdAfx.h"
+#include "StdAfx.h"
 
 // Constants: General Defines
-// TMATELEMNUM - ‰ñ“]s—ñ”z—ñ‚Ì—v‘f”(16)
+// TMATELEMNUM - å›è»¢è¡Œåˆ—é…åˆ—ã®è¦ç´ æ•°(16)
 #define TMATELEMNUM 16
 
 // Structure: Quat
 //
 // Variables:
-// t -		À•”
-// x,y,z -	‹••”
+// t -		å®Ÿéƒ¨
+// x,y,z -	è™šéƒ¨
 typedef struct{
 	double t;
 	double x,y,z;
 }Quat;
 
 // Class: QUATERNION
-// ƒNƒH[ƒ^ƒjƒIƒ“‰‰Z—pƒ‚ƒWƒ…[ƒ‹
+// ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³æ¼”ç®—ç”¨ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«
 class QUATERNION
 {
 public:
 	// Function: QInit
-	// ƒNƒH[ƒ^ƒjƒIƒ“‚Ì‰Šú‰»
+	// ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ã®åˆæœŸåŒ–
 	Quat QInit(double,double,double,double);	
 	
 	// Function: QGenRot
-	// ‰ñ“]ƒNƒH[ƒ^ƒjƒIƒ“¶¬
+	// å›è»¢ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ç”Ÿæˆ
 	Quat QGenRot(double,double,double,double);	
 
 	// Function: QRot
-	// ƒNƒH[ƒ^ƒjƒIƒ“‚É‚æ‚éƒxƒNƒgƒ‹‚Ì‰ñ“]
+	// ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ã«ã‚ˆã‚‹ãƒ™ã‚¯ãƒˆãƒ«ã®å›è»¢
 	Quat QRot(Quat,Quat,Quat);					
 
 	// Function: QConjugation
-	// ‹¤–ğƒNƒH[ƒ^ƒjƒIƒ“‚ğ¶¬
+	// å…±å½¹ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ã‚’ç”Ÿæˆ
 	Quat QConjugation(Quat);					
 
 	// Function: QMult
-	// ƒNƒH[ƒ^ƒjƒIƒ“‚ÌŠ|‚¯Z
+	// ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ã®æ›ã‘ç®—
 	Quat QMult(Quat,Quat);						
 
 	// Function: QtoR
-	// ƒNƒH[ƒ^ƒjƒIƒ“q‚ğ‰ñ“]s—ñr(OpenGL‘Î‰‚Ì‚½‚ßA1ŸŒ³16—v‘f”z—ñ)‚Ö•ÏŠ· (•K—v‚Å‚ ‚ê‚ÎA2ŸŒ³”z—ñVer‚ğƒI[ƒo[ƒ[ƒh‚µ‚Ä‚­‚¾‚³‚¢)
+	// ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³qã‚’å›è»¢è¡Œåˆ—r(OpenGLå¯¾å¿œã®ãŸã‚ã€1æ¬¡å…ƒ16è¦ç´ é…åˆ—)ã¸å¤‰æ› (å¿…è¦ã§ã‚ã‚Œã°ã€2æ¬¡å…ƒé…åˆ—Verã‚’ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰ã—ã¦ãã ã•ã„)
 	void QtoR(double [],Quat);					
 
 	// Function: QtoR
-	// ƒI[ƒo[ƒ[ƒh(ˆø”Fr,t,x,y,z)
+	// ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰(å¼•æ•°ï¼šr,t,x,y,z)
 	void QtoR(double [],double,double,double,double);	
 
 	// Function: QCopy
-	// ƒNƒH[ƒ^ƒjƒIƒ“‚ÌƒRƒs[ p <- q
+	// ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ã®ã‚³ãƒ”ãƒ¼ p <- q
 	Quat QCopy(Quat);							
 
 	// Function: QtoC
-	// ƒNƒH[ƒ^ƒjƒIƒ“‚Ì‹•”•”‚ğCoord‚Æ‚µ‚Ä•Ô‚·
+	// ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ã®è™šæ•°éƒ¨ã‚’Coordã¨ã—ã¦è¿”ã™
 	Coord QtoC(Quat);							
 
 	// Function: CtoQ
-	// ƒNƒH[ƒ^ƒjƒIƒ“À•”‚ğ0A‹••”‚ğCoord‚Æ‚µ‚ÄƒNƒH[ƒ^ƒjƒIƒ“‚ğ¶¬
+	// ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³å®Ÿéƒ¨ã‚’0ã€è™šéƒ¨ã‚’Coordã¨ã—ã¦ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ã‚’ç”Ÿæˆ
 	Quat CtoQ(Coord);							
 
 	// Function: QSlerp
-	// ƒNƒH[ƒ^ƒjƒIƒ“‚É‚æ‚é‹…–ÊüŒ`•âŠÔ
+	// ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ã«ã‚ˆã‚‹çƒé¢ç·šå½¢è£œé–“
 	Quat QSlerp(Quat,Quat,double);				
 };
 

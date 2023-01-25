@@ -1,14 +1,9 @@
-#include "stdafx.h"
-#include "BODY.h"
+ï»¿#include "stdafx.h"			// Add by K.Magara
 #include "NURBS_Func.h"
 #include "SFQuant.h"
 
-#if defined(_DEBUG) && defined(_MSC_VER)
-#define new DEBUG_NEW
-#endif
-
 // Function: SFQuant
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^(‰Šú‰»)
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿(åˆæœŸåŒ–)
 SFQuant::SFQuant()
 {
 	U = V = 0;
@@ -18,92 +13,74 @@ SFQuant::SFQuant()
 }
 
 // Function: SFQuant
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^(Šî–{—Ê‚ğ“¾‚é)
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿(åŸºæœ¬é‡ã‚’å¾—ã‚‹)
 //
 // Parameters:
-// *S - NURBS‹È–Ê‚Ö‚Ìƒ|ƒCƒ“ƒ^
-// u,v - (u, v)ƒpƒ‰ƒ[ƒ^
+// *S - NURBSæ›²é¢ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+// u,v - (u, v)ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
 SFQuant::SFQuant(NURBSS *S,double u,double v)
 {
-//	NURBS_Func nf;
+	NURBS_Func nf;
 	U = u;
 	V = v;
-//	Coord du = nf.CalcDiffuNurbsS(S,u,v);			// u•ûŒü1ŠK”÷•ª
-//	Coord dv = nf.CalcDiffvNurbsS(S,u,v);			// v•ûŒü1ŠK”÷•ª
-//	Coord duu = nf.CalcDiffNNurbsS(S,2,0,u,v);		// u•ûŒü2ŠK”÷•ª
-//	Coord dvv = nf.CalcDiffNNurbsS(S,0,2,u,v);		// v•ûŒü2ŠK”÷•ª
-//	Coord duv = nf.CalcDiffNNurbsS(S,1,1,u,v);		// u,v•ûŒüŠe1ŠK”÷•ª
-//	n = nf.CalcNormVecOnNurbsS(S,u,v);				// –@üƒxƒNƒgƒ‹
-	Coord du = S->CalcDiffuNurbsS(u,v);			// u•ûŒü1ŠK”÷•ª
-	Coord dv = S->CalcDiffvNurbsS(u,v);			// v•ûŒü1ŠK”÷•ª
-	Coord duu = S->CalcDiffNNurbsS(2,0,u,v);		// u•ûŒü2ŠK”÷•ª
-	Coord dvv = S->CalcDiffNNurbsS(0,2,u,v);		// v•ûŒü2ŠK”÷•ª
-	Coord duv = S->CalcDiffNNurbsS(1,1,u,v);		// u,v•ûŒüŠe1ŠK”÷•ª
-	n = S->CalcNormVecOnNurbsS(u,v);				// –@üƒxƒNƒgƒ‹
-	E = CalcInnerProduct(du,du);				// ‘æ1Šî–{—Ê
-	F = CalcInnerProduct(du,dv);				// ‘æ1Šî–{—Ê
-	G = CalcInnerProduct(dv,dv);				// ‘æ1Šî–{—Ê
-	L = CalcInnerProduct(duu,n);				// ‘æ2Šî–{—Ê
-	M = CalcInnerProduct(duv,n);				// ‘æ2Šî–{—Ê
-	N = CalcInnerProduct(dvv,n);				// ‘æ2Šî–{—Ê
+	Coord du = nf.CalcDiffuNurbsS(S,u,v);			// uæ–¹å‘1éšå¾®åˆ†
+	Coord dv = nf.CalcDiffvNurbsS(S,u,v);			// væ–¹å‘1éšå¾®åˆ†
+	Coord duu = nf.CalcDiffNNurbsS(S,2,0,u,v);		// uæ–¹å‘2éšå¾®åˆ†
+	Coord dvv = nf.CalcDiffNNurbsS(S,0,2,u,v);		// væ–¹å‘2éšå¾®åˆ†
+	Coord duv = nf.CalcDiffNNurbsS(S,1,1,u,v);		// u,væ–¹å‘å„1éšå¾®åˆ†
+	n = nf.CalcNormVecOnNurbsS(S,u,v);				// æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«
+	E = CalcInnerProduct(du,du);				// ç¬¬1åŸºæœ¬é‡
+	F = CalcInnerProduct(du,dv);				// ç¬¬1åŸºæœ¬é‡
+	G = CalcInnerProduct(dv,dv);				// ç¬¬1åŸºæœ¬é‡
+	L = CalcInnerProduct(duu,n);				// ç¬¬2åŸºæœ¬é‡
+	M = CalcInnerProduct(duv,n);				// ç¬¬2åŸºæœ¬é‡
+	N = CalcInnerProduct(dvv,n);				// ç¬¬2åŸºæœ¬é‡
 
 }
 
 // Function: SetSFQ
-// Šî–{—Ê‚ğ“¾‚é
+// åŸºæœ¬é‡ã‚’å¾—ã‚‹
 //
 // Parameters:
-// *S - NURBS‹È–Ê‚Ö‚Ìƒ|ƒCƒ“ƒ^
-// u,v - (u, v)ƒpƒ‰ƒ[ƒ^
+// *S - NURBSæ›²é¢ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+// u,v - (u, v)ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
 int SFQuant::SetSFQ(NURBSS *S,double u,double v)
 {	
-//	NURBS_Func nf;
+	NURBS_Func nf;
 	U = u;
 	V = v;
-//	Coord du = nf.CalcDiffuNurbsS(S,u,v);			// u•ûŒü1ŠK”÷•ª
-//	Coord dv = nf.CalcDiffvNurbsS(S,u,v);			// v•ûŒü1ŠK”÷•ª
-//	Coord duu = nf.CalcDiffNNurbsS(S,2,0,u,v);		// u•ûŒü2ŠK”÷•ª
-//	Coord dvv = nf.CalcDiffNNurbsS(S,0,2,u,v);		// v•ûŒü2ŠK”÷•ª
-//	Coord duv = nf.CalcDiffNNurbsS(S,1,1,u,v);		// u,v•ûŒüŠe1ŠK”÷•ª
-//	n = nf.CalcNormVecOnNurbsS(S,u,v);				// –@üƒxƒNƒgƒ‹
-	Coord du = S->CalcDiffuNurbsS(u,v);			// u•ûŒü1ŠK”÷•ª
-	Coord dv = S->CalcDiffvNurbsS(u,v);			// v•ûŒü1ŠK”÷•ª
-	Coord duu = S->CalcDiffNNurbsS(2,0,u,v);		// u•ûŒü2ŠK”÷•ª
-	Coord dvv = S->CalcDiffNNurbsS(0,2,u,v);		// v•ûŒü2ŠK”÷•ª
-	Coord duv = S->CalcDiffNNurbsS(1,1,u,v);		// u,v•ûŒüŠe1ŠK”÷•ª
-	n = S->CalcNormVecOnNurbsS(u,v);				// –@üƒxƒNƒgƒ‹
-	E = CalcInnerProduct(du,du);				// ‘æ1Šî–{—Ê
-	F = CalcInnerProduct(du,dv);				// ‘æ1Šî–{—Ê
-	G = CalcInnerProduct(dv,dv);				// ‘æ1Šî–{—Ê
-	L = CalcInnerProduct(duu,n);				// ‘æ2Šî–{—Ê
-	M = CalcInnerProduct(duv,n);				// ‘æ2Šî–{—Ê
-	N = CalcInnerProduct(dvv,n);				// ‘æ2Šî–{—Ê
+	Coord du = nf.CalcDiffuNurbsS(S,u,v);			// uæ–¹å‘1éšå¾®åˆ†
+	Coord dv = nf.CalcDiffvNurbsS(S,u,v);			// væ–¹å‘1éšå¾®åˆ†
+	Coord duu = nf.CalcDiffNNurbsS(S,2,0,u,v);		// uæ–¹å‘2éšå¾®åˆ†
+	Coord dvv = nf.CalcDiffNNurbsS(S,0,2,u,v);		// væ–¹å‘2éšå¾®åˆ†
+	Coord duv = nf.CalcDiffNNurbsS(S,1,1,u,v);		// u,væ–¹å‘å„1éšå¾®åˆ†
+	n = nf.CalcNormVecOnNurbsS(S,u,v);				// æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«
+	E = CalcInnerProduct(du,du);				// ç¬¬1åŸºæœ¬é‡
+	F = CalcInnerProduct(du,dv);				// ç¬¬1åŸºæœ¬é‡
+	G = CalcInnerProduct(dv,dv);				// ç¬¬1åŸºæœ¬é‡
+	L = CalcInnerProduct(duu,n);				// ç¬¬2åŸºæœ¬é‡
+	M = CalcInnerProduct(duv,n);				// ç¬¬2åŸºæœ¬é‡
+	N = CalcInnerProduct(dvv,n);				// ç¬¬2åŸºæœ¬é‡
 
 	return KOD_TRUE;
 }
 
-// Function: CalcMeanCurvature
-// NURBS‹È–Êã‚Ì(u,v)‚É‚¨‚¯‚é•½‹Ï‹È—¦‚ğ‹‚ß‚éiƒI[ƒo[ƒ[ƒhj
-// 
-// Parameters:
-// q - ‹È–Ê‚ÌŠî–{—Ê‚ğƒZƒbƒg‚É‚µ‚½\‘¢‘Ì
+// Function: SetSFQ1
+// ç¬¬ä¸€åŸºæœ¬é‡ã‚’å¾—ã‚‹
 //
-// Retrurn:
-// ŒvZŒ‹‰Ê
-double SFQuant::CalcMeanCurvature(void)
+// Parameters:
+// *S - NURBSæ›²é¢ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+// u,v - (u, v)ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
+int SFQuant::SetSFQ1(NURBSS *S,double u,double v)
 {
-	return -(G*L+E*N-2*F*M)/(E*G-F*F)/2;		// •½‹Ï‹È—¦
-}
+    NURBS_Func nf;
+    U = u;
+    V = v;
+    Coord du = nf.CalcDiffuNurbsS(S,u,v);			// uæ–¹å‘1éšå¾®åˆ†
+    Coord dv = nf.CalcDiffvNurbsS(S,u,v);			// væ–¹å‘1éšå¾®åˆ†
+    E = CalcInnerProduct(du,du);				// ç¬¬1åŸºæœ¬é‡
+    F = CalcInnerProduct(du,dv);				// ç¬¬1åŸºæœ¬é‡
+    G = CalcInnerProduct(dv,dv);				// ç¬¬1åŸºæœ¬é‡
 
-// Function: CalcGaussCurvature
-// NURBS‹È–Êã‚Ì(u,v)‚É‚¨‚¯‚éƒKƒEƒX‹È—¦‚ğ‹‚ß‚éiƒI[ƒo[ƒ[ƒhj
-//
-// Parameters:
-// q - ‹È–Ê‚ÌŠî–{—Ê‚ğƒZƒbƒg‚É‚µ‚½\‘¢‘Ì
-//
-// Retrurn:
-// ŒvZŒ‹‰Ê
-double SFQuant::CalcGaussCurvature(void)
-{
-	return (L*N-M*M)/(E*G-F*F);					// ƒKƒEƒX‹È—¦
+    return KOD_TRUE;
 }
