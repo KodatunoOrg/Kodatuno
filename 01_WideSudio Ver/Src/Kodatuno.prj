@@ -1,0 +1,94 @@
+#ID
+55707B20
+#STLINK
+0
+#CMODE
+1
+#OUTPUT
+Kodatuno
+#STOUTPUT
+Kodatuno
+#DBG_OUTPUT
+Kodatunod
+#DBG_STOUTPUT
+Kodatunod
+#DTHICKNESS
+2
+#GRIDX
+1
+#GRIDY
+1
+#DWIDTH
+100
+#DHEIGHT
+30
+#WS_DLL
+
+#WINC_NAME
+WSCmainWindow
+#OBJS
+Describe_Proc.o Kodatuno_Main.o IGES_Parser.o BODY_Handler.o KodListFunc.o StdAfxWS.o StdAfx.o Quaternion.o Describe_BODY.o NURBS_Func.o UserFunc.o UserFuncSub.o Command.o Kodatuno_CMD.o STL_Parser.o
+#COMPAT
+0
+#WS_FILES
+
+#MPFC_COMPAT
+0
+#JAVA_PKG_NAME
+
+#ENCODING
+SJIS
+#POLICY
+
+#LIB_CREATE
+0
+#LANG
+C++
+#MAKE
+$(WSDIR)/../gcc/bin/make.exe
+#CC1
+$(WSDIR)/../gcc/bin/gcc.exe
+#CC
+$(WSDIR)/../gcc/bin/g++.exe
+#LD
+$(WSDIR)/../gcc/bin/g++.exe
+#USER_INCLUDE
+-I. -I'$(WSDIR)/include'
+#USER_FL
+-DMSW -Wall -Wno-format
+#USER_RT_INCLUDE
+
+#USER_RT_FL
+-O2 
+#USER_DBG_INCLUDE
+
+#USER_DBG_FL
+-g -ggdb
+#USER_LIB
+
+#USER_LD_FL
+
+#USER_RT_LIB
+-L'$(WSDIR)/lib' -lws -lwsc -mwindows
+#USER_DBG_LIB
+-L'$(WSDIR)/lib' -lws -lwsc
+#USER_RT_STLIB
+'$(WSDIR)/lib-st/libws.a' '$(WSDIR)/lib-st/libwsc.a' -L'$(WSDIR)/../others/lib' -ljpeg -lpng -lz -lmpr -limm32 -lwsock32 -mwindows
+#USER_DBG_STLIB
+'$(WSDIR)/lib-st/libws.a' '$(WSDIR)/lib-st/libwsc.a' -L'$(WSDIR)/../others/lib' -ljpeg -lpng -lz -lmpr -limm32 -lwsock32 -lgdi32 -lcomdlg32
+#FONT0
+13,0,0,0,400,0,0,0,128,3,2,1,1,ÇlÇr ÉSÉVÉbÉN
+#FONT1
+15,0,0,0,400,0,0,0,128,3,2,1,1,ÇlÇr ÉSÉVÉbÉN
+#FONT2
+17,0,0,0,400,0,0,0,128,3,2,1,1,ÇlÇr ÉSÉVÉbÉN
+#FONT3
+19,0,0,0,400,0,0,0,128,3,2,1,1,ÇlÇr ÉSÉVÉbÉN
+#FONT4
+22,0,0,0,400,0,0,0,128,3,2,1,1,ÇlÇr ÉSÉVÉbÉN
+#FONT5
+24,0,0,0,400,0,0,0,128,3,2,1,1,ÇlÇr ÉSÉVÉbÉN
+#FONT6
+26,0,0,0,400,0,0,0,128,3,2,1,1,ÇlÇr ÉSÉVÉbÉN
+#FONT7
+34,0,0,0,400,0,0,0,128,3,2,1,1,ÇlÇr ÉSÉVÉbÉN
