@@ -2322,7 +2322,8 @@ int NURBS_Func::CalcIntersecPtsPlaneSearch(NURBSS *nurb,Coord pt,Coord nvec,doub
 	}
 	init_pt_num = CheckTheSamePoints(init_pt,init_pt_num);		// 同一点は除去する
 	if(!init_pt_num){		// 見つからない場合は、交差していないとみなす
-        GuiIF.SetMessage("NURBS KOD_ERROR:Init intersection point is noexistence");
+		// ワーニングエラーは出さず戻り値で判断  by K.Magara
+//      GuiIF.SetMessage("NURBS KOD_ERROR:Init intersection point is noexistence");
 		return KOD_FALSE;					
 	}
 	else if(init_pt_num == KOD_ERR) return KOD_ERR;			// init_pt_numがinit_ptの配列長を超えた
