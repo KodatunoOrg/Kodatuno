@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"> 
+<HTML> 
+<HEAD LANG="ja"> 
+	<TITLE>Kodatuno User's Guide</TITLE> 
+	<meta HTTP-EQUIV="Content-type" CONTENT="text/html; charset=euc-jp"> 
+</HEAD> 
+<BODY bgcolor="#ffffff"> 
+<table cellspacing="0" cellpadding="0" border="0" width="100%">   
+	<tr valign="top" height="32">   
+	</tr>   
+	<tr valign="top">        
+		<td width="256" valign="bottom" align="left">          
+			<IMG SRC="pixmaps/logo.jpg" width="300" height="98" alt="Kodatuno Logo" ALIGN="top">
+		</td>        
+		<td valign="bottom" align="center">          
+			<center> 	   
+		<b><big>Kodatuno User's Guide</big>
+		</b>
+		<center>        
+		</td>       
+		<td width="20%" valign="bottom" align="right">     
+			<A HREF="./1-3.html">Prev</A>     
+			<A HREF="./index.html">Index</A>
+			<A HREF="./2-1.html">Next</A><br>
+		</td>   
+	</tr> 
+</table> 
+<blockquote> 
+
+<BR><HR><H2>Kodatuno内部でのCADデータの構成</H2>
+　Kodatunoへ取り込まれた3D-CADデータ(BODY)は，JAMA-IS(Ver. 1.04)に準拠した階層構造をによって表現，保持されます．
+下図は内側に2つのトリム面を持つ曲面(BODY)がKodatuno内部でどのように表現されているのかを示した例です．<BR>
+　BODYはまずエッジを表すNURBS曲線群(N/C edge*)とトリムを持つNURBS曲面(Trim/S)の2種類に分けられます．
+Trim/Sはさらに，トリム前のNURBS曲面(N/S)と，そのN/Sのパラメトリック空間内でトリムを構成するNURBS曲線群(N/C Outer/Inner*)
+に分けられています．N/C Inner*はN/Sの内周をトリムするNURBS曲線群を表しています．今回の例では，2つの内周トリムが存在しており，
+これらはそれぞれ複合曲線(COMP I*)と呼ばれる構造体に格納されています．更に，COMP I*は面上線(CONPS 2)の構成要素として表現されています．
+また，N/C Outer*はN/Sの外周トリムを構成するNURBS曲線群を表しています．（今回の例の場合は，N/Sの外周と一致しています．）
+N/C Outer*もN/C Inner*と同様，複合曲線(COMP O)，更に面上線(CONPS 1)に格納されています．<BR>
+　BODYを構成するオブジェクトの実際の構造体による表現は<A HREF="3-8.html">3.8  CADデータの内部表現 </A>を参照してください．
+
+<P><CENTER>
+<P><CENTER><IMG SRC="pixmaps/BODY_Composition1.jpg"></CENTER></P>
+</CENTER></P>
+<P><CENTER>
+<P><CENTER><IMG SRC="pixmaps/BODY_Composition2.jpg"></CENTER></P>
+［BODYの階層構造］
+</CENTER></P>
+
+</blockquote> <HR> Document Release 2.0 for Kodatuno R2.0, Nov. 2011<P> <hr> <center>
+<A HREF="./1-3.html">Prev</A>
+<A HREF="./index.html">index</A>
+<A HREF="./2-1.html">Next</A><br>
+</center> <hr> <table cellpadding="0" cellspacing="0" border="0" width="100%">    
+<tr>      
+	<td align="left">        
+		<small>Copyright(C) Kodatuno Development Team, 2011</small>      
+	</td>      
+	<td align="right">        
+		<small><i>Last modified: Nov. 11, 2011</i></small>      
+	</td>   
+</tr> </table>  <!-- end of body --> </body>  
+</html>  

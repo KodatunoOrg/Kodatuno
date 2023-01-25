@@ -1,0 +1,27 @@
+WS_ROOT_DIR = $(WSDIR)/..
+
+WS_DEFAULT_DIR = $(WSDIR)
+ARCH = -DWS_DEFAULT_DIR='$(WS_DEFAULT_DIR)' -DMSW -DUNICODE
+CC1 = $(WS_ROOT_DIR)/gcc/bin/gcc.exe
+CC = $(WS_ROOT_DIR)/gcc/bin/g++.exe
+STLD = $(WS_ROOT_DIR)/gcc/bin/g++.exe
+AR = $(WS_ROOT_DIR)/gcc/bin/ar
+DEBUG = -g -ggdb -Wall -Wno-format
+DEBUG2 = -O -Wall -Wno-format
+DEBUG_DLL = -g -ggdb -Wall -Wno-format -fPIC
+DEBUG2_DLL = -O -Wall -Wno-format -fPIC
+OBJDIR = ./debug
+OBJDIR2 = ./runtime
+C++FLAGS = $(DEBUG) -DFUNCPROTO -DXTFUNCPROTO $(INCLUDE) $(ARCH) -I/usr/include/mingw32
+C++FLAGS2 = $(DEBUG2) -DFUNCPROTO -DXTFUNCPROTO $(INCLUDE) $(ARCH) -I/usr/include/mingw32
+C++FLAGS_DLL = $(DEBUG_DLL) -DFUNCPROTO -DXTFUNCPROTO $(INCLUDE) $(ARCH) -I/usr/include/mingw32
+C++FLAGS2_DLL = $(DEBUG2_DLL) -DFUNCPROTO -DXTFUNCPROTO $(INCLUDE) $(ARCH) -I/usr/include/mingw32
+STFLAGS = -r -nostdlib
+SHARED = 
+STRIP = echo
+WINDRES = $(WS_ROOT_DIR)/gcc/bin/windres.exe
+DLLWRAP = $(WS_ROOT_DIR)/gcc/bin/dllwrap.exe
+DLLTOOL = $(WS_ROOT_DIR)/gcc/bin/dlltool.exe
+SJISFIX = $(WSDIR)/bin/sjisfix.exe
+EUCKRFIX = $(WSDIR)/bin/euckrfix.exe
+RM = $(WSDIR)/bin/rm.exe

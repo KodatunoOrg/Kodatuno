@@ -1,0 +1,1041 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"> 
+<HTML> 
+<HEAD LANG="ja"> 
+	<TITLE>Kodatuno User's Guide</TITLE> 
+	<meta HTTP-EQUIV="Content-type" CONTENT="text/html; charset=euc-jp"> 
+</HEAD> 
+<BODY bgcolor="#ffffff"> 
+<table cellspacing="0" cellpadding="0" border="0" width="100%">   
+	<tr valign="top" height="32">   
+	</tr>   
+	<tr valign="top">        
+		<td width="256" valign="bottom" align="left">          
+			<IMG SRC="pixmaps/logo.jpg" width="300" height="98" alt="Kodatuno Logo" ALIGN="top">
+		</td>        
+		<td valign="bottom" align="center">          
+			<center> 	   
+		<b><big>Kodatuno User's Guide</big>
+		</b>
+		<center>        
+		</td>       
+		<td width="20%" valign="bottom" align="right">          
+			<A HREF="./3-2.html" TARGET="_top">Prev</A>     
+			<A HREF="./index.html" TARGET="_top">Index</A>          
+			<A HREF="./3-4.html" TARGET="_top">Next</A><br>     
+		</td>   
+	</tr> 
+</table> 
+<blockquote> 
+
+<BR><HR><H2>汎用演算ライブラリ</H2>
+【StdAfx.h】<BR><BR>
+各種数値演算モジュールを提供します。<BR>
+
+<BR>■シンボル
+<pre><font size="3">
+#define KOD_ERR       -1                  ERRORのシンボル
+#define KOD_FALSE     0                   偽のシンボル
+#define KOD_TRUE      1                   真のシンボル
+#define KOD_DONE      2                   実行済みを示すシンボル
+#define KOD_ONEDGE    2                   点がエッジ上にあることを示すシンボル
+#define KOD_EQUAL     2                   同値のシンボル
+#define LOW_ACCURACY  0                   低精度のシンボル
+#define MID_ACCURACY  1                   普通精度のシンボル
+#define HIGH_ACCURACY 2                   高精度のシンボル
+#define FNAMEMAX      256                 ファイル名の最大文字数
+#define PI            3.141592653589793   円周率
+#define APPROX_ZERO_L 1.0e-6              ゼロと見なせる値(低精度)
+#define APPROX_ZERO   1.0e-12             ゼロと見なせる値(普通精度)
+#define APPROX_ZERO_H 1.0e-16             ゼロと見なせる値(高精度)
+#define LOOPCOUNTMAX  100                 収束計算回数の条件
+#define COORDINDEX    3                   3次元座標を示すインデックス数
+#define QUADINDEX     4                   3次元同次座標を示すインデックス数
+</font></pre>
+
+<HR>
+<BR>■インクルードライブラリ<BR><BR>
+&lt;stdio.h&gt;<BR> &lt;stdlib.h&gt;<BR> &lt;math.h&gt;<BR> &lt;string.h&gt;<BR> &lt;GL/glut.h&gt;<BR>
+"StdAfxWS.h"<BR><BR>
+
+<HR>
+<BR>■型定義
+<pre><font size="3">
+typedef double **Matirx       double形の2次元配列をMatrixとして定義
+typedef double *Vector        double形の1次元配列をVectorとして定義
+
+＜同次変換行列用構造体＞
+typedef struct{
+    Coord Rot[3];    回転行列
+    Coord Trl;       並進成分
+}FRAME;
+
+＜表示属性用構造体＞
+typedef struct{
+    float Color[4];  色(r,g,b,?)
+}DispStat;
+</font></pre>
+
+<HR>
+<BR>■クラス
+<pre><font size="3">
+＜三次元座標用クラス＞
+class Coord
+{
+public:
+    double x,y,z;    x,y,z座標値
+    double dmy;      汎用
+
+    // オペレータのオーバーロード
+    Coord operator +(Coord);    座標値同士の足し算(AddCoord())
+    Coord operator -(Coord);    座標値同士の引き算(SubCoord())
+    Coord operator *(Coord);    座標値同士の掛け算(MulCoord())
+    Coord operator *(double);   オーバーロード
+    Coord operator /(Coord);    座標値同士の割り算(DivCoord())
+    Coord operator /(double);   オーバーロード
+    double operator &(Coord);   座標値同士の内積(CalcInnerProduct())
+    Coord operator &&(Coord);   座標値同士の外積(CalcOuterProduct())
+};
+</font></pre>
+
+<BR><BR>
+
+<HR>
+<BR>■関数(Global)<BR><BR>
+<H2>＜Geometric, 2D/3D Vector＞</H2>
+<pre><font size="3">
+<A NAME=" InitCoord()"> </A>
+<H4>void InitCoord(Coord *a)
+void InitCoord(Coord *a,int n)</H4>
+＜説明＞
+    座標値(x,y,z,dmy)を(0,0,0,0)で初期化する．
+＜引数＞
+    *a：初期化したいCoord構造体へのポインタ/配列 
+     n：配列数 
+＜戻り値＞
+    なし
+
+<A NAME=" AddCoord()"> </A>
+<A NAME=" AddCoord2D()"> </A>
+<H4>Coord AddCoord(Coord A, Coord B)  
+Coord AddCoord(Coord A, double b)  
+Coord AddCoord(Coord A, double b, double c, doule d)
+Coord AddCoord2D(Coord A, Coord B)
+Coord AddCoord2D(Coord A, double b)  
+Coord AddCoord2D(Coord A, double b, double c)</H4>
+＜説明＞
+    座標値の足し算．  
+    ans = (A.x+B.x, A.y+B.y, A.z+B.z)  あるいは、 
+    ans = (A.x+b, A.y+b, A.z+b)  あるいは、  
+    ans = (A.x+b, A.y+c, A.z+d)  
+    2Dの場合はzの演算は行わない
+ ＜引数＞  
+    加算する2つのCoord．　あるいは、片方をdouble値とすることも可能． 
+ ＜戻り値＞  
+    加算の結果 
+
+<A NAME=" DivCoord()"> </A>
+<A NAME=" DivCoord2D()"> </A>
+<H4>Coord DivCoord(Coord A, Coord B);  
+Coord DivCoord(Coord A, double b);  
+Coord DivCoord(Coord A, double b, double c, double d)
+Coord DivCoord2D(Coord A, Coord B);  
+Coord DivCoord2D(Coord A, double b);  
+Coord DivCoord2D(Coord A, double b, double c)</H4>
+＜説明＞
+    座標値の割り算  
+    ans = (A.x/B.x, A.y/B.y, A.z/B.z)  あるいは、 
+    ans = (A.x/b, A.y/b, A.z/b)  あるいは、  
+    ans = (A.x/b, A.y/c, A.z/d)
+    2Dの場合はzの演算は行わない  
+＜引数＞  
+    除算する2つのCoord．　あるいは、片方をdouble値とすることも可能． 
+＜戻り値＞  
+    除算の結果 
+
+<A NAME=" MulCoord()"> </A>
+<A NAME=" MulCoord2D()"> </A>
+<H4>Coord MulCoord(Coord A, Coord B);  
+Coord MulCoord(Coord A, double b);  
+Coord MulCoord(Coord A, double b, double c, double d);
+Coord MulCoord2D(Coord A, Coord B);  
+Coord MulCoord2D(Coord A, double b);  
+Coord MulCoord2D(Coord A, double b, double c); </H4>
+＜説明＞
+    座標値の掛け算  
+    ans = (A.x*B.x, A.y*B.y, A.z*B.z)  あるいは、 
+    ans = (A.x*b, A.y*b, A.z*b)  あるいは、  
+    ans = (A.x*b, A.y*c, A.z*d)  
+    2Dの場合はzの演算は行わない
+＜引数＞  
+    乗算する2つのCoord．　あるいは、片方をdouble値とすることも可能． 
+＜戻り値＞  
+    乗算の結果 
+ 
+<A NAME=" SubCoord()"> </A>
+<A NAME=" SubCoord2D()"> </A>
+<H4>Coord SubCoord(Coord A, Coord B);  
+Coord SubCoord(Coord A, double b);  
+Coord SubCoord(Coord A, double b, double c, double d); 
+Coord SubCoord2D(Coord A, Coord B);  
+Coord SubCoord2D(Coord A, double b);  
+Coord SubCoord2D(Coord A, double b, double c); </H4>
+＜説明＞
+    座標値の掛け算  
+    ans = (A.x-B.x, A.y-B.y, A.z-B.z)  あるいは、 
+    ans = (A.x-b, A.y-b, A.z-b)  あるいは、  
+    ans = (A.x-b, A.y-c, A.z-d)  
+    2Dの場合はzの演算は行わない
+＜引数＞  
+    減算する2つのCoord．　あるいは、片方をdouble値とすることも可能． 
+＜戻り値＞  
+    減算の結果 
+
+<A NAME=" SetCoord()"> </A>
+<A NAME=" SetCoord2D()"> </A>
+<H4>Coord SetCoord(Coord A);  
+Coord SetCoord(double a, double b, double c); 
+Coord SetCoord2D(Coord A);  
+Coord SetCoord2D(double a, double b); </H4>
+＜説明＞
+    座標値の代入  
+    ans = (A.x, A.y, A.z)  あるいは  
+    ans = (a,b,c)  
+    2Dの場合はzの演算は行わない
+＜引数＞  
+    代入するCoord．　あるいは、double型  
+＜戻り値＞  
+    代入の結果 
+    
+<A NAME=" CopyCoord()"> </A>
+<A NAME=" CopyCoord2D()"> </A>
+<H4>void CopyCoord(Coord *a,int n,Coord *b);</H4>
+＜説明＞
+    座標値群のコピー(b<--a)  
+＜引数＞  
+    *a：コピー元
+    n：座標値の数
+    *b：コピー先  
+＜戻り値＞  
+    なし 
+
+<A NAME=" DiffCoord()"> </A>
+<A NAME=" DiffCoord2D()"> </A>
+<H4>int DiffCoord(Coord A, Coord B);
+int DiffCoord(Coord A, Coord B, double App);
+int DiffCoord2D(Coord A, Coord B);
+int DiffCoord2D(Coord A, Coord B, double App);  </H4>
+＜説明＞
+    AとBを比較する．　APPROX_ZERO以内で一致しているか 
+    精度を指定することもできる．
+＜引数＞  
+    比較したい座標値  
+＜戻り値＞  
+    A = B：KOD_TRUE　　　A != B： 
+
+<A NAME=" AbsCoord()"> </A>
+<A NAME=" AbsCoord2D()"> </A>
+<H4>Coord AbsCoord(Coord a)
+Coord AbsCoord2D(Coord a)</H4>
+＜説明＞
+    座標値の絶対値を返す
+＜引数＞
+    絶対値を求めたいCoord.
+＜戻り値＞
+    絶対値化されたCoord.
+    
+<A NAME=" ZeroCoord()"> </A>
+<A NAME=" ZeroCoord2D()"> </A>
+<H4>Coord ZeroCoord(Coord a)
+Coord ZeroCoord2D(Coord a)</H4>
+＜説明＞
+    座標値が(0.0 , 0.0 , 0.0)の場合にKOD_FALSEを返す
+    2Dの場合はzの値は見ない
+＜引数＞
+    3次元座標値
+＜戻り値＞
+    KOD_FALSE：座標値が(0.0 , 0.0 , 0.0)
+    KOD_TURE：座標値が(0.0 , 0.0 , 0.0)でない
+
+<A NAME=" NormalizeVec()"> </A>
+<H4>Coord NormalizeVec(Coord A);
+Coord NormalizeVec(double a, double b, double c);  </H4>
+＜説明＞
+    空間ベクトルを単位化する  
+＜引数＞  
+    単位化したいCoord．　あるいはdouble型  
+＜戻り値＞  
+    単位化されたCoord 
+
+<A NAME=" CalcEuclid()"> </A>
+<A NAME=" CalcEuclid2D()"> </A>
+<H4>double CalcEuclid(Coord A);  
+double CalcEuclid2D(double a, double b);  </H4>
+＜説明＞
+    原点からの3次元（2次元）ユークリッド距離を求める 
+＜引数＞  
+    距離を求めたい座標値  
+＜戻り値＞  
+    距離 
+
+<A NAME=" CalcDistance()"> </A>
+<A NAME=" CalcDistance2D()"> </A>
+<H4>double CalcDistance(Coord A,Coord B);  
+double CalcDistance2D(Coord A,Coord B);  </H4>
+＜説明＞
+    2点間の3次元（2次元）ユークリッド距離を求める 
+＜引数＞  
+    距離を求めたい2つの座標値  
+＜戻り値＞  
+    距離 
+
+<A NAME=" CalcInnerProduct()"> </A>
+<H4>double CalcInnerProduct(Coord A, Coord B);  
+double CalcInnerProduct(Coord A, double b, double c, double d); </H4>
+＜説明＞
+    内積を求める  
+＜引数＞  
+    内積を求めたい2つの空間ベクトル、あるいは一方をdouble型で指定 
+＜戻り値＞  
+    内積(スカラー) 
+
+<A NAME=" CalcOuterProduct()"> </A>
+<A NAME=" CalcOuterProduct2D()"> </A>
+<H4>Coord CalcOuterProduct(Coord A, Coord B);
+Coord CalcOuterProduct2D(Coord A, Coord B);  </H4>
+＜説明＞
+    外積を求める  
+＜引数＞  
+    外積を求めたい2つの空間ベクトル  
+＜戻り値＞  
+    外積(空間ベクトル) 
+
+<A NAME=" CalcVecAngle()"> </A>
+<A NAME=" CalcVecAngle2D()"> </A>
+<H4>double CalcVecAngle2D(Coord A, Coord B);  </H4>
+＜説明＞
+    2つの空間ベクトルと原点とのなす角を求める 
+＜引数＞  
+    角度を求めたい2つの空間ベクトル  
+＜戻り値＞  
+    角度(rad) 
+
+<A NAME=" CalcInterDivPt()"> </A>
+<H4>Coord CalcInterDivPt(Coord A, Coord B, double t); </H4>
+＜説明＞
+    2点間の内分点を求める  
+＜引数＞  
+ A,B：内分点を求めたい2つの座標値  
+    t：内分率(0〜1)  
+＜戻り値＞  
+    内分点 
+
+<A NAME=" CalcOrthoProjection()"> </A>
+<H4>Coord CalcOrthoProjection(Coord p, Coord n, Coord q); </H4>
+＜説明＞
+    任意の点を任意の平面へ正射影する  
+＜引数＞  
+    p：任意の平面上の1点  
+    n：任意の平面の単位法線ベクトル  
+    q：正射影したい点  
+＜戻り値＞  
+    正射影された平面上の点 
+
+<A NAME=" CalcDistPtToPlane()"> </A>
+<H4>double CalcDistPtToPlane(Coord Pt,Coord P0,Coord N)</H4>
+＜説明＞
+    任意の点から任意の平面までの距離を求める
+＜引数＞  
+    Pt:任意の点  P0:平面上の1点  N:平面の法線ベクトル
+＜戻り値＞  
+    計算結果
+
+<A NAME=" CalcScalarTriProduct()"> </A>
+<H4>double CalcScalarTriProduct(Coord A, Coord B, Coord C); </H4>
+＜説明＞
+    スカラー三重積を求める  
+＜引数＞  
+    スカラー三重積を求めたい3つの空間ベクトル 
+＜戻り値＞  
+    スカラー三重積 
+
+<A NAME=" CalcRotVec()"> </A>
+<A NAME=" CalcRotVec2D()"> </A>
+<H4>Coord CalcRotVec(Coord A, Coord B, double Ang); 
+Coord CalcRotVec2D(Coord A, double Ang);  </H4>
+＜説明＞
+    任意のベクトルを原点を通る任意軸周り(2Dの場合はz軸周り)に回転させたベクトルを求める 
+＜引数＞  
+    A：回転させたい位置ベクトル  
+    B：回転軸方向ベクトル(単位ベクトル)  
+    Ang：回転角(rad)  
+＜戻り値＞  
+    回転後のベクトル 
+
+<A NAME=" CalcNormalLine()"> </A>
+<H4>Coord CalcNormalLine(Coord P,Coord A,Coord u)</H4>
+＜説明＞
+    任意の点Pから任意の直線(点Aを通り単位ベクトルuの方向を持つ)へ下ろした点を求める
+＜引数＞  
+    Coord P : 任意の点
+    Coord A : 直線上の点
+    Coord u : 直線の方向を示す単位ベクトル
+＜戻り値＞  
+    計算結果
+
+<A NAME=" Arc_CP()"> </A>
+<H4>Coord Arc_CP(Coord A, Coord B, double Cos);  </H4>
+＜説明＞
+    円の中心点から円上に接する任意の2本の接線が交わる点へのベクトルを求める(中心角0<θ<π) 
+＜引数＞  
+    A：円弧をなすベクトル１  
+    B：円弧をなすベクトル２  
+    Cos：中心角の余弦  
+＜戻り値＞  
+    計算結果 
+
+<A NAME=" IsPointInPolygon()"> </A>
+<H4>int IsPointInPolygon(Coord TargetPoint, Coord *BorderPoint, int CountPoinｔ); </H4>
+＜説明＞
+    注目点の多角形内外判別を行う(x-y平面内)． 
+＜引数＞  
+    TargetPoint：内外判定をする注目点  
+    *BorderPoint：多角形の頂点群  
+    CountPoint：頂点の数  
+＜戻り値＞  
+    KOD_TRUE：内  
+    KOD_FALSE：外  
+    KOD_ONEDGE：エッジ上 
+    
+<A NAME=" CalcNormVecFrom3Pts()"> </A>
+<H4>Coord CalcNormVecFrom3Pts(Coord p1,Coord p2,Coord p3); </H4>
+＜説明＞
+   空間上の3点からなる平面の法線ベクトルを求める． 
+＜引数＞  
+    p1, p2, p3：空間上の3点
+＜戻り値＞  
+    法線ベクトル
+    
+<A NAME=" ClacPolygonArea2D()"> </A>
+<H4>double ClacPolygonArea2D(Coord p[],int Vnum); </H4>
+＜説明＞
+   2D平面上の多角形の符号付き面積を得る． 
+＜引数＞  
+    p[ ]：頂点列
+    Vnum：頂点の数
+＜戻り値＞  
+    符号付面積(CCW：正，CW：負)
+
+<A NAME=" DiscriminateCW2D()"> </A>
+<H4>int DiscriminateCW2D(Coord p[],int Vnum); </H4>
+＜説明＞
+   2D平面上の多角形が時計回りか反時計回りかを判別する． 
+＜引数＞  
+    p[ ]：頂点列
+    Vnum：頂点の数
+＜戻り値＞  
+    CCW：KOD_TRUE
+    CW：KOD_FALSE
+
+</font></pre>
+<BR><BR>
+    
+</font></pre>
+<BR><BR>
+
+<H2>＜Homoheneous Transform＞<BR>＜Rotation Matrix＞</H2>
+<pre><font size="3">
+<A NAME=" MulFrameCoord()"> </A>
+<H4>Coord MulFrameCoord(FRAME　F, Coord A);  
+Coord MulFrameCoord(double R[3][3], double T[3], Coord A); </H4>
+＜説明＞
+    同次変換行列と座標値(3Dベクトル)との掛け算 
+＜引数＞  
+    F or R,T：同次変換行列をFまたは回転行列と並進ベクトルの成分で与える 
+    A：座標値  
+＜戻り値＞  
+    乗算結果 
+
+<A NAME=" MulFrame()"> </A>
+<H4>FRAME MulFrame(FRAME F, FRAME G);  </H4>
+＜説明＞
+    同次変換行列同士の掛け算  
+＜引数＞  
+    2つの同次変換行列  
+＜戻り値＞  
+    乗算結果 
+
+<A NAME=" InvFrame()"> </A>
+<H4>FRAME InvFrame(FRAME F);  </H4>
+＜説明＞
+    同次変換行列の逆行列を得る  
+＜引数＞  
+    逆行列を求めたい同次変換行列  
+＜戻り値＞  
+    逆行列を格納した同次変換行列 
+
+<A NAME=" RotToZYZEuler()"> </A>
+<H4>Coord RotToZYZEuler(Coord R[3]);  </H4>
+＜説明＞
+    回転行列をz-y-zオイラー角へ変換  
+＜引数＞  
+    Pict 回転行列 
+  
+＜戻り値＞  
+    ans.x = z-y-zオイラー角a  
+    ans.y = z-y-zオイラー角b  
+    ans.z = z-y-zオイラー角c 
+
+<A NAME=" InitFrame()"> </A>
+<H4>InitFrame(FRAME *F);  </H4>
+＜説明＞
+    Frame内変数を全て0に初期化  
+ ＜引数＞  
+    初期化したい同次変換行列へのポインタ  
+＜戻り値＞  
+    なし 
+</font></pre>
+<BR><BR>
+
+<H2>＜Multi Dimension Vector＞<BR>＜Multi Dimension Matrix＞</H2>
+<pre><font size="3">
+<A NAME=" InitVector()"> </A>
+<A NAME=" InitMatrix()"> </A>
+<H4>void InitVector(Vector V, int n);  
+void InitMatrix(Matrix M, int m, int n);  </H4>
+＜説明＞
+    n次元ベクトル、m*n次元行列の初期化(0クリア) 
+＜引数＞  
+    V,M：初期化したいベクトルorマトリックス  
+    n,m：ベクトルorマトリックスの配列長  
+＜戻り値＞  
+    なし 
+    
+<A NAME=" CopyVector()"> </A>
+<H4>void CopyVector(Vector a,int n,Vector b); </H4>
+＜説明＞
+    ベクトルのコピー  
+＜引数＞  
+    a：コピー元
+    n：ベクトル次元数
+    b：コピー先
+＜戻り値＞  
+    なし 
+
+<A NAME=" MulMxMx()"> </A>
+<H4>void MulMxMx(Matrix A, int m1, int n1, Matrix B, int m2, int n2, Matrix Ans); </H4>
+＜説明＞
+    m1*n1行列Aとm2*n2行列Bの掛け算  
+＜引数＞  
+    A,B：乗算したい行列  
+    m1,n1：Aの行数、列数  
+    m2,n2：Bの行数、列数  
+    Ans：乗算結果  
+＜戻り値＞  
+    なし 
+
+<A NAME=" MulMxVec()"> </A>
+<H4>void MulMxVec(Matrix M, int m1, int n1 ,Vector V, int n2, Vector Ans); 
+void MulMxVec(Matrix M, int m1, int n1, Coord *A, Coord *Ans); </H4>
+＜説明＞
+    m1*n1行列Aとn2次元ベクトルVの掛け算  
+    m1*n1行列Aと座標値（3次元空間ベクトル）Aの掛け算 
+＜引数＞  
+    M,V,A：乗算したい行列、ベクトル、座標値  
+    m1,n1：Aの行数、列数  
+    n2：Vの次元数  
+    Ans：乗算結果  
+＜戻り値＞  
+    なし 
+
+<A NAME=" MulMxCoord()"> </A>
+<H4>Coord MulMxCoord(Coord A[3], Coord B);  
+Coord MulMxCOord(Matrix M, Coord B);  </H4>
+＜説明＞
+    3*3行列(A[3] or M)と3次元ベクトルBの掛け算 
+＜引数＞  
+    A[3],M：3*3行列  
+    B：3次元ベクトルをCoordで指定  
+＜戻り値＞  
+    乗算結果 
+
+<A NAME=" TranMx()"> </A>
+<H4>void TranMx(Matrix M, int n, Matrix Ans);
+void TranMx(Coord A[3], Coord B[3]);
+void TranMx(Coord **A, int m, int n, Cord **B)</H4>
+＜説明＞
+    n*n行列Mまたはm*n行列A[m][n]または3*3行列A[3]の転置行列を得る 
+＜引数＞  
+    M：転置するn*n行列  
+    m：行列Aの行数
+    n：行列Mの行/列数または行列Aの列数
+    A[3]：転置する3*3行列　　　　　(注意)Mは次元任意だが、Aは3次元 
+    Ans,B[3]：転置された行列  
+＜戻り値＞  
+    なし 
+
+<A NAME=" Gauss()"> </A>
+<H4>double Gauss(int n, Matrix a, Vector b, Vector x);  
+double Gauss(int n, Matrix a, Coord *b, Coord *x);</H4>
+＜説明＞
+    ガウスの消去法を用いて連立1次方程式を解く 
+    [A]{X} = {B}      {X} = [A]^{B}             [A]^：[A]の逆行列 
+＜引数＞  
+    n：行/列数  
+    a：n*nの係数行列　　　　　(注意)出力としてLU分解された結果が格納される 
+    b：n次元の右辺ベクトル  
+    x：n次元の変数ベクトル  
+＜戻り値＞  
+    行列式  
+    メモリー確保に失敗した場合はKOD_ERR  
+    行列式の絶対値がAPPROX_ZERO以下の場合はKOD_FALSE 
+
+<A NAME=" LU_Solver()"> </A>
+<H4>void LU_Solver(int n,Matrix a,Vector b,int *ip,Vector x);  
+void LU_Solver(int n,Matrix a,Coord *b,int *ip,Coord *x);</H4>
+＜説明＞
+    LU分解の結果から連立1次方程式を解く
+＜引数＞  
+    n：行/列数  
+    a：n*nの係数行列　　　　　(注意)出力としてLU分解された結果が格納される 
+    b：n次元の右辺ベクトル  
+    ip：行交換の情報
+    x：解  
+＜戻り値＞  
+    なし
+    
+<A NAME=" LU()"> </A>
+<H4>double LU(int n, Matrix M, int *Ip);  </H4>
+＜説明＞
+    LU分解ルーチン  
+＜引数＞  
+    n：行/列数  
+    M：n*n行列　　　　　　　(注意)出力としてLU分解された結果が格納される 
+    *Ip：行交換の情報が格納される(n個のint配列を用意すること) 
+＜戻り値＞  
+    行列式 
+
+<A NAME=" MatInv()"> </A>
+<A NAME=" MatInv2()"> </A>
+<A NAME=" MatInv3()"> </A>
+<H4>double MatInv(int n, Matrix M, Matrix Ans);  
+double MatInv2(Matrix M, Matrix Ans);  
+double MatInv3(Matrix M, Matrix Ans);  </H4>
+＜説明＞
+    n*n行列の逆行列を求める  
+    2*2/3*3行列の場合はMatInv2/MatInv3を用いた方が早い 
+＜引数＞  
+    n：行/列数  
+    M：n*n正方行列  
+    Ans：逆行列  
+＜戻り値＞  
+    行列式  
+    行列式の絶対値がAPPROX_ZERO以下の場合はKOD_FALSE 
+</font></pre>
+<BR><BR>
+
+<H2>＜Numerical Calculation＞</H2>
+<pre><font size="3">
+<A NAME=" DegToRad()"> </A>
+<A NAME=" RadToDeg()"> </A>
+<H4>double DegToRad(double deg);  
+double RadToDeg(double rad);  </H4>
+＜説明＞
+    角度の単位を変換する（deg <--> rad）  
+＜引数＞  
+    変換したい単位の角度  
+＜戻り値＞  
+    変換された単位の角度  
+ 
+<A NAME=" CalcCubicEquation()"> </A>
+<A NAME=" CalcQuadraticEquation()"> </A>
+<A NAME=" CalcLinearEquation()"> </A>
+<H4>int CalcCubicEquation(double *A, double *Ans);  
+int CalcQuadraticEquation(double *A, double *Ans); 
+int CalcLinearEquation(double *A, double *Ans);  </H4>
+＜説明＞
+    3/2/1次方程式を解く  
+＜引数＞  
+    *A：係数を格納した配列       ex)A[0]X^3 + A[1]X^2 + A[2]X + A[3] = 0 
+    Ans：解                                    X = Ans[0], Ans[1], Ans[2] 
+＜戻り値＞  
+    解の個数  
+    解が存在しない場合はKOD_FALSE  
+ 
+<A NAME=" nCr()"> </A>
+<H4>int nCr(int n,int r);  </H4>
+＜説明＞
+    2項係数(nCrの組み合わせ総数)を求める。  
+＜引数＞  
+    n：nCrのn  
+    r：nCrのr  
+＜戻り値＞  
+    計算結果 
+</font></pre>
+<BR><BR>
+
+<H2>＜Drawing＞</H2>
+<pre><font size="3">
+<A NAME=" DrawPoint()"> </A>
+<H4>void DrawPoint(Coord P, double Scale, double Width, double Color[3]); </H4>
+＜説明＞
+    点を描画する  
+＜引数＞  
+    P：点の座標値  
+    Scale：PをScale倍する  
+    Width：点のサイズ  
+    Color[3]：点の色をRGBで指定　(0<= r,g,b <=1) 
+＜戻り値＞  
+    なし 
+
+<A NAME=" DrawPoints()"> </A>
+<H4>void DrawVector(Coord P, Coord T, double Len, double Width, double Color[3]); </H4>
+＜説明＞
+    ベクトルを描画する  
+＜引数＞  
+    P：始点の座標値  
+    T：方向ベクトル  
+    Len：描画する線分の長さ  
+    Width：描画する線分の太さ  
+    Color[3]：線の色をRGBで指定　(0<= r,g,b <=1) 
+＜戻り値＞  
+    なし 
+
+<A NAME=" DrawVector()"> </A>
+<H4>void DrawVector(Coord P, Coord T, double Len, double Width, double Color[3]); </H4>
+＜説明＞
+    ベクトルを描画する  
+＜引数＞  
+    P：始点の座標値  
+    T：方向ベクトル  
+    Len：描画する線分の長さ  
+    Width：描画する線分の太さ  
+    Color[3]：線の色をRGBで指定　(0<= r,g,b <=1) 
+＜戻り値＞  
+    なし 
+
+<A NAME=" DrawLine()"> </A>
+<H4>void DrawLine(Coord P, Coord Q, double Width, double Color[3]); </H4>
+＜説明＞
+    2点を繋ぐ線分を描画する  
+＜引数＞  
+    P：始点の座標値  
+    Q：終点の座標値  
+    Width：描画する線分の太さ  
+    Color[3]：線の色をRGBで指定　(0<= r,g,b <=1) 
+＜戻り値＞  
+    なし 
+</font></pre>
+<BR><BR>
+
+<H2>＜Memory Allocation＞</H2>
+<pre><font size="3">
+<A NAME=" NewMatrix()"> </A>
+<H4>Matrix NewMatrix(int m, int n);  </H4>
+＜説明＞
+    m*n行列配列のメモリー確保  
+＜引数＞  
+    m,n：行、列の次元数  
+＜戻り値＞  
+    確保されたMatrix配列のポインタ  
+    メモリー確保に失敗した場合はNULL 
+
+<A NAME=" NewVector()"> </A>
+<H4>Vector NewVector(int n);  </H4>
+＜説明＞
+    n次元ベクトルのメモリー確保  
+＜引数＞  
+    n：次元数  
+＜戻り値＞  
+    確保されたVector配列のポインタ  
+    メモリー確保に失敗した場合はNULL 
+
+<A NAME=" FreeMatrix()"> </A>
+<H4>void FreeMatrix(Matrix M, int m);  </H4>
+＜説明＞
+    Matrix配列のメモリー解放  
+＜引数＞  
+    M：メモリー解放したいMatrix配列  
+    m：Mの行数  
+＜戻り値＞  
+    なし 
+
+<A NAME=" FreeVector()"> </A>
+<H4>void FreeVector(Vector V);  </H4>
+＜説明＞
+    Vector配列のメモリー解放  
+＜引数＞  
+    V：メモリー解放したいVector配列  
+＜戻り値＞  
+    なし 
+
+<A NAME=" NewCoord1()"> </A>
+<A NAME=" NewCoord2()"> </A>
+<H4>Coord *NewCoord1(int n);  
+Coord **NewCoord2(int m, int n);  </H4>
+＜説明＞
+    1/2次元Coord配列のメモリー確保  
+＜引数＞  
+    m,n：行、列の次元数  
+＜戻り値＞  
+    確保されたCoord配列のポインタ  
+    メモリー確保に失敗した場合はNULL 
+
+<A NAME=" FreeCoord1()"> </A>
+<A NAME=" FreeCoord2()"> </A>
+<H4>void FreeCoord1(Coord *A);  
+void FreeCoord2(Coord **A, int m);  </H4>
+＜説明＞
+    1/2次元Coord配列のメモリー解放  
+＜引数＞  
+    A：1/2次元Coord配列  
+    m：**Aの行数  
+＜戻り値＞  
+    なし 
+</font></pre>
+<BR><BR>
+
+<H2>＜Console Operation＞</H2>
+<pre><font size="3">
+<A NAME=" SetMessage()"> </A>
+<H4>void SetMessage(char *Mes);  </H4>
+＜説明＞
+    コンソールにメッセージを出力  
+＜引数＞  
+    Mes：出力したいメッセージ文字列  
+＜戻り値＞  
+    なし 
+
+<A NAME=" SetCommand()"> </A>
+<H4>void SetCommand(char *cmd);  </H4>
+＜説明＞
+    コンソールにコマンドを出力  
+＜引数＞  
+    cmd：出力したいコマンド文字列  
+＜戻り値＞  
+    なし 
+</font></pre>
+<BR><BR>
+
+<H2>＜Others＞</H2>
+<pre><font size="3">
+<A NAME=" sgn()"> </A>
+<H4>double sgn(double N);  </H4>
+＜説明＞
+    数値の符号判定  
+＜引数＞  
+    N：符号判定したいdouble型の数値  
+＜戻り値＞  
+    Nが負の場合：-1  
+    Nが０の場合：0  
+    Nが正の場合：1  
+    がdouble型で返る 
+
+<A NAME=" CheckZero()"> </A>
+<H4>int CheckZero(double val,int flag);</H4>
+＜説明＞
+    値がAPPROX_ZEROの範囲で0であるかチェックする。 
+＜引数＞  
+    val：入力値  
+    flag：精度(HIGH_ACCURACY or LOW_ACCURACY) 
+＜戻り値＞  
+    0とみなせる：KOD_TRUE  
+    0とみなせない：KOD_FALSE  
+    失敗：KOD_ERR 
+
+<A NAME=" CheckRange()"> </A>
+<H4>int CheckRange(double low,double up,double val,int flag);</H4>
+＜説明＞
+    指定した値が指定した範囲内であるかをチェック 
+＜引数＞  
+    low：下限  
+    up：上限  
+    val：調べたい値  
+    flag = 0:(low <= val <= up) --> (low-ap < val < up+ap),  
+       1:(low < val < up) --> (low+ap < val < up-ap), 
+       2:(val <= up) --> (val < up+ap),  
+       3:(val < up) --> (val < up-ap),  
+       4:(low <= val) --> (low-ap < val),  
+    v5:(low < val) --> (low+ap < val)  
+＜戻り値＞  
+    範囲内：KOD_TRUE  
+    範囲外：KOD_FALSE  
+    失敗：KOD_ERR 
+
+<A NAME=" CheckMag()"> </A>
+
+<A NAME=" BubbleSort()"> </A>
+<H4>void BubbleSort(int Arr[], int n);  
+void BubbleSort(double Arr[], int n);  </H4>
+＜説明＞
+    バブルソートを行う  
+＜引数＞  
+    Arr[]：ソートしたいint/double型配列  
+    n：配列長  
+＜戻り値＞  
+    なし 
+
+<A NAME=" QCmp()"> </A>
+<H4>int QCmp(const void *a, const void *b);  </H4>
+＜説明＞
+    C言語標準関数qsort()用比較関数  
+    2つのdouble型数値の大小比較を行う  
+＜引数＞  
+    a,b：比較したいdouble型の数値  
+＜戻り値＞  
+    a < b：1  
+    a > b：-1  
+    それ以外は0 
+</font></pre>
+<BR><BR><BR>
+<HR>
+
+
+
+【Quaternion.h】<BR><BR>
+クォータニオン演算モジュールを提供します。<BR>
+
+<BR>■シンボル
+<pre><font size="3">
+#define TMATELEMNUM       -16         回転行列配列の要素数
+</font></pre>
+
+<HR>
+<BR>■インクルードライブラリ<BR><BR>
+"StdAfx.h"<BR>
+
+<HR>
+<BR>■型定義
+<pre><font size="3">
+＜クォータニオン構造体＞
+typedef struct{
+    double t;          実部
+    double x,y,z;      虚部
+}Quat;
+
+<HR>
+<BR>■クラス<BR><BR>
+QUATERNION<BR><BR>
+<継承><BR>
+なし<BR><BR>
+
+<HR>
+<BR>■関数(Class QUATERNION)<BR><BR>
+
+<pre><font size="3">
+<A NAME=" QInit()"> </A>
+<H4>public  
+Quat QInit(double t, double x, double y, double z);  </H4>
+＜説明＞
+    クォータニオンを引数で指定した数値で初期化します。 
+＜引数＞  
+    t,x,y,z：Quat構造体変数  
+＜戻り値＞  
+    初期化されたQuat  
+ 
+
+    
+<A NAME=" QGenRot()"> </A>
+<H4>public  
+Quat QGenRot(double r, double x, double y, doublez); </H4>
+＜説明＞
+    回転クォータニオンqを生成します。 q = {cos(r/2)： x*sin(r/2), y*sin(r/2), z*sin(r/2)} 
+＜引数＞  
+    r：回転角[rad]  
+    x,y,z：回転軸ベクトル  
+＜戻り値＞  
+    回転演算用Quat 
+
+<A NAME=" QRot()"> </A>
+<H4>public  
+Quat QRot(Quat r, Quat p, Quat q);  </H4>
+＜説明＞
+   クォータニオンによるベクトルの回転演算を実行します。 
+＜引数＞  
+    r：qの共役クォータニオン  
+    p：回転したい座標値を持ったクォータニオン  
+    q：回転クォータニオン  
+＜戻り値＞  
+    回転演算結果 
+
+<A NAME=" QConjugation()"> </A>
+<H4>public  
+Quat QConjugation(Quat r);  </H4>
+＜説明＞
+    共役クォータニオンを生成  
+＜引数＞  
+    r：クォータニオン  
+＜戻り値＞  
+    共役クォータニオン 
+
+<A NAME=" QMult()"> </A>
+<H4>public  
+Quat QMult(Quat　p, Quat q);  </H4>
+＜説明＞
+    クォータニオン同士の積  
+＜引数＞  
+    p,q：乗算する2つのクォータニオン  
+＜戻り値＞  
+    計算結果 
+
+<A NAME=" QtoR()"> </A>
+<A NAME=" QCopy()"> </A>
+<H4>public  
+void QtoR(double r[15] ,Quat q);  
+void QtoR(double r[15], double t, double x, double y, double z); </H4>
+＜説明＞
+    クォータニオンqを同次変換行列rへ変換する  
+＜引数＞  
+    r：4*4行列を１次元配列で表現したもの。  
+    q：クォータニオン  
+＜戻り値＞  
+    なし 
+
+<A NAME=" QtoC()"> </A>
+<H4>public  
+Coord QtoC(Quat q);  </H4>
+＜説明＞
+    クォータニオンの3つの虚部をCoord構造体に代入する。 
+＜引数＞  
+    q：代入したいクォータニオン  
+＜戻り値＞  
+    クォータニオン虚部x,y,zをそのままCoord x,y,zとしたもの 
+
+<A NAME=" CtoQ()"> </A>
+<H4>public  
+Quat CtoQ(Coord C);  </H4>
+＜説明＞
+    クォータニオン実部を0、虚部をCoordとしてクォータニオンを生成 
+＜引数＞  
+    C：Coordで表現されたクォータニオンの虚部  
+＜戻り値＞  
+    生成されたクォータニオン 
+
+<A NAME=" QSlerp()"> </A>
+<H4>public  
+Quat QSlerp(Quat p, Quat q, double t);  </H4>
+＜説明＞
+    クォータニオンによる球面線形補間  
+    2つのベクトルp(t=0)、q(t=1)間をtで指定した内分上に球面線形補間する 
+    ※p,qは単位ベクトルであること  
+＜引数＞  
+    p,q：分割したい両端の点の座標を虚部としたクォータニオン 
+    t：内分比  
+＜戻り値＞  
+    補間された点を表すクォータニオン 
+</font></pre>
+
+</blockquote> <HR> Document Release 2.0 for Kodatuno R2.0, Nov. 2011<P> <hr> <center>
+			<A HREF="./3-2.html" TARGET="_top">Prev</A>     
+			<A HREF="./index.html" TARGET="_top">Index</A>          
+			<A HREF="./3-4.html" TARGET="_top">Next</A><br>     
+</center> <hr> <table cellpadding="0" cellspacing="0" border="0" width="100%">    
+<tr>      
+	<td align="left">        
+		<small>Copyright(C) Kodatuno Development Team, 2011</small>      
+	</td>      
+	<td align="right">        
+		<small><i>Last modified: Nov. 11, 2011</i></small>      
+	</td>   
+</tr> </table>  <!-- end of body --> </body>  
+</html>  
+

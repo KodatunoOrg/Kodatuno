@@ -1,0 +1,41 @@
+// 練習課題
+int MyAppMain(BODYList *BodyList,OBJECTList *ObjList, int PickCount, double Prop[])
+{
+	if(!PickCount)	return KOD_ERR;		// セレクションされていなかったら、何もしない
+
+	NURBS_Func nfunc;
+	double green[3] = {0,1,0};
+
+	OBJECT *obj = (OBJECT *)ObjList->getData(0);		// 一番最初にセレクションされたエンティティの情報を得る
+	BODY *body = (BODY *)BodyList->getData(obj->Body);	// 一番最初にセレクションされたBODYの実体を得る
+	if(obj->Type != _TRIMMED_SURFACE)	return KOD_ERR;	// セレクションされた曲面がトリム面でない場合は終了
+
+	NURBSS *S = body->TrmS[obj->Num].pts;		// BODYからNURBS曲面を取り出す
+	
+	NURBSS *S_ = new NURBSS;					// アフィン変換を施したNURBS曲面を格納するために新たなNURBSSをS_として宣言，メモリー確保
+	nfunc.GenNurbsS(S_,*S);						// 変換前のNURBS曲面SをS_にコピー
+
+	Coord ratio = SetCoord(1,1,Prop[0]);		// Prop[0]をz方向の倍率として取り出す
+	double deg = Prop[1];						// Prop[1]を回転角度として取り出す
+	Coord shift = SetCoord(0,0,Prop[2]);		// Prop[2]をz方向の移動量として取り出す
+	double feed = Prop[3];						// Prop[3]は交点群算出時の点間隔
+
+	nfunc.ChRatioNurbsS(S_,ratio);				// S_をz方向にratio倍する
+	nfunc.RotNurbsS(S_,SetCoord(0,1,0),deg);	// S_をy軸周りにdeg度回転
+	nfunc.ShiftNurbsS(S_,shift);				// S_をsiffシフト
+
+	BODY *newbody = new BODY;
+	newbody->RegistNurbsStoBody(BodyList,*S_,"NewBody");
+
+	Coord R[1000],R_[1000],Cod[1000];
+	int PtNum = nfunc.CalcIntersecPtsNurbsSSearch(S,S_,10,feed,R,R_,1000);	// NURBS曲面同士の交点群を算出
+	nfunc.CalcNurbsSCoords(S,PtNum,R,Cod);
+
+	NURBSC C;
+	nfunc.GenInterpolatedNurbsC1(&C,Cod,PtNum,4);		// 指定した点群を通る4階のNURBS曲線を生成する
+
+	Describe_BODY desc;
+	desc.DrawNurbsCurve(C);			// NURBS曲線の描画
+
+	return KOD_TRUE;
+}

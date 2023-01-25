@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"> 
+<HTML> 
+<HEAD LANG="ja"> 
+	<TITLE>Kodatuno User's Guide</TITLE> 
+	<meta HTTP-EQUIV="Content-type" CONTENT="text/html; charset=euc-jp"> 
+</HEAD> 
+<BODY bgcolor="#ffffff"> 
+<table cellspacing="0" cellpadding="0" border="0" width="100%">   
+	<tr valign="top" height="32">   
+	</tr>   
+	<tr valign="top">        
+		<td width="256" valign="bottom" align="left">          
+			<IMG SRC="pixmaps/logo.jpg" width="300" height="98" alt="Kodatuno Logo" ALIGN="top">
+		</td>        
+		<td valign="bottom" align="center">          
+			<center> 	   
+		<b><big>Kodatuno User's Guide</big>
+		</b>
+		<center>        
+		</td>       
+		<td width="20%" valign="bottom" align="right">     
+			<A HREF="./2-6-1.html">Prev</A>     
+			<A HREF="./index.html">Index</A>
+			<A HREF="./2-6-3.html">Next</A><br>
+		</td>   
+	</tr> 
+</table> 
+<blockquote> 
+
+<BR><HR><H2>(Ex. 2) Bodyのアフィン変換</H2>
+
+　あるBodyに対して平行・回転・拡大・縮小などのアフィン変換を行う方法について解説します．<BR><BR>
+　"SampleFunc1.cpp"のSmpTransBody()を実行します．
+
+<H4>＜実行手順＞</H4>
+<OL>
+<LI>Kodatunoアプリケーションを起動し, 適当なIGESデータを1つ読み込みます．
+<LI>表示されたBodyをピックします．
+<LI>"User Status"からMode2を選択し，"Sample Func 1"ボタンを押します．
+<LI>選択したBodyの位置と大きさが変わったことを確認してください．
+
+<P><CENTER><IMG SRC="pixmaps/UserFunc_TransBody.jpg"></CENTER></P>
+
+</OL>
+<BR><BR>
+<H4>＜ソース解説＞</H4>
+(Ex. 1)で解説したように，"Sample Func 1"をクリックしたので，"UserFunc.cpp"の77行目ExecSampleFunc1()が実行され，
+さらにMode2を選択したことから，UserStat.Modeには1が代入されているので，SmpTransBody()が実行されます．<BR>
+　では，SmpRegistBody()を見てみましょう．
+
+<P><CENTER><IMG SRC="pixmaps/UserFunc_TransBody2.jpg"></CENTER></P>
+
+　まず最初の行(37行目)には，ピックされたオブジェクトの数がゼロ，つまり何も選択されていない状態でこの関数が実行された場合のエラー処理が
+記述されています．ポカよけの意味でこの処理を冒頭に記述しておくことをおすすめします．<BR>
+　つづいて39行目では，一番最初にピックしたオブジェクトの情報を取り出しています．
+この記述は<A HREF="./2-5.html">2.5 サンプルアプリケーションの実行とソース解説 1</A>
+でも出てきました．本例では一番最初にピックしたものに限定していますが，実際のコーディングでは目的に応じて取り出すオブジェクトを変える工夫が必要です．<BR>
+　ピックしたオブジェクトの情報を取り出した後，その情報を元にBodyの実体を引っ張ってきます．それが40行目です．
+OBJECT構造体のメンバー変数Bodyにはピックしたオブジェクトが属するBodyのインデックス番号が入っています．
+このインデックス番号のBodyをBODYListから取り出しています．
+この39，40行目の2行はセットで使うことがほとんどです．C言語に自身のない人はとりあえずこの2行はおまじないとしてしまってください．<BR>
+　Bodyの実体を取り出したら，あとはそのBodyのメンバー関数を用いてアフィン変換を適宜行うだけです．<BR>
+<UL>
+<LI>BODY::RotBody()は指定した軸周りに指定角度Bodyを回転させます．<BR>
+<LI>BODY::ShiftBody()は指定したシフト量だけBodyを平行移動させます．<BR>
+<LI>BODY::ExpandBody()は指定した拡大量だけBodyを拡大/縮小させます．<BR>
+</UL>
+　ここで，Kodatunoでは3次元座標を扱うクラスとして"StdAfx.h"に定義されたCoordクラスを用います．
+たとえば，44行目ではshiftという名のCoord変数を宣言すると同時に(0,0,10)という3次元座標値を代入しています．
+Coordを使った種々の計算は"StdAfx.h"にかなり多く用意していますので，一通り見ておくとよいと思います．
+<BR><BR>
+
+　以上で(Ex. 2)の解説を終了します．次からはNURBS曲線/曲面に対して種々の情報を取り出す操作を行っていきます．
+まずは，NURBS曲線に対して指定した分割数で分割したときの分割点を生成する方法を示します．
+
+
+</blockquote> <HR> Document Release 2.0 for Kodatuno R2.0, Nov. 2011<P> <hr> <center>
+<A HREF="./2-6-1.html">Prev</A>
+<A HREF="./index.html">index</A>
+<A HREF="./2-6-3.html">Next</A><br>
+</center> <hr> <table cellpadding="0" cellspacing="0" border="0" width="100%">    
+<tr>      
+	<td align="left">        
+		<small>Copyright(C) Kodatuno Development Team, 2011</small>      
+	</td>      
+	<td align="right">        
+		<small><i>Last modified: Nov. 11, 2011</i></small>      
+	</td>   
+</tr> </table>  <!-- end of body --> </body>  
+</html>  
+

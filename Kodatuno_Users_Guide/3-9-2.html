@@ -1,0 +1,937 @@
+<!DOCTYPE HTML PUBLIC "-    W3C    DTD HTML 4.0 Transitional    EN"> 
+<HTML> 
+<HEAD LANG="ja"> 
+<TITLE>Kodatuno User's Guide</TITLE> 
+<meta HTTP-EQUIV="Content-type" CONTENT="text/html; charset=euc-jp"> 
+</HEAD> 
+<BODY bgcolor="#ffffff"> 
+<table cellspacing="0" cellpadding="0" border="0" width="100%">   
+<tr valign="top" height="32">   
+</tr>   
+<tr valign="top">        
+<td width="256" valign="bottom" align="left">          
+<IMG SRC="pixmaps/logo.jpg" width="300" height="98" alt="Kodatuno Logo" ALIGN="top">
+</td>        
+<td valign="bottom" align="center">          
+<center>    
+<b><big>Kodatuno User's Guide</big>
+</b>
+<center>        
+</td>       
+<td width="20%" valign="bottom" align="right">          
+<A HREF="./3-8.html" TARGET="_top">Prev</A>     
+<A HREF="./index.html" TARGET="_top">Index</A>          
+<A HREF="./references.html" TARGET="_top">Next</A><br>     
+</td>   
+</tr> 
+</table> 
+<blockquote> 
+
+<BR><HR><H2>システム</H2>
+
+【Kodatuno.h】<BR><BR>
+BODYの管理、OpenGLによる描画処理、各種プロシージャの実行処理を定義します。<BR>
+
+<BR>■シンボル
+<pre><font size="3">
+#define CONSOLE_CHAR_NUMMAX  2048    コンソールに出力可能な文字数 
+#define MAXSELECT            2000    セレクション時の最大バッファサイズ 
+#define BODYLISTMAX          8       読み込めるBODYの最大数 
+#define TOLERANCE            20      NURBS曲面の粗さのデフォルト値 
+#define HISTORYNUMMAX        10      コマンド履歴の最大数 <BR>
+＜NURBS曲面の生成方法を表すシンボル＞
+#define ROTSURF0     回転サーフェス
+#define SWEEPSURF 1     スイープサーフェス
+
+</font></pre>
+
+<HR>
+<BR>■インクルードライブラリ<BR><BR>
+"IGES_Parser.h" "StdAfx.h" "Quaternion.h" "Describe_BODY" "UserFunc.h" "Command.h"<BR><BR>
+
+<HR>
+<BR>■型定義<BR><BR>
+なし<BR><BR>
+
+<HR>
+<BR>■クラス<BR><BR>
+KODatUNO<BR>
+<継承><BR>
+public Describe_BODY<BR>
+public BODY_Handler<BR><BR>
+
+<HR>
+<BR>■関数(Class USER)<BR><BR>
+
+<pre><font size="3">
+<A NAME="InitializeWin()"> </A>
+<H4>public
+InitializeWin();</H4>
+＜説明＞
+    コンストラクタ
+    ユーザが独自に作成した関数とUserボタンとの関連付け及び、Userステータスの初期化を行う。  
+＜引数＞  
+   なし
+＜戻り値＞  
+    なし
+
+<A NAME="DeleteWin()"> </A>
+<H4>public
+void DeleteWin();  </H4>
+＜説明＞
+    Kodatunoの終了処理  
+＜引数＞  
+    なし  
+＜戻り値＞  
+    なし  
+＜呼び出し元＞  
+    Kodatuno_Win_Proc(); 
+
+<A NAME="OpenFile()"> </A>
+<H4>public
+int OpenFile();  
+int OpenFile(char *Fname);  </H4>
+＜説明＞
+    拡張子IGSまたはigsのファイルを読み込むダイアログボックスを表示し、IGSファイルを読み込む。読み込まれた立体上方はBODYに登録され、BODY描画フラグを立てる。
+    また、読み込んだNURBSデータに縮退がある場合は、その補間もここで行われる。 
+＜引数＞  
+    *Fname：IGESファイル名  
+＜戻り値＞  
+    正常に読み込み終了：KOD_TRUE  
+    IGES読み込みエラー：KOD_FALSE  
+＜呼び出し元＞  
+    CmdFileOpen();     Menu_Proc(); 
+
+<A NAME="OpenInpFile()"> </A>
+<H4>public
+int OpenInpFile();  </H4>
+＜説明＞
+    拡張子INPまたはinpを持つインプットファイルのフルパス名を取得する。 
+＜引数＞  
+    なし
+＜戻り値＞  
+    正常取得：KOD_TRUE  
+＜呼び出し元＞  
+    OpenInpFile_Proc(); 
+
+<A NAME="BodyListSelect()"> </A>
+<H4>public
+int BodyListSelect();  </H4>
+＜説明＞
+    BODYリストボックスにあるBODY名が選択された場合に、そのBODYの番号を得る 
+＜引数＞  
+    なし  
+＜戻り値＞  
+    なし  
+＜呼び出し元＞  
+    BodyListSel_Proc(); 
+
+<A NAME="ReDraw()"> </A>
+<H4>public
+void ReDraw(int x,int y);  </H4>
+＜説明＞
+    OpenGLによるBODY描画を行う。再描画イベントが発生した時に呼ばれる。 
+    (注意)OpenGLが用意するAPIはこの関数にぶら下がっていなければならない。 
+＜引数＞  
+    x,y：マウスの位置  
+＜戻り値＞  
+    なし  
+＜呼び出し元＞  
+    Describe_Proc(); 
+
+<A NAME="ReDrawUserFunc()"> </A>
+<H4>public
+void ReDrawUserFunc();  </H4>
+＜説明＞
+    User関数によって実行されたOpenGLによる描画はこの関数で行う。 
+    (注意)OpenGLが用意するAPIはこの関数にぶら下がっていなければならない。 
+＜引数＞  
+    なし  
+＜戻り値＞  
+    なし  
+＜呼び出し元＞  
+    Describe_Proc(); 
+
+<A NAME="ReDrawUserCommand()"> </A>
+<H4>public
+void ReDrawUserCommand()</H4>
+＜説明＞
+    UserCommand実行時の再描画呼び出し
+＜引数＞  
+    なし  
+＜戻り値＞  
+    なし  
+＜呼び出し元＞  
+    Describe_Proc(); 
+    
+<A NAME="GetConsoleCharNum()"> </A>
+<H4>public
+int GetConsoleCharNum();  </H4>
+＜説明＞
+    コンソールの現在の文字数を得る。  
+＜引数＞  
+    なし  
+＜戻り値＞  
+    コンソール文字数  
+＜呼び出し元＞  
+    console_KeyHook(); 
+
+<A NAME="SetConsoleCharNum()"> </A>
+<H4>public
+void SetConsoleCharNum(int len);  </H4>
+＜説明＞
+    コンソール文字数を保存する。  
+＜引数＞  
+    len：保存したいコンソール文字数  
+＜戻り値＞  
+    なし  
+＜呼び出し元＞  
+    Console_Expose();     Console_KeyHook();      InitializeWin(); 
+
+<A NAME="ExecCommand()"> </A>
+<H4>public
+void ExecCommand(char *allcmdline);  </H4>
+＜説明＞
+    コンソールから入力されたコマンドを解析し実行する。 
+＜引数＞  
+    *allcmdline：コマンド引数も含めたコマンド文字列 
+＜戻り値＞  
+    なし  
+＜呼び出し元＞  
+    console_KeyHook(); 
+
+<A NAME="GetUpperConsoleHistory()"> </A><A NAME="GetLowerConsoleHistory()"> </A>
+<H4>public
+int GetUpperConsoleHistory(WSCstring *cmd); 
+int GetLowerConsoleHistory(WSCstring *cmd); </H4>
+＜説明＞
+    コンソール内で上下矢印キーが押された場合、コマンド履歴を矢印に沿って取得していく。 
+＜引数＞  
+    *cmd：取得したコマンド文字列を格納  
+＜戻り値＞  
+    正常取得：KOD_TRUE  
+    コマンド履歴なし：KOD_FALSE  
+＜呼び出し元＞  
+    console_KeyHook(); 
+
+<A NAME="SetConsoleHistory()"> </A>
+<H4>public
+void SetConsoleHistory(WSCstring His); </H4>
+＜説明＞
+    コマンド履歴を格納している配列に新たなコマンドを履歴として登録する。 
+＜引数＞  
+    His：履歴登録するコマンド文字列  
+＜戻り値＞  
+    なし  
+＜呼び出し元＞  
+    console_KeyHook(); 
+
+<A NAME="GetResizeWindow()"> </A>
+<H4>public
+void GetResizeWindow();  </H4>
+＜説明＞
+    ウィンドウがリサイズされたときに、そのウインドウサイズを読み込む。 
+＜引数＞  
+    なし  
+＜戻り値＞  
+    なし  
+＜呼び出し元＞  
+    Kodatuno_Win_Proc(); 
+
+<A NAME="MouseEvent()"> </A>
+<H4>public
+void MouseEvent(long Trig, long Btn, short x, short y); </H4>
+＜説明＞
+    マウスイベントが発生した場合に、押されたボタンに応じて処理を行う。 
+＜引数＞  
+    Trig：マウスを押したか離したか  
+    Btn：押されたボタンの種類  
+    x,y：マウス位置  
+＜戻り値＞  
+    なし  
+＜呼び出し元＞  
+    Describe_Proc(); 
+
+<A NAME="MouseMotionEvent()"> </A>
+<H4>public
+void MouseEvent(long Trig, long Btn, short x, short y); </H4>
+＜説明＞
+    マウスイベントが発生した場合に、押されたボタンに応じて処理を行う。 
+＜引数＞  
+    Trig：マウスを押したか離したか  
+    Btn：押されたボタンの種類  
+    x,y：マウス位置  
+＜戻り値＞  
+    なし  
+＜呼び出し元＞  
+    Describe_Proc(); 
+
+<A NAME="ChangeViewX()"> </A><A NAME="ChangeViewY()"> </A><A NAME="ChangeViewZ()"> </A><A NAME="ChangeViewXYZ()"> </A>
+<H4>public
+void ChangeViewX();  
+void ChangeViewY();  
+void ChangeViewZ();  
+void ChangeViewXYZ();  </H4>
+＜説明＞
+    X/Y/Z軸上または鳥瞰での視点に切り替える。 
+＜引数＞  
+    なし  
+＜戻り値＞  
+    なし  
+＜呼び出し元＞  
+    ChangeView_Proc(); 
+
+<A NAME="ChangeViewUp()"> </A><A NAME="ChangeViewDown()"> </A><A NAME="ChangeViewLeft()"> </A><A NAME="ChangeViewRight()"> </A>
+<H4>public
+WSCbool ChangeViewUP();
+WSCbool ChangeViewDown();
+WSCbool ChangeViewLeft();
+WSCbool ChangeViewRight();</H4>
+＜説明＞
+    Ctrl + 上下左右矢印キーで15degづつBODYを回転させる。
+＜引数＞  
+    なし  
+＜戻り値＞  
+    True : Ctrlキーが押されていない場合
+    False : Ctrlキーが押されている場合
+＜呼び出し元＞  
+    Kodatuno_Win_Proc(); 
+
+
+<A NAME="FitView()"> </A>
+<H4>public
+void FitView();  </H4>
+＜説明＞
+    倍率をデフォルトに戻す。  
+＜引数＞  
+    なし  
+＜戻り値＞  
+    なし  
+＜呼び出し元＞  
+    ChangeView_Proc(); 
+
+<A NAME="SolidView()"> </A><A NAME="NoEdgeView()"> </A><A NAME="WireFlameView()"> </A><A NAME="VoidView()"> </A>
+<H4>public
+void SolidView();  
+void NoEdgeView();
+void WireFlameView();  
+void VoidView(); </H4>
+＜説明＞
+    BODYのソリッド表示/ワイヤーフレーム表示/非表示を切り替える。 
+＜引数＞  
+    なし  
+＜戻り値＞  
+    なし  
+＜呼び出し元＞  
+    ChangeView_Proc(); 
+
+<A NAME="SelectAll()"> </A>
+<H4>public
+void SelectAll()</H4>
+＜説明＞
+    全てセレクト状態にする
+＜引数＞  
+    なし  
+＜戻り値＞  
+    なし  
+＜呼び出し元＞  
+    ChangeView_Proc(); 
+
+
+
+<A NAME="SelectionCancel()"> </A>
+<H4>public
+void SelectionCancel();  </H4>
+＜説明＞
+    エンティティがセレクション状態にある場合は、セレクションを全て解除する。 
+＜引数＞  
+    なし  
+＜戻り値＞  
+    なし  
+＜呼び出し元＞  
+    ChangeView_Proc(); 
+
+<A NAME="ViewBlending()"> </A>
+<H4>public
+void ViewBlending();  </H4>
+＜説明＞
+    BODYを半透明にする.  
+＜引数＞  
+    なし  
+＜戻り値＞  
+    なし  
+＜呼び出し元＞  
+    ChangeView_Proc(); 
+
+<A NAME="DeleteBody()"> </A>
+<H4>public
+void DeleteBody();  </H4>
+＜説明＞
+    選択されているBODYを消去。  
+＜引数＞  
+    なし  
+＜戻り値＞  
+    なし  
+＜呼び出し元＞  
+    Menu_Proc(); 
+
+<A NAME="OpenDelBtn()"> </A>
+<H4>public
+void OpenDelBtn();  </H4>
+＜説明＞
+    Open，Deleteボタンの表示属性の変更  
+＜引数＞  
+    なし  
+＜戻り値＞  
+    なし  
+＜呼び出し元＞  
+    Menu_Proc(); 
+
+<A NAME="ExecuteUserFuncMain()"> </A>
+<H4>public
+void ExecuteUserFuncMain(int val);  </H4>
+＜説明＞
+    User関数を実行する。  
+＜引数＞  
+    val：Userに割り当てられたボタンのどのボタンが押されたかを表すシンボル 
+＜戻り値＞  
+    なし  
+＜呼び出し元＞  
+    Menu_Proc(); 
+
+<A NAME="AcceptUserStat()"> </A>
+<H4>public
+void AcceptUserStat(int Mode,double Prop[15]); </H4>
+＜説明＞
+    Userステータスダイアログの設定値を認識する。 
+＜引数＞  
+    Mode：mode1〜mode15までの番号  
+    Prop[15]：15個のプロパティ値  
+＜戻り値＞  
+    なし  
+＜呼び出し元＞  
+    UserStatDlg_Proc(); 
+
+<A NAME="UserViewCanncel()"> </A>
+<H4>public
+void UserViewCanncel();  </H4>
+＜説明＞
+    User関数実行によって描画された画像を消去する 
+＜引数＞  
+    なし  
+＜戻り値＞  
+    なし  
+＜呼び出し元＞  
+    ChangeView_Proc(); 
+
+<A NAME="SetModelScale()"> </A>
+<H4>public
+void SetModelScale();  </H4>
+＜説明＞
+    最適モデルスケールを取得する。  
+＜引数＞  
+    なし  
+＜戻り値＞  
+    なし  
+ 
+
+<A NAME="GetModelScale()"> </A>
+<H4>public
+void GetModelScale()</H4>
+＜説明＞
+    モデルスケールを取得する。  
+＜引数＞  
+    なし  
+＜戻り値＞  
+    なし  
+    
+<A NAME="SetTolerance()"> </A>
+<H4>public
+void SetTolerance()</H4>
+＜説明＞
+    トレランス値をセットする。  
+＜引数＞  
+    なし  
+＜戻り値＞  
+    なし
+    
+<A NAME="GetTolerance()"> </A>
+<H4>public
+void GetTolerance()</H4>
+＜説明＞
+    トレランス値を取得する。  
+＜引数＞  
+    なし  
+＜戻り値＞  
+    なし
+
+<A NAME="GenSurface()"> </A>
+<H4>public
+void GenSurface(Coord Axis, double Ang, int Flag); </H4>
+＜説明＞
+    ・セレクションされているNURBS曲線に対して、任意軸回りに任角度だけ回転させたNURBS曲面を生成する。 
+    ・セレクションされているNURBS曲線に対して、任意軸方向に任意長さだけスイープさせたNURBS曲面を生成する。  
+  
+＜引数＞  
+    Axis：回転中心となる軸を指定  
+    Ang：回転角度[deg]  
+    Flag：回転サーフェス(Flag = ROTSURF) or スィープサーフェス(Flag = SWEEPSURF)を指定する 
+＜戻り値＞  
+    なし  
+＜呼び出し元＞  
+    RotSurfDlg_Proc(); 
+
+<A NAME="GenNurbsCurve()"> </A>
+<H4>public
+int GenNurbsCurve(int Val, char *Fname, int M); </H4>
+＜説明＞
+    Inputファイル(点列)を読み込み、指定した生成方法を用いてNURBS曲線を生成する。 
+＜引数＞  
+    Vaｌ：NURBS曲線の生成方法を示すシンボル  
+    *Fname：Inputファイル名  
+    M：生成するNURBS曲線の階数  
+＜戻り値＞  
+    NURBS曲線の生成に成功：KOD_TRUE  
+    Inputファイルの読み込みに失敗した：KOD_ERR 
+    Inputファイルに記述されている点の数がCTLPNUMMAXを超えている：KOD_ERR 
+＜呼び出し元＞  
+    NurbsCDlg_Proc(); 
+
+<A NAME="GenNurbsSurface()"> </A>
+<H4>public
+int GenNurbsSurface(int Val, char *Fname, int M); </H4>
+＜説明＞
+    Inputファイル(点列)を読み込み、指定した生成方法を用いてNURBS曲面を生成する。 
+＜引数＞  
+    Vaｌ：NURBS曲面の生成方法を示すシンボル  
+    *Fname：Inputファイル名  
+    M：生成するNURBS曲面の階数  
+＜戻り値＞  
+    NURBS曲面の生成に成功：KOD_TRUE  
+    Inputファイルの読み込みに失敗した：KOD_ERR 
+    Inputファイルに記述されている点の数がCTLPNUMMAXを超えている：KOD_ERR 
+＜呼び出し元＞  
+    NurbsCDlg_Proc(); 
+ 
+<A NAME="SearchBodyList()"> </A>
+<H4>public
+BODY *SearchBodyList(BODYList *BodyList, int Key); </H4>
+＜説明＞
+    セレクションされているBODYの実体を得る  
+＜引数＞  
+    *BodyList：サーチしたいBODYのリストを指定 
+    Key：サーチしたいBODY番号を指定  
+＜戻り値＞  
+    BODYへのポインタ 
+
+<A NAME="GetSurfInfo()"> </A>
+<H4>public
+void GetSurfInfo(void); </H4>
+＜説明＞
+    選択されている曲面の情報をコンソール出力する  
+＜引数＞  
+    なし 
+＜戻り値＞  
+    なし 
+
+<A NAME="ChangeRank()"> </A>
+<H4>public
+void ChangeRank(int Newrank[2]); </H4>
+＜説明＞
+    選択されている曲面のRankを変更する 
+＜引数＞  
+    Newrank[2]：変更後のu方向,v方向ランク
+＜戻り値＞  
+    なし 
+
+<A NAME="ChangeBackColor()"> </A>
+<H4>public
+void ChangeBackColor(double rgb[3]); </H4>
+＜説明＞
+    背景の色を変更する  
+＜引数＞  
+    rgb[3]：変更後の色をrgbで指定 
+＜戻り値＞  
+    なし 
+
+
+<A NAME="Describe_Main()"> </A>
+<H4>private
+void Describe_Main();  </H4>
+＜説明＞
+    BODY描画メイン。  
+＜引数＞  
+    なし  
+＜戻り値＞  
+    なし 
+
+<A NAME="DrawBODY()"> </A>
+<H4>private
+void DrawBODY();  </H4>
+＜説明＞
+    BODYの描画をする。  
+＜引数＞  
+    なし  
+＜戻り値＞  
+    なし 
+
+<A NAME="DrawAxis()"> </A>
+<H4>private
+void DrawAxis(double Ascale,double Mscale); </H4>
+＜説明＞
+    軸を描画する。  
+＜引数＞  
+    Ascale：軸のスケール  
+    Mscale：モデルスケール  
+＜戻り値＞  
+    なし 
+
+<A NAME="DrawRubberband()"> </A>
+<H4>private
+void DrawRubberband(double sx,double sy,double ex,double ey); </H4>
+＜説明＞
+    ラバーバンドを描画する。  
+＜引数＞  
+    sx,sy：矩形の開始位置座標(sx,sy)  
+    sx,sy：矩形の終了位置座標(ex,ey)  
+＜戻り値＞  
+    なし 
+
+<A NAME="Draw_NurbsCurve()"> </A>
+<H4>private
+void Draw_NurbsCurve(BODY *Curr_body); </H4>
+＜説明＞
+    NURBS曲線を描画する。  
+＜引数＞  
+    *Curr_body：BODY構造体へのポインタ  
+＜戻り値＞  
+    なし 
+
+<A NAME="Draw_NurbsSurface()"> </A>
+<H4>private
+void Draw_NurbsSurface(BODY *Curr_body); </H4>
+＜説明＞
+    NURBS曲面を描画する。  
+＜引数＞  
+    *Curr_body：BODY構造体へのポインタ  
+＜戻り値＞  
+    なし  
+ 
+
+<A NAME="Draw_TrimSurfe()"> </A>
+<H4>private
+void Draw_TrimSurfe(BODY *Curr_body); </H4>
+＜説明＞
+    トリム面を描画する。  
+＜引数＞  
+    *Curr_body：BODY構造体へのポインタ  
+＜戻り値＞  
+    なし 
+
+<A NAME="UVWireView()"> </A>
+<H4>private
+void UVWireView();  </H4>
+＜説明＞
+    UVパラメータで分割されたワイヤーフレームを表示する。 
+＜引数＞  
+    なし  
+＜戻り値＞  
+    なし 
+
+<A NAME="SetOpenGLStat()"> </A>
+<H4>private
+void SetOpenGLStat();  </H4>
+＜説明＞
+    OpenGLを初期化する。  
+＜引数＞  
+    なし  
+＜戻り値＞  
+    なし 
+
+<A NAME="SetModelScale()"> </A>
+<H4>private
+void SetModelScale();  </H4>
+＜説明＞
+    最適モデルスケールを取得する。  
+＜引数＞  
+    なし  
+＜戻り値＞  
+    なし 
+
+<A NAME="DoSelect()"> </A>
+<H4>private
+void DoSelect(int x,int y);  </H4>
+＜説明＞
+    セレクション(マウスピッキング)を設定する。  
+＜引数＞  
+    x,y：セレクション時に取得する座標値(x,y)  
+＜戻り値＞  
+    なし 
+
+<A NAME="ClearSeldEntList()"> </A>
+<H4>private
+void ClearSeldEntList();  </H4>
+＜説明＞
+    セレクションリスト及びOBJECTを初期化する。 
+＜引数＞  
+    なし  
+＜戻り値＞  
+    なし 
+
+<A NAME="DeleteBodySub()"> </A>
+<H4>private
+void DeleteBodySub(BODY *body,int n); </H4>
+＜説明＞
+    選択されているBODYを消去する(Sub)。  
+＜引数＞  
+    *body：BODY構造体へのポインタ  
+    n：bodyの番号  
+＜戻り値＞  
+    なし 
+
+<A NAME="ClickPicking()"> </A>
+<H4>private
+void ClickPicking(Gluint SelectBuf[],int hits); </H4>
+＜説明＞
+    クリックによるマウスピッキングをする。  
+＜引数＞  
+    SelectBuf[]：セレクションバッファ  
+    hits：ヒットした数  
+＜戻り値＞  
+    なし 
+
+<A NAME="DragPicking()"> </A>
+<H4>private
+void DragPicking(Gluint SelectBuf[],int hits); </H4>
+＜説明＞
+    ドラッグによるマウスピッキングをする。  
+＜引数＞  
+    SelectBuf[]：セレクションバッファ  
+    hits：ヒットした数  
+＜戻り値＞  
+    なし  
+ 
+
+<A NAME="ObjSelect()"> </A>
+<H4>private
+int ObjSelect(GLuint SelectBuf[],int hits); </H4>
+＜説明＞
+ オブジェクトの選択判別する（デプス値が一番小さいオブジェクトを取得する）。 
+＜引数＞  
+    SelectBuf[]：セレクションバッファ  
+    hits：ヒット数  
+＜戻り値＞  
+    デプス値が一番小さいオブジェクト 
+
+<A NAME="AddEntSymbolToObj()"> </A>
+<H4>private
+int AddEntSymbolToObj();  </H4>
+＜説明＞
+    OBJECT構造体に何番目の曲線or曲面かの情報を付加する。 
+＜引数＞  
+    なし  
+＜戻り値＞  
+    成功：KOD_TRUE  
+    失敗：KOD_FALSE 
+
+<A NAME="InitCmdFlags()"> </A>
+<H4>private
+void InitCmdFlags();  </H4>
+＜説明＞
+    Cmd用フラグを全てKOD_FALSEに初期化する。 
+＜引数＞  
+    なし  
+＜戻り値＞  
+    なし 
+
+<A NAME="SetNewObject()"> </A>
+<H4>private
+void SetNewObject(int BodyNum,int TypeNum,int NumNum); </H4>
+＜説明＞
+    ピックされたオブジェクトをOBJECTリストに登録する。 
+＜引数＞  
+    BodyNum：BODYオブジェクトの番号  
+    TypeNum：エンティティタイプのシンボル  
+    NumNum：Typeにおける要素番号  
+＜戻り値＞  
+    なし 
+
+<HR>
+<BR>■変数(Class KODatUNO)
+<pre><font size="3">
+public
+    int  UVWireFlameViewFlag;          UVワイヤーフレーム表示フラグ
+private
+    USER User;                         ユーザークラス
+    BODYListBodyList;                  BODYリストの操作用インスタンス
+    OBJECTList SeldEntList;            セレクションされたエンティティを逐次格納していくリスト
+    CommandMap CmdMap[COMMANDNUMMAX];  コマンドマップ
+    intConsoleCharNum;                 コンソールに入力されている全ての文字数を保持
+    int Focus_Body;                    選択中のBodyを表す値
+    QUATERNION QFunc;                  クォータニオンのインスタンス
+    double RotMx[TMATELEMNUM];         クォータニオン→同時変換マトリックス
+    Quat StartQ;                       右クリックした瞬間の回転角を格納するクォータニオン
+    Quat TargetQ;                      ぐりぐりやっている途中のクォータニオン
+    double ModelScale;                 現在のモデルスケール
+    double ModelScale1st;              モデルスケールの初期値
+    double Tolerance;                  NURBSを表現する時の面の粗さ
+    double Trl[3];                     平行移動量
+    int  Vp[4];                        ビューポイント
+    double AxisScale;                  軸描画のスケール
+    int  OpenGLInitFlag;               OpenGL初期設定済みフラグ
+    int  ExecUserFuncFlag[USERFUNCNUMMAX];     UserFunc描画フラグ
+    int  ExecUserCommandFlag[USERCOMMANDNUM];  UserCommand描画フラグ
+    int  DoSelectFlag;                 セレクション実行フラグ
+    int  SweepSelectFlag;              スイープセレクションを開始したことを示すフラグ
+    int  ScreenHeight;                 デフォルトスクリーンの高さ
+    int  ScreenWidth;                  デフォルトスクリーンの幅
+    int  StartX;                       ドラッグ開始位置X
+    int  StartY;                       ドラッグ開始位置Y
+    int  OldPosX;                      ウィンドウ再描画直前のX座標
+    int  OldPosY;                      ウィンドウ再描画直前のY座標
+    int  CurrentX;                     ドラッグ中の位置X
+    int  CurrentY;                     ドラッグ中の位置Y
+    int  LBtnFlag;                     左クリックしたことを示すフラグ
+    int  RBtnFlag;                     右クリックしたことを示すフラグ
+    int  MBtnFlag;                     中クリックしたことを示すフラグ
+    int  ShiftKeyFlag;                 Shiftキーを押したことを示すフラグ
+    int  CtrlKeyFlag;                  Ctrlキーを押したことを示すフラグ
+    int  AltKeyFlag;                   Altキーを押したことを示すフラグ
+    int  SolidViewFlag;                ソリッド表示フラグ
+    int  EdgeViewFlag;                 エッジ表示フラグ
+    int  WireFlameViewFlag;            ワイヤーフレーム表示フラグ
+    int  BlendViewFlag;                半透明表示フラグ
+    int  DrawBODYFlag;                 BODY描画フラグ
+    int  DrawSurfFlag;                 Surface描画フラグ
+    int ReDrawBODYFlag;                BODY描画1発目を示すフラグ
+    GLuint SelectBuf[MAXSELECT];       セレクトバッファ
+    int argc;                          コマンド引数
+    char *argv[MAXCOMMANDOPNUM];       コマンド引数
+    char CmdStack[HISTORYNUMMAX][256]; コマンド履歴
+    int CmdStackNum;                   コマンド履歴数
+    int CmdStackNow;
+</font></pre>
+
+
+<HR>
+<BR>■グローバル変数
+<pre><font size="3">
+    extern KODatUNO Kodatuno;          KODatUNOクラス唯一のオブジェクト
+</font></pre>
+
+
+<HR>
+<BR>■グローバル関数<BR><BR>
+Kodatunoシステムコマンドを登録
+<pre><font size="3">
+<A NAME="Cmd()"> </A>
+void CmdVerInf(int,char *[]);              コマンド(バージョン情報出力)
+void CmdFileOpen(int,char *[]);            コマンド(ファイルオープン)
+void CmdUVWire(int,char *[]);              コマンド(UVワイヤーフレーム表示)
+void CmdChScale(int,char *[]);             コマンド(スケール変更)
+void CmdGenRotSurf(int,char *[]);          コマンド(回転サーフェス生成)
+void CmdGenSweepSurf(int,char *[]);        コマンド(スイープサーフェス生成)
+void CmdGenNurbsCurve(int,char *[]);       コマンド(Nurbs曲線生成)
+void CmdGenNurbsSurface(int,char *[]);     コマンド(Nurbs曲面生成)
+void CmdChTolerance(int,char *[]);         コマンド(トレランス変更)
+void CmdMoveBody(int,char *[]);            コマンド(BODYの平行移動)
+void CmdRotateBody(int ,char *[]);         コマンド(BODYの回転)
+void CmdCPView(int ,char *[]);             コマンド(コントロールポイント描画)
+void CmdSurfInfo(int,char *[]);            コマンド(曲面情報を出力)
+void CmdExpand(int,char *[]);              コマンド(BODYの拡大)
+＜説明＞
+    各種コマンド処理
+＜引数＞  
+    argc : コマンド引数の数
+    *argv[] : コマンド引数文字列
+＜戻り値＞  
+    なし 
+</font></pre>
+<HR>
+
+【Command.h】<BR><BR>
+コマンドの登録、コマンド解析に関するライブラリを提供します。<BR>
+
+<BR>■シンボル
+<pre><font size="3">
+#define MAXCOMMANDLEN   16             コマンド文字数の最大値
+#define MAXCOMMANDOPNUM 5              登録できるコマンドオプション数
+#define COMMANDNUMMAX   200            登録できるコマンド数
+#define SYSCOMMANDNUM   100            Kodatunoがあらかじめ用意するコマンドの最大値(0-99)
+#define USERCOMMANDNUM  100            ユーザーが独自に登録できるコマンドの最大値(100-199)
+</font></pre>
+
+<HR>
+<BR>■インクルードライブラリ<BR><BR>
+&lt;WSClistData.h&gt<BR>
+"StdAfx.h"<BR><BR>
+
+<HR>
+<BR>■型定義
+<pre><font size="3">
+＜コマンド用構造体＞
+typedef struct{
+    char Name[MAXCOMMANDLEN];      コマンド名
+    char Op[MAXCOMMANDOPNUM];      オプション名
+    int  CmdNo;                    キー
+    void (*Command)(int,char *[]); コマンド実行関数へのポインタ
+}CommandMap;
+</font></pre>
+
+<HR>
+<BR>■クラス<BR><BR>
+なし<BR>
+
+<HR>
+<BR>■関数(Global)
+<pre><font size="3">
+<A NAME="SetCmdList()"> </A>
+<H4>void SetCmdList(CommandMap *CmdMap,char *name,char *op,int key,void (*Cmd)(int,char *[])); </H4>
+＜説明＞
+    コマンドを追加する。  
+＜引数＞  
+    *CmdMap：コマンド情報を格納する構造体へのポインタ 
+    *name：コマンド名  
+    *op：コマンドオプション名  
+    key：コマンドを代表する値(0〜99：Kodatunoが使用、100〜199：Userに割り当て) 
+    (*Cmd)(int,char *[])：実行されるコマンドの関数へのポインタ 
+＜戻り値＞  
+    なし 
+
+<A NAME="AnalCommandLine()"> </A>
+<H4>int AnalCommandLine(char *str,char *argv[]);   </H4>
+＜説明＞
+    コマンドを解析する。  
+＜引数＞  
+    *str：コマンドラインの文字数  
+    *argv[]：分解した文字列を格納  
+＜戻り値＞  
+    コマンドライン引数の数 
+
+<A NAME="SearchRegdCmdNum()"> </A>
+<H4>int SearchRegdCmdNum(CommandMap *CmdMap,char *cmd);  </H4>
+＜説明＞
+    引数で指定したコマンドの登録Noを調べる。  
+＜引数＞  
+    *CmdMap：コマンドマップ  
+    *cmd：コマンド名  
+＜戻り値＞  
+    コマンドの登録No(失敗：KOD_ERR) 
+</font></pre>
+
+
+</blockquote> <HR> Document Release 2.0 for Kodatuno R2.0, Nov. 2011<P> <hr> <center>
+<A HREF="./3-8.html" TARGET="_top">Prev</A>     
+<A HREF="./index.html" TARGET="_top">Index</A>          
+<A HREF="./references.html" TARGET="_top">Next</A><br>     
+</center> <hr> <table cellpadding="0" cellspacing="0" border="0" width="100%">    
+<tr>      
+<td align="left">        
+<small>Copyright(C) Kodatuno Development Team, 2011</small>      
+</td>      
+<td align="right">        
+		<small><i>Last modified: Nov. 11, 2011</i></small>      
+</td>   
+</tr> </table>  <!-- end of body --> </body>  
+</html>  
+

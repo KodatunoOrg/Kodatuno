@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"> 
+<HTML> 
+<HEAD LANG="ja"> 
+	<TITLE>Kodatuno User's Guide</TITLE> 
+	<meta HTTP-EQUIV="Content-type" CONTENT="text/html; charset=euc-jp"> 
+</HEAD> 
+<BODY bgcolor="#ffffff"> 
+<table cellspacing="0" cellpadding="0" border="0" width="100%">   
+	<tr valign="top" height="32">   
+	</tr>   
+	<tr valign="top">        
+		<td width="256" valign="bottom" align="left">          
+			<IMG SRC="pixmaps/logo.jpg" width="300" height="98" alt="Kodatuno Logo" ALIGN="top">
+		</td>        
+		<td valign="bottom" align="center">          
+			<center> 	   
+		<b><big>Kodatuno User's Guide</big>
+		</b>
+		<center>        
+		</td>       
+		<td width="20%" valign="bottom" align="right">     
+			<A HREF="./2-8.html">Prev</A>     
+			<A HREF="./index.html">Index</A>
+			<A HREF="./3-1.html">Next</A><br>
+		</td>   
+	</tr> 
+</table> 
+<blockquote> 
+
+<BR><HR><H2>その他</H2>
+UserFuncには、これまで述べてきた機能に加え、更に以下に2つの機能があります。
+<UL>
+<BR><LI>ユーザーコマンドの登録<BR><BR>
+Kodatunoでは、システムが提供するコマンド(<A HREF="2-4.html">2.4  各コマンドの名称と機能 </A>)以外に、
+ユーザーが独自でコマンドを作成し、登録することができます。サンプルとして、(<A HREF="2-7.html">2.7 簡単なアプリケーションの作成  </A>)
+で示したプログラムをコンソールから実行できるようにしてみます。
+<OL>
+<BR><LI>まず、コマンド名を登録します。コマンド名は"cross"とします。<BR>
+UserFunc.cpp内にRegistUserCommand()関数があります。その関数内を次のように変更してください。
+<P><CENTER>
+<P><CENTER><IMG SRC="pixmaps/Command_Name.jpg"></CENTER></P>
+</CENTER></P>
+
+SetCmdList()関数は、Command.cpp/.hに定義されています。第1引数はコマンドの名前やオプションの有無などを格納した構造体(実体はKodatuno.hで定義されています)への
+ポインタ(変更不可)、第2引数はコマンド名、第3引数はオプション指定、第4引数はこのコマンドのシンボル、第5引数はシステムコマンドでないことを明示するためにNULLを指定します。
+第4引数であるコマンドのシンボルは、UserFunc.hでユーザーが定義しなければなりません。
+<P><CENTER>
+<P><CENTER><IMG SRC="pixmaps/Command_Symbol.jpg"></CENTER></P>
+</CENTER></P>
+
+<BR><LI>次に、"cross"が入力されたときの処理をUserFunc.cpp内のCommand()関数に記述します。<BR><BR>
+<P><CENTER>
+<P><CENTER><IMG SRC="pixmaps/Command_Command.jpg"></CENTER></P>
+</CENTER></P>
+
+コンソールに"cross"が入力されると、Command()の第4引数CmdNoに先ほど定義したcrossコマンドシンボル"CMD_CROSS"が渡されます。
+よって、Command()内ではCMD_CORSSが入力されたことを条件として、ExecSampleFunc4()を実行するようにコーディングします。<BR><BR>
+</OL>
+
+以上で、コマンド登録及び、コマンド入力後の応答を実装することができました。<BR><BR>
+
+<BR><LI>Wide Studioが提供するダイアログの利用<BR>
+例えば、ユーザー独自のファイルフォーマットの読み込みを行いたい場合などに便利です。
+Wide Studioの機能をUser Funcより用いる場合は、専用の関数ExecWSFunc()を通して行う必要があります。
+以下に、ユーザーボタン"User Func 5"にファイルをオープンするダイアログを適用する例を示します。
+<OL>
+<BR><LI>まず、ExecWSFunc()にこれから作成する関数名を記述します。今回の例では、MyOpenFileFunc()という名前とします。<BR>
+<P><CENTER>
+<P><CENTER><IMG SRC="pixmaps/UserWSFunc_ExecWSFunc.jpg"></CENTER></P>
+</CENTER></P>
+MyOpenFileFunc()をvalが4となる位置に挿入しました。valは"User Func"ボタンのシンボルを示し、val=4の場合、"User Func 5"を示します。<BR>
+
+<BR><LI>次に、MyOpenFileFunc()を書いていきます。
+<P><CENTER>
+<P><CENTER><IMG SRC="pixmaps/UserWSFunc_MyOpenFileFunc.jpg"></CENTER></P>
+</CENTER></P>
+Wide Studioに関するコーディングはWide Studioのリファレンスを参照してください。
+関数冒頭の3行でダイアログを開く処理を行っています。今回の例では、拡張子igsのみダイアログに表示されるようにしています。
+次のif文以降で、ダイアログのOKが押された場合の処理を記述します。<BR><BR>
+</OL>
+以上で、UserFuncにおけるダイアログの表示が可能となります。
+</UL>
+
+</blockquote> <HR> Document Release 2.0 for Kodatuno R2.0, Nov. 2011<P> <hr> <center>
+<A HREF="./2-8.html">Prev</A>
+<A HREF="./index.html">index</A>
+<A HREF="./3-1.html">Next</A><br>
+</center> <hr> <table cellpadding="0" cellspacing="0" border="0" width="100%">    
+<tr>      
+	<td align="left">        
+		<small>Copyright(C) Kodatuno Development Team, 2011</small>      
+	</td>      
+	<td align="right">        
+		<small><i>Last modified: Nov. 11, 2011</i></small>      
+	</td>   
+</tr> </table>  <!-- end of body --> </body>  
+</html>  
+

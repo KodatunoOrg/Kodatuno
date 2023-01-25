@@ -2,6 +2,24 @@
 Inputファイル(***.inp)
 ======================
 
+【概要】
+Kodatunoで点列からNURBS曲線/曲面を生成するために必要なファイルです。
+
+【ファイル内容】
+NurbsC
+	+--- Sample.inp				自由曲線デバッグ用ファイル(高杉さんが作成なさったファイルです)
+	+--- Polygonal.inp		折れ線デバッグ用ファイル
+NurbsS
+	+--- ensui.inp				板厚計測システムOrthrosで計測した点列(円錐台形状)
+	+--- hankyuu.inp			板厚計測システムOrhhrosで計測した点列(半球形状)
+	+--- triangle1.inp		三角形1
+	+--- triangle2.inp		三角形2
+	+--- square.inp			　四角形
+	+--- pentagon.inp			五角形(折れ面or階数2指定)
+	+--- hexagon.inp			六角形(折れ面or階数2指定)
+	+--- FreeSurf.inp			自由曲面
+
+【注意】
 NURBS曲面に関するInputファイルを作成する際は、ファイルの先頭行にu,v各方向の点の数を入力してください。
 また、各点の座標の順序はuv方向の順序に則ります。以下の例を参考にしてください。
 

@@ -1,0 +1,658 @@
+<!DOCTYPE HTML <H4>private "-W3CDTD HTML 4.0 TransitionalEN"> 
+<HTML> 
+<HEAD LANG="ja"> 
+    <TITLE>Kodatuno User's Guide</TITLE> 
+    <meta HTTP-EQUIV="Content-type" CONTENT="text/html; charset=euc-jp"> 
+</HEAD> 
+<BODY bgcolor="#ffffff"> 
+<table cellspacing="0" cellpadding="0" border="0" width="100%">   
+    <tr valign="top" height="32">   
+    </tr>   
+    <tr valign="top">        
+        <td width="256" valign="bottom" align="left">          
+            <IMG SRC="pixmaps/logo.jpg" width="300" height="98" alt="Kodatuno Logo" ALIGN="top">
+        </td>        
+        <td valign="bottom" align="center">          
+            <center>        
+        <b><big>Kodatuno User's Guide</big>
+        </b>
+        <center>        
+        </td>       
+        <td width="20%" valign="bottom" align="right">          
+            <A HREF="./3-4.html" TARGET="_top">Prev</A>     
+            <A HREF="./index.html" TARGET="_top">Index</A>          
+            <A HREF="./3-6.html" TARGET="_top">Next</A><br>     
+        </td>   
+    </tr> 
+</table> 
+<blockquote> 
+
+<BR><HR><H2>IGESパーサー</H2>
+【IGES_Parser.h】<BR><BR>
+IGESファイルを解析し、Kodatuno内部表現へ変換します。<BR>
+
+<BR>■シンボル
+<pre><font size="3">
+#define SECTION_NUM          5        セクションの数(S,G,D,P,T)
+#define COLUMN_MAX_          82       1行のカラム数('\n'と'\0'を含む)
+#define COLUMN_MAX           80       1行のカラム数('\n'と'\0'は含まない)
+#define COL_CHAR             73       セクション判別文字のカラム
+#define COL_P_DIRECTORY      65       パラメータ部でのディレクトリ部への逆ポインタがあるカラム
+#define GLOBALPARAMNUM       25       グローバル部のパラメータ数
+#define FIELD_NUM            8        ディレクトリ部の1フィールドの文字数
+#define DIRECTORYPARANUM     20       ディレクトリ部のパラメータ数
+#define SECTION_START        0        スタートルセクション判別用シンボル
+#define SECTION_GLOBAL       1        グローバルセクション判別用シンボル
+#define SECTION_DIRECTORY    2        ディレクトリセクション判別用シンボル
+#define SECTION_PARAMETER    3        パラメータセクション判別用シンボル
+#define SECTION_TERMINATE    4        ターミネートセクション判別用シンボル
+#define MAIN_ENTITY_TYPE_NUM 9        読み込み対象となるエンティティタイプの数
+#define NRBS_PARAM_MAX       200      NRBS曲面・曲線で定義されるパラメータの最大値
+</font></pre>
+
+<HR>
+<BR>■インクルードライブラリ<BR><BR>
+"BODY.h"<BR><BR>
+
+<HR>
+<BR>■型定義
+<pre><font size="3">
+＜IGESフォーマットにおけるグローバル部パラメータのシンボルを定義＞
+enum GlobalParamType{
+    PARAM_DELIMITER=1,        パラメータデリミタ
+    RECORD_DELIMITER,         レコードデリミタ
+    SEND_PRODUCT_ID,          送り側製品ＩＤ
+    FILE_NAME,                ファイル名
+    SEND_SYSTEM_ID,           送り側システムＩＤ
+    PRIRPO_VERSION,           プリプロセッサバージョン
+    INT_LENGTH,               整数値の長さ
+    FLOAT_PNT_LENGTH,         単精度浮動小数点指数の最大値
+    FLOAT_PNT_FIGURE,         単精度浮動小数点有効桁数
+    DOUBLE_PNT_LENGTH,        倍精度浮動小数点指数の最大値
+    DOUBLE_PNT_FIGURE,        倍精度浮動小数点有効桁数
+    RECIVE_PRODUCT_ID,        受け取り側製品ＩＤ
+    MODEL_SCALE,              モデルスケール
+    UNIT_FLAG,                単位フラグ
+    UNIT,                     単位
+    LINE_THICKNESS_NUMBER,    線幅の最大類別数
+    LINE_THICKNESS,           線幅の最大値
+    DATE_MAKE_FILE,           ファイル作成日時
+    MIN_ACCRACY,              最小精度
+    MODEL_SPACE_SIZE,         モデル空間の大きさ
+    FILE_MAKER_NAME,          ファイル作成者
+    BELONG,                   所属
+    IGES_VERSION,             バージョン
+    DRAFTING_STANDARD,        製図規格
+    DATE_MAKE_MODEL           モデル作成日
+};
+
+＜ディレクトリ部パラメータのシンボルを定義＞
+enum DirectoryParamType{
+    ENTITY_TYPE_NUM,          要素番号
+    PARAM_DATA,               パラメータ部へのポインタ
+    STRUCTURE,                ストラクチャ
+    LINE_FONT_PATTERN,        線種
+    LEVEL,                    レベル
+    VIEW_,                    ビュー
+    TRAN_MATRIX,              マトリックスへのポインタ
+    LABEL_DISP_ASSOC,         ラベル表示
+    STATUS_NUM,               ステイタス
+    SEQUENCE_NUM,             シーケンス番号
+    ENTITY_TYPE_NUM_,         要素番号
+    LINE_WEIGHT_NUM,          線幅
+    COLOR_NUM,                色
+    PARAM_LINE_COUNT,         パラメータ部のライン数
+    FORM_NUM,                 形式番号
+    RESERVED1,                予備
+    RESERVED2,                予備
+    ENTITY_LABEL,             要素のラベル
+    ENTITY_SUBSCRIPT_NUM,     サブスクリプト
+    SEQUENCE_NUM_             シーケンス番号
+};
+
+＜グローバル部の必要パラメータ構造体＞
+typedef struct{
+    double scale;             モデルのスケール
+    int    unit_flag;         単位フラグ
+    double space_size;        モデル空間の大きさ
+}GlobalParam;
+
+＜ディレクトリ部の必要パラメータ構造体＞
+typedef struct{
+    int entity_type;          要素番号
+    int entity_count;         何番目のentity_typeかを表す
+    int p_param;              パラメータ部へのポインタ
+    int p_tm;                 マトリックスへのポインタ
+    int blank_stat;           表示属性
+    int subordinate_stat;     従属属性
+    int useflag_stat;         entity使用意図
+    int seq_num;              シーケンス番号
+    int param_line_count;     パラメータ部のライン数
+}DirectoryParam;
+</font></pre>
+
+<HR>
+<BR>■クラス<BR><BR>
+IGES_PARSER<BR><BR>
+<継承><BR>
+なし<BR><BR>
+
+<HR>
+<BR>■関数(Class IGES_PARSER)<BR><BR>
+
+<pre><font size="3">
+<A NAME="IGES_Parser_Main()"> </A>
+<H4>public
+int IGES_Parser_Main(BODY *body,char IGES_fname[]); </H4>
+＜説明＞
+    IGESパーサーのメイン。  
+＜引数＞  
+    *body：立体を構成するエンティティの集合オブジェクトへのポインタ 
+    IGES_fname[]：IGESファイル名  
+＜戻り値＞  
+    成功：KOD_TRUE  
+    失敗：KOD_ERR 
+    
+<A NAME="NormalizeKnotRange()"> </A>
+<H4>public
+int NormalizeKnotRange(BODY *body, double val); </H4>
+＜説明＞
+    ノットベクトルを0〜valで正規化する。  
+＜引数＞  
+    *body：立体を構成するエンティティの集合オブジェクトへのポインタ 
+    val：ノットベクトルの範囲の上限
+＜戻り値＞  
+    KOD_TRUE  
+    
+<A NAME="ExpandKnotRange()"> </A>
+<H4>public
+int ExpandKnotRange(BODY *body); </H4>
+＜説明＞
+    隣うノットベクトルの間隔がMIN_KNOT_RANGE以上となるようにノットベクトルの範囲を修正する。  
+＜引数＞  
+    *body：立体を構成するエンティティの集合オブジェクトへのポインタ 
+＜戻り値＞  
+    KOD_TRUE  
+    
+<A NAME="ModifyParamConect()"> </A>
+<H4>public
+int ModifyParamConect(BODY *body); </H4>
+＜説明＞
+    パラメトリック平面内のトリム曲線同士のつながりをチェック、修正する。  
+＜引数＞  
+    *body：立体を構成するエンティティの集合オブジェクトへのポインタ 
+＜戻り値＞  
+    KOD_TRUE  
+
+<A NAME="CheckDegenracy()"> </A>
+<H4>public
+int CheckDegenracy(BODY *body); </H4>
+＜説明＞
+    NURBS曲面の縮退をチェックし、見つかれば修正する。  
+＜引数＞  
+    *body：立体を構成するエンティティの集合オブジェクトへのポインタ 
+＜戻り値＞  
+    KOD_TRUE  
+    
+<A NAME="IGES_PARSER()"> </A>
+<H4>public
+IGES_PARSER();  </H4>
+＜説明＞
+    コンストラクタ。  
+＜引数＞  
+    なし  
+＜戻り値＞  
+    なし 
+
+<A NAME="GetSectionLine()"> </A>
+<H4>private
+void GetSectionLine(FILE *fp,int line[]);  </H4>
+＜説明＞
+    各セクションのライン数を調べる。  
+＜引数＞  
+    *fp：読み込んだIGESファイルへのポインタ  
+    line[]：各セクションのライン数  
+＜戻り値＞  
+    なし 
+
+<A NAME="GetStartSection()"> </A>
+<H4>private
+int GetStartSection(FILE *fp,int sline);  </H4>
+＜説明＞
+    スタート部の情報を読み込む。  
+＜引数＞  
+    *fp：読み込んだIGESファイルへのポインタ  
+    sline：スタート部のライン数  
+＜戻り値＞  
+    成功：KOD_TRUE  
+    失敗：KOD_ERR 
+
+<A NAME="GetGlobalSection()"> </A>
+<H4>private
+int GetGlobalSection(FILE *fp,GlobalParam *gpara,int gline); </H4>
+＜説明＞
+    グローバル部の情報を読み込む。  
+＜引数＞  
+    *fp：読み込んだIGESファイルへのポインタ  
+    *gpara：グローバル部のパラメータ構造体へのポインタ 
+    gline：グローバル部のライン数  
+＜戻り値＞  
+    成功：KOD_TRUE  
+    失敗：KOD_ERR 
+
+<A NAME="GetDirectorySection()"> </A>
+<H4>private
+int GetDirectorySection(FILE *fp,DirectoryParam *dpara,int TypeNum[],int dline); </H4>
+＜説明＞
+    ディレクトリ部の情報を読み込む。  
+＜引数＞  
+    *fp：読み込んだIGESファイルへのポインタ  
+    *dpara：ディレクトリ部のパラメータ構造体へのポインタ 
+    TypeNum[]：BODYを構成する各エンティティの数 
+    dline：ディレクトリ部のライン数  
+＜戻り値＞  
+    成功：KOD_TRUE  
+    失敗：KOD_ERR 
+
+<A NAME="GetStatusNumber()"> </A>
+<H4>private
+void GetStatusNumber(char field[],DirectoryParam *dpara); </H4>
+＜説明＞
+    DE#9(ステータス)部を読み込む。  
+＜引数＞  
+    field[]：フィールド  
+    *dpara：ディレクトリ部のパラメータ構造体へのポインタ 
+＜戻り値＞  
+    なし 
+
+<A NAME="GetParameterSection()"> </A>
+<H4>private
+int GetParameterSection(FILE *fp,DirectoryParam *dpara,BODY body,int dline); </H4>
+＜説明＞
+    パラメータ部の情報を読み込む。  
+＜引数＞  
+    *fp：読み込んだIGESファイルへのポインタ  
+    *dpara：ディレクトリ部のパラメータ構造体へのポインタ 
+    body：BODY構造体  
+    dline：ディレクトリ部のライン数  
+＜戻り値＞  
+    成功：KOD_TRUE  
+    失敗：KOD_ERR 
+
+<A NAME="GetTerminateSection()"> </A>
+<H4>private
+int GetTerminateSection(FILE *fp);  </H4>
+＜説明＞
+    ターミネート部の情報を読み込む。  
+＜引数＞  
+    *fp：読み込んだIGESファイルへのポインタ  
+＜戻り値＞  
+    成功：KOD_TRUE 
+
+<A NAME="GetType()"> </A>
+<H4>private
+void GetType(int type,int entitynum[]);  </H4>
+＜説明＞
+    各エンティティタイプの数を取得する。  
+＜引数＞  
+    type:エンティティのタイプ  
+    enntitynum[]:エンティティの数  
+＜戻り値＞  
+    なし 
+
+<A NAME="GetCirAPara()"> </A>
+<H4>private
+int GetCirAPara(char str[],int pD,DirectoryParam *dpara,BODY body); </H4>
+＜説明＞
+    Type100 円・円弧を読み込む。  
+＜引数＞  
+    str[]：文字列バッファ  
+    pD：ディレクトリ部への逆ポインタの値  
+    *dpara：ディレクトリ部のパラメータ構造体へのポインタ 
+    body：BODY構造体  
+＜戻り値＞  
+    成功：KOD_TRUE 
+
+<A NAME="GetCompCPara()"> </A>
+<H4>private
+int GetCompCPara(char str[],int pD,DirectoryParam *dpara,int dline,BODY body); </H4>
+＜説明＞
+    Type102 複合曲線を読み込む。  
+＜引数＞  
+    str[]：文字列バッファ  
+    pD：ディレクトリ部への逆ポインタの値  
+    *dpara：ディレクトリ部のパラメータ構造体へのポインタ 
+    body：BODY構造体  
+＜戻り値＞  
+    成功：KOD_TRUE  
+    失敗：KOD_ERR 
+
+<A NAME="GetConAPara()"> </A>
+<H4>private
+int GetConAPara(char str[],int pD,DirectoryParam *dpara,BODY body); </H4>
+＜説明＞
+    Type104 円錐曲線を読み込む。  
+＜引数＞  
+    str[]：文字列バッファ  
+    pD：ディレクトリ部への逆ポインタの値  
+    *dpara：ディレクトリ部のパラメータ構造体へのポインタ 
+    body：BODY構造体  
+＜戻り値＞  
+    成功：KOD_TRUE  
+    失敗：KOD_ERR 
+
+<A NAME="GetLinePara()"> </A>
+<H4>private
+int GetLinePara(char str[],int pD,DirectoryParam *dpara,BODY body); </H4>
+＜説明＞
+    Type110 線分を読み込む。  
+＜引数＞  
+    str[]：文字列バッファ  
+    pD：ディレクトリ部への逆ポインタの値  
+    *dpara：ディレクトリ部のパラメータ構造体へのポインタ 
+    body：BODY構造体  
+＜戻り値＞  
+    成功：KOD_TRUE  
+    失敗：KOD_ERR 
+
+<A NAME="GetTMatPara()"> </A>
+<H4>private
+int GetTMatPara(char str[],int pD,DirectoryParam *dpara,BODY body) </H4>
+＜説明＞
+    Type124 変換行列を読み込む。  
+＜引数＞  
+    str[]：文字列バッファ  
+    pD：ディレクトリ部への逆ポインタの値  
+    *dpara：ディレクトリ部のパラメータ構造体へのポインタ 
+    body：BODY構造体  
+＜戻り値＞  
+    成功：KOD_TRUE  
+    失敗：KOD_ERR 
+
+<A NAME="GetNurbsCPara()"> </A>
+<H4>private
+int GetNurbsCPara(char str[],int pD,DirectoryParam *dpara,BODY body) </H4>
+＜説明＞
+    Type126 NURBS曲線を読み込む。  
+＜引数＞  
+    str[]：文字列バッファ  
+    pD：ディレクトリ部への逆ポインタの値  
+    *dpara：ディレクトリ部のパラメータ構造体へのポインタ 
+    body：BODY構造体  
+＜戻り値＞  
+    成功：KOD_TRUE  
+    失敗：KOD_ERR 
+
+<A NAME="GetNurbsSPara()"> </A>
+<H4>private
+int GetNurbsSPara(char str[],int pD,DirectoryParam *dpara,BODY body); </H4>
+＜説明＞
+    Type128 NURBS曲面を読み込む。  
+＜引数＞  
+    str[]：文字列バッファ  
+    pD：ディレクトリ部への逆ポインタの値  
+    *dpara：ディレクトリ部のパラメータ構造体へのポインタ 
+    body：BODY構造体  
+＜戻り値＞  
+    成功：KOD_TRUE  
+    失敗：KOD_ERR 
+
+<A NAME="GeConpSPara()"> </A>
+<H4>private
+int GeConpSPara(char str[],int pD,DirectoryParam *dpara,int dline,BODY body);</H4> 
+＜説明＞
+    Type142 面上線を読み込む。  
+＜引数＞  
+    str[]：文字列バッファ  
+    pD：ディレクトリ部への逆ポインタの値  
+    *dpara：ディレクトリ部のパラメータ構造体へのポインタ 
+    body：BODY構造体  
+＜戻り値＞  
+    成功：KOD_TRUE  
+    失敗：KOD_ERR 
+
+<A NAME="GetTrmSPara()"> </A>
+<H4>private
+int GetTrmSPara(char str[],int pD,DirectoryParam *dpara,BODY body); </H4>
+＜説明＞
+    Type144 トリム面を読み込む。  
+＜引数＞  
+    str[]：文字列バッファ  
+    pD：ディレクトリ部への逆ポインタの値  
+    *dpara：ディレクトリ部のパラメータ構造体へのポインタ 
+    body：BODY構造体  
+＜戻り値＞  
+    成功：KOD_TRUE  
+    失敗：KOD_ERR 
+
+<A NAME="CatchStringI()"> </A>
+<H4>private
+int CatchStringI(char **p);  </H4>
+＜説明＞
+    カンマまでの数値を読み込んで返す(int)。  
+＜引数＞  
+    **p：文字列へのポインタ  
+＜戻り値＞  
+    a：カンマまでの数値 
+
+<A NAME="CatchStringD()"> </A>
+<H4>private
+int CatchStringD(char **p);  </H4>
+＜説明＞
+    カンマまでの数値を読み込んで返す(int)。  
+＜引数＞  
+    **p：文字列へのポインタ  
+＜戻り値＞  
+    a：カンマまでの数値 
+
+<A NAME="ChangeEntityforNurbs()"> </A>
+<H4>private
+int ChangeEntityforNurbs(DirectoryParam *dpara,BODY body,int dline); </H4>
+＜説明＞
+    NURBS曲線以外のエンティティをNURBS曲線に変換し、変換行列があれば座標変換を施す。 
+＜引数＞  
+    *dpara：ディレクトリ部のパラメータ構造体へのポインタ 
+    body：BODY構造体  
+    dline：ディレクトリ部のライン数  
+＜戻り値＞  
+    成功：KOD_TRUE  
+    失敗：KOD_ERR 
+
+<A NAME="SearchMaxCoord()"> </A>
+<H4>private
+int SearchMaxCoord(BODY *body,int TypeNum[]);  </H4>
+＜説明＞
+    全てのエンティティにおける座標値の最大値を調べる。 
+＜引数＞  
+    *body：BODY構造体へのポインタ  
+    TypeNum[]:エンティティタイプの数  
+＜戻り値＞  
+    成功：KOD_TRUE  
+    失敗：KOD_ERR 
+
+<A NAME="GetDEPointer()"> </A>
+<H4>private
+void *GetDEPointer(int TypeNum,BODY body);  </H4>
+＜説明＞
+    DE部へのポインタが示す実際の構造体へのポインタを返す。 
+＜引数＞  
+    TypeNum：エンティティのタイプの数  
+    body：BODY構造体  
+＜戻り値＞  
+    なし 
+
+<A NAME="SearchEntType()"> </A>
+<H4>private
+int SearchEntType(DirectoryParam *dpara,int pdnum,int dline); </H4>
+＜説明＞
+    DE部へのポインタの値からエンティティのタイプを調べて返す。 
+＜引数＞  
+    *dpara：ディレクトリ部のパラメータ構造体へのポインタ 
+    pdnum：DE部のシーケンスナンバー  
+    dline：ディレクトリ部のライン数  
+＜戻り値＞  
+    成功：KOD_TRUE  
+    失敗：KOD_ERR 
+
+<A NAME="InitDisplayStat()"> </A>
+<H4>private
+void InitDisplayStat(DispStat *Dstat);  </H4>
+＜説明＞
+    各エンティティの表示属性を設定する。  
+＜引数＞  
+    *Dstat：エンティティの表示属性  
+＜戻り値＞  
+    なし 
+
+<A NAME="GetNurbsCFromLine()"> </A>
+<H4>private
+int GetNurbsCFromLine(int NurbsCount,int LineCount,BODY body); </H4>
+＜説明＞
+    Type 110(線分)からType 126(NURBS曲線)のパラメータを得る。 
+＜引数＞  
+    NurbsCount：NURBS曲線の数  
+    LineCount：線分の数  
+＜戻り値＞  
+    成功：KOD_TRUE  
+    失敗：KOD_ERR 
+
+<A NAME="GetNurbsCFromCirA()"> </A>
+<H4>private
+int GetNurbsCFromCirA(int NurbsCount,int CirCount,BODY body); </H4>
+＜説明＞
+    Type 100(円・円弧)からType 126(NURBS曲線)のパラメータを得る。 
+＜引数＞  
+    NurbsCount：NURBS曲線の数  
+    CirCount：円・円弧の数  
+＜戻り値＞  
+    成功：KOD_TRUE  
+    失敗：KOD_ERR 
+
+<A NAME="CirAToNurbsC_seg1()"> </A>
+<H4>private
+int CirAToNurbsC_seg1(int NurbsCount,int CirCount,BODY body,Coord vec[], double angle_rad); </H4>
+＜説明＞
+    1セグメントの円弧(中心角が0°<θ<=90°の時) 
+＜引数＞  
+    NurbsCount：NURBS曲線の数  
+    CirCount：円・円弧の数  
+    body：BODY構造体  
+    vec[]：円/円弧の中心点O-始点Psベクトル成分、中心点-終点Peベクトル成分 
+    angle_rad：中心角の大きさ  
+＜戻り値＞  
+    成功：KOD_TRUE  
+    失敗：KOD_ERR 
+
+<A NAME="CirAToNurbsC_seg2()"> </A>
+<H4>private
+int CirAToNurbsC_seg2(int NurbsCount,int CirCount,BODY body,Coord vec[], double angle_rad); </H4>
+＜説明＞
+    2セグメントの円弧(中心角が90°<θ<=270°の時) 
+＜引数＞  
+    NurbsCount：NURBS曲線の数  
+    CirCount：円・円弧の数  
+    body：BODY構造体  
+    vec[]：円/円弧の中心点O-始点Psベクトル成分、中心点-終点Peベクトル成分 
+    angle_rad：中心角の大きさ  
+＜戻り値＞  
+    成功：KOD_TRUE  
+    失敗：KOD_ERR 
+
+<A NAME="CirAToNurbsC_seg3()"> </A>
+<H4>private
+int CirAToNurbsC_seg3(int NurbsCount,int CirCount,BODY body,Coord vec[], double angle_rad); </H4>
+＜説明＞
+    3セグメントの円弧(中心角が270°<θ<=360°の時) 
+＜引数＞  
+    NurbsCount：NURBS曲線の数  
+    CirCount：円・円弧の数  
+    body：BODY構造体  
+    vec[]：円/円弧の中心点O-始点Psベクトル成分、中心点-終点Peベクトル成分 
+    angle_rad：中心角の大きさ  
+＜戻り値＞  
+    成功：KOD_TRUE  
+    失敗：KOD_ERR 
+
+<A NAME="CirAToNurbsC_seg4()"> </A>
+<H4>private
+int CirAToNurbsC_seg4(int NurbsCount,int CirCount,BODY body,Coord vec[], double angle_rad); </H4>
+＜説明＞
+    4セグメントの円弧(円の時)  
+＜引数＞  
+    NurbsCount：NURBS曲線の数  
+    CirCount：円・円弧の数  
+    body：BODY構造体  
+    vec[]：円/円弧の中心点O-始点Psベクトル成分、中心点-終点Peベクトル成分 
+    angle_rad：中心角の大きさ  
+＜戻り値＞  
+    成功：KOD_TRUE  
+    失敗：KOD_ERR 
+
+<A NAME="TransformNurbsC()"> </A>
+<H4>private
+int TransformNurbsC(int NurbsCount,int TMp,BODY body); </H4>
+＜説明＞
+    Type124 変換行列を用いてNURBS曲線を座標変換する。 
+＜引数＞  
+    NurbsCount：NURBS曲線の数  
+    TMｐ：変換行列の数  
+ body：BODY構造体  
+＜戻り値＞  
+    成功：KOD_TRUE  
+    失敗：KOD_ERR 
+
+<A NAME="CheckKnotVecRange()"> </A>
+<H4>private
+int CheckKnotVecRange(double Range[2],double Knot[],int N,int M,int K); </H4>
+＜説明＞
+    ノットベクトルの範囲が0〜1でなかった場合は、強制的に0〜1にする。 
+＜引数＞  
+    Range[2]：ノットベクトルの範囲  
+    Knot[]：ノットベクトル  
+    N：ノットベクトルの数  
+    M：階数  
+    K：コントロールポイントの数  
+＜戻り値＞  
+    成功：KOD_TRUE  
+    失敗：KOD_ERR 
+
+<A NAME="CheckKnotVecRange()"> </A>
+<H4>private
+double CheckKnotVecRange(double Knot[],int M,int K); </H4>
+＜説明＞
+    隣り合うノットベクトルの差の最小値を返す。 
+＜引数＞  
+    Knot[]：ノットベクトル  
+    M：階数  
+    K：コントロールポイントの数  
+＜戻り値＞  
+    最小値
+</font></pre>
+
+<HR>
+<BR>■変数(Class Describe_BODY)
+<pre><font size="3">
+private
+BODY *body;                          IGESデータはこのBODY構造体に全て格納される
+BODY_Handler hbody;                  BODY構造体の各オブジェクトのメモリー操作用
+int *TypeNum;                        どのBODYオブジェクトが幾つあるかを示す
+char buf[COLUMN_MAX_];               汎用文字列バッファ
+int  entity[ALL_ENTITY_TYPE_NUM];    エンティティの番号を格納した配列
+int  TypeCount[ALL_ENTITY_TYPE_NUM]; 各エンティティタイプの正常メモリー確保数を格納
+</font></pre>
+
+</blockquote> <HR> Document Release 2.0 for Kodatuno R2.0, Nov. 2011<P> <hr> <center>
+            <A HREF="./3-4.html" TARGET="_top">Prev</A>     
+            <A HREF="./index.html" TARGET="_top">Index</A>          
+            <A HREF="./3-6.html" TARGET="_top">Next</A><br>     
+</center> <hr> <table cellpadding="0" cellspacing="0" border="0" width="100%">    
+<tr>      
+    <td align="left">        
+        <small>Copyright(C) Kodatuno Development Team, 2011</small>      
+    </td>      
+    <td align="right">        
+		<small><i>Last modified: Nov. 11, 2011</i></small>      
+    </td>   
+</tr> </table>  <!-- end of body --> </body>  
+</html>  
+

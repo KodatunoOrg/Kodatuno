@@ -1,0 +1,52 @@
+##########################################
+# compiler flags                         #
+##########################################
+
+DEBUG = -DMSW -Wall -Wno-format -g -ggdb
+
+DBGRM = echo
+
+##########################################
+# setting of includes                    #
+##########################################
+
+ALL_INCLUDES = -I. -I'$(WSDIR)/include' 
+
+##########################################
+# setting of libraries                   #
+##########################################
+
+ALL_LIBS =   -lwswin -L'$(WSDIR)/lib' -lws -lwsc -lwsopengl -lopengl32 -lglut32 -lglu32 -lwsc -lwsb -lwsc
+
+ALL_LIBS2 =   -lwswin -L'$(WS_DEFAULT_DIR)/lib' -lws -lwsc -lwsopengl -lopengl32 -lglut32 -lglu32 -lwsc -lwsb -lwsc
+
+##########################################
+# setting of window                      #
+##########################################
+
+WINOBJ = Kodatuno.o \
+        Kodatuno_Win.o 
+
+OPOBJ = \
+        Kodatuno_Win_Proc.o \
+        Menu_Proc.o \
+        BodyListSel_Proc.o \
+        Console_Proc.o \
+        ChangeView_Proc.o \
+        RotSurfDlg_Proc.o \
+        NurbsCDlg_Proc.o \
+        OpenInpFile_Proc.o \
+        UserStatDlg_Proc.o \
+        SweepSurfDlg_Proc.o \
+        NurbsSDlg_Proc.o 
+
+OBJS = $(WINOBJ) $(OPOBJ) Describe_Proc.o Kodatuno_Main.o IGES_Parser.o KodListFunc.o StdAfxWS.o StdAfx.o Quaternion.o Describe_BODY.o NURBS_Func.o UserFunc.o Command.o Kodatuno_CMD.o STL_Parser.o VRML_Parser.o MESH.o BODY.o SFQuant.o SampleFunc1.o SampleFunc2.o 
+
+##########################################
+# setting of target binary               #
+##########################################
+
+TARGET = KOD_Test_d
+
+CC=$(WSDIR)/../gcc/bin/gcc.exe
+CXX=$(WSDIR)/../gcc/bin/g++.exe

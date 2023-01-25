@@ -1,0 +1,2801 @@
+#OBJ       Kodatuno_Win
+ #TYPE       WSCmainWindow
+ #PARENT   NULL
+ #PROC  Kodatuno_Win_Proc
+  #TRIG    0
+  #PRO   Kodatuno_Win_Proc.cpp
+
+ #PROC  Kodatuno_Win_Proc
+  #TRIG    32
+  #PRO   Kodatuno_Win_Proc.cpp
+
+ #PROC  Kodatuno_Win_Proc
+  #TRIG    10
+  #PRO   Kodatuno_Win_Proc.cpp
+
+ #RES      titleString
+Kodatuno
+ #RES      x
+100
+ #RES      y
+100
+ #RES      width
+830
+ #RES      height
+660
+ #RES      backColor
+#a0a0a0
+ #RES      topShadowColor
+DEF15
+ #RES      bottomShadowColor
+DEF16
+ #RES      vis
+1
+ #RES      pixmapStyle
+1
+ #icon	C:/Documents
+
+#OBJ       Graphic_Form
+ #TYPE       WSCform
+ #PARENT   Kodatuno_Win
+ #RES      x
+50
+ #RES      y
+5
+ #RES      width
+640
+ #RES      height
+480
+ #RES      shadowType
+-1
+ #RES      vis
+1
+ #RES      anchorTop
+5
+ #RES      anchorBottom
+175
+ #RES      anchorLeft
+50
+ #RES      anchorRight
+140
+ #RES      anchorTopFlag
+1
+ #RES      anchorBottomFlag
+1
+ #RES      anchorLeftFlag
+1
+ #RES      anchorRightFlag
+1
+
+#OBJ       Describe_Form
+ #TYPE       WSCopenglForm
+ #PARENT   Graphic_Form
+ #PROC  Describe_Proc
+  #TRIG    9
+  #PRO   Describe_Proc
+
+ #PROC  Describe_Proc
+  #TRIG    14
+  #PRO   Describe_Proc
+
+ #PROC  Describe_Proc
+  #TRIG    15
+  #PRO   Describe_Proc
+
+ #PROC  Describe_Proc
+  #TRIG    13
+  #PRO   Describe_Proc
+
+ #RES      x
+0
+ #RES      y
+0
+ #RES      width
+640
+ #RES      height
+480
+ #RES      backColor
+#000000
+ #RES      topShadowColor
+#282828
+ #RES      bottomShadowColor
+#000000
+ #RES      shadowType
+3
+ #RES      vis
+1
+ #RES      anchorTopFlag
+1
+ #RES      anchorBottomFlag
+1
+ #RES      anchorLeftFlag
+1
+ #RES      anchorRightFlag
+1
+
+#OBJ       Menu_Form
+ #TYPE       WSCform
+ #PARENT   Kodatuno_Win
+ #RES      x
+695
+ #RES      y
+5
+ #RES      width
+130
+ #RES      height
+480
+ #RES      shadowType
+3
+ #RES      vis
+1
+ #RES      anchorTop
+5
+ #RES      anchorBottom
+175
+ #RES      anchorRight
+5
+ #RES      anchorTopFlag
+1
+ #RES      anchorBottomFlag
+1
+ #RES      anchorRightFlag
+1
+
+#OBJ       Open_Body_Btn
+ #TYPE       WSCvbtn
+ #PARENT   Menu_Form
+ #PROC  Menu_Proc
+  #TRIG    2
+  #PRO   Menu_Proc.cpp
+
+ #RES      userValue
+1
+ #RES      usePixmap
+1
+ #RES      labelString
+Open
+ #RES      vis
+1
+ #RES      x
+5
+ #RES      y
+143
+ #RES      width
+58
+ #RES      height
+25
+ #RES      anchorTop
+143
+ #RES      anchorLeft
+5
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       User_Func_Btn5
+ #TYPE       WSCvbtn
+ #PARENT   Menu_Form
+ #PROC  Menu_Proc
+  #TRIG    2
+  #PRO   Menu_Proc
+
+ #RES      userValue
+105
+ #RES      labelString
+User Fucn 5
+ #RES      vis
+1
+ #RES      x
+5
+ #RES      y
+445
+ #RES      width
+120
+ #RES      anchorBottom
+5
+ #RES      anchorLeft
+5
+ #RES      anchorBottomFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       User_Func_Btn4
+ #TYPE       WSCvbtn
+ #PARENT   Menu_Form
+ #PROC  Menu_Proc
+  #TRIG    2
+  #PRO   Menu_Proc
+
+ #RES      userValue
+104
+ #RES      labelString
+User Fucn 4
+ #RES      vis
+1
+ #RES      x
+5
+ #RES      y
+415
+ #RES      width
+120
+ #RES      anchorBottom
+35
+ #RES      anchorLeft
+5
+ #RES      anchorBottomFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       User_Func_Btn3
+ #TYPE       WSCvbtn
+ #PARENT   Menu_Form
+ #PROC  Menu_Proc
+  #TRIG    2
+  #PRO   Menu_Proc.cpp
+
+ #RES      userValue
+103
+ #RES      labelString
+User Fucn 3
+ #RES      vis
+1
+ #RES      x
+5
+ #RES      y
+385
+ #RES      width
+120
+ #RES      anchorBottom
+65
+ #RES      anchorLeft
+5
+ #RES      anchorBottomFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       User_Func_Btn2
+ #TYPE       WSCvbtn
+ #PARENT   Menu_Form
+ #PROC  Menu_Proc
+  #TRIG    2
+  #PRO   Menu_Proc.cpp
+
+ #RES      userValue
+102
+ #RES      labelString
+User Func 2
+ #RES      vis
+1
+ #RES      x
+5
+ #RES      y
+355
+ #RES      width
+120
+ #RES      anchorBottom
+95
+ #RES      anchorLeft
+5
+ #RES      anchorBottomFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       User_Func_Btn1
+ #TYPE       WSCvbtn
+ #PARENT   Menu_Form
+ #PROC  Menu_Proc
+  #TRIG    2
+  #PRO   Menu_Proc
+
+ #RES      userValue
+101
+ #RES      labelString
+User Fucn 1
+ #RES      vis
+1
+ #RES      x
+5
+ #RES      y
+325
+ #RES      width
+120
+ #RES      anchorBottom
+125
+ #RES      anchorLeft
+5
+ #RES      anchorBottomFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       Del_Body_Btn
+ #TYPE       WSCvbtn
+ #PARENT   Menu_Form
+ #PROC  Menu_Proc
+  #TRIG    2
+  #PRO   Menu_Proc
+
+ #RES      userValue
+2
+ #RES      labelString
+Delete
+ #RES      vis
+1
+ #RES      det
+0
+ #RES      x
+67
+ #RES      y
+143
+ #RES      width
+58
+ #RES      height
+25
+ #RES      anchorTop
+143
+ #RES      anchorLeft
+67
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       Body_List_Win
+ #TYPE       WSClist
+ #PARENT   Menu_Form
+ #PROC  BodyListSel_Proc
+  #TRIG    35
+  #PRO   BodyListSel_Proc.cpp
+
+ #RES      titleString
+title2
+ #RES      barThickness
+15
+ #RES      workWidth
+200
+ #RES      workHeight
+116
+ #RES      hbarVisible
+1
+ #RES      vbarVisible
+0
+ #RES      x
+5
+ #RES      y
+5
+ #RES      width
+120
+ #RES      height
+135
+ #RES      shadowThickness
+0
+ #RES      vis
+1
+ #RES      anchorTop
+5
+ #RES      anchorLeft
+5
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       User_Stat_Btn
+ #TYPE       WSCvbtn
+ #PARENT   Menu_Form
+ #PROC  Menu_Proc
+  #TRIG    2
+  #PRO   Menu_Proc
+
+ #RES      userValue
+100
+ #RES      labelString
+User Status
+ #RES      vis
+1
+ #RES      x
+5
+ #RES      y
+290
+ #RES      width
+120
+ #RES      anchorBottom
+160
+ #RES      anchorLeft
+5
+ #RES      anchorBottomFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       Console_Form
+ #TYPE       WSCtextField
+ #PARENT   Kodatuno_Win
+ #PROC  Console_Proc
+  #TRIG    18
+  #PRO   Console_Proc.cpp
+
+ #PROC  Console_Proc
+  #TRIG    9
+  #PRO   Console_Proc.cpp
+
+ #RES      x
+50
+ #RES      y
+510
+ #RES      width
+775
+ #RES      height
+145
+ #RES      vis
+1
+ #RES      anchorBottom
+5
+ #RES      anchorLeft
+50
+ #RES      anchorRight
+5
+ #RES      anchorBottomFlag
+1
+ #RES      anchorLeftFlag
+1
+ #RES      anchorRightFlag
+1
+ #RES      enableFep
+0
+ #RES      noHatch
+1
+ #RES      displayOnly
+1
+ #RES      emboss
+1
+
+#OBJ       Label_1
+ #TYPE       WSCvlabel
+ #PARENT   Kodatuno_Win
+ #RES      shadowType
+-1
+ #RES      labelString
+Console
+ #RES      alignmentH
+0
+ #RES      vis
+1
+ #RES      x
+50
+ #RES      y
+490
+ #RES      width
+60
+ #RES      height
+20
+ #RES      anchorBottom
+150
+ #RES      anchorLeft
+50
+ #RES      anchorBottomFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       Line
+ #TYPE       WSCvline
+ #PARENT   Kodatuno_Win
+ #RES      lineX
+0,2000
+ #RES      lineY
+0,0
+ #RES      vis
+1
+ #RES      x
+110
+ #RES      y
+500
+ #RES      width
+715
+ #RES      height
+2
+ #RES      foreColor
+#646464
+ #RES      anchorBottom
+158
+ #RES      anchorLeft
+110
+ #RES      anchorRight
+5
+ #RES      anchorBottomFlag
+1
+ #RES      anchorLeftFlag
+1
+ #RES      anchorRightFlag
+1
+
+#OBJ       View_Form
+ #TYPE       WSCform
+ #PARENT   Kodatuno_Win
+ #RES      x
+5
+ #RES      y
+5
+ #RES      width
+40
+ #RES      height
+650
+ #RES      backColor
+#a0a0a0
+ #RES      topShadowColor
+DEF15
+ #RES      bottomShadowColor
+DEF16
+ #RES      shadowType
+3
+ #RES      vis
+1
+ #RES      anchorTop
+5
+ #RES      anchorBottom
+5
+ #RES      anchorLeft
+5
+ #RES      anchorTopFlag
+1
+ #RES      anchorBottomFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       ViewOnX
+ #TYPE       WSCvbtn
+ #PARENT   View_Form
+ #PROC  ChangeView_Proc
+  #TRIG    2
+  #PRO   ChangeView_Proc.cpp
+
+ #RES      userValue
+1
+ #RES      labelPixmap
+./icons/ViewOnX.png
+ #RES      vis
+1
+ #RES      x
+4
+ #RES      y
+5
+ #RES      width
+30
+ #RES      anchorTop
+5
+ #RES      anchorLeft
+4
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       ViewOnY
+ #TYPE       WSCvbtn
+ #PARENT   View_Form
+ #PROC  ChangeView_Proc
+  #TRIG    2
+  #PRO   ChangeView_Proc
+
+ #RES      userValue
+2
+ #RES      labelPixmap
+./icons/ViewOnY.png
+ #RES      vis
+1
+ #RES      x
+4
+ #RES      y
+35
+ #RES      width
+30
+ #RES      anchorTop
+35
+ #RES      anchorLeft
+4
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       ViewOnZ
+ #TYPE       WSCvbtn
+ #PARENT   View_Form
+ #PROC  ChangeView_Proc
+  #TRIG    2
+  #PRO   ChangeView_Proc
+
+ #RES      userValue
+3
+ #RES      labelPixmap
+./icons/ViewOnZ.png
+ #RES      vis
+1
+ #RES      x
+4
+ #RES      y
+65
+ #RES      width
+30
+ #RES      anchorTop
+65
+ #RES      anchorLeft
+4
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       ViewOnXYZ
+ #TYPE       WSCvbtn
+ #PARENT   View_Form
+ #PROC  ChangeView_Proc
+  #TRIG    2
+  #PRO   ChangeView_Proc
+
+ #RES      userValue
+4
+ #RES      labelPixmap
+./icons/ViewOnXYZ.png
+ #RES      vis
+1
+ #RES      x
+4
+ #RES      y
+95
+ #RES      width
+30
+ #RES      anchorTop
+95
+ #RES      anchorLeft
+4
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       ViewSolid
+ #TYPE       WSCvbtn
+ #PARENT   View_Form
+ #PROC  ChangeView_Proc
+  #TRIG    2
+  #PRO   ChangeView_Proc
+
+ #RES      userValue
+10
+ #RES      labelPixmap
+./icons/ViewSolid.png
+ #RES      vis
+1
+ #RES      x
+4
+ #RES      y
+160
+ #RES      width
+30
+ #RES      anchorTop
+160
+ #RES      anchorLeft
+4
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       ViewWireFrame
+ #TYPE       WSCvbtn
+ #PARENT   View_Form
+ #PROC  ChangeView_Proc
+  #TRIG    2
+  #PRO   ChangeView_Proc
+
+ #RES      userValue
+12
+ #RES      labelPixmap
+./icons/ViewWierFrame.png
+ #RES      vis
+1
+ #RES      x
+4
+ #RES      y
+220
+ #RES      width
+30
+ #RES      anchorTop
+220
+ #RES      anchorLeft
+4
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       ViewFit
+ #TYPE       WSCvbtn
+ #PARENT   View_Form
+ #PROC  ChangeView_Proc
+  #TRIG    2
+  #PRO   ChangeView_Proc
+
+ #RES      userValue
+5
+ #RES      labelPixmap
+./icons/ViewFit.png
+ #RES      vis
+1
+ #RES      x
+4
+ #RES      y
+125
+ #RES      width
+30
+ #RES      anchorTop
+125
+ #RES      anchorLeft
+4
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       ViewVoid
+ #TYPE       WSCvbtn
+ #PARENT   View_Form
+ #PROC  ChangeView_Proc
+  #TRIG    2
+  #PRO   ChangeView_Proc
+
+ #RES      userValue
+13
+ #RES      labelPixmap
+./icons/ViewVoid.png
+ #RES      vis
+1
+ #RES      x
+4
+ #RES      y
+250
+ #RES      width
+30
+ #RES      anchorTop
+250
+ #RES      anchorLeft
+4
+ #RES      anchorTopFlag
+1
+
+#OBJ       SelectCancel
+ #TYPE       WSCvbtn
+ #PARENT   View_Form
+ #PROC  ChangeView_Proc
+  #TRIG    2
+  #PRO   ChangeView_Proc
+
+ #RES      userValue
+101
+ #RES      labelPixmap
+./icons/SelectCancel.png
+ #RES      vis
+1
+ #RES      x
+4
+ #RES      y
+315
+ #RES      width
+30
+ #RES      anchorTop
+315
+ #RES      anchorLeft
+4
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       ViewErase
+ #TYPE       WSCvbtn
+ #PARENT   View_Form
+ #PROC  ChangeView_Proc
+  #TRIG    2
+  #PRO   ChangeView_Proc
+
+ #RES      userValue
+102
+ #RES      labelPixmap
+./icons/ViewErase.png
+ #RES      vis
+1
+ #RES      x
+4
+ #RES      y
+345
+ #RES      width
+30
+ #RES      anchorTop
+345
+ #RES      anchorLeft
+4
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       ViewBlend
+ #TYPE       WSCvbtn
+ #PARENT   View_Form
+ #PROC  ChangeView_Proc
+  #TRIG    2
+  #PRO   ChangeView_Proc.cpp
+
+ #RES      userValue
+1000
+ #RES      labelPixmap
+./icons/ViewBlend.png
+ #RES      vis
+1
+ #RES      x
+4
+ #RES      y
+380
+ #RES      width
+30
+ #RES      anchorTop
+380
+ #RES      anchorLeft
+4
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       SelectAll
+ #TYPE       WSCvbtn
+ #PARENT   View_Form
+ #PROC  ChangeView_Proc
+  #TRIG    2
+  #PRO   ChangeView_Proc.cpp
+
+ #RES      userValue
+100
+ #RES      labelPixmap
+./icons/SelectAll.png
+ #RES      vis
+1
+ #RES      x
+4
+ #RES      y
+285
+ #RES      width
+30
+ #RES      anchorTop
+285
+ #RES      anchorLeft
+4
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       ViewNoEdge
+ #TYPE       WSCvbtn
+ #PARENT   View_Form
+ #PROC  ChangeView_Proc
+  #TRIG    2
+  #PRO   ChangeView_Proc.cpp
+
+ #RES      userValue
+11
+ #RES      labelPixmap
+./icons/ViewSolid_NoEdge.png
+ #RES      vis
+1
+ #RES      x
+4
+ #RES      y
+190
+ #RES      width
+30
+ #RES      anchorTop
+190
+ #RES      anchorLeft
+4
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       RotSurf_Dlg
+ #TYPE       WSCdialog
+ #PARENT   Kodatuno_Win
+ #PROC  RotSurfDlg
+  #TRIG    2
+  #PRO   RotSurfDlg_Proc.cpp
+
+ #RES      workBackColor
+DEF1
+ #RES      no
+0
+ #RES      titleString
+Roteting Surface Generation
+ #RES      x
+300
+ #RES      y
+320
+ #RES      width
+400
+ #RES      height
+170
+ #RES      titleBar
+2
+
+#OBJ       AxisOfRotation_Form
+ #TYPE       WSCtform
+ #PARENT   RotSurf_Dlg
+ #RES      titleString
+Rotation axis
+ #RES      x
+3
+ #RES      y
+10
+ #RES      width
+390
+ #RES      height
+53
+ #RES      vis
+1
+ #RES      anchorTop
+10
+ #RES      anchorLeft
+3
+ #RES      anchorRight
+7
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+ #RES      anchorRightFlag
+1
+
+#OBJ       AOR_Label_X
+ #TYPE       WSCvlabel
+ #PARENT   AxisOfRotation_Form
+ #RES      shadowType
+-1
+ #RES      labelString
+X
+ #RES      vis
+1
+ #RES      x
+10
+ #RES      y
+20
+ #RES      width
+20
+ #RES      height
+20
+ #RES      anchorTop
+20
+ #RES      anchorLeft
+10
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       AOR_Label_Y
+ #TYPE       WSCvlabel
+ #PARENT   AxisOfRotation_Form
+ #RES      shadowType
+-1
+ #RES      labelString
+Y
+ #RES      vis
+1
+ #RES      x
+132
+ #RES      y
+20
+ #RES      width
+20
+ #RES      height
+20
+ #RES      anchorTop
+20
+ #RES      anchorLeft
+132
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       AOR_Label_Z
+ #TYPE       WSCvlabel
+ #PARENT   AxisOfRotation_Form
+ #RES      shadowType
+-1
+ #RES      labelString
+Z
+ #RES      vis
+1
+ #RES      x
+254
+ #RES      y
+20
+ #RES      width
+20
+ #RES      height
+20
+ #RES      anchorTop
+20
+ #RES      anchorLeft
+254
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       AOR_X
+ #TYPE       WSCvifield
+ #PARENT   AxisOfRotation_Form
+ #RES      enableFep
+0
+ #RES      tab
+AOR_Y
+ #RES      enableFocusMove
+1
+ #RES      emboss
+1
+ #RES      labelString
+0.0
+ #RES      vis
+1
+ #RES      x
+30
+ #RES      y
+20
+ #RES      height
+25
+ #RES      anchorTop
+20
+ #RES      anchorLeft
+30
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       AOR_Y
+ #TYPE       WSCvifield
+ #PARENT   AxisOfRotation_Form
+ #RES      enableFep
+0
+ #RES      tab
+AOR_Z
+ #RES      backtab
+AOR_X
+ #RES      enableFocusMove
+1
+ #RES      emboss
+1
+ #RES      labelString
+0.0
+ #RES      vis
+1
+ #RES      x
+152
+ #RES      y
+20
+ #RES      height
+25
+ #RES      anchorTop
+20
+ #RES      anchorLeft
+152
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       AOR_Z
+ #TYPE       WSCvifield
+ #PARENT   AxisOfRotation_Form
+ #RES      enableFep
+0
+ #RES      tab
+AOR_Ang
+ #RES      backtab
+AOR_Y
+ #RES      enableFocusMove
+1
+ #RES      emboss
+1
+ #RES      labelString
+1.0
+ #RES      vis
+1
+ #RES      x
+274
+ #RES      y
+20
+ #RES      height
+25
+ #RES      anchorTop
+20
+ #RES      anchorLeft
+274
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       RotAng_Form
+ #TYPE       WSCtform
+ #PARENT   RotSurf_Dlg
+ #RES      titleString
+Rotation angle
+ #RES      x
+3
+ #RES      y
+70
+ #RES      width
+147
+ #RES      height
+53
+ #RES      vis
+1
+ #RES      anchorTop
+70
+ #RES      anchorLeft
+3
+ #RES      anchorRight
+250
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+ #RES      anchorRightFlag
+1
+
+#OBJ       AOR_Ang
+ #TYPE       WSCvifield
+ #PARENT   RotAng_Form
+ #RES      enableFep
+0
+ #RES      tab
+RotSurf_Dlg
+ #RES      backtab
+AOR_Z
+ #RES      enableFocusMove
+1
+ #RES      emboss
+1
+ #RES      labelString
+360.0
+ #RES      vis
+1
+ #RES      x
+10
+ #RES      y
+20
+ #RES      width
+132
+ #RES      height
+25
+ #RES      anchorTop
+20
+ #RES      anchorLeft
+10
+ #RES      anchorRight
+5
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+ #RES      anchorRightFlag
+1
+
+#OBJ       NurbsCurve_Dlg
+ #TYPE       WSCdialog
+ #PARENT   Kodatuno_Win
+ #PROC  NurbsCDlg
+  #TRIG    2
+  #PRO   NurbsCDlg_Proc.cpp
+
+ #RES      workBackColor
+DEF1
+ #RES      no
+0
+ #RES      titleString
+Nurbs Curve Generator
+ #RES      x
+300
+ #RES      y
+320
+ #RES      width
+200
+ #RES      height
+237
+ #RES      titleBar
+2
+
+#OBJ       NurbsCOpt
+ #TYPE       WSCradioGroup
+ #PARENT   NurbsCurve_Dlg
+ #RES      menuItems
+Polygonal,Interpolated 1,Approximated,Inerpolated 2,Control Point
+ #RES      value
+5
+ #RES      titleString
+Option
+ #RES      x
+3
+ #RES      y
+10
+ #RES      width
+190
+ #RES      height
+150
+ #RES      vis
+1
+ #RES      anchorTop
+10
+ #RES      anchorLeft
+3
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       OpenInpFile_Btn
+ #TYPE       WSCvbtn
+ #PARENT   NurbsCurve_Dlg
+ #PROC  OpenInpFile_Proc
+  #TRIG    2
+  #PRO   OpenInpFile_Proc.cpp
+
+ #RES      labelString
+File
+ #RES      vis
+1
+ #RES      x
+8
+ #RES      y
+170
+ #RES      width
+70
+ #RES      height
+25
+ #RES      anchorTop
+170
+ #RES      anchorLeft
+8
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       InpFileName
+ #TYPE       WSCvifield
+ #PARENT   NurbsCurve_Dlg
+ #RES      enableFep
+0
+ #RES      emboss
+1
+ #RES      maxLength
+256
+ #RES      det
+0
+ #RES      x
+3
+ #RES      y
+170
+ #RES      width
+0
+
+#OBJ       NurbsC_Rank_Lb
+ #TYPE       WSCvlabel
+ #PARENT   NurbsCurve_Dlg
+ #RES      shadowType
+-1
+ #RES      labelString
+Rank
+ #RES      alignmentH
+1
+ #RES      vis
+1
+ #RES      x
+110
+ #RES      y
+170
+ #RES      width
+35
+
+#OBJ       NurbsC_Rank
+ #TYPE       WSCvifield
+ #PARENT   NurbsCurve_Dlg
+ #RES      enableFep
+0
+ #RES      shadowType
+2
+ #RES      emboss
+1
+ #RES      labelString
+4
+ #RES      vis
+1
+ #RES      x
+150
+ #RES      y
+170
+ #RES      width
+30
+ #RES      height
+25
+ #RES      anchorTop
+170
+ #RES      anchorLeft
+150
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       User_Stat_Dlg
+ #TYPE       WSCdialog
+ #PARENT   Kodatuno_Win
+ #PROC  UserStatDlg
+  #TRIG    2
+  #PRO   UserStatDlg_Proc.cpp
+
+ #RES      no
+0
+ #RES      titleString
+User_Dlg
+ #RES      x
+300
+ #RES      y
+320
+ #RES      width
+355
+ #RES      height
+366
+ #RES      titleBar
+2
+
+#OBJ       Uer_Prop1_Lab
+ #TYPE       WSCvlabel
+ #PARENT   User_Stat_Dlg
+ #RES      shadowType
+-1
+ #RES      labelString
+Prop1
+ #RES      alignmentH
+0
+ #RES      vis
+1
+ #RES      x
+10
+ #RES      y
+172
+ #RES      width
+50
+
+#OBJ       User_Prop2_Lab
+ #TYPE       WSCvlabel
+ #PARENT   User_Stat_Dlg
+ #RES      shadowType
+-1
+ #RES      labelString
+Prop2
+ #RES      alignmentH
+0
+ #RES      vis
+1
+ #RES      x
+10
+ #RES      y
+200
+ #RES      width
+50
+
+#OBJ       User_Prop1
+ #TYPE       WSCvifield
+ #PARENT   User_Stat_Dlg
+ #RES      enableFep
+0
+ #RES      tab
+User_Prop2
+ #RES      enableFocusMove
+1
+ #RES      shadowType
+1
+ #RES      emboss
+1
+ #RES      labelString
+0
+ #RES      vis
+1
+ #RES      x
+55
+ #RES      y
+172
+ #RES      width
+58
+ #RES      height
+25
+
+#OBJ       User_Prop2
+ #TYPE       WSCvifield
+ #PARENT   User_Stat_Dlg
+ #RES      enableFep
+0
+ #RES      tab
+User_Prop3
+ #RES      enableFocusMove
+1
+ #RES      shadowType
+1
+ #RES      emboss
+1
+ #RES      labelString
+-10
+ #RES      vis
+1
+ #RES      x
+55
+ #RES      y
+202
+ #RES      width
+60
+ #RES      height
+25
+
+#OBJ       User_Prop3_Lab
+ #TYPE       WSCvlabel
+ #PARENT   User_Stat_Dlg
+ #RES      shadowType
+-1
+ #RES      labelString
+Prop3
+ #RES      alignmentH
+0
+ #RES      vis
+1
+ #RES      x
+10
+ #RES      y
+230
+ #RES      width
+50
+
+#OBJ       User_Prop4_Lab
+ #TYPE       WSCvlabel
+ #PARENT   User_Stat_Dlg
+ #RES      shadowType
+-1
+ #RES      labelString
+Prop4
+ #RES      alignmentH
+0
+ #RES      vis
+1
+ #RES      x
+10
+ #RES      y
+260
+ #RES      width
+50
+
+#OBJ       User_Prop5_Lab
+ #TYPE       WSCvlabel
+ #PARENT   User_Stat_Dlg
+ #RES      shadowType
+-1
+ #RES      labelString
+Prop5
+ #RES      alignmentH
+0
+ #RES      vis
+1
+ #RES      x
+10
+ #RES      y
+290
+ #RES      width
+50
+
+#OBJ       User_Prop3
+ #TYPE       WSCvifield
+ #PARENT   User_Stat_Dlg
+ #RES      enableFep
+0
+ #RES      tab
+User_Prop4
+ #RES      enableFocusMove
+1
+ #RES      shadowType
+1
+ #RES      emboss
+1
+ #RES      labelString
+1
+ #RES      vis
+1
+ #RES      x
+55
+ #RES      y
+232
+ #RES      width
+60
+ #RES      height
+25
+
+#OBJ       User_Prop4
+ #TYPE       WSCvifield
+ #PARENT   User_Stat_Dlg
+ #RES      enableFep
+0
+ #RES      tab
+User_Prop5
+ #RES      enableFocusMove
+1
+ #RES      shadowType
+1
+ #RES      emboss
+1
+ #RES      labelString
+0.1
+ #RES      vis
+1
+ #RES      x
+55
+ #RES      y
+262
+ #RES      width
+60
+ #RES      height
+25
+
+#OBJ       User_Prop5
+ #TYPE       WSCvifield
+ #PARENT   User_Stat_Dlg
+ #RES      tab
+User_Prop6
+ #RES      enableFocusMove
+1
+ #RES      shadowType
+1
+ #RES      emboss
+1
+ #RES      labelString
+0
+ #RES      vis
+1
+ #RES      x
+55
+ #RES      y
+292
+ #RES      width
+60
+ #RES      height
+25
+
+#OBJ       Uer_Prop7_Lab
+ #TYPE       WSCvlabel
+ #PARENT   User_Stat_Dlg
+ #RES      shadowType
+-1
+ #RES      labelString
+Prop7
+ #RES      alignmentH
+0
+ #RES      vis
+1
+ #RES      x
+125
+ #RES      y
+202
+ #RES      width
+50
+
+#OBJ       Uer_Prop8_Lab
+ #TYPE       WSCvlabel
+ #PARENT   User_Stat_Dlg
+ #RES      shadowType
+-1
+ #RES      labelString
+Prop8
+ #RES      alignmentH
+0
+ #RES      vis
+1
+ #RES      x
+125
+ #RES      y
+232
+ #RES      width
+50
+
+#OBJ       Uer_Prop9_Lab
+ #TYPE       WSCvlabel
+ #PARENT   User_Stat_Dlg
+ #RES      shadowType
+-1
+ #RES      labelString
+Prop9
+ #RES      alignmentH
+0
+ #RES      vis
+1
+ #RES      x
+125
+ #RES      y
+262
+ #RES      width
+50
+
+#OBJ       Uer_Prop10_Lab
+ #TYPE       WSCvlabel
+ #PARENT   User_Stat_Dlg
+ #RES      shadowType
+-1
+ #RES      labelString
+Prop10
+ #RES      alignmentH
+0
+ #RES      vis
+1
+ #RES      x
+125
+ #RES      y
+292
+ #RES      width
+50
+
+#OBJ       User_Prop6
+ #TYPE       WSCvifield
+ #PARENT   User_Stat_Dlg
+ #RES      enableFep
+0
+ #RES      tab
+User_Prop7
+ #RES      enableFocusMove
+1
+ #RES      shadowType
+1
+ #RES      emboss
+1
+ #RES      labelString
+0
+ #RES      vis
+1
+ #RES      x
+170
+ #RES      y
+172
+ #RES      width
+60
+ #RES      height
+25
+
+#OBJ       User_Prop7
+ #TYPE       WSCvifield
+ #PARENT   User_Stat_Dlg
+ #RES      enableFep
+0
+ #RES      tab
+User_Prop8
+ #RES      enableFocusMove
+1
+ #RES      shadowType
+1
+ #RES      emboss
+1
+ #RES      labelString
+0
+ #RES      vis
+1
+ #RES      x
+170
+ #RES      y
+202
+ #RES      width
+60
+ #RES      height
+25
+
+#OBJ       User_Prop8
+ #TYPE       WSCvifield
+ #PARENT   User_Stat_Dlg
+ #RES      enableFep
+0
+ #RES      tab
+User_Prop9
+ #RES      enableFocusMove
+1
+ #RES      shadowType
+1
+ #RES      emboss
+1
+ #RES      labelString
+0
+ #RES      vis
+1
+ #RES      x
+170
+ #RES      y
+232
+ #RES      width
+60
+ #RES      height
+26
+
+#OBJ       User_Prop9
+ #TYPE       WSCvifield
+ #PARENT   User_Stat_Dlg
+ #RES      enableFep
+0
+ #RES      tab
+User_Prop10
+ #RES      enableFocusMove
+1
+ #RES      shadowType
+1
+ #RES      emboss
+1
+ #RES      labelString
+0
+ #RES      vis
+1
+ #RES      x
+170
+ #RES      y
+262
+ #RES      width
+60
+ #RES      height
+25
+
+#OBJ       User_Prop10
+ #TYPE       WSCvifield
+ #PARENT   User_Stat_Dlg
+ #RES      enableFep
+0
+ #RES      tab
+User_Prop1
+ #RES      enableFocusMove
+1
+ #RES      shadowType
+1
+ #RES      emboss
+1
+ #RES      labelString
+0
+ #RES      vis
+1
+ #RES      x
+170
+ #RES      y
+292
+ #RES      width
+60
+ #RES      height
+25
+
+#OBJ       UerMode
+ #TYPE       WSCtform
+ #PARENT   User_Stat_Dlg
+ #RES      titleString
+Mode
+ #RES      x
+10
+ #RES      y
+10
+ #RES      width
+325
+ #RES      height
+150
+ #RES      backColor
+DEF5
+ #RES      vis
+1
+
+#OBJ       UserMode1
+ #TYPE       WSCvradio
+ #PARENT   UerMode
+ #RES      unique
+1
+ #RES      group
+UserMode
+ #RES      labelString
+Mode1
+ #RES      vis
+1
+ #RES      x
+15
+ #RES      y
+20
+ #RES      width
+80
+ #RES      height
+25
+
+#OBJ       UserMode2
+ #TYPE       WSCvradio
+ #PARENT   UerMode
+ #RES      unique
+1
+ #RES      group
+UserMode
+ #RES      id
+1
+ #RES      labelString
+Mode2
+ #RES      vis
+1
+ #RES      x
+15
+ #RES      y
+45
+ #RES      width
+80
+ #RES      height
+25
+
+#OBJ       UserMode3
+ #TYPE       WSCvradio
+ #PARENT   UerMode
+ #RES      unique
+1
+ #RES      group
+UserMode
+ #RES      id
+2
+ #RES      status
+1
+ #RES      labelString
+Mode3
+ #RES      vis
+1
+ #RES      x
+15
+ #RES      y
+70
+ #RES      width
+80
+ #RES      height
+25
+
+#OBJ       UserMode4
+ #TYPE       WSCvradio
+ #PARENT   UerMode
+ #RES      unique
+1
+ #RES      group
+UserMode
+ #RES      id
+3
+ #RES      labelString
+Mode4
+ #RES      vis
+1
+ #RES      x
+15
+ #RES      y
+95
+ #RES      width
+80
+ #RES      height
+25
+
+#OBJ       UserMode5
+ #TYPE       WSCvradio
+ #PARENT   UerMode
+ #RES      unique
+1
+ #RES      group
+UserMode
+ #RES      id
+4
+ #RES      labelString
+Mode5
+ #RES      vis
+1
+ #RES      x
+15
+ #RES      y
+120
+ #RES      width
+80
+ #RES      height
+25
+
+#OBJ       UserMode6
+ #TYPE       WSCvradio
+ #PARENT   UerMode
+ #RES      unique
+1
+ #RES      group
+UserMode
+ #RES      id
+5
+ #RES      labelString
+Mode6
+ #RES      vis
+1
+ #RES      x
+125
+ #RES      y
+20
+ #RES      width
+80
+ #RES      height
+25
+
+#OBJ       UserMode11
+ #TYPE       WSCvradio
+ #PARENT   UerMode
+ #RES      unique
+1
+ #RES      group
+UserMode
+ #RES      id
+10
+ #RES      labelString
+Mode11
+ #RES      vis
+1
+ #RES      x
+235
+ #RES      y
+20
+ #RES      width
+80
+ #RES      height
+25
+
+#OBJ       UserMode7
+ #TYPE       WSCvradio
+ #PARENT   UerMode
+ #RES      unique
+1
+ #RES      group
+UserMode
+ #RES      id
+6
+ #RES      labelString
+Mode7
+ #RES      vis
+1
+ #RES      x
+125
+ #RES      y
+45
+ #RES      width
+80
+ #RES      height
+25
+
+#OBJ       UserMode8
+ #TYPE       WSCvradio
+ #PARENT   UerMode
+ #RES      unique
+1
+ #RES      group
+UserMode
+ #RES      id
+7
+ #RES      labelString
+Mode8
+ #RES      vis
+1
+ #RES      x
+125
+ #RES      y
+70
+ #RES      width
+80
+ #RES      height
+25
+
+#OBJ       UserMode9
+ #TYPE       WSCvradio
+ #PARENT   UerMode
+ #RES      unique
+1
+ #RES      group
+UserMode
+ #RES      id
+8
+ #RES      labelString
+Mode9
+ #RES      vis
+1
+ #RES      x
+125
+ #RES      y
+95
+ #RES      width
+80
+ #RES      height
+25
+
+#OBJ       UserMode10
+ #TYPE       WSCvradio
+ #PARENT   UerMode
+ #RES      unique
+1
+ #RES      group
+UserMode
+ #RES      id
+9
+ #RES      labelString
+Mode10
+ #RES      vis
+1
+ #RES      x
+125
+ #RES      y
+120
+ #RES      width
+80
+ #RES      height
+25
+
+#OBJ       UserMode12
+ #TYPE       WSCvradio
+ #PARENT   UerMode
+ #RES      unique
+1
+ #RES      group
+UserMode
+ #RES      id
+11
+ #RES      labelString
+Mode12
+ #RES      vis
+1
+ #RES      x
+235
+ #RES      y
+45
+ #RES      width
+80
+ #RES      height
+25
+
+#OBJ       UserMode13
+ #TYPE       WSCvradio
+ #PARENT   UerMode
+ #RES      unique
+1
+ #RES      group
+UserMode
+ #RES      id
+12
+ #RES      labelString
+Mode13
+ #RES      vis
+1
+ #RES      x
+235
+ #RES      y
+70
+ #RES      width
+80
+ #RES      height
+25
+
+#OBJ       UserMode14
+ #TYPE       WSCvradio
+ #PARENT   UerMode
+ #RES      unique
+1
+ #RES      group
+UserMode
+ #RES      id
+13
+ #RES      labelString
+Mode14
+ #RES      vis
+1
+ #RES      x
+235
+ #RES      y
+95
+ #RES      width
+80
+ #RES      height
+25
+
+#OBJ       UserMode15
+ #TYPE       WSCvradio
+ #PARENT   UerMode
+ #RES      unique
+1
+ #RES      group
+UserMode
+ #RES      id
+14
+ #RES      labelString
+Mode15
+ #RES      vis
+1
+ #RES      x
+235
+ #RES      y
+120
+ #RES      width
+80
+ #RES      height
+25
+
+#OBJ       Uer_Prop11_Lab
+ #TYPE       WSCvlabel
+ #PARENT   User_Stat_Dlg
+ #RES      shadowType
+-1
+ #RES      labelString
+Prop11
+ #RES      alignmentH
+0
+ #RES      vis
+1
+ #RES      x
+240
+ #RES      y
+172
+ #RES      width
+50
+
+#OBJ       Uer_Prop6_Lab
+ #TYPE       WSCvlabel
+ #PARENT   User_Stat_Dlg
+ #RES      shadowType
+-1
+ #RES      labelString
+Prop6
+ #RES      alignmentH
+0
+ #RES      vis
+1
+ #RES      x
+125
+ #RES      y
+172
+ #RES      width
+50
+
+#OBJ       User_Prop11
+ #TYPE       WSCvifield
+ #PARENT   User_Stat_Dlg
+ #RES      enableFep
+0
+ #RES      tab
+User_Prop7
+ #RES      enableFocusMove
+1
+ #RES      shadowType
+1
+ #RES      emboss
+1
+ #RES      labelString
+0
+ #RES      vis
+1
+ #RES      x
+285
+ #RES      y
+172
+ #RES      width
+60
+ #RES      height
+25
+
+#OBJ       Uer_Prop12_Lab
+ #TYPE       WSCvlabel
+ #PARENT   User_Stat_Dlg
+ #RES      shadowType
+-1
+ #RES      labelString
+Prop12
+ #RES      alignmentH
+0
+ #RES      vis
+1
+ #RES      x
+240
+ #RES      y
+202
+ #RES      width
+50
+
+#OBJ       Uer_Prop13_Lab
+ #TYPE       WSCvlabel
+ #PARENT   User_Stat_Dlg
+ #RES      shadowType
+-1
+ #RES      labelString
+Prop13
+ #RES      alignmentH
+0
+ #RES      vis
+1
+ #RES      x
+240
+ #RES      y
+232
+ #RES      width
+50
+
+#OBJ       Uer_Prop14_Lab
+ #TYPE       WSCvlabel
+ #PARENT   User_Stat_Dlg
+ #RES      shadowType
+-1
+ #RES      labelString
+Prop14
+ #RES      alignmentH
+0
+ #RES      vis
+1
+ #RES      x
+240
+ #RES      y
+262
+ #RES      width
+50
+
+#OBJ       Uer_Prop15_Lab
+ #TYPE       WSCvlabel
+ #PARENT   User_Stat_Dlg
+ #RES      shadowType
+-1
+ #RES      labelString
+Prop15
+ #RES      alignmentH
+0
+ #RES      vis
+1
+ #RES      x
+240
+ #RES      y
+292
+ #RES      width
+50
+
+#OBJ       User_Prop12
+ #TYPE       WSCvifield
+ #PARENT   User_Stat_Dlg
+ #RES      enableFep
+0
+ #RES      tab
+User_Prop7
+ #RES      enableFocusMove
+1
+ #RES      shadowType
+1
+ #RES      emboss
+1
+ #RES      labelString
+0
+ #RES      vis
+1
+ #RES      x
+285
+ #RES      y
+202
+ #RES      width
+60
+ #RES      height
+25
+
+#OBJ       User_Prop13
+ #TYPE       WSCvifield
+ #PARENT   User_Stat_Dlg
+ #RES      enableFep
+0
+ #RES      tab
+User_Prop7
+ #RES      enableFocusMove
+1
+ #RES      shadowType
+1
+ #RES      emboss
+1
+ #RES      labelString
+0
+ #RES      vis
+1
+ #RES      x
+285
+ #RES      y
+232
+ #RES      width
+60
+ #RES      height
+25
+
+#OBJ       User_Prop14
+ #TYPE       WSCvifield
+ #PARENT   User_Stat_Dlg
+ #RES      enableFep
+0
+ #RES      tab
+User_Prop7
+ #RES      enableFocusMove
+1
+ #RES      shadowType
+1
+ #RES      emboss
+1
+ #RES      labelString
+0
+ #RES      vis
+1
+ #RES      x
+285
+ #RES      y
+262
+ #RES      width
+60
+ #RES      height
+25
+
+#OBJ       User_Prop15
+ #TYPE       WSCvifield
+ #PARENT   User_Stat_Dlg
+ #RES      enableFep
+0
+ #RES      tab
+User_Prop7
+ #RES      enableFocusMove
+1
+ #RES      shadowType
+1
+ #RES      emboss
+1
+ #RES      labelString
+0
+ #RES      vis
+1
+ #RES      x
+285
+ #RES      y
+292
+ #RES      width
+60
+ #RES      height
+25
+
+#OBJ       SweepSurf_Dlg
+ #TYPE       WSCdialog
+ #PARENT   Kodatuno_Win
+ #PROC  SweepSurfDlg
+  #TRIG    2
+  #PRO   SweepSurfDlg_Proc.cpp
+
+ #RES      workBackColor
+DEF1
+ #RES      no
+0
+ #RES      titleString
+Sweep Surface Generation
+ #RES      x
+310
+ #RES      y
+330
+ #RES      width
+400
+ #RES      height
+170
+ #RES      titleBar
+2
+
+#OBJ       DirectionOfSweep_Form
+ #TYPE       WSCtform
+ #PARENT   SweepSurf_Dlg
+ #RES      titleString
+Sweep Direction Axis
+ #RES      x
+3
+ #RES      y
+10
+ #RES      width
+390
+ #RES      height
+53
+ #RES      vis
+1
+ #RES      anchorTop
+10
+ #RES      anchorLeft
+3
+ #RES      anchorRight
+7
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+ #RES      anchorRightFlag
+1
+
+#OBJ       DOS_Label_X
+ #TYPE       WSCvlabel
+ #PARENT   DirectionOfSweep_Form
+ #RES      shadowType
+-1
+ #RES      labelString
+X
+ #RES      vis
+1
+ #RES      x
+10
+ #RES      y
+20
+ #RES      width
+20
+ #RES      height
+20
+ #RES      anchorTop
+20
+ #RES      anchorLeft
+10
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       DOS_Label_Y
+ #TYPE       WSCvlabel
+ #PARENT   DirectionOfSweep_Form
+ #RES      shadowType
+-1
+ #RES      labelString
+Y
+ #RES      vis
+1
+ #RES      x
+132
+ #RES      y
+20
+ #RES      width
+20
+ #RES      height
+20
+ #RES      anchorTop
+20
+ #RES      anchorLeft
+132
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       DOS_Label_Z
+ #TYPE       WSCvlabel
+ #PARENT   DirectionOfSweep_Form
+ #RES      shadowType
+-1
+ #RES      labelString
+Z
+ #RES      vis
+1
+ #RES      x
+254
+ #RES      y
+20
+ #RES      width
+20
+ #RES      height
+20
+ #RES      anchorTop
+20
+ #RES      anchorLeft
+254
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       DOS_X
+ #TYPE       WSCvifield
+ #PARENT   DirectionOfSweep_Form
+ #RES      enableFep
+0
+ #RES      emboss
+1
+ #RES      labelString
+0.0
+ #RES      vis
+1
+ #RES      x
+30
+ #RES      y
+20
+ #RES      height
+25
+ #RES      anchorTop
+20
+ #RES      anchorLeft
+30
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       DOS_Y
+ #TYPE       WSCvifield
+ #PARENT   DirectionOfSweep_Form
+ #RES      enableFep
+0
+ #RES      emboss
+1
+ #RES      labelString
+0.0
+ #RES      vis
+1
+ #RES      x
+152
+ #RES      y
+20
+ #RES      height
+25
+ #RES      anchorTop
+20
+ #RES      anchorLeft
+152
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       DOS_Z
+ #TYPE       WSCvifield
+ #PARENT   DirectionOfSweep_Form
+ #RES      enableFep
+0
+ #RES      emboss
+1
+ #RES      labelString
+1.0
+ #RES      vis
+1
+ #RES      x
+274
+ #RES      y
+20
+ #RES      height
+25
+ #RES      anchorTop
+20
+ #RES      anchorLeft
+274
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       SweepLen_Form
+ #TYPE       WSCtform
+ #PARENT   SweepSurf_Dlg
+ #RES      titleString
+Sweep Length
+ #RES      x
+3
+ #RES      y
+70
+ #RES      width
+147
+ #RES      height
+53
+ #RES      vis
+1
+ #RES      anchorTop
+70
+ #RES      anchorLeft
+3
+ #RES      anchorRight
+250
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+ #RES      anchorRightFlag
+1
+
+#OBJ       Sweep_Length
+ #TYPE       WSCvifield
+ #PARENT   SweepLen_Form
+ #RES      enableFep
+0
+ #RES      emboss
+1
+ #RES      labelString
+10
+ #RES      vis
+1
+ #RES      x
+10
+ #RES      y
+20
+ #RES      width
+132
+ #RES      height
+25
+ #RES      anchorTop
+20
+ #RES      anchorLeft
+10
+ #RES      anchorRight
+5
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+ #RES      anchorRightFlag
+1
+
+#OBJ       NurbsSurface_Dlg
+ #TYPE       WSCdialog
+ #PARENT   Kodatuno_Win
+ #PROC  NurbsSDlg
+  #TRIG    2
+  #PRO   NurbsSDlg_Proc.cpp
+
+ #RES      workBackColor
+DEF1
+ #RES      no
+0
+ #RES      tab
+NurbsSOpt
+ #RES      backtab
+OpenNurbsSInpFile_Btn
+ #RES      titleString
+Nurbs Surface Generator
+ #RES      x
+300
+ #RES      y
+320
+ #RES      width
+200
+ #RES      height
+237
+ #RES      titleBar
+2
+
+#OBJ       NurbsSOpt
+ #TYPE       WSCradioGroup
+ #PARENT   NurbsSurface_Dlg
+ #RES      menuItems
+Polygonal,Interpolated 1,Approximated,null,Control Point
+ #RES      value
+5
+ #RES      titleString
+Option
+ #RES      tab
+NSP_U
+ #RES      backtab
+NurbsSurface_Dlg
+ #RES      enableFocusMove
+1
+ #RES      x
+3
+ #RES      y
+10
+ #RES      width
+190
+ #RES      height
+150
+ #RES      vis
+1
+ #RES      anchorTop
+10
+ #RES      anchorLeft
+3
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       OpenNurbsSInpFile_Btn
+ #TYPE       WSCvbtn
+ #PARENT   NurbsSurface_Dlg
+ #PROC  OpenInpFile_Proc
+  #TRIG    2
+  #PRO   OpenInpFile_Proc.cpp
+
+ #RES      tab
+NurbsSurface_Dlg
+ #RES      backtab
+NSR_V
+ #RES      labelString
+File
+ #RES      vis
+1
+ #RES      x
+8
+ #RES      y
+170
+ #RES      width
+70
+ #RES      height
+25
+ #RES      anchorTop
+170
+ #RES      anchorLeft
+8
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       NurbsS_Rank_Lb
+ #TYPE       WSCvlabel
+ #PARENT   NurbsSurface_Dlg
+ #RES      shadowType
+-1
+ #RES      labelString
+Rank
+ #RES      alignmentH
+1
+ #RES      vis
+1
+ #RES      x
+110
+ #RES      y
+170
+ #RES      width
+35
+ #RES      anchorTop
+170
+ #RES      anchorLeft
+110
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+
+#OBJ       NurbsS_Rank
+ #TYPE       WSCvifield
+ #PARENT   NurbsSurface_Dlg
+ #RES      return
+NurbsSurface_Dlg
+ #RES      tab
+NSR_V
+ #RES      backtab
+NSP_V
+ #RES      enableFocusMove
+1
+ #RES      shadowType
+2
+ #RES      emboss
+1
+ #RES      labelString
+4
+ #RES      vis
+1
+ #RES      x
+150
+ #RES      y
+170
+ #RES      width
+30
+ #RES      height
+25
+ #RES      anchorTop
+170
+ #RES      anchorLeft
+150
+ #RES      anchorTopFlag
+1
+ #RES      anchorLeftFlag
+1
+

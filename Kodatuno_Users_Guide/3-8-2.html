@@ -1,0 +1,420 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"> 
+<HTML> 
+<HEAD LANG="ja"> 
+	<TITLE>Kodatuno User's Guide</TITLE> 
+	<meta HTTP-EQUIV="Content-type" CONTENT="text/html; charset=euc-jp"> 
+</HEAD> 
+<BODY bgcolor="#ffffff"> 
+<table cellspacing="0" cellpadding="0" border="0" width="100%">   
+	<tr valign="top" height="32">   
+	</tr>   
+	<tr valign="top">        
+		<td width="256" valign="bottom" align="left">          
+			<IMG SRC="pixmaps/logo.jpg" width="300" height="98" alt="Kodatuno Logo" ALIGN="top">
+		</td>        
+		<td valign="bottom" align="center">          
+			<center> 	   
+		<b><big>Kodatuno User's Guide</big>
+		</b>
+		<center>        
+		</td>       
+		<td width="20%" valign="bottom" align="right">          
+			<A HREF="./3-7.html" TARGET="_top">Prev</A>     
+			<A HREF="./index.html" TARGET="_top">Index</A>          
+			<A HREF="./3-9.html" TARGET="_top">Next</A><br>     
+		</td>   
+	</tr> 
+</table> 
+<blockquote> 
+
+<BR><HR><H2>CADデータの内部表現</H2>
+【BODY.h】<BR><BR>
+
+Kodatuno内部での立体表現を定義。
+JAMA-IS V1.04を準拠しています。各定義の詳細はJAMA-IS仕様書を参照してください。
+また、Bodyの階層構造に関しては、<A HREF="1-4.html">1.4  Kodatuno内部でのCADデータの構成 </A>を参照してください。
+
+<BR>■シンボル
+<pre><font size="3">
+#define ALL_ENTITY_TYPE_NUM 21            全エンティティタイプの数
+#define CTLPNUMMAX          512           NURBSで用いられるコントロールポイントの数の上限
+#define KNOTNUMMAX          512           NURBSで用いられるノットシーケンスの数の上限
+#define GEOMTRYELEM         0             IGESディレクトリ部"Entity Use Flag"より、幾何要素を示す
+#define PARAMETRICELEM      5             IGESディレクトリ部"Entity Use Flag"より、2Dパラメトリック要素を示す
+#define NORM_KNOT_VAL       1             ノットベクトルを正規化するときの範囲の最大値
+#define MIN_KNOT_RANGE      0.0002        隣り合うノットベクトルの差がこの値以上であること
+
+＜エンティティタイプのシンボルを定義＞
+#define    CIRCLE_ARC                  100     円/円弧
+#define    COMPOSITE_CURVE             102     複合曲線
+#define    CONIC_ARC                   104     円錐曲線
+#define    COPIOUS_DATA                106     有意点列
+#define    PLANE                       108     平面
+#define    LINE                        110     線分
+#define    PARAMETRIC_SPLINE_CURVE     112     パラメトリックスプライン曲線
+#define    PARAMETRIC_SPLINE_SURFACE   114     パラメトリックスプライン曲面
+#define    POINT                       116     点
+#define    TRANSFORMATION_MATRIX       124     変換行列
+#define    NURBS_CURVE                 126     有理Bスプライン曲線
+#define    NURBS_SURFACE               128     有理Bスプライン曲面
+#define    CURVE_ON_PARAMETRIC_SURFACE 142     面上線
+#define    TRIMMED_SURFACE             144     トリム面
+#define    SUBFIGURE_DEFINITION        308     子図の定義
+#define    ASSOCIATIVITY_INSTANCE      402     グループ
+#define    DRAWING                     404     図面
+#define    PROPERTY                    406     図面サイズ
+#define    SINGULAR_SUBFIGURE_INSTANCE 408     子図の参照
+#define    VIEW                        410     投象面
+</font></pre>
+
+<HR>
+<BR>■インクルードライブラリ<BR><BR>
+"StdAfx.h" "NURBS_Func.h"<BR><BR>
+
+<HR>
+<BR>■型定義
+<pre><font size="3">
+typedef WSClistData BODYList       WideStudioが用意するデータリストの型をBODYListとして再登録
+typedef WSClistData OBJECTList     WideStudioが用意するデータリストの型をOBJECTListとして再登録
+
+＜エンティティタイプのシンボルをenumで定義＞
+enum EntityType{
+    _CIRCLE_ARC,                     0:円・円弧
+    _COMPOSITE_CURVE,                1:複合曲線
+    _CONIC_ARC,                      2:円錐曲線
+    _COPIOUS_DATA,                   3:有意点列
+    _PLANE,                          4:平面
+    _LINE,                           5:線分
+    _PARAMETRIC_SPLINE_CURVE,        6:パラメトリックスプライン曲線
+    _PARAMETRIC_SPLINE_SURFACE,      7:パラメトリックスプライン曲面
+    _POINT,                          8:点
+    _TRANSFORMATION_MATRIX,          9:変換行列
+    _NURBSC,                         10:有理Bスプライン曲線
+    _NURBSS,                         11:有理Bスプライン曲面
+    _CURVE_ON_PARAMETRIC_SURFACE,    12:面上線
+    _TRIMMED_SURFACE,                13:トリム面
+    _SUBFIGURE_DEFINITION,           14:子図の定義
+    _ASSOCIATIVITY_INSTANCE,         15:グループ
+    _DRAWING,                        16:図面
+    _PROPERTY,                       17:図面サイズ
+    _SINGULAR_SUBFIGURE_INSTANCE,    18:子図の参照
+    _VIEW                            19:投象面
+    _MESH                            20:メッシュ
+};
+
+＜エンティティタイプごとに構造体を定義＞
+＜円・円弧＞
+typedef struct{
+    double zt;        Z軸方向の深さ
+    Coord  cp[3];     円・円弧の中心点、始点、終点
+    double R;         半径
+    double t[2];      t[0]:始点の角度 t[1]:終点の角度
+    int EntUseFlag;   ディレクトリ部 Entity Use Flag の値(0:幾何要素 5:2Dパラメトリック要素)
+    int pD;           ディレクトリ部への逆ポインタ
+    DispStat Dstat;   表示属性（色r,g,b）
+}CIRA;
+
+＜円錐曲線＞
+typedef struct{
+    double prop[6];   係数
+    double zt;        ZT平面の定義
+    Coord  cp[2];     始点、終点
+    int pD;           ディレクトリ部への逆ポインタ
+    DispStat Dstat;   表示属性（色r,g,b）
+}CONA;
+
+＜線分＞
+typedef struct{
+    Coord cp[2];      始点、終点
+    int EntUseFlag;   ディレクトリ部 Entity Use Flag の値(0:幾何要素 5:2Dパラメトリック要素)
+    int pD;           ディレクトリ部への逆ポインタ
+    DispStat Dstat;   表示属性（色r,g,b）
+}LINE_;
+
+＜変換マトリックス＞
+typedef struct{
+    double R[3][3];   回転行列
+    double T[3];      並進ベクトル
+    int pD;           ディレクトリ部への逆ポインタ
+}TMAT;
+
+＜有理Bスプライン(NURBS)曲線＞
+typedef struct{
+    int K;            コントロールポイントの数
+    int M;            階数(=次数+1)
+    int N;            ノットベクトルの数
+    int prop[4];      各プロパティ
+    double *T;        ノットシーケンスの値 A+1個
+    double *W;        Weightの値 K+1個
+    Coord *cp;        コントロールポイント K+1個
+    double V[2];      パラメータの範囲
+    Coord norm;       法線ベクトル
+    int EntUseFlag;   ディレクトリ部 Entity Use Flag の値(0:幾何要素 5:2Dパラメトリック要素)
+    int pD;           ディレクトリ部への逆ポインタ
+    DispStat Dstat;   表示属性（色r,g,b）
+}NURBSC;
+
+＜有理Bスプライン(NURBS)曲面＞
+typedef struct{
+    int K[2];         コントロールポイントの数(u方向,v方向)
+    int M[2];         階数(=次数+1)
+    int N[2];         ノットベクトルの数
+    int prop[5];      パラメータ
+    double *S;        u方向ノットベクトルの値 A+1個
+    double *T;        v方向ノットベクトルの値 B+1個
+    double **W;       Weightの値
+    Coord  **cp;      コントロールポイント C個
+    double U[2];      u方向パラメータ
+    double V[2];      v方向パラメータ
+    int pD;           ディレクトリ部への逆ポインタ
+    int TrmdSurfFlag; このNURBS曲面がトリム面として呼ばれているのか、独立して存在するのかを示すフラグ(トリム面:KOD_TRUE  独立面:KOD_FALSE)
+    DispStat Dstat;   表示属性（色r,g,b,）
+}NURBSS;
+
+＜複合曲線を構成できる曲線群を共用体で宣言＞
+typedef union{
+    CIRA CirA;        円・円弧
+    CONA ConA;        円錐曲線
+    LINE_ Line;       直線
+    NURBSC NurbsC;    NURBS曲線
+}COMPELEM;
+
+＜複合曲線＞
+typedef struct{
+    int N;            構成要素数
+    int *DEType;      各構成要素のエンティティタイプ
+    COMPELEM **pDE;   各構成要素の構造体へのポインタ
+    int DegeFlag;     複合曲線が縮退した2Dパラメトリック曲線を表すフラグ
+    NURBSC DegeNurbs; 複合曲線が縮退した2Dパラメトリック曲線だった場合に縮退を解消するためのNURBS曲線
+    int pD;           ディレクトリ部への逆ポインタ
+}COMPC;
+
+＜面上線を構成できる曲線群を共用体で宣言＞
+typedef union{
+    CIRA  CirA;       円・円弧
+    COMPC CompC;      複合曲線
+    CONA  ConA;       円錐曲線
+    NURBSC NurbsC;    NURBS曲線
+}CURVE;
+
+＜面上線＞
+typedef struct{
+    int crtn;         面上線がどのように作られたかを示す
+    int SType;        Surface Sのエンティティタイプ
+    int BType;        Curve Bのエンティティタイプ
+    int CType;        Curve Cのエンティティタイプ
+    NURBSS *pS;       Curveが乗るSurface構造体へのポインタ
+    CURVE *pB;        Surface Sのパラメータ空間におけるCurve B構造体へのポインタ
+    CURVE *pC;        Curve C構造体へのポインタ
+    int pref;         送り側システムで採られていた表現を示すフラグ
+    int pD;           ディレクトリ部への逆ポインタ
+}CONPS;
+
+＜トリム面＞
+typedef struct{
+    NURBSS *pts;      トリムされるSurface EntityのDE部へのポインタ
+    int n1;           0:外周がDの境界と一致、1:それ以外
+    int n2;           Trimmed Surfaceの内周にあたる単純閉曲線の数
+    CONPS *pTO;       Trimmed Surfaceの外周にあたる単純閉曲線構造体へのポインタ
+    CONPS **pTI;      Trimmed Surfaceの内周にあたる単純閉曲線構造体へのポインタ
+    int pD;           ディレクトリ部への逆ポインタ
+}TRMS;
+
+typedef TRMS TRIMD_NURBSS;     トリム面に対してNurbs曲面を想起させる名称を与えておく
+
+＜パス生成対象エンティティを示す構造体＞
+typedef struct{
+    int Body;         BODYオブジェクトの番号
+    int Type;         エンティティタイプのシンボル(NURBS曲線:126 , NURBS曲面:128 , トリム面:144)
+    int Num;          Typeにおける要素番号(NURBS曲線が4本あったら、その4本に割り当てられた0〜3の番号)
+    int CCount;       何番目にピックされた曲線かを表す
+    int SCount;       何番目にピックされた曲面かを表す
+}OBJECT;
+
+<HR>
+<BR>■クラス<BR><BR>
+BODY<BR><BR>
+<継承><BR>
+なし<BR><BR>
+
+<HR>
+<BR>■関数(Class BODY)<BR><BR>
+
+<pre><font size="3">
+
+<A NAME="BODY()"> </A>
+<H4>public
+BODY(); </H4>
+＜説明＞
+    コンストラクタ
+＜引数＞  
+    なし  
+＜戻り値＞  
+    なし
+
+<A NAME="NewBodyElem()"> </A>
+<H4>public
+void BODY::NewBodyElem(); </H4>
+＜説明＞
+    BODYを構成する全要素のメモリー確保
+＜引数＞  
+    なし  
+＜戻り値＞  
+    なし
+
+<A NAME="DelBodyElem()"> </A>
+<H4>public
+void BODY::DelBodyElem(); 
+void BODY::DelBodyElem(int TypeNum_[ ])</H4>
+＜説明＞
+    BODYを構成する全要素/指定した数だけメモリー解放
+＜引数＞  
+    TypeNum_[ ]：メモリ開放したいエンティティとエンティティ数を指定  
+＜戻り値＞  
+    なし
+
+<A NAME="RotBody()"></A>
+<H4>public
+void BODY::RotBody(Coord Axis,double deg) </H4>
+＜説明＞
+    1つのBODYを指定した軸周りに指定した角度回転させる
+＜引数＞
+    Axis：回転軸
+    deg：回転角
+＜戻り値＞
+    なし
+    
+<A NAME="ShiftBody()"></A>
+<H4>public
+void BODY::ShiftBody(Coord d) </H4>
+＜説明＞
+    1つのBODYを指定した量だけ平行移動量する
+＜引数＞
+    d：平行移動量
+＜戻り値＞
+    なし
+    
+<A NAME="ExpandBody()"></A>
+<H4>public
+void BODY::ExpandBody(Coord r) </H4>
+＜説明＞
+    1つのBODYを指定した倍率で拡大縮小する
+＜引数＞
+    r：倍率
+＜戻り値＞
+    なし    
+    
+<A NAME="RegistBody()"></A>
+<H4>public
+void BODY::RegistBody(BODYList *BodyList, char BodyName[]) </H4>
+＜説明＞
+    自分を新たなBODYとして登録する
+＜引数＞
+   *BodyList：登録先リストへのポインタ
+   *BODYName[ ] ：登録名
+＜戻り値＞
+    なし 
+
+<A NAME="RegistBody()"></A>
+<H4>public
+void BODY::DeleteBody(BODYList *BodyList) </H4>
+＜説明＞
+    自分自身を消去する
+＜引数＞
+   *BodyList：登録先リストへのポインタ
+＜戻り値＞
+    なし 
+
+<A NAME="RegistNurbsCtoBody()"> </A>
+<A NAME="RegistNurbsCtoBodyN()"> </A>
+<H4>public
+void BODY::RegistNurbsCtoBody(BODYList *BodyList,NURBSC Nurb,char BodyName[])
+void BODY::RegistNurbsCtoBodyN(BODYList *BodyList,NURBSC Nurb[],char BodyName[],int N)</H4>
+＜説明＞
+    1つ/N個のNURBS曲線を新たなBODYとして登録する
+＜引数＞
+    *BodyList：サーチしたいBODYのリストを指定 
+    Nurb : 登録するNURBS曲線
+    BodyName[] : Bodyリストウィンドウに登録するBody名
+    N : 登録するNURBS曲線の個数
+＜戻り値＞
+    なし
+    
+<A NAME="RegistNurbsStoBody()"> </A>
+<A NAME="RegistNurbsStoBodyN()"> </A>
+<H4>public
+void BODY::RegistNurbsStoBody(BODYList *BodyList,NURBSS Nurb,char BodyName[])
+void BODY::RegistNurbsStoBodyN(BODYList *BodyList,NURBSS Nurb[],char BodyName[],int N)</H4>
+＜説明＞
+    1つ/N個のNURBS曲面を新たなBODYとして登録する
+＜引数＞
+    *BodyList：サーチしたいBODYのリストを指定 
+    Nurb : 登録するNURBS曲面
+    BodyName[] : Bodyリストウィンドウに登録するBody名
+    N : 登録するNURBS曲面の個数
+＜戻り値＞
+    なし
+
+<A NAME="ChangeStatColor()"> </A>
+<H4>public
+void BODY::ChangeStatColor(float *Col, float r, float g, flaot b, float a); </H4>
+＜説明＞
+    エンティティの表示色を変更する  
+＜引数＞  
+    Col：変更したいエンティティのColorステータス 
+    r：変更したいエンティティのColorステータスのR値 
+    g：変更したいエンティティのColorステータスのG値 
+    b：変更したいエンティティのColorステータスのB値 
+    a：変更したいエンティティのColorステータスのa値 
+＜戻り値＞  
+    なし
+
+<A NAME="InitCurveColor()"> </A>
+<A NAME="InitSurfaceColor()"> </A>
+<H4>public
+void BODY::InitCurveColor(float *col);
+void BODY::InitSurfaceColor(float *col);</H4>
+＜説明＞
+    線/面の色の初期値を与える  
+＜引数＞  
+   *col：Colorステータス 
+＜戻り値＞  
+    なし
+    
+</font></pre>
+
+<HR>
+<BR>■変数(Class BODY)
+<pre><font size="3">
+public:
+    CIRA  *CirA;                           円・円弧
+    COMPC *CompC;                          複合曲線
+    CONA  *ConA;                           円錐曲線
+    LINE_ *Line;                           線分
+    TMAT  *TMat;                           変換行列
+    NURBSC *NurbsC;                        NRBS曲線
+    NURBSS *NurbsS;                        NRBS曲面
+    CONPS *ConpS;                          面上線
+    TRMS  *TrmS;                           トリム面
+    MESH  *Mesh;                           メッシュ
+    Data  *Mom                             自分が属するリストのアドレス
+    double MaxCoord;                       立体の寸法の最大値(この値で初期表示倍率を決定)
+    int  TypeNum[ALL_ENTITY_TYPE_NUM];     BODYを構成する各エンティティの数を格納した配列
+    char Name[FNAMEMAX];                   BODY名
+</font></pre>
+
+</blockquote> <HR> Document Release 2.0 for Kodatuno R2.0, Nov. 2011<P> <hr> <center>
+			<A HREF="./3-7.html" TARGET="_top">Prev</A>     
+			<A HREF="./index.html" TARGET="_top">Index</A>          
+			<A HREF="./3-9.html" TARGET="_top">Next</A><br>     
+</center> <hr> <table cellpadding="0" cellspacing="0" border="0" width="100%">    
+<tr>      
+	<td align="left">        
+		<small>Copyright(C) Kodatuno Development Team, 2011</small>      
+	</td>      
+	<td align="right">        
+		<small><i>Last modified: Nov. 11, 2011</i></small>      
+	</td>   
+</tr> </table>  <!-- end of body --> </body>  
+</html>  
+
