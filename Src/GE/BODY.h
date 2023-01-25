@@ -11,6 +11,8 @@
 // ALL_ENTITY_TYPE_NUM -	全エンティティタイプの数(21)
 // CTLPNUMMAX -				NURBSで用いられるコントロールポイントの数の上限(1024)
 // KNOTNUMMAX -				NURBSで用いられるノットシーケンスの数の上限(1024)
+// DISPLAY -                IGESディレクトリ部"Blank Status"より、表示を表す(0)
+// HIDDEN -                 IGESディレクトリ部"Blank Status"より、非表示を表す(1)
 // GEOMTRYELEM -			IGESディレクトリ部"Entity Use Flag"より、幾何要素を示す(0)
 // PARAMETRICELEM -			IGESディレクトリ部"Entity Use Flag"より、2Dパラメトリック要素を示す(5)
 // NORM_KNOT_VAL -			ノットベクトルを正規化するときの範囲の最大値(1)
@@ -18,6 +20,8 @@
 #define ALL_ENTITY_TYPE_NUM	21
 #define CTLPNUMMAX  1024
 #define KNOTNUMMAX  1024
+#define DISPLAY     0
+#define HIDDEN      1
 #define GEOMTRYELEM 0
 #define PARAMETRICELEM 5
 #define NORM_KNOT_VAL	1
@@ -66,7 +70,7 @@ typedef KODlistData OBJECTList;
 #define	TRIMMED_SURFACE				144
 #define	SUBFIGURE_DEFINITION		308
 #define	ASSOCIATIVITY_INSTANCE		402
-#define	DRAWING						404	
+#define	DRAWING						404
 #define	PROPERTY					406
 #define	SINGULAR_SUBFIGURE_INSTANCE 408
 #define	VIEW						410
@@ -94,27 +98,27 @@ typedef KODlistData OBJECTList;
 // _VIEW -							19:投象面
 // _MESH -							20:メッシュ
 enum EntityType{
-	_CIRCLE_ARC,
-	_COMPOSITE_CURVE,
-	_CONIC_ARC,
-	_COPIOUS_DATA,
-	_PLANE,
-	_LINE,
-	_PARAMETRIC_SPLINE_CURVE,
-	_PARAMETRIC_SPLINE_SURFACE,
-	_POINT,
-	_TRANSFORMATION_MATRIX,
-	_NURBSC,
-	_NURBSS,
-	_CURVE_ON_PARAMETRIC_SURFACE,
-	_TRIMMED_SURFACE,
-	_SUBFIGURE_DEFINITION,
-	_ASSOCIATIVITY_INSTANCE,
-	_DRAWING,
-	_PROPERTY,
-	_SINGULAR_SUBFIGURE_INSTANCE,
-	_VIEW,
-	_MESH
+    _CIRCLE_ARC,
+    _COMPOSITE_CURVE,
+    _CONIC_ARC,
+    _COPIOUS_DATA,
+    _PLANE,
+    _LINE,
+    _PARAMETRIC_SPLINE_CURVE,
+    _PARAMETRIC_SPLINE_SURFACE,
+    _POINT,
+    _TRANSFORMATION_MATRIX,
+    _NURBSC,
+    _NURBSS,
+    _CURVE_ON_PARAMETRIC_SURFACE,
+    _TRIMMED_SURFACE,
+    _SUBFIGURE_DEFINITION,
+    _ASSOCIATIVITY_INSTANCE,
+    _DRAWING,
+    _PROPERTY,
+    _SINGULAR_SUBFIGURE_INSTANCE,
+    _VIEW,
+    _MESH
 };
 
 /*
@@ -125,25 +129,27 @@ enum EntityType{
 
 // Structure: CIRA
 // 円・円弧を表わす構造体
-// 
+//
 // Variables:
 // double	zt -			Z軸方向の深さ
 // Coord	cp[3] -			円・円弧の中心点、始点、終点
 // double	R -				半径
 // double	t[2] -			t[0]:始点の角度 t[1]:終点の角度
 // Coord	U,V -			円，円弧を構成する平面の任意の直交ベクトル
+// int      BlankStat -     ディレクトリ部 Blank Statusの値（0:表示する 1：表示しない）
 // int		EntUseFlag -	ディレクトリ部 Entity Use Flag の値(0:幾何要素 5:2Dパラメトリック要素)
 // int		pD -			ディレクトリ部への逆ポインタ
 // DispStat	Dstat -			 表示属性（色r,g,b）
 typedef struct{
-	double zt;		
-	Coord  cp[3];	
-	double R;
-	double t[2];
-	Coord  U,V;
-	int EntUseFlag;
-	int pD;
-	DispStat Dstat;
+    double zt;
+    Coord  cp[3];
+    double R;
+    double t[2];
+    Coord  U,V;
+    int BlankStat;
+    int EntUseFlag;
+    int pD;
+    DispStat Dstat;
 }CIRA;
 
 // Structure: CONA
@@ -156,11 +162,11 @@ typedef struct{
 // int pD -			ディレクトリ部への逆ポインタ
 // DispStat Dstat - 表示属性（色r,g,b）
 typedef struct{
-	double prop[6];
-	double zt;
-	Coord  cp[2];
-	int pD;
-	DispStat Dstat;
+    double prop[6];
+    double zt;
+    Coord  cp[2];
+    int pD;
+    DispStat Dstat;
 }CONA;
 
 // Structure: LINE_
@@ -168,14 +174,16 @@ typedef struct{
 //
 // Variables:
 // Coord cp[2] -	始点、終点
+// int BlankStat -  ディレクトリ部 Blank Statusの値（0:表示する 1：表示しない）
 // int EntUseFlag - ディレクトリ部 Entity Use Flag の値(0:幾何要素 5:2Dパラメトリック要素)
 // int pD -			ディレクトリ部への逆ポインタ
 // DispStat Dstat - 表示属性（色r,g,b）
 typedef struct{
-	Coord cp[2];
-	int EntUseFlag;
-	int pD;
-	DispStat Dstat;
+    Coord cp[2];
+    int BlankStat;
+    int EntUseFlag;
+    int pD;
+    DispStat Dstat;
 }LINE_;
 
 // Structure: TMAT
@@ -186,9 +194,9 @@ typedef struct{
 // double T[3] -	並進ベクトル
 // int pD -			ディレクトリ部への逆ポインタ
 typedef struct{
-	double R[3][3];	// 回転行列
-	double T[3];	// 並進ベクトル
-	int pD;			// ディレクトリ部への逆ポインタ
+    double R[3][3];	// 回転行列
+    double T[3];	// 並進ベクトル
+    int pD;			// ディレクトリ部への逆ポインタ
 }TMAT;
 
 // Structure: NURBSC
@@ -202,32 +210,34 @@ typedef struct{
 //					prop[0]==0:非平面内曲線, 1:平面内曲線
 //					prop[1]==0:閉曲線でない，1:閉曲線
 //					prop[2]==0:有理式，1:多項式
-//					prop[3]==0:非周期的曲線, 1:周期的曲線	
-// double *T -		ノットシーケンスの値 K+M個				
-// double *W -		Weightの値 K個							
-// Coord *cp -		コントロールポイント K個								
+//					prop[3]==0:非周期的曲線, 1:周期的曲線
+// double *T -		ノットシーケンスの値 K+M個
+// double *W -		Weightの値 K個
+// Coord *cp -		コントロールポイント K個
 // double V[2] -	パラメータの範囲
 // Coord norm -		法線ベクトル
+// int BlankStat -  ディレクトリ部 Blank Statusの値（0:表示する 1：表示しない）
 // int EntUseFlag - ディレクトリ部 Entity Use Flag の値(0:幾何要素 5:2Dパラメトリック要素)
 // int pD -			ディレクトリ部への逆ポインタ
 // int OriginEnt -	元のエンティティタイプ
 // void *pOriginEnt - 元のエンティティへのポインタ
 // DispStat Dstat - 表示属性（色r,g,b）
 typedef struct{
-	int K;
-	int M;
-	int N;
-	int prop[4];
-	double *T;
-	double *W;
-	Coord *cp;
-	double V[2];
-	Coord norm;
-	int EntUseFlag;
-	int pD;
-	int OriginEnt;
-	void *pOriginEnt;
-	DispStat Dstat;
+    int K;
+    int M;
+    int N;
+    int prop[4];
+    double *T;
+    double *W;
+    Coord *cp;
+    double V[2];
+    Coord norm;
+    int BlankStat;
+    int EntUseFlag;
+    int pD;
+    int OriginEnt;
+    void *pOriginEnt;
+    DispStat Dstat;
 }NURBSC;
 
 // Structure: NURBSS
@@ -475,6 +485,10 @@ public:
 	// Function: NewTrmS
 	// TRMSを指定した数だけメモリー確保し，初期化する
 	TRMS *NewTrmS(int);				
+
+    // Funciton: CopyBody
+    // Bodyのコピー
+    void CopyBody(BODY *);
 	
 	// Function: RotBody
 	// BODYの回転
@@ -533,6 +547,11 @@ public:
 	int GetNurbsCFromCirA(int,int);							
 
 private:
+
+    // Function: CheckTheSameNurbsC
+    // (private)同一のNURBS曲線を探索
+    NURBSC *CheckTheSameNurbsC(NURBSC *,int,NURBSC *);
+
 	// Function: CirAToNurbsC_seg1
 	// (private)円・円弧エンティティが1セグメントの場合
 	int CirAToNurbsC_seg1(int,int,Coord [],double);

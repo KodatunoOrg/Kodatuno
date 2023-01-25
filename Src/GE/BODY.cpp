@@ -196,10 +196,88 @@ void BODY::DelBodyElem(int TypeNum_[])
 	}
 }
 
+// Function: CopyBody
+// 他のBODYを自身にコピーする
+//
+// Parameters:
+// *body - コピー元のBODYポインタ
+void BODY::CopyBody(BODY *body)
+{
+    NURBS_Func NFunc;
+
+    for(int i=0;i<ALL_ENTITY_TYPE_NUM;i++)
+        this->TypeNum[i] = body->TypeNum[i];
+
+    this->NewNurbsC(TypeNum[_NURBSC]);
+    this->NewNurbsS(TypeNum[_NURBSS]);
+    this->NewTrmS(TypeNum[_TRIMMED_SURFACE]);
+
+    for(int n=0;n<TypeNum[_NURBSC];n++)
+        NFunc.GenNurbsC(&this->NurbsC[n],body->NurbsC[n]);
+
+    for(int n=0;n<TypeNum[_TRIMMED_SURFACE];n++){
+
+        NURBSS *nurbsS;
+        NURBSC *nurbsC;
+        CONPS *conps_o,*conps_i;
+        COMPC *compc_o,*compc_i;
+        int curve_num=0;
+
+        nurbsS = &this->NurbsS[n];
+        conps_o = (CONPS *)malloc(sizeof(CONPS));		// 外側トリムを構成する面上線のメモリー確保
+        compc_o = (COMPC *)malloc(sizeof(COMPC));		// 外側トリムを構成する複合曲線のメモリー確保
+
+        NFunc.GenNurbsS(nurbsS,*body->TrmS[n].pts);		// 新たなNURBS曲面を1つ得る
+        this->TrmS[n].pts = nurbsS;						// NURBS曲面をトリム面に関連付ける
+        nurbsS->TrmdSurfFlag = KOD_TRUE;
+
+        NFunc.New_TrmS(&this->TrmS[n],body->TrmS[n].n2);				// トリム面のメモリー確保
+
+        conps_i = (CONPS *)malloc(sizeof(CONPS)*body->TrmS[n].n2);		// 内側を構成する面上線のメモリー確保
+        compc_i = (COMPC *)malloc(sizeof(COMPC)*body->TrmS[n].n2);		// 内側を構成する複合曲線のメモリー確保
+
+        // NURBS曲線をトリム部分を構成するNURBS曲線に関連付ける
+        // 外周トリム
+        this->TrmS[n].pTO = conps_o;
+        NFunc.New_CompC(compc_o,body->TrmS[n].pTO->pB->CompC.N);
+        for(int i=0;i<body->TrmS[n].pTO->pB->CompC.N;i++){
+            nurbsC = CheckTheSameNurbsC(this->NurbsC,TypeNum[_NURBSC],&body->TrmS[n].pTO->pB->CompC.pDE[i]->NurbsC);
+            compc_o->pDE[i] = (COMPELEM *)nurbsC;
+            compc_o->DEType[i] = body->TrmS[n].pTO->pB->CompC.DEType[i];
+        }
+        this->TrmS[n].pTO->pB = (CURVE *)compc_o;
+        this->TrmS[n].pTO->BType = body->TrmS[n].pTO->BType;
+        this->TrmS[n].pTO->pB->CompC.DegeFlag = body->TrmS[n].pTO->pB->CompC.DegeFlag;
+        this->TrmS[n].pTO->pB->CompC.DegeNurbs = body->TrmS[n].pTO->pB->CompC.DegeNurbs;
+
+        // 内周トリム
+        curve_num = 0;
+        for(int i=0;i<body->TrmS[n].n2;i++){
+            this->TrmS[n].pTI[i] = &(conps_i[i]);
+            NFunc.New_CompC(&compc_i[i],body->TrmS[n].pTI[i]->pB->CompC.N);
+            for(int j=0;j<body->TrmS[n].pTI[i]->pB->CompC.N;j++){
+                nurbsC = CheckTheSameNurbsC(this->NurbsC,TypeNum[_NURBSC],&body->TrmS[n].pTI[i]->pB->CompC.pDE[j]->NurbsC);
+                compc_i[i].pDE[j] = (COMPELEM *)nurbsC;
+                compc_i[i].DEType[j] = body->TrmS[n].pTI[i]->pB->CompC.DEType[j];
+                curve_num++;
+            }
+            this->TrmS[n].pTI[i]->pB = (CURVE *)(&(compc_i[i]));
+            this->TrmS[n].pTI[i]->BType = body->TrmS[n].pTI[i]->BType;
+            this->TrmS[n].pTI[i]->pB->CompC.DegeFlag = body->TrmS[n].pTI[i]->pB->CompC.DegeFlag;
+            this->TrmS[n].pTI[i]->pB->CompC.DegeNurbs = body->TrmS[n].pTI[i]->pB->CompC.DegeNurbs;
+        }
+
+        this->TrmS[n].n1 = body->TrmS[n].n1;
+        this->TrmS[n].n2 = body->TrmS[n].n2;
+
+    }
+
+
+}
 
 // Function: RotBody
 // BODYを回転させる
-
+//
 // Parameters:
 //	Axis - 回転軸
 //	deg - 回転角度
@@ -652,6 +730,7 @@ int BODY::GetNurbsCFromLine(int NurbsCount,int LineCount)
 	NurbsC[NurbsCount].V[0] = 0.;
 	NurbsC[NurbsCount].V[1] = 1.;
 
+    NurbsC[NurbsCount].BlankStat = Line[LineCount].BlankStat;	// ディレクトリ部の情報"Blank Status"を得る(NURBSC)
 	NurbsC[NurbsCount].EntUseFlag = Line[LineCount].EntUseFlag;	// ディレクトリ部の情報"Entity Use Flag"を得る(NURBSC)
 	NurbsC[NurbsCount].OriginEnt = LINE;						// 元は線分要素であったことを記憶
 	NurbsC[NurbsCount].pOriginEnt = &Line[LineCount];			// 元は線分要素であったことを記憶
@@ -717,6 +796,7 @@ int BODY::GetNurbsCFromCirA(int NurbsCount,int CirCount)
 		return KOD_ERR;
 	}
 
+    NurbsC[NurbsCount].BlankStat = CirA[CirCount].BlankStat;	// ディレクトリ部の情報"Blank Status"を得る(NURBSC)
 	NurbsC[NurbsCount].EntUseFlag = CirA[CirCount].EntUseFlag;	// ディレクトリ部の情報"Entity Use Flag"を得る(NURBSC)
 	NurbsC[NurbsCount].OriginEnt = CIRCLE_ARC;					// 元は円・円弧要素であったことを記憶
 	NurbsC[NurbsCount].pOriginEnt = &CirA[CirCount];		// その円・円弧要素へのポインタ
@@ -1179,4 +1259,37 @@ COMPC *TRMS::GetInnerCompC(int N)
 NURBSS *TRMS::GetNurbsS()
 {
     return pts;
+}
+
+// Funciton: CheckTheSameNurbsC
+// CopyBODY()のサブ関数．指定したNURBS曲線と同じ曲線を探し，そのポインタを返す
+//
+// Parameters:
+// *Tnurbs - 探索されるNURBS曲線
+// N - Tnurbsの数
+// *Inurbs - 探索対象のNURBS曲線
+//
+// Return:
+// Tnurbsのポインタ
+NURBSC *BODY::CheckTheSameNurbsC(NURBSC *Tnurbs, int N, NURBSC *Inurbs)
+{
+    NURBSC *nurb;
+    bool flag = false;
+
+
+    for(int i=0;i<N;i++){
+        if(Tnurbs[i].K == Inurbs->K){
+            flag = true;
+            for(int j=0;j<Inurbs->K;j++){
+                if(DiffCoord(Tnurbs[i].cp[j],Inurbs->cp[j]) == KOD_FALSE){
+                    flag = false;
+                    break;
+                }
+            }
+        }
+        if(flag == true)
+            return &Tnurbs[i];
+    }
+
+    return NULL;
 }

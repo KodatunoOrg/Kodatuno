@@ -308,7 +308,8 @@ void Describe_BODY::Draw_Lines(BODY *Body)
 {
 	for(int i=0;i<Body->TypeNum[_LINE];i++){
 		glColor3f(Body->Line[i].Dstat.Color[0],Body->Line[i].Dstat.Color[1],Body->Line[i].Dstat.Color[2]);
-		if(Body->Line[i].EntUseFlag == GEOMTRYELEM){				// IGESディレクトリ部の"Entity Use Flag"が0の場合は実際のモデル要素として描画する
+        // IGESディレクトリ部の"Entity Use Flag"が0かつ，"Blank Status"が0の場合は実際のモデル要素として描画する
+        if(Body->Line[i].EntUseFlag == GEOMTRYELEM && Body->Line[i].BlankStat == DISPLAY){
 			DrawLine(Body->Line[i]);
 		}
 	}
@@ -323,7 +324,8 @@ void Describe_BODY::Draw_CircleArcs(BODY *Body)
 {
 	for(int i=0;i<Body->TypeNum[_CIRCLE_ARC];i++){
 		glColor3f(Body->CirA[i].Dstat.Color[0],Body->CirA[i].Dstat.Color[1],Body->CirA[i].Dstat.Color[2]);
-		if(Body->CirA[i].EntUseFlag == GEOMTRYELEM){				// IGESディレクトリ部の"Entity Use Flag"が0の場合は実際のモデル要素として描画する
+        // IGESディレクトリ部の"Entity Use Flag"が0かつ，"Blank Status"が0の場合は実際のモデル要素として描画する
+        if(Body->CirA[i].EntUseFlag == GEOMTRYELEM && Body->CirA[i].BlankStat == DISPLAY){
 			DrawCircleArc(Body->CirA[i]);
 		}
 	}
@@ -338,7 +340,8 @@ void Describe_BODY::Draw_NurbsCurves(BODY *Body)
 {
 	for(int i=0;i<Body->TypeNum[_NURBSC];i++){
 		glColor3f(Body->NurbsC[i].Dstat.Color[0],Body->NurbsC[i].Dstat.Color[1],Body->NurbsC[i].Dstat.Color[2]);
-		if(Body->NurbsC[i].EntUseFlag == GEOMTRYELEM){				// IGESディレクトリ部の"Entity Use Flag"が0の場合は実際のモデル要素として描画する
+        // IGESディレクトリ部の"Entity Use Flag"が0かつ，"Blank Status"が0の場合は実際のモデル要素として描画する
+        if(Body->NurbsC[i].EntUseFlag == GEOMTRYELEM && Body->NurbsC[i].BlankStat == DISPLAY){
 			DrawNurbsCurve(Body->NurbsC[i]);						// 描画
 		}
 	}

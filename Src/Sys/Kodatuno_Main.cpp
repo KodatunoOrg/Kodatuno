@@ -270,7 +270,8 @@ void KODatUNO::Draw_NurbsCurve(BODY *Curr_body)
 	for(int i=0;i<Curr_body->TypeNum[_NURBSC];i++){
 		glPushName(i);		// ネームスタックの先頭にiを挿入
 		glColor3f(Curr_body->NurbsC[i].Dstat.Color[0],Curr_body->NurbsC[i].Dstat.Color[1],Curr_body->NurbsC[i].Dstat.Color[2]);
-		if(Curr_body->NurbsC[i].EntUseFlag == GEOMTRYELEM){				// IGESディレクトリ部の"Entity Use Flag"が0の場合は実際のモデル要素として描画する
+        // IGESディレクトリ部の"Entity Use Flag"が0かつ，"Blank Status"が0の場合は実際のモデル要素として描画する
+        if(Curr_body->NurbsC[i].EntUseFlag == GEOMTRYELEM && Curr_body->NurbsC[i].BlankStat == DISPLAY){
 			DrawNurbsCurve(Curr_body->NurbsC[i]);						// 描画
 		}
 		glPopName();		// ネームスタックの先頭を削除

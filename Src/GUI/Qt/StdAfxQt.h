@@ -37,7 +37,7 @@ public:
 	
 // Function: ExecCommand
 // コマンド実行
-    int ExecCommand(const char *);
+    void ExecCommand(const char *);
 
 // Function: AddBodyNameToWin
 // 新たに登録したBODYの名前をウィンドウリストに表示する

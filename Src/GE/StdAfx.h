@@ -2,6 +2,7 @@
 #define _STD_AFX_H_
 
 #include "Kutil.h"
+//#include <omp.h>
 
 // Constants: General Defines
 // KOD_ERR -					ERRORのシンボル(-1)

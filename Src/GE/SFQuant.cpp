@@ -63,3 +63,23 @@ int SFQuant::SetSFQ(NURBSS *S,double u,double v)
 
 	return KOD_TRUE;
 }
+
+// Function: SetSFQ1
+// 第一基本量を得る
+//
+// Parameters:
+// *S - NURBS曲面へのポインタ
+// u,v - (u, v)パラメータ
+int SFQuant::SetSFQ1(NURBSS *S,double u,double v)
+{
+    NURBS_Func nf;
+    U = u;
+    V = v;
+    Coord du = nf.CalcDiffuNurbsS(S,u,v);			// u方向1階微分
+    Coord dv = nf.CalcDiffvNurbsS(S,u,v);			// v方向1階微分
+    E = CalcInnerProduct(du,du);				// 第1基本量
+    F = CalcInnerProduct(du,dv);				// 第1基本量
+    G = CalcInnerProduct(dv,dv);				// 第1基本量
+
+    return KOD_TRUE;
+}

@@ -36,7 +36,7 @@ void CmdVerInf(int argc,char *argv[])
 				argc--; argv++;
 				for(int i=0;i<atoi(argv[0]);i++){
 					char mes[256];
-					sprintf(mes,"%d:Kodatuno 2.0",i+1);
+                    sprintf(mes,"%d:Kodatuno R%d.%d",i+1,KODATUNO_MAJOR_VER,KODATUNO_MINOR_VER);
                     GuiIF.SetMessage(mes);
 				}
 				break;

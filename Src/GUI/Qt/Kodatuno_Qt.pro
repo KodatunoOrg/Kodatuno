@@ -9,8 +9,6 @@ QT       += core gui opengl
 TARGET = KOD_TEST
 TEMPLATE = app
 
-RC_FILE = mainicon.rc
-
 INCLUDEPATH += \
     ../../GE/ \
     ../../Sys/ \
@@ -86,8 +84,8 @@ FORMS    += \
 RESOURCES += \
     icons.qrc
 
-QMAKE_CXXFLAGS += -fopenmp
-LIBS += -fopenmp
+#QMAKE_CXXFLAGS += -fopenmp
+#LIBS += -fopenmp
 
 LIBS += -lopengl32 -lglu32
 

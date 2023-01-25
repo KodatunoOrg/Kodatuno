@@ -43,8 +43,7 @@ int SmpContourLine(BODYList *BodyList,OBJECTList *ObjList, int PickCount, double
 	double delta = Prop[3];			// 等高線生成のZ間隔
 	int step = fabs(upper - under)/delta + 1;	// 等高線の本数を算出
 
-	Coord nvec = SetCoord(0,0,1);	// 平面の法線ベクトルを指定(X-Y平面とする)
-
+    Coord nvec = SetCoord(0,0,1);	// 平面の法線ベクトルを指定(X-Y平面とする)
 	// 平面をZ方向にシフトしていきながら，等高線を算出する
 	for(int i=0;i<step;i++){
 		double z = under + delta*(double)i;	// 現在の平面のZ位置
@@ -64,7 +63,6 @@ int SmpContourLine(BODYList *BodyList,OBJECTList *ObjList, int PickCount, double
 		}
 	}
 	GuiIF.SetMessage("END");
-
 
 	return KOD_TRUE;
 }
