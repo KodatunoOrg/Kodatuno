@@ -1,6 +1,6 @@
-/*************************************************************************
+﻿/*************************************************************************
  * Kutil.h 
- * �ŏ�ʃw�b�_�@�������炱����C���N���[�h����
+ * 最上位ヘッダ　迷ったらこれをインクルードせよ
  * V1.0 2013/09/19 K.Takasugi
  ************************************************************************/
 
@@ -14,13 +14,10 @@
 //#define USE_WIDE_STUDIO
 #define USE_QT
 
-// GLUT�w�b�_�t�@�C���̃C���N���[�h
-// �eOS�ɍ��킹�ēK�؂�GLUT.h�̃t�@�C���ʒu���w�肵�Ă�������
-#ifndef MacOS
-#include <GL/glut.h>
-#else
-#include <GLUT/glut.h>
-#endif
+// GLUヘッダファイルのインクルード
+// 各OSに合わせて適切にGL/GLU.hのファイル位置を指定してください
+#include <GL/glu.h>
+
 
 #ifdef USE_WIDE_STUDIO
 #include "StdAfxWS.h"

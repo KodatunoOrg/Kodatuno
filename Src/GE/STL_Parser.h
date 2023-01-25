@@ -1,20 +1,30 @@
-#ifndef _STL_PARSER_MAIN_H_
+ï»¿#ifndef _STL_PARSER_MAIN_H_
 #define _STL_PARSER_MAIN_H_
 
 #include "BODY.h"
 
-#define BUFSIZEMAX 256		// •¶š—ñˆêŠi”[—pƒoƒbƒtƒ@‚ÌƒTƒCƒY
-#define LABELSIZEMAX 10		// ƒ‰ƒxƒ‹•¶š—ñˆêŠi”[—pƒoƒbƒtƒ@‚ÌƒTƒCƒY
-#define LABEL_FASET_SIZE 5	// "facet"•¶š”
-#define LABEL_OUTER_SIZE 5	// "outer"•¶š”
-#define VERTEXNUM	3		// 1‚Â‚Ìƒtƒ@ƒZƒbƒg‚ÉŠÜ‚Ü‚ê‚é"vertex"‚Ì”
-#define UVCPNUM	2			// 1‚Â‚ÌNURBSƒtƒ@ƒZƒbƒg‚Ì1•ûŒü‚ÌƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒg”
+// Constants: General Defines
+// BUFSIZEMAX_STL -		æ–‡å­—åˆ—ä¸€æ™‚æ ¼ç´ç”¨ãƒãƒƒãƒ•ã‚¡ã®ã‚µã‚¤ã‚º(256)
+// LABELSIZEMAX_STL -	ãƒ©ãƒ™ãƒ«æ–‡å­—åˆ—ä¸€æ™‚æ ¼ç´ç”¨ãƒãƒƒãƒ•ã‚¡ã®ã‚µã‚¤ã‚º(10)
+// LABEL_FASET_SIZE -	"facet"æ–‡å­—æ•°(5)
+// LABEL_OUTER_SIZE -	"outer"æ–‡å­—æ•°(5)
+// VERTEXNUM -			1ã¤ã®ãƒ•ã‚¡ã‚»ãƒƒãƒˆã«å«ã¾ã‚Œã‚‹"vertex"ã®æ•°(3)
+// UVCPNUM -			1ã¤ã®NURBSãƒ•ã‚¡ã‚»ãƒƒãƒˆã®1æ–¹å‘ã®ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆæ•°(2)
+#define BUFSIZEMAX_STL		256
+#define LABELSIZEMAX_STL	10
+#define LABEL_FASET_SIZE	5
+#define LABEL_OUTER_SIZE	5
+#define VERTEXNUM			3
+#define UVCPNUM				2
 
-// STLƒp[ƒT[—pƒNƒ‰ƒX‚ğ’è‹`
+// Class: STL_PARSER
+// STLãƒ‘ãƒ¼ã‚µãƒ¼ç”¨ã‚¯ãƒ©ã‚¹
 class STL_PARSER
 {
 public:
-    int STL_Parser_Main(BODY *, const char *);	// STLƒtƒ@ƒCƒ‹‚Ìƒp[ƒTmain
+	// Function: STL_Parser_Main
+	// STLãƒ‘ãƒ¼ã‚µãƒ¡ã‚¤ãƒ³
+    int STL_Parser_Main(BODY *, const char *);
 };
 
 #endif

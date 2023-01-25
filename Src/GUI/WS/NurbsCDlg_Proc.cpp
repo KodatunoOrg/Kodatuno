@@ -1,23 +1,27 @@
-// Nurbs‹Èü¶¬ƒ_ƒCƒAƒƒO‚ÌƒvƒƒV[ƒWƒƒ
+ï»¿// Nurbsæ›²ç·šç”Ÿæˆãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 #include <WScom.h>
 #include <WSCfunctionList.h>
 #include <WSCbase.h>
 #include "Kodatuno.h"
 
-
+// Function: NurbsCDlg_Proc
+// Nurbsæ›²ç·šç”Ÿæˆãƒ€ã‚¤ãƒ¤ãƒ­ã‚°ã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
+//
+// Parameters: 
+// *object - ã“ã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ã‚’å‘¼ã³å‡ºã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ãƒã‚¤ãƒ³ã‚¿
 void NurbsCDlg_Proc(WSCbase* object)
 {
 	if(NurbsCurve_Dlg == NULL)	return;
 
-	if(NurbsCurve_Dlg->getStatus() == WS_DIALOG_OK){		// OKƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚½
+	if(NurbsCurve_Dlg->getStatus() == WS_DIALOG_OK){		// OKãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚ŒãŸ
 
-		WSCstring fname = InpFileName->getProperty(WSNlabelString);		// ƒCƒ“ƒvƒbƒgƒtƒ@ƒCƒ‹–¼æ“¾
+		WSCstring fname = InpFileName->getProperty(WSNlabelString);		// ã‚¤ãƒ³ãƒ—ãƒƒãƒˆãƒ•ã‚¡ã‚¤ãƒ«åå–å¾—
 		if(!fname.getChars()){
 			GuiIF.SetMessage("You do not choose a file.");
 			return;
 		}
 
-		int val = NurbsCOpt->getProperty(WSNvalue);			// ƒ‰ƒWƒIƒ{ƒ^ƒ“‚Ì‘I‘ğ”Ô†‚ğ“¾‚é
+		int val = NurbsCOpt->getProperty(WSNvalue);			// ãƒ©ã‚¸ã‚ªãƒœã‚¿ãƒ³ã®é¸æŠç•ªå·ã‚’å¾—ã‚‹
 		switch(val){
 			case 1:
 				GuiIF.SetMessage("You chose generating Polygonal Nurbs Curve.");
@@ -40,7 +44,7 @@ void NurbsCDlg_Proc(WSCbase* object)
 		mes.addString(fname);
 		GuiIF.SetMessage(mes);
 
-		int rank = NurbsC_Rank->getProperty(WSNlabelString);	// ¶¬‚·‚éNURBS‹Èü‚ÌŠK”‚ğæ“¾
+		int rank = NurbsC_Rank->getProperty(WSNlabelString);	// ç”Ÿæˆã™ã‚‹NURBSæ›²ç·šã®éšæ•°ã‚’å–å¾—
 		if(rank > RANKMAX || rank <= 0){
 			char mes[256];
 			sprintf(mes,"KODATUNO ERROR: Inappropriate Rank ( 0 <= Rank <= %d)",RANKMAX);
@@ -48,11 +52,11 @@ void NurbsCDlg_Proc(WSCbase* object)
 			return;
 		}
 
-		Kodatuno.GenNurbsCurve(val,fname,rank);		// NURBS‹Èü¶¬
+		Kodatuno.GenNurbsCurve(val,fname,rank);		// NURBSæ›²ç·šç”Ÿæˆ
 
-		NurbsCurve_Dlg->setVisible(False);			// ƒ_ƒCƒAƒƒO‚ğ•Â‚¶‚é
+		NurbsCurve_Dlg->setVisible(False);			// ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’é–‰ã˜ã‚‹
 
-		Describe_Form->redraw();		// •`‰æ—Ìˆæ‚ÉÄ•`‰æ‚ğw¦
+		Describe_Form->redraw();		// æç”»é ˜åŸŸã«å†æç”»ã‚’æŒ‡ç¤º
 	}
 }
 static WSCfunctionRegister  op("NurbsCDlg_Proc",(void*)NurbsCDlg_Proc);

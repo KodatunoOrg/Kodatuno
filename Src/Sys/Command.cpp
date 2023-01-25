@@ -1,9 +1,15 @@
-#include "Command.h"
+ï»¿#include "Command.h"
 
-// ƒRƒ}ƒ“ƒh’Ç‰Á
-// ˆø” *CmdMap:ƒRƒ}ƒ“ƒhî•ñ‚ğŠi”[‚·‚é\‘¢‘Ì‚Ö‚Ìƒ|ƒCƒ“ƒ^,  *name:ƒRƒ}ƒ“ƒh–¼,  *op:ƒRƒ}ƒ“ƒhƒIƒvƒVƒ‡ƒ“–¼
-//      key:ƒRƒ}ƒ“ƒh‚ğ‘ã•\‚·‚é’l(0`99:Kodatuno‚ªg—pA100`199:User‚ÉŠ„‚è“–‚Ä),  (*Cmd)(int,char *[]):Às‚³‚ê‚éƒRƒ}ƒ“ƒh‚ÌŠÖ”‚Ö‚Ìƒ|ƒCƒ“ƒ^
-void SetCmdList(CommandMap *CmdMap,char *name,char *op,int key,void (*Cmd)(int,char *[]))
+// Function: SetCmdList
+// ã‚³ãƒãƒ³ãƒ‰ã‚’è¿½åŠ ã™ã‚‹
+//
+// Parameters:
+// *CmdMap - ã‚³ãƒãƒ³ãƒ‰æƒ…å ±ã‚’æ ¼ç´ã™ã‚‹æ§‹é€ ä½“ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+// *name - ã‚³ãƒãƒ³ãƒ‰å
+// *op - ã‚³ãƒãƒ³ãƒ‰ã‚ªãƒ—ã‚·ãƒ§ãƒ³å
+// key - ã‚³ãƒãƒ³ãƒ‰ã‚’ä»£è¡¨ã™ã‚‹å€¤(0ï½99:KodatunoãŒä½¿ç”¨ã€100~199:userã«å‰²ã‚Šå½“ã¦)
+// (*Cmd)(int,char *[]) - å®Ÿè¡Œã•ã‚Œã‚‹ã‚³ãƒãƒ³ãƒ‰ã®é–¢æ•°ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+void SetCmdList(CommandMap *CmdMap,const char *name,const char *op,int key,void (*Cmd)(int,char *[]))
 {
 	if(key >= COMMANDNUMMAX){
         GuiIF.SetMessage("ERROR:your selected key number is out of the region!");
@@ -11,32 +17,39 @@ void SetCmdList(CommandMap *CmdMap,char *name,char *op,int key,void (*Cmd)(int,c
 		return ;
 	}
 
-	strcpy(CmdMap[key].Name,name);	// ƒRƒ}ƒ“ƒh–¼æ“¾
-	strcpy(CmdMap[key].Op,op);		// ƒRƒ}ƒ“ƒhƒIƒvƒVƒ‡ƒ“æ“¾
-	CmdMap[key].CmdNo = key;		// ƒRƒ}ƒ“ƒh‘ã•\’læ“¾
-	CmdMap[key].Command = Cmd;		// ƒRƒ}ƒ“ƒhÀsŠÖ”æ“¾
+	strcpy(CmdMap[key].Name,name);	// ã‚³ãƒãƒ³ãƒ‰åå–å¾—
+	strcpy(CmdMap[key].Op,op);		// ã‚³ãƒãƒ³ãƒ‰ã‚ªãƒ—ã‚·ãƒ§ãƒ³å–å¾—
+	CmdMap[key].CmdNo = key;		// ã‚³ãƒãƒ³ãƒ‰ä»£è¡¨å€¤å–å¾—
+	CmdMap[key].Command = Cmd;		// ã‚³ãƒãƒ³ãƒ‰å®Ÿè¡Œé–¢æ•°å–å¾—
 }
 
-// ƒRƒ}ƒ“ƒh‰ğÍ
-// Qt”Å‚Å‚ÍƒRƒ}ƒ“ƒh•”•ª‚ğæ‚èo‚µ‚½•¶š—ñ‚ğ“n‚·
+// Function: AnalCommandLine
+// ã‚³ãƒãƒ³ãƒ‰ã‚’è§£æã™ã‚‹
+// 
+// Parameters:
+// *str - ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³ã®æ–‡å­—æ•°
+// *argv[] - åˆ†è§£ã—ãŸæ–‡å­—åˆ—ã‚’æ ¼ç´
+// 
+// Return:
+// ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³å¼•æ•°ã®æ•°
 int AnalCommandLine(char *str,char *argv[])
 {
 	int argc=0;
 	int len;
 	char *p;
 
-	len = strlen(str);						// ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“‚Ì•¶š”‚ğƒJƒEƒ“ƒg
+	len = strlen(str);						// ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³ã®æ–‡å­—æ•°ã‚’ã‚«ã‚¦ãƒ³ãƒˆ
 	len -= 2;
-	str[len] = '\0';						// ‚¨‚µ‚è‚É"\n>"‚ª‚Â‚¢‚Ä‚¢‚é‚Ì‚ÅAÁ‚·
+	str[len] = '\0';						// ãŠã—ã‚Šã«"\n>"ãŒã¤ã„ã¦ã„ã‚‹ã®ã§ã€æ¶ˆã™
 
-	// “ü—Í•¶š—ñ‚È‚µ
+	// å…¥åŠ›æ–‡å­—åˆ—ãªã—
 	if(!strcmp(str,"")){
 		return KOD_ERR;
 	}
 
-	// ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“ŒŸo
+	// ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³æ¤œå‡º
 	else{
-		// str‚ğ•ª‰ğ‚µAargc,argv‚ğ“¾‚é
+		// strã‚’åˆ†è§£ã—ã€argc,argvã‚’å¾—ã‚‹
 		p = str;
 			while(((p = strchr(str,' ')) != NULL) || ((p = strchr(str,'>')) != NULL)){
 				str[p-str] = '\0';
@@ -51,7 +64,15 @@ int AnalCommandLine(char *str,char *argv[])
 	return argc;
 }
 
-// ˆø”‚Åw’è‚µ‚½ƒRƒ}ƒ“ƒh‚Ì“o˜^No‚ğ’²‚×‚é
+// Function: SearchRegdCmdNum
+// å¼•æ•°ã§æŒ‡å®šã—ãŸã‚³ãƒãƒ³ãƒ‰ã®ç™»éŒ²Noã‚’èª¿ã¹ã‚‹
+// 
+// Parameters:
+// *CmdMap - ã‚³ãƒãƒ³ãƒ‰ãƒãƒƒãƒ—
+// *cmd - ã‚³ãƒãƒ³ãƒ‰å
+// 
+// Return:
+// ã‚³ãƒãƒ³ãƒ‰ã®ç™»éŒ²No(å¤±æ•—:KOD_ERR)
 int SearchRegdCmdNum(CommandMap *CmdMap,char *cmd)
 {
 	for(int i=0;i<COMMANDNUMMAX;i++){

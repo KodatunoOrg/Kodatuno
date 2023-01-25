@@ -1,6 +1,7 @@
-#include "KodListFunc.h"
+ï»¿#include "KodListFunc.h"
 
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// Function: KODlistData
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿(åˆæœŸåŒ–)
 KODlistData::KODlistData()
 {
 	num	 = 0;
@@ -9,14 +10,24 @@ KODlistData::KODlistData()
 	sentinel = NULL;
 }
 
-// ƒŠƒXƒg‚Ö‚Ì“o˜^”‚ğ“¾‚é
+// Function: getNum
+// ãƒªã‚¹ãƒˆã¸ã®ç™»éŒ²æ•°ã‚’å¾—ã‚‹
+//
+// Return:
+// ãƒªã‚¹ãƒˆã¸ã®ç™»éŒ²æ•°
 int KODlistData::getNum()
 {
 	return num;
 }
 
-// V‚½‚Èƒf[ƒ^‚ğƒŠƒXƒgÅŒã”ö‚É“o˜^
-// •Ô’l‚Íƒf[ƒ^‚ğ“ü‚ê‚½” ‚ÌƒAƒhƒŒƒX
+// Function: add
+// æ–°ãŸãªãƒ‡ãƒ¼ã‚¿ã‚’ãƒªã‚¹ãƒˆæœ€å¾Œå°¾ã«ç™»éŒ²
+//
+// Parameters:
+// *idata - æ–°ãŸã«ç™»éŒ²ã™ã‚‹ãƒ‡ãƒ¼ã‚¿ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+//
+// Return:
+// ãƒ‡ãƒ¼ã‚¿ã‚’å…¥ã‚ŒãŸç®±ã®ã‚¢ãƒ‰ãƒ¬ã‚¹
 Data *KODlistData::add(void *idata)
 {
 	if(idata == NULL) return NULL;
@@ -42,10 +53,15 @@ Data *KODlistData::add(void *idata)
 	return newdata;			
 }
 
-// V‚½‚Èƒf[ƒ^‚ğw’è‚µ‚½ƒf[ƒ^‚ÌŒã‚ë‚É‰Á‚¦‚é	
-// ˆø”@@tag:w’èƒf[ƒ^    insF‰Á‚¦‚éƒf[ƒ^
-// tag‚ÉNULL‚ğw’è‚µ‚½ê‡‚Íæ“ª‚É‰Á‚¦‚é
-// •Ô’l‚Íƒf[ƒ^‚ğ“ü‚ê‚½” ‚ÌƒAƒhƒŒƒX
+// Function: addData
+// æ–°ãŸãªãƒ‡ãƒ¼ã‚¿ã‚’æŒ‡å®šã—ãŸãƒ‡ãƒ¼ã‚¿ã®å¾Œã‚ã«åŠ ãˆã‚‹
+//
+// Parameters:
+// *tag - æŒ‡å®šãƒ‡ãƒ¼ã‚¿ (NULLã‚’æŒ‡å®šã—ãŸå ´åˆã¯å…ˆé ­ã«åŠ ãˆã‚‹)    
+// *ins - åŠ ãˆã‚‹ãƒ‡ãƒ¼ã‚¿
+//
+// Return:
+// ãƒ‡ãƒ¼ã‚¿ã‚’å…¥ã‚ŒãŸç®±ã®ã‚¢ãƒ‰ãƒ¬ã‚¹
 Data *KODlistData::addData(Data *tag,void *ins)
 {
 	if(ins == NULL) return NULL;
@@ -71,9 +87,15 @@ Data *KODlistData::addData(Data *tag,void *ins)
 	return nd;
 }
 
-// V‚½‚Èƒf[ƒ^‚ğn”Ô‚Ìƒf[ƒ^‚ÌŒã‚ë‚É‰Á‚¦‚é	
-// ˆø”@@n:n”Ô‚Ìƒf[ƒ^    insF‰Á‚¦‚éƒf[ƒ^
-// •Ô’l‚Íƒf[ƒ^‚ğ“ü‚ê‚½” ‚ÌƒAƒhƒŒƒX
+// Function: addData
+// æ–°ãŸãªãƒ‡ãƒ¼ã‚¿ã‚’nç•ªã®ãƒ‡ãƒ¼ã‚¿ã®å¾Œã‚ã«åŠ ãˆã‚‹(ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰)
+//
+// Parameters:
+// n - nç•ªã®ãƒ‡ãƒ¼ã‚¿    
+// *ins - åŠ ãˆã‚‹ãƒ‡ãƒ¼ã‚¿
+//
+// Return:
+// ãƒ‡ãƒ¼ã‚¿ã‚’å…¥ã‚ŒãŸç®±ã®ã‚¢ãƒ‰ãƒ¬ã‚¹
 Data *KODlistData::addData(int n,void *ins)
 {
 	if(n >= num) return NULL;
@@ -95,8 +117,15 @@ Data *KODlistData::addData(int n,void *ins)
 	return (addData(curr,ins));
 }
 
-// w’è‚µ‚½ƒf[ƒ^A‚ğw’è‚µ‚½ƒf[ƒ^B‚ÌŒã‚ë‚É•ÏX‚·‚é
-// B‚ªNULL‚Ìê‡‚Íæ“ª‚É‘}“ü‚·‚é
+// Function: insData
+// æŒ‡å®šã—ãŸãƒ‡ãƒ¼ã‚¿Aã‚’æŒ‡å®šã—ãŸãƒ‡ãƒ¼ã‚¿Bã®å¾Œã‚ã«å¤‰æ›´ã™ã‚‹
+//
+// Parameters:
+// *A - å¤‰æ›´ã™ã‚‹ãƒ‡ãƒ¼ã‚¿ãƒã‚¤ãƒ³ã‚¿
+// *B - Aã®å‰ã®ãƒ‡ãƒ¼ã‚¿ã‚’ç¤ºã™ãƒã‚¤ãƒ³ã‚¿ (NULLã®å ´åˆã¯å…ˆé ­ã«æŒ¿å…¥ã™ã‚‹)
+//
+// Return:
+// KOD_TRUE
 int KODlistData::insData(Data *A,Data *B)
 {
 	if(A == NULL) return KOD_ERR;
@@ -125,8 +154,14 @@ int KODlistData::insData(Data *A,Data *B)
 	return KOD_TRUE;
 }
 
-
-// n”Ô‚Ìƒf[ƒ^‚ğ“¾‚é
+// Function: getData
+// nç•ªã®ãƒ‡ãƒ¼ã‚¿ã‚’å¾—ã‚‹
+//
+// Parameters:
+// n - ãƒ‡ãƒ¼ã‚¿ç•ªå·
+//
+// Return:
+// nç•ªã®ãƒ‡ãƒ¼ã‚¿ã¸ã®ãƒã‚¤ãƒ³ã‚¿
 void *KODlistData::getData(int n)
 {
 	if(n >= num) return NULL;
@@ -148,10 +183,14 @@ void *KODlistData::getData(int n)
 	return curr->data;
 }
 
-// ©g‚ÌÁ–Å
+// Function: clear
+// è‡ªèº«ã®æ¶ˆæ»…
+//
+// Return:
+// KOD_TRUE (ãã‚‚ãã‚‚ãƒ‡ãƒ¼ã‚¿ãŒãªã‹ã£ãŸã‚‰KOD_FALSEã‚’ãƒªã‚¿ãƒ¼ãƒ³)
 int KODlistData::clear()
 {
-	if(head == NULL)	return KOD_FALSE;	// ‚»‚à‚»‚à‰½‚à‚È‚©‚Á‚½‚çFALSE‚ğƒŠƒ^[ƒ“
+	if(head == NULL)	return KOD_FALSE;	// ãã‚‚ãã‚‚ä½•ã‚‚ãªã‹ã£ãŸã‚‰FALSEã‚’ãƒªã‚¿ãƒ¼ãƒ³
 
 	curr = old = head;
 	while(curr != NULL){
@@ -166,7 +205,14 @@ int KODlistData::clear()
 	return KOD_TRUE;
 }
 
-// n”Ô‚Ìƒf[ƒ^‚ğƒŠƒXƒg‚©‚çÁ‹
+// Function: delData
+// nç•ªã®ãƒ‡ãƒ¼ã‚¿ã‚’ãƒªã‚¹ãƒˆã‹ã‚‰æ¶ˆå»
+//
+// Parameters:
+// n - æ¶ˆå»ã™ã‚‹ãƒ‡ãƒ¼ã‚¿ã®ç•ªå·
+//
+// Return:
+// KOD_TRUE (nãŒãƒªã‚¹ãƒˆã«ç™»éŒ²ã•ã‚Œã¦ã„ã‚‹ãƒ‡ãƒ¼ã‚¿æ•°ã‚ˆã‚Šå¤šã„å ´åˆï¼šKOD_ERR)
 int KODlistData::delData(int n)
 {
 	if(n >= num) return KOD_ERR;
@@ -200,7 +246,14 @@ int KODlistData::delData(int n)
 	return KOD_TRUE;
 }
 
-// w’è‚µ‚½ƒf[ƒ^‚ğƒŠƒXƒg‚©‚çÁ‹
+// Function: delData
+// æŒ‡å®šã—ãŸãƒ‡ãƒ¼ã‚¿ã‚’ãƒªã‚¹ãƒˆã‹ã‚‰æ¶ˆå» (ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰)
+//
+// Parameters:
+// *d - æ¶ˆå»ã™ã‚‹ãƒ‡ãƒ¼ã‚¿ã®ãƒã‚¤ãƒ³ã‚¿
+//
+// Return:
+// KOD_TRUE (dãŒNULLï¼šKOD_ERR)
 int KODlistData::delData(Data *d)
 {
 	if(d == NULL)	return KOD_ERR;
@@ -231,8 +284,16 @@ int KODlistData::delData(Data *d)
 	return KOD_TRUE;
 }
 
-// w’è‚µ‚½ƒf[ƒ^‚ğƒŠƒXƒg‚©‚ç‚Í‚¸‚·
-// ’ˆÓFÁ‹‚Í‚µ‚È‚¢‚Ì‚ÅA‚Í‚¸‚³‚ê‚½ƒf[ƒ^‚Í©•ª‚ÅÁ‹‚·‚é‚±‚Æ
+// Function: snipData
+// æŒ‡å®šã—ãŸãƒ‡ãƒ¼ã‚¿ã‚’ãƒªã‚¹ãƒˆã‹ã‚‰ã¯ãšã™
+//
+// æ³¨æ„ï¼šæ¶ˆå»ã¯ã—ãªã„ã®ã§ã€ã¯ãšã•ã‚ŒãŸãƒ‡ãƒ¼ã‚¿ã¯è‡ªåˆ†ã§æ¶ˆå»ã™ã‚‹ã“ã¨
+//
+// Parameters:
+// *d - ã¯ãšã™ãƒ‡ãƒ¼ã‚¿ã®ãƒã‚¤ãƒ³ã‚¿
+//
+// Return:
+// ã¯ãšã•ã‚ŒãŸãƒ‡ãƒ¼ã‚¿ã¸ã®ãƒã‚¤ãƒ³ã‚¿ (dãŒNULLã ã£ãŸå ´åˆï¼ŒNULLã‚’ãƒªã‚¿ãƒ¼ãƒ³)
 Data *KODlistData::snipData(Data *d)
 {
 	if(d == NULL)	return NULL;
@@ -260,21 +321,34 @@ Data *KODlistData::snipData(Data *d)
 	return d;
 }
 
-
-// ƒŠƒXƒg‚Ì“ª‚ğ•ÏX
+// Function: ChangeHead
+// ãƒªã‚¹ãƒˆã®å…ˆé ­ã‚’æŒ‡å®šã—ãŸãƒ‡ãƒ¼ã‚¿ã«å¤‰æ›´ã™ã‚‹
+// 
+// Parameters:
+// *d - å¤‰æ›´ã™ã‚‹ãƒ‡ãƒ¼ã‚¿ã®ãƒã‚¤ãƒ³ã‚¿
 void KODlistData::ChangeHead(Data *d)
 {
 	head = d;
 }
 
-// ƒŠƒXƒg‚Ì––”ö‚ğ•ÏX
+// Function: ChangeEnd
+// ãƒªã‚¹ãƒˆã®æœ«å°¾ã‚’æŒ‡å®šã—ãŸãƒ‡ãƒ¼ã‚¿ã«å¤‰æ›´ã™ã‚‹
+// 
+// Parameters:
+// *d - å¤‰æ›´ã™ã‚‹ãƒ‡ãƒ¼ã‚¿ã®ãƒã‚¤ãƒ³ã‚¿
 void KODlistData::ChangeEnd(Data *d)
 {
 	end = d;
 }
 
-
-// n”Ô‚ÌDataƒNƒ‰ƒX‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğ“¾‚é(ƒf[ƒ^”Ô†‚Í0‚©‚çƒXƒ^[ƒg‚·‚éj
+// Function: getpData
+// nç•ªã®Dataã‚¯ãƒ©ã‚¹ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’å¾—ã‚‹(ãƒ‡ãƒ¼ã‚¿ç•ªå·ã¯0ã‹ã‚‰ã‚¹ã‚¿ãƒ¼ãƒˆã™ã‚‹ï¼‰
+//
+// Parameters:
+// n - ãƒ‡ãƒ¼ã‚¿ç•ªå·
+//
+// Return:
+// æŒ‡å®šã•ã‚ŒãŸnç•ªã®ãƒ‡ãƒ¼ã‚¿ã®ãƒã‚¤ãƒ³ã‚¿
 Data *KODlistData::getpData(int n)
 {
 	if(n >= num) return NULL;
@@ -295,27 +369,50 @@ Data *KODlistData::getpData(int n)
 	return curr;
 }
 
-// w’è‚µ‚½Data‚ÌŸ‚ÌData‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğ“¾‚é
+// Function: getNextpData
+// æŒ‡å®šã—ãŸDataã®æ¬¡ã®Dataã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’å¾—ã‚‹
+// 
+// Parameters:
+// *data - æŒ‡å®šã™ã‚‹Dataã¸ã®ãƒã‚¤ãƒ³ã‚¿
+//
+// Return:
+// æŒ‡å®šã—ãŸDataã®æ¬¡ã®Dataã¸ã®ãƒã‚¤ãƒ³ã‚¿
 Data *KODlistData::getNextpData(Data *data)
 {
 	return data->next;
 }
 
-// w’è‚µ‚½Data‚ÌŸ‚ÌData‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğ“¾‚é
+// Function: getPrevpData
+// æŒ‡å®šã—ãŸDataã®å‰ã®Dataã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’å¾—ã‚‹
+// 
+// Parameters:
+// *data - æŒ‡å®šã™ã‚‹Dataã¸ã®ãƒã‚¤ãƒ³ã‚¿
+//
+// Return:
+// æŒ‡å®šã—ãŸDataã®å‰ã®Dataã¸ã®ãƒã‚¤ãƒ³ã‚¿
 Data *KODlistData::getPrevpData(Data *data)
 {
 	return data->before;
 }
 
-// ÅŒã‚ÌDataƒIƒuƒWƒFƒNƒg‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğ“¾‚é
+// Function: getEndpData
+// æœ€å¾Œã®Dataã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’å¾—ã‚‹
+//
+// Return:
+// æœ€å¾Œã®Dataã¸ã®ãƒã‚¤ãƒ³ã‚¿
 Data *KODlistData::getEndpData()
 {
 	return end;
 }
 
-
-// w’è‚µ‚½ƒf[ƒ^‚ÉŠø‚ğ—§‚Ä‚é
-// •Ô’l‚ÍŠø‚ğ—§‚Ä‚½ƒf[ƒ^‚ÌƒAƒhƒŒƒX
+// Function: setSentinel
+// æŒ‡å®šã—ãŸãƒ‡ãƒ¼ã‚¿ã«æ——ã‚’ç«‹ã¦ã‚‹
+//
+// Parameters:
+// n - æ——ã‚’ç«‹ã¦ã‚‹ãƒ‡ãƒ¼ã‚¿ã®ç•ªå·
+// 
+// Return:
+// æ——ã‚’ç«‹ã¦ãŸãƒ‡ãƒ¼ã‚¿ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ (nãŒãƒªã‚¹ãƒˆæ•°ã‚ˆã‚Šã‚‚å¤§ãå ´åˆã¯NULLã‚’ãƒªã‚¿ãƒ¼ãƒ³)
 void *KODlistData::setSentinel(int n)
 {
 	if(n >= num) return NULL;
@@ -328,11 +425,17 @@ void *KODlistData::setSentinel(int n)
 	return sentinel->data;
 }
 
-// Šø‚©‚çn”Ô–ÚŒãor‘O‚Ìƒf[ƒ^‚ğ“¾‚é
-// dn‚ªƒ}ƒCƒiƒX‚Ìê‡‚ÍŒã‚ëŒü‚«‚Ì’Tõ
+// Function: getDataFromSentinel
+// æ——ã‹ã‚‰dnç•ªç›®å¾Œorå‰ã®ãƒ‡ãƒ¼ã‚¿ã‚’å¾—ã‚‹ (dnãŒãƒã‚¤ãƒŠã‚¹ã®å ´åˆã¯å¾Œã‚å‘ãã®æ¢ç´¢)
+// 
+// Parameters:
+// dn - æ——ã‹ã‚‰ä½•ç•ªç›®ã‹ã‚’è¡¨ã‚ã™
+//
+// Return:
+// æŒ‡å®šãƒ‡ãƒ¼ã‚¿ã¸ã®ãƒã‚¤ãƒ³ã‚¿ (æ——ãŒè¨­å®šã•ã‚Œã¦ã„ãªã‹ã£ãŸå ´åˆãŠã‚ˆã³,ãƒ‡ãƒ¼ã‚¿ãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸå ´åˆã¯NULLã‚’ãƒªã‚¿ãƒ¼ãƒ³)
 void *KODlistData::getDataFromSentinel(int dn)
 {
-	if(sentinel == NULL)		// Šø‚ªİ’è‚³‚ê‚Ä‚¢‚È‚©‚Á‚½‚çNULL‚ğ•Ô‚·
+	if(sentinel == NULL)		// æ——ãŒè¨­å®šã•ã‚Œã¦ã„ãªã‹ã£ãŸã‚‰NULLã‚’è¿”ã™
 		return NULL;
 
 	bool flag;
@@ -344,24 +447,24 @@ void *KODlistData::getDataFromSentinel(int dn)
 		flag = true;
 	}
 
-	// ‘OŒü‚«
+	// å‰å‘ã
 	if(flag == true){
 		curr = sentinel;
 		for(int i=0;i<dn;i++){
 			curr = curr->next;
-			if(curr == NULL){		// ƒf[ƒ^‚ªI’[‚Ö—ˆ‚Ä‚µ‚Ü‚Á‚½‚ç
-				return NULL;		// NULL‚ğ•Ô‚·
+			if(curr == NULL){		// ãƒ‡ãƒ¼ã‚¿ãŒçµ‚ç«¯ã¸æ¥ã¦ã—ã¾ã£ãŸã‚‰
+				return NULL;		// NULLã‚’è¿”ã™
 			}
 		}
 		return curr->data;
 	}
-	// ŒãŒü‚«
+	// å¾Œå‘ã
 	else if(flag == false){
 		curr = sentinel;
 		for(int i=0;i<dn;i++){
 			curr = curr->before;	
-			if(curr == NULL){		// ƒf[ƒ^‚ªæ“ª‚Ö—ˆ‚Ä‚µ‚Ü‚Á‚½‚ç
-				return NULL;		// NULL‚ğ•Ô‚·
+			if(curr == NULL){		// ãƒ‡ãƒ¼ã‚¿ãŒå…ˆé ­ã¸æ¥ã¦ã—ã¾ã£ãŸã‚‰
+				return NULL;		// NULLã‚’è¿”ã™
 			}
 		}
 		return curr->data;
@@ -370,10 +473,17 @@ void *KODlistData::getDataFromSentinel(int dn)
 	return NULL;
 }
 
-// Šø‚ğŒ»İ‚ÌˆÊ’u‚©‚çn”Ô–ÚŒãor‘O‚ÉˆÚ“®‚³‚¹‚é
+// Function: shiftSentinel
+// æ——ã‚’ç¾åœ¨ã®ä½ç½®ã‹ã‚‰dnç•ªç›®å¾Œorå‰ã«ç§»å‹•ã•ã›ã‚‹ (dnãŒãƒã‚¤ãƒŠã‚¹ã®å ´åˆã¯å¾Œã‚å‘ãã«ç§»å‹•)
+//
+// Parameters:
+// æ——ã®ç§»å‹•é‡
+//
+// Return:
+// ç§»å‹•å¾Œã®æ——ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ (æ——ãŒè¨­å®šã•ã‚Œã¦ã„ãªã‹ã£ãŸã‚‰NULLã‚’è¿”ã™)
 void *KODlistData::shiftSentinel(int dn)
 {
-	if(sentinel == NULL)		// Šø‚ªİ’è‚³‚ê‚Ä‚¢‚È‚©‚Á‚½‚çNULL‚ğ•Ô‚·
+	if(sentinel == NULL)		// æ——ãŒè¨­å®šã•ã‚Œã¦ã„ãªã‹ã£ãŸã‚‰NULLã‚’è¿”ã™
 		return NULL;
 
 	bool flag;
@@ -385,7 +495,7 @@ void *KODlistData::shiftSentinel(int dn)
 		flag = true;
 	}
 
-	// ‘OŒü‚«
+	// å‰å‘ã
 	if(flag == true){
 		for(int i=0;i<dn;i++){
 			sentinel = sentinel->next;
@@ -393,7 +503,7 @@ void *KODlistData::shiftSentinel(int dn)
 		}
 		return sentinel->data;
 	}
-	// ŒãŒü‚«
+	// å¾Œå‘ã
 	else if(flag == false){
 		for(int i=0;i<dn;i++){
 			sentinel = sentinel->before;
@@ -405,19 +515,27 @@ void *KODlistData::shiftSentinel(int dn)
 	return NULL;
 }
 
-// Šø‚Ì‚ ‚éêŠ‚Ìƒf[ƒ^‚ğæ“¾‚·‚é
+// Function: getSentinelData
+// æ——ã®ã‚ã‚‹å ´æ‰€ã®ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—ã™ã‚‹
+//
+// Return:
+// æ——ã®ã‚ã‚‹å ´æ‰€ã®ãƒ‡ãƒ¼ã‚¿ã¸ã®ãƒã‚¤ãƒ³ã‚¿
 void *KODlistData::getSentinelData()
 {
-	if(sentinel == NULL)		// Šø‚ªİ’è‚³‚ê‚Ä‚¢‚È‚©‚Á‚½‚çNULL‚ğ•Ô‚·
+	if(sentinel == NULL)		// æ——ãŒè¨­å®šã•ã‚Œã¦ã„ãªã‹ã£ãŸã‚‰NULLã‚’è¿”ã™
 		return NULL;
 
 	return sentinel->data;
 }
 
-// Šø‚Ì‚ ‚éƒf[ƒ^‚ÌŸ‚Ìƒf[ƒ^‚ğæ“¾‚·‚é
+// Function: getNextSentData
+// æ——ã®ã‚ã‚‹ãƒ‡ãƒ¼ã‚¿ã®æ¬¡ã®ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—ã™ã‚‹
+//
+// Return:
+// æ——ã®ã‚ã‚‹å ´æ‰€ã®æ¬¡ã®ãƒ‡ãƒ¼ã‚¿ã¸ã®ãƒã‚¤ãƒ³ã‚¿
 void *KODlistData::getNextSentData()
 {
-	if(sentinel == NULL)		// Šø‚ªİ’è‚³‚ê‚Ä‚¢‚È‚©‚Á‚½‚çNULL‚ğ•Ô‚·
+	if(sentinel == NULL)		// æ——ãŒè¨­å®šã•ã‚Œã¦ã„ãªã‹ã£ãŸã‚‰NULLã‚’è¿”ã™
 		return NULL;
 
 	return sentinel->next->data;

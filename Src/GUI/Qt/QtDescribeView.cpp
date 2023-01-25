@@ -1,16 +1,21 @@
-#include "QtDescribeView.h"
+﻿#include "QtDescribeView.h"
 
-// �R���X�g���N�^
+// Constructor: QtDescribeView
+// QtDescribeViewクラスのコンストラクタ
+//
+// Parameters: 
+// *parent - 呼び出し元の親ウィジェットを指定
 QtDescribeView::QtDescribeView(QWidget *parent) :
     QGLWidget(parent)
 {
     setFocusPolicy(Qt::StrongFocus);
-    setMouseTracking(true);             // �}�E�X���`��̈�ɓ��邾���ŁC�}�E�X�ʒu���擾�ł���悤�ɂ���
+    setMouseTracking(true);             // マウスが描画領域に入るだけで，マウス位置を取得できるようにする
     setMinimumSize(640,480);
     setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);    
 }
 
-// OpenGL������
+// Function: initializeGL
+// OpenGLを初期化する
 void QtDescribeView::initializeGL()
 {
 //    qglClearColor( Qt::black );
@@ -29,20 +34,30 @@ void QtDescribeView::initializeGL()
 //    glCullFace(GL_BACK);
 }
 
-// ���T�C�Y�E�B�W�F�b�g
+// Function: resizeGL
+// リサイズウィジェット
+// 
+// Parameters:
+// w - ウィンドウの幅のサイズ
+// h - ウィンドウの高さのサイズ
 void QtDescribeView::resizeGL(int w, int h)
 {
     Kodatuno.GetResizeWindow(w,h);
 }
 
-// OpenGL�`��
+// Function: paintGL
+// OpenGLを描画する
 void QtDescribeView::paintGL()
 {
     Kodatuno.ReDraw(MouseX,MouseY);
     Kodatuno.ReDrawUserFunc();
 }
 
-// �}�E�X�������̃C�x���g
+// Function: mousePressEvent
+// マウス押下時のイベント
+// 
+// Parameters:
+// *event - マウスからの情報
 void QtDescribeView::mousePressEvent(QMouseEvent *event)
 {
     long trig = KDT_MOUSE_PRESS;
@@ -51,7 +66,11 @@ void QtDescribeView::mousePressEvent(QMouseEvent *event)
     Kodatuno.MouseEvent(trig, btn, event->x(), event->y());
 }
 
-// �}�E�X�����[�X���C�x���g
+// Function: mouseReleaseEvent
+// マウスリリース時イベント
+//
+// Parameters:
+// *event - マウスからの情報
 void QtDescribeView::mouseReleaseEvent(QMouseEvent *event)
 {
     long trig = KDT_MOUSE_RELEASE;
@@ -60,10 +79,14 @@ void QtDescribeView::mouseReleaseEvent(QMouseEvent *event)
     Kodatuno.MouseEvent(trig, btn, event->x(), event->y());
 }
 
-// �}�E�X�ړ����C�x���g
+// Function: mouseMoveEvent
+// マウス移動時イベント
+// 
+// Parameters:
+// *event - マウスからの情報
 void QtDescribeView::mouseMoveEvent(QMouseEvent *event)
 {
-    // ���݂̃}�E�X�ʒu�𒀎��o���Ă���
+    // 現在のマウス位置を逐次覚えておく
     MouseX = event->x();
     MouseY = event->y();
 
@@ -73,13 +96,21 @@ void QtDescribeView::mouseMoveEvent(QMouseEvent *event)
     Kodatuno.MouseMotionEvent(btn, key, event->x(), event->y());
 }
 
-// �}�E�X�z�C�[���C�x���g
+// Function: wheelEvent
+// マウスホイールイベント
+// 
+// Parameters:
+// *event - ホイールからの情報
 void QtDescribeView::wheelEvent(QWheelEvent *event)
 {
     Kodatuno.MouseWheelEvent(event->delta());
 }
 
-// �L�[�{�[�h�C�x���g
+// Function: keyPressEvent
+// キーボードイベント
+//
+// Parameters:
+// *event - キーボードからの情報
 void QtDescribeView::keyPressEvent(QKeyEvent *event)
 {
     switch(event->key()){
@@ -100,7 +131,11 @@ void QtDescribeView::keyPressEvent(QKeyEvent *event)
     }
 }
 
-//������Ă���}�E�X�{�^���̎擾
+// Function: getMouseBtn
+// 押されているマウスボタンの取得
+//
+// Parameters:
+// *event - マウスからの情報
 long QtDescribeView::getMouseBtn(QMouseEvent *event )
 {
     switch(event->buttons()){
@@ -115,7 +150,11 @@ long QtDescribeView::getMouseBtn(QMouseEvent *event )
     }
 }
 
-//������Ă���C���L�[�̎擾
+// Function: getModifierkey
+// 押されている修飾キーを取得する
+//
+// Parameters:
+// *event - マウスからの情報
 long QtDescribeView::getModifierKey(QMouseEvent *event )
 {
     if( event->modifiers() & Qt::ControlModifier ){
@@ -133,7 +172,14 @@ long QtDescribeView::getModifierKey(QMouseEvent *event )
     
 }
 
-// �_��`��
+// Function: drawPoint
+// 点を描画する
+//
+// Parameters:
+// p - 点の座標値
+// scale - pをscale倍する
+// width - 点のサイズ
+// color[3] - 点の色をRGBで指定(0 <= r,g,b <= 1)
 void QtDescribeView::drawPoint(Coord p,double scale,double width,double color[3])
 {
     glDisable(GL_LIGHTING);
@@ -145,8 +191,14 @@ void QtDescribeView::drawPoint(Coord p,double scale,double width,double color[3]
     glEnable(GL_LIGHTING);
 }
 
-// �_�Q��`��
-// ����   *p:�_�Q, n:�_��, scale:�X�P�[��, width:�_�̃T�C�Y, color,�_�̐F
+// Function: drawPoints
+// 点群を描画する
+//
+// Parameters:
+// p - 点の座標値
+// scale - pをscale倍する
+// width - 点のサイズ
+// color[3] - 点の色をRGBで指定(0 <= r,g,b <= 1)
 void QtDescribeView::drawPoints(Coord *p,int n,double scale,double width,double color[3])
 {
     glDisable(GL_LIGHTING);
@@ -160,7 +212,15 @@ void QtDescribeView::drawPoints(Coord *p,int n,double scale,double width,double 
     glEnable(GL_LIGHTING);
 }
 
-// �x�N�g����`��
+// Function: drawVector
+// ベクトルを描画する
+// 
+// Parameters:
+// s - 3次元ベクトルの始点座標
+// e - 3次元ベクトルの終点座標
+// vec_len - 表示するベクトルの長さの倍率
+// width - 描画する線分の太さ
+// color[3] - 点の色をRGBで指定(0 <= r,g,b <= 1)
 void QtDescribeView::drawVector(Coord s,Coord e,double vec_len,double width,double color[3])
 {
     glDisable(GL_LIGHTING);
@@ -174,7 +234,15 @@ void QtDescribeView::drawVector(Coord s,Coord e,double vec_len,double width,doub
     glEnable(GL_LIGHTING);
 }
 
-// 2�_�Ԃɐ�����`��
+// Function: drawLine
+// 2点間に線分を描画する
+//
+// Parameters:
+// s - 3次元ベクトルの始点座標
+// e - 3次元ベクトルの終点座標
+// vec_len - 表示するベクトルの長さの倍率
+// width - 描画する線分の太さ
+// color[3] - 点の色をRGBで指定(0 <= r,g,b <= 1)
 void QtDescribeView::drawLine(Coord s,Coord e,double width,double color[3])
 {
     glDisable(GL_LIGHTING);

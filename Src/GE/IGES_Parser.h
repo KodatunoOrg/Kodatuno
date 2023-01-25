@@ -1,151 +1,361 @@
+ï»¿// IGESãƒ‘ãƒ¼ã‚µ
+
 #ifndef _IGES_PARSER_MAIN_H_
 #define _IGES_PARSER_MAIN_H_
 
 #include "BODY.h"
 
-#define SECTION_NUM		 5			// ƒZƒNƒVƒ‡ƒ“‚Ì”(S,G,D,P,T)
-#define COLUMN_MAX_	     82			// 1s‚ÌƒJƒ‰ƒ€”('\n'‚Æ'\0'‚ğŠÜ‚Ş)
-#define COLUMN_MAX       80			// 1s‚ÌƒJƒ‰ƒ€”('\n'‚Æ'\0'‚ÍŠÜ‚Ü‚È‚¢)
-#define COL_CHAR		 73			// ƒZƒNƒVƒ‡ƒ“”»•Ê•¶š‚ÌƒJƒ‰ƒ€
-#define COL_P_DIRECTORY  65			// ƒpƒ‰ƒ[ƒ^•”‚Å‚ÌƒfƒBƒŒƒNƒgƒŠ•”‚Ö‚Ì‹tƒ|ƒCƒ“ƒ^‚ª‚ ‚éƒJƒ‰ƒ€
-#define GLOBALPARAMNUM	 25			// ƒOƒ[ƒoƒ‹•”‚Ìƒpƒ‰ƒ[ƒ^”
-#define FIELD_NUM		 8			// ƒfƒBƒŒƒNƒgƒŠ•”‚Ì1ƒtƒB[ƒ‹ƒh‚Ì•¶š”
-#define DIRECTORYPARANUM 20			// ƒfƒBƒŒƒNƒgƒŠ•”‚Ìƒpƒ‰ƒ[ƒ^”
-#define SECTION_START		0		// ƒXƒ^[ƒgƒ‹ƒZƒNƒVƒ‡ƒ“”»•Ê—pƒVƒ“ƒ{ƒ‹
-#define SECTION_GLOBAL		1		// ƒOƒ[ƒoƒ‹ƒZƒNƒVƒ‡ƒ“”»•Ê—pƒVƒ“ƒ{ƒ‹
-#define SECTION_DIRECTORY	2		// ƒfƒBƒŒƒNƒgƒŠƒZƒNƒVƒ‡ƒ“”»•Ê—pƒVƒ“ƒ{ƒ‹
-#define SECTION_PARAMETER	3		// ƒpƒ‰ƒ[ƒ^ƒZƒNƒVƒ‡ƒ“”»•Ê—pƒVƒ“ƒ{ƒ‹
-#define SECTION_TERMINATE	4		// ƒ^[ƒ~ƒl[ƒgƒZƒNƒVƒ‡ƒ“”»•Ê—pƒVƒ“ƒ{ƒ‹
-#define MAIN_ENTITY_TYPE_NUM 9		// “Ç‚İ‚İ‘ÎÛ‚Æ‚È‚éƒGƒ“ƒeƒBƒeƒBƒ^ƒCƒv‚Ì”
-#define NRBS_PARAM_MAX  200			// NRBS‹È–ÊE‹Èü‚Å’è‹`‚³‚ê‚éƒpƒ‰ƒ[ƒ^‚ÌÅ‘å’l
+// Constants: General Defines
+//#define SECTION_NUM -				ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®æ•°(S,G,D,P,T)(5)
+//#define COLUMN_MAX_ -				1è¡Œã®ã‚«ãƒ©ãƒ æ•°('\n'ã¨'\0'ã‚’å«ã‚€)(82)
+//#define COLUMN_MAX -				1è¡Œã®ã‚«ãƒ©ãƒ æ•°('\n'ã¨'\0'ã¯å«ã¾ãªã„)(80)
+//#define COL_CHAR -				ã‚»ã‚¯ã‚·ãƒ§ãƒ³åˆ¤åˆ¥æ–‡å­—ã®ã‚«ãƒ©ãƒ (73)
+//#define COL_P_DIRECTORY -			ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿éƒ¨ã§ã®ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªéƒ¨ã¸ã®é€†ãƒã‚¤ãƒ³ã‚¿ãŒã‚ã‚‹ã‚«ãƒ©ãƒ (65)
+//#define GLOBALPARAMNUM -			ã‚°ãƒ­ãƒ¼ãƒãƒ«éƒ¨ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿æ•°(25)
+//#define FIELD_NUM -				ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªéƒ¨ã®1ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã®æ–‡å­—æ•°(8)
+//#define DIRECTORYPARANUM -		ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªéƒ¨ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿æ•°(20)
+//#define SECTION_START -			ã‚¹ã‚¿ãƒ¼ãƒˆãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³åˆ¤åˆ¥ç”¨ã‚·ãƒ³ãƒœãƒ«(0)
+//#define SECTION_GLOBAL -			ã‚°ãƒ­ãƒ¼ãƒãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³åˆ¤åˆ¥ç”¨ã‚·ãƒ³ãƒœãƒ«(1)
+//#define SECTION_DIRECTORY -		ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚»ã‚¯ã‚·ãƒ§ãƒ³åˆ¤åˆ¥ç”¨ã‚·ãƒ³ãƒœãƒ«(2)
+//#define SECTION_PARAMETER -		ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚»ã‚¯ã‚·ãƒ§ãƒ³åˆ¤åˆ¥ç”¨ã‚·ãƒ³ãƒœãƒ«(3)
+//#define SECTION_TERMINATE -		ã‚¿ãƒ¼ãƒŸãƒãƒ¼ãƒˆã‚»ã‚¯ã‚·ãƒ§ãƒ³åˆ¤åˆ¥ç”¨ã‚·ãƒ³ãƒœãƒ«(4)
+//#define MAIN_ENTITY_TYPE_NUM -	èª­ã¿è¾¼ã¿å¯¾è±¡ã¨ãªã‚‹ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚¿ã‚¤ãƒ—ã®æ•°(9)
+//#define NRBS_PARAM_MAX -			NRBSæ›²é¢ãƒ»æ›²ç·šã§å®šç¾©ã•ã‚Œã‚‹ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®æœ€å¤§å€¤(200)
+#define SECTION_NUM		 5			
+#define COLUMN_MAX_	     82			
+#define COLUMN_MAX       80			
+#define COL_CHAR		 73			
+#define COL_P_DIRECTORY  65			
+#define GLOBALPARAMNUM	 25			
+#define FIELD_NUM		 8			
+#define DIRECTORYPARANUM 20			
+#define SECTION_START		0		
+#define SECTION_GLOBAL		1		
+#define SECTION_DIRECTORY	2		
+#define SECTION_PARAMETER	3		
+#define SECTION_TERMINATE	4		
+#define MAIN_ENTITY_TYPE_NUM 9		
+#define NRBS_PARAM_MAX  200			
 
 
-// ƒOƒ[ƒoƒ‹•”ƒpƒ‰ƒ[ƒ^‚ÌƒVƒ“ƒ{ƒ‹‚ğ’è‹`
+// ã‚°ãƒ­ãƒ¼ãƒãƒ«éƒ¨ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®ã‚·ãƒ³ãƒœãƒ«ã‚’å®šç¾©
+// Enum: Enum Symbol of Global Section's Parameter
+//PARAM_DELIMITER=1 -		ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ‡ãƒªãƒŸã‚¿
+//RECORD_DELIMITER -		ãƒ¬ã‚³ãƒ¼ãƒ‰ãƒ‡ãƒªãƒŸã‚¿
+//SEND_PRODUCT_ID -			é€ã‚Šå´è£½å“ï¼©ï¼¤
+//FILE_NAME -				ãƒ•ã‚¡ã‚¤ãƒ«å
+//SEND_SYSTEM_ID -			é€ã‚Šå´ã‚·ã‚¹ãƒ†ãƒ ï¼©ï¼¤
+//PRIRPO_VERSION -			ãƒ—ãƒªãƒ—ãƒ­ã‚»ãƒƒã‚µãƒãƒ¼ã‚¸ãƒ§ãƒ³
+//INT_LENGTH -				æ•´æ•°å€¤ã®é•·ã•
+//FLOAT_PNT_LENGTH -		å˜ç²¾åº¦æµ®å‹•å°æ•°ç‚¹æŒ‡æ•°ã®æœ€å¤§å€¤
+//FLOAT_PNT_FIGURE -		å˜ç²¾åº¦æµ®å‹•å°æ•°ç‚¹æœ‰åŠ¹æ¡æ•°
+//DOUBLE_PNT_LENGTH -		å€ç²¾åº¦æµ®å‹•å°æ•°ç‚¹æŒ‡æ•°ã®æœ€å¤§å€¤
+//DOUBLE_PNT_FIGURE -		å€ç²¾åº¦æµ®å‹•å°æ•°ç‚¹æœ‰åŠ¹æ¡æ•°
+//RECIVE_PRODUCT_ID -		å—ã‘å–ã‚Šå´è£½å“ï¼©ï¼¤
+//MODEL_SCALE -				ãƒ¢ãƒ‡ãƒ«ã‚¹ã‚±ãƒ¼ãƒ«
+//UNIT_FLAG -				å˜ä½ãƒ•ãƒ©ã‚°
+//UNIT -					å˜ä½
+//LINE_THICKNESS_NUMBER -	ç·šå¹…ã®æœ€å¤§é¡åˆ¥æ•°
+//LINE_THICKNESS -			ç·šå¹…ã®æœ€å¤§å€¤
+//DATE_MAKE_FILE -			ãƒ•ã‚¡ã‚¤ãƒ«ä½œæˆæ—¥æ™‚
+//MIN_ACCRACY -				æœ€å°ç²¾åº¦
+//MODEL_SPACE_SIZE -		ãƒ¢ãƒ‡ãƒ«ç©ºé–“ã®å¤§ãã•
+//FILE_MAKER_NAME -			ãƒ•ã‚¡ã‚¤ãƒ«ä½œæˆè€…
+//BELONG -					æ‰€å±
+//IGES_VERSION -			ãƒãƒ¼ã‚¸ãƒ§ãƒ³
+//DRAFTING_STANDARD -		è£½å›³è¦æ ¼
+//DATE_MAKE_MODEL -			ãƒ¢ãƒ‡ãƒ«ä½œæˆæ—¥
 enum GlobalParamType{
-	PARAM_DELIMITER=1,			// ƒpƒ‰ƒ[ƒ^ƒfƒŠƒ~ƒ^
-	RECORD_DELIMITER,			// ƒŒƒR[ƒhƒfƒŠƒ~ƒ^
-	SEND_PRODUCT_ID,			// ‘—‚è‘¤»•i‚h‚c
-	FILE_NAME,					// ƒtƒ@ƒCƒ‹–¼
-	SEND_SYSTEM_ID,				// ‘—‚è‘¤ƒVƒXƒeƒ€‚h‚c
-	PRIRPO_VERSION,				// ƒvƒŠƒvƒƒZƒbƒTƒo[ƒWƒ‡ƒ“
-	INT_LENGTH,					// ®”’l‚Ì’·‚³
-	FLOAT_PNT_LENGTH,			// ’P¸“x•‚“®¬”“_w”‚ÌÅ‘å’l
-	FLOAT_PNT_FIGURE,			// ’P¸“x•‚“®¬”“_—LŒøŒ…”
-	DOUBLE_PNT_LENGTH,			// ”{¸“x•‚“®¬”“_w”‚ÌÅ‘å’l
-	DOUBLE_PNT_FIGURE,			// ”{¸“x•‚“®¬”“_—LŒøŒ…”
-	RECIVE_PRODUCT_ID,			// ó‚¯æ‚è‘¤»•i‚h‚c
-	MODEL_SCALE,				// ƒ‚ƒfƒ‹ƒXƒP[ƒ‹
-	UNIT_FLAG,					// ’PˆÊƒtƒ‰ƒO
-	UNIT,						// ’PˆÊ
-	LINE_THICKNESS_NUMBER,		// ü•‚ÌÅ‘å—Ş•Ê”
-	LINE_THICKNESS,				// ü•‚ÌÅ‘å’l
-	DATE_MAKE_FILE,				// ƒtƒ@ƒCƒ‹ì¬“ú
-	MIN_ACCRACY,				// Å¬¸“x
-	MODEL_SPACE_SIZE,			// ƒ‚ƒfƒ‹‹óŠÔ‚Ì‘å‚«‚³
-	FILE_MAKER_NAME,			// ƒtƒ@ƒCƒ‹ì¬Ò
-	BELONG,						// Š‘®
-	IGES_VERSION,				// ƒo[ƒWƒ‡ƒ“
-	DRAFTING_STANDARD,			// »}‹KŠi
-	DATE_MAKE_MODEL				// ƒ‚ƒfƒ‹ì¬“ú
+	PARAM_DELIMITER=1,
+	RECORD_DELIMITER,
+	SEND_PRODUCT_ID,
+	FILE_NAME,		
+	SEND_SYSTEM_ID,	
+	PRIRPO_VERSION,	
+	INT_LENGTH,		
+	FLOAT_PNT_LENGTH,
+	FLOAT_PNT_FIGURE,
+	DOUBLE_PNT_LENGTH,
+	DOUBLE_PNT_FIGURE,
+	RECIVE_PRODUCT_ID,
+	MODEL_SCALE,	
+	UNIT_FLAG,		
+	UNIT,			
+	LINE_THICKNESS_NUMBER,
+	LINE_THICKNESS,		
+	DATE_MAKE_FILE,		
+	MIN_ACCRACY,		
+	MODEL_SPACE_SIZE,	
+	FILE_MAKER_NAME,	
+	BELONG,				
+	IGES_VERSION,		
+	DRAFTING_STANDARD,	
+	DATE_MAKE_MODEL		
 };
 
-// ƒfƒBƒŒƒNƒgƒŠ•”ƒpƒ‰ƒ[ƒ^‚ÌƒVƒ“ƒ{ƒ‹‚ğ’è‹`
+// ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªéƒ¨ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®ã‚·ãƒ³ãƒœãƒ«ã‚’å®šç¾©
+// Enum: Enum Symbol of Directory Section's Parameter
+	//ENTITY_TYPE_NUM -			è¦ç´ ç•ªå·
+	//PARAM_DATA -				ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿éƒ¨ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+	//STRUCTURE -				ã‚¹ãƒˆãƒ©ã‚¯ãƒãƒ£
+	//LINE_FONT_PATTERN -		ç·šç¨®
+	//LEVEL -					ãƒ¬ãƒ™ãƒ«
+	//VIEW_ -					ãƒ“ãƒ¥ãƒ¼
+	//TRAN_MATRIX -				ãƒãƒˆãƒªãƒƒã‚¯ã‚¹ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+	//LABEL_DISP_ASSOC -		ãƒ©ãƒ™ãƒ«è¡¨ç¤º
+	//STATUS_NUM -				ã‚¹ãƒ†ã‚¤ã‚¿ã‚¹
+	//SEQUENCE_NUM -			ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ç•ªå·
+	//ENTITY_TYPE_NUM_ -		è¦ç´ ç•ªå·
+	//LINE_WEIGHT_NUM -			ç·šå¹…
+	//COLOR_NUM -				è‰²
+	//PARAM_LINE_COUNT -		ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿éƒ¨ã®ãƒ©ã‚¤ãƒ³æ•°
+	//FORM_NUM -				å½¢å¼ç•ªå·
+	//RESERVED1 -				äºˆå‚™
+	//RESERVED2 -				äºˆå‚™
+	//ENTITY_LABEL -			è¦ç´ ã®ãƒ©ãƒ™ãƒ«
+	//ENTITY_SUBSCRIPT_NUM -	ã‚µãƒ–ã‚¹ã‚¯ãƒªãƒ—ãƒˆ
+	//SEQUENCE_NUM_ -			ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ç•ªå·
 enum DirectoryParamType{
-	ENTITY_TYPE_NUM,			// —v‘f”Ô†
-	PARAM_DATA,					// ƒpƒ‰ƒ[ƒ^•”‚Ö‚Ìƒ|ƒCƒ“ƒ^
-	STRUCTURE,					// ƒXƒgƒ‰ƒNƒ`ƒƒ
-	LINE_FONT_PATTERN,			// üí
-	LEVEL,						// ƒŒƒxƒ‹
-	VIEW_,						// ƒrƒ…[
-	TRAN_MATRIX,				// ƒ}ƒgƒŠƒbƒNƒX‚Ö‚Ìƒ|ƒCƒ“ƒ^
-	LABEL_DISP_ASSOC,			// ƒ‰ƒxƒ‹•\¦
-	STATUS_NUM,					// ƒXƒeƒCƒ^ƒX
-	SEQUENCE_NUM,				// ƒV[ƒPƒ“ƒX”Ô†
-	ENTITY_TYPE_NUM_,			// —v‘f”Ô†
-	LINE_WEIGHT_NUM,			// ü•
-	COLOR_NUM,					// F
-	PARAM_LINE_COUNT,			// ƒpƒ‰ƒ[ƒ^•”‚Ìƒ‰ƒCƒ“”
-	FORM_NUM,					// Œ`®”Ô†
-	RESERVED1,					// —\”õ
-	RESERVED2,					// —\”õ
-	ENTITY_LABEL,				// —v‘f‚Ìƒ‰ƒxƒ‹
-	ENTITY_SUBSCRIPT_NUM,		// ƒTƒuƒXƒNƒŠƒvƒg
-	SEQUENCE_NUM_				// ƒV[ƒPƒ“ƒX”Ô†
+	ENTITY_TYPE_NUM,
+	PARAM_DATA,		
+	STRUCTURE,		
+	LINE_FONT_PATTERN,
+	LEVEL,			
+	VIEW_,			
+	TRAN_MATRIX,	
+	LABEL_DISP_ASSOC,
+	STATUS_NUM,		
+	SEQUENCE_NUM,	
+	ENTITY_TYPE_NUM_,
+	LINE_WEIGHT_NUM,
+	COLOR_NUM,		
+	PARAM_LINE_COUNT,
+	FORM_NUM,		
+	RESERVED1,		
+	RESERVED2,		
+	ENTITY_LABEL,	
+	ENTITY_SUBSCRIPT_NUM,
+	SEQUENCE_NUM_		
 };
 
-// ƒOƒ[ƒoƒ‹•”‚Ì•K—vƒpƒ‰ƒ[ƒ^\‘¢‘Ì
+// Structure: GlobalParam
+// ã‚°ãƒ­ãƒ¼ãƒãƒ«éƒ¨ã®å¿…è¦ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿æ§‹é€ ä½“
+//
+// Variables:
+// double	scale -			ãƒ¢ãƒ‡ãƒ«ã®ã‚¹ã‚±ãƒ¼ãƒ«
+// int		unit_flag -		å˜ä½ãƒ•ãƒ©ã‚°
+// double	space_size -	ãƒ¢ãƒ‡ãƒ«ç©ºé–“ã®å¤§ãã•
 typedef struct{
-	double scale;			// ƒ‚ƒfƒ‹‚ÌƒXƒP[ƒ‹
-	int    unit_flag;		// ’PˆÊƒtƒ‰ƒO
-	double space_size;		// ƒ‚ƒfƒ‹‹óŠÔ‚Ì‘å‚«‚³
+	double scale;
+	int    unit_flag;
+	double space_size;
 }GlobalParam;
 
-// ƒfƒBƒŒƒNƒgƒŠ•”‚Ì•K—vƒpƒ‰ƒ[ƒ^\‘¢‘Ì
+// Structure: DirectoryParam
+// ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªéƒ¨ã®å¿…è¦ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿æ§‹é€ ä½“
+//
+// Variables:
+// int entity_type -		è¦ç´ ç•ªå·
+// int entity_count -		ä½•ç•ªç›®ã®entity_typeã‹ã‚’è¡¨ã™
+// int p_param -			ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿éƒ¨ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+// int p_tm -				ãƒãƒˆãƒªãƒƒã‚¯ã‚¹ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+// int blank_stat -			è¡¨ç¤ºå±æ€§
+// int subordinate_stat -	å¾“å±å±æ€§
+// int useflag_stat -		entityä½¿ç”¨æ„å›³
+// int seq_num -			ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ç•ªå·
+// int param_line_count -	ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿éƒ¨ã®ãƒ©ã‚¤ãƒ³æ•°
 typedef struct{
-	int entity_type;		// —v‘f”Ô†
-	int entity_count;		// ‰½”Ô–Ú‚Ìentity_type‚©‚ğ•\‚·
-	int p_param;			// ƒpƒ‰ƒ[ƒ^•”‚Ö‚Ìƒ|ƒCƒ“ƒ^
-	int p_tm;				// ƒ}ƒgƒŠƒbƒNƒX‚Ö‚Ìƒ|ƒCƒ“ƒ^
-	int blank_stat;			// •\¦‘®«
-	int subordinate_stat;	// ]‘®‘®«
-	int useflag_stat;		// entityg—pˆÓ}
-	int seq_num;			// ƒV[ƒPƒ“ƒX”Ô†
-	int param_line_count;	// ƒpƒ‰ƒ[ƒ^•”‚Ìƒ‰ƒCƒ“”
+	int entity_type;
+	int entity_count;
+	int p_param;	
+	int p_tm;		
+	int blank_stat;	
+	int subordinate_stat;	
+	int useflag_stat;		
+	int seq_num;			
+	int param_line_count;	
 }DirectoryParam;
 
-
-// IGESƒp[ƒT[—pƒNƒ‰ƒX‚ğ’è‹`
+// Class: IGES_PARSER
+// IGESãƒ‘ãƒ¼ã‚µãƒ¼ç”¨ã‚¯ãƒ©ã‚¹
 class IGES_PARSER
 {
 public:
-    int IGES_Parser_Main(BODY *, const char *);	// IGESƒtƒ@ƒCƒ‹‚Ìƒp[ƒTmain
-	int Optimize4OpenGL(BODY *);			// “Ç‚İ‚ñ‚¾IGESƒtƒ@ƒCƒ‹‚ğOpenGL—p‚ÉÅ“K‰»‚·‚é(ExpandKnotRange(), ModifyParamConect(), CheckDegenracy(), CheckCWforTrim()‚ğÀs)
-	int ExpandKnotRange(BODY *);			// —×‚è‡‚¤ƒmƒbƒgƒxƒNƒgƒ‹‚Ì·‚ªMIN_KNOT_RANGEˆÈã‚É‚È‚é‚æ‚¤”ÍˆÍ‚ğ•ÏX‚·‚é
-	int ModifyParamConect(BODY *);			// ƒpƒ‰ƒƒgƒŠƒbƒN•½–Ê“à‚ÌƒgƒŠƒ€‹Èü“¯m‚Ì‚Â‚È‚ª‚è‚ğƒ`ƒFƒbƒNAC³‚·‚é
-	int CheckDegenracy(BODY *);				// k‘Ş(2Dƒpƒ‰ƒƒgƒŠƒbƒN‹Èü‚Ìn“_‚ÆI“_‚ªˆê’v‚µ‚Ä‚¢‚é‚©)‚Ìƒ`ƒFƒbƒN
-	int CheckCWforTrim(BODY *);				// ƒgƒŠƒ€‚Ég‚í‚ê‚Ä‚¢‚é•¡‡‹Èü‚©‚ç‚È‚é‘½ŠpŒ`‚ªŒv‰ñ‚è‚©”½Œv‰ñ‚è‚©‚ğ’²‚×AŠOüƒgƒŠƒ€‚Í”½Œv‰ñ‚èA“àüƒgƒŠƒ€‚ÍŒvü‚è‚É‚È‚é‚æ‚¤‚É•ÏX‚·‚é
-	int NormalizeKnotRange(BODY *,double);	// ƒmƒbƒgƒxƒNƒgƒ‹‚Ì”ÍˆÍ‚ğ0`val‚Ö(ƒmƒbƒg‚Ì³‹K‰»)
-	IGES_PARSER();					// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	// Constructor: IGES_PARSER
+	// IGES_PARSERã‚¯ãƒ©ã‚¹ã®ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	IGES_PARSER();	
+
+	//  Function: IGES_Parser_Main
+	// IGESãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ãƒ¼ã‚µmain
+	int IGES_Parser_Main(BODY *, const char *);	
+
+	//  Function: Optimize4OpenGL
+	// èª­ã¿è¾¼ã‚“ã IGESãƒ•ã‚¡ã‚¤ãƒ«ã‚’OpenGLç”¨ã«æœ€é©åŒ–ã™ã‚‹(ExpandKnotRange(), ModifyParamConect(), CheckDegenracy(), CheckCWforTrim()ã‚’å®Ÿè¡Œ)
+	int Optimize4OpenGL(BODY *);			
+
+	//  Function: ExpandKnotRange
+	// éš£ã‚Šåˆã†ãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«ã®å·®ãŒMIN_KNOT_RANGEä»¥ä¸Šã«ãªã‚‹ã‚ˆã†ç¯„å›²ã‚’å¤‰æ›´ã™ã‚‹
+	int ExpandKnotRange(BODY *);			
+
+	//  Function: ModifyParamConect
+	// ãƒ‘ãƒ©ãƒ¡ãƒˆãƒªãƒƒã‚¯å¹³é¢å†…ã®ãƒˆãƒªãƒ æ›²ç·šåŒå£«ã®ã¤ãªãŒã‚Šã‚’ãƒã‚§ãƒƒã‚¯ã€ä¿®æ­£ã™ã‚‹
+	int ModifyParamConect(BODY *);			
+
+	//  Function: CheckDegenracy
+	// ç¸®é€€(2Dãƒ‘ãƒ©ãƒ¡ãƒˆãƒªãƒƒã‚¯æ›²ç·šã®å§‹ç‚¹ã¨çµ‚ç‚¹ãŒä¸€è‡´ã—ã¦ã„ã‚‹ã‹)ã®ãƒã‚§ãƒƒã‚¯
+	int CheckDegenracy(BODY *);				
+
+	//  Function: CheckCWforTrim
+	// ãƒˆãƒªãƒ ã«ä½¿ã‚ã‚Œã¦ã„ã‚‹è¤‡åˆæ›²ç·šã‹ã‚‰ãªã‚‹å¤šè§’å½¢ãŒæ™‚è¨ˆå›ã‚Šã‹åæ™‚è¨ˆå›ã‚Šã‹ã‚’èª¿ã¹ã€å¤–å‘¨ãƒˆãƒªãƒ ã¯åæ™‚è¨ˆå›ã‚Šã€å†…å‘¨ãƒˆãƒªãƒ ã¯æ™‚è¨ˆå‘¨ã‚Šã«ãªã‚‹ã‚ˆã†ã«å¤‰æ›´ã™ã‚‹
+	int CheckCWforTrim(BODY *);				
+
+	//  Function: NormalizeKnotRange
+	// ãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«ã®ç¯„å›²ã‚’0ï½valã¸(ãƒãƒƒãƒˆã®æ­£è¦åŒ–)
+	int NormalizeKnotRange(BODY *,double);	
+
 
 private:
-	void GetSectionLine(FILE *,int []);								// ŠeƒZƒNƒVƒ‡ƒ“‚Ìƒ‰ƒCƒ“”‚ğ’²‚×‚é
-	int GetStartSection(FILE *,int);								// ƒXƒ^[ƒg•”‚Ì“Ç‚İ‚İ
-	int GetGlobalSection(FILE *,GlobalParam *,int);					// ƒOƒ[ƒoƒ‹•”‚Ì“Ç‚İ‚İ
-	int GetDirectorySection(FILE *,DirectoryParam *,int [],int);	// ƒfƒBƒŒƒNƒgƒŠ•”‚Ì“Ç‚İ‚İ
-	void GetStatusNumber(char [],DirectoryParam *);					// ƒfƒBƒŒƒNƒgƒŠ•”‚Ìî•ñ#9‚ğæ“¾
-	int GetParameterSection(FILE *,DirectoryParam *,BODY,int);		// ƒpƒ‰ƒ[ƒ^•”‚Ì“Ç‚İ‚İ
-	int GetTerminateSection(FILE *);								// ƒ^[ƒ~ƒl[ƒg•”‚Ì“Ç‚İ‚İiƒXƒPƒ‹ƒgƒ“j
-	void GetType(int,int []);										// ŠeƒGƒ“ƒeƒBƒeƒBƒ^ƒCƒv‚Ì”‚ğ‹L‰¯‚·‚é
-	int GetCirAPara(char [],int,DirectoryParam *,BODY);				// Type100 ‰~E‰~ŒÊ‚Ì“Ç‚İ‚İ
-	int GetCompCPara(char [],int,DirectoryParam *,int,BODY);		// Type102 •¡‡‹Èü‚Ì“Ç‚İ‚İ
-	int GetConAPara(char [],int,DirectoryParam *,BODY);				// Type104 ‰~‹Èü‚Ì“Ç‚İ‚İ
-	int GetLinePara(char [],int,DirectoryParam *,BODY);				// Type110 ü•ª‚Ì“Ç‚İ‚İ
-	int GetTMatPara(char [],int,DirectoryParam *,BODY);				// Type124 •ÏŠ·s—ñ‚Ì“Ç‚İ‚İ
-	int GetNurbsCPara(char [],int,DirectoryParam *,BODY);			// Type126 NRBS‹Èü‚Ì“Ç‚İ‚İ
-	int GetNurbsSPara(char [],int,DirectoryParam *,BODY);			// Type128 NRBS‹È–Ê‚Ì“Ç‚İ‚İ
-	int GeConpSPara(char [],int,DirectoryParam *,int,BODY);			// Type142 –Êãü‚Ì“Ç‚İ‚İ
-	int GetTrmSPara(char [],int,DirectoryParam *,BODY);				// Type144 ƒgƒŠƒ€–Ê‚Ì“Ç‚İ‚İ
-	int CatchStringI(char **);										// ƒJƒ“ƒ}‚Ü‚Å‚Ì”’l‚ğ“Ç‚İ‚ñ‚Å•Ô‚·(int)
-	double CatchStringD(char **);									// ƒJƒ“ƒ}‚Ü‚Å‚Ì”’l‚ğ“Ç‚İ‚ñ‚Å•Ô‚·(double)
-	int ChangeEntityforNurbs(DirectoryParam *,BODY,int);			// ƒGƒ“ƒeƒBƒeƒB‚ğ‘S‚ÄNURBS‚Ö•ÏX‚·‚é
-	int SearchMaxCoord(BODY *,int []);								// ‘S‚Ä‚ÌƒGƒ“ƒeƒBƒeƒB‚É‚¨‚¯‚éÀ•W’l‚ÌÅ‘å’l‚ğ’²‚×‚é
-	void *GetDEPointer(int ,BODY);									// DE•”‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ª¦‚·ÀÛ‚Ì\‘¢‘Ì‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğ•Ô‚·
-	int SearchEntType(DirectoryParam *,int,int);					// DE•”‚Ö‚Ìƒ|ƒCƒ“ƒ^‚Ì’l‚©‚çƒGƒ“ƒeƒBƒeƒB‚Ìƒ^ƒCƒv‚ğ’²‚×‚Ä•Ô‚·
-	void InitDisplayStat(DispStat *);								// ŠeƒGƒ“ƒeƒBƒeƒB‚Ì•\¦‘®«‚ğİ’è
+	// Function: GetSectionLine
+	// å„ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®ãƒ©ã‚¤ãƒ³æ•°ã‚’èª¿ã¹ã‚‹
+	void GetSectionLine(FILE *,int []);								
 
-	int TransformNurbsC(int,int,BODY);						// NURBS‹Èü‚ğÀ•W•ÏŠ·‚·‚é
-	int ChangeKnotVecRange(double [],double [],int,int,int,double);	// ƒmƒbƒgƒxƒNƒgƒ‹‚Ì³‹K‰»sub1
-	double ChangeKnot(double ,double ,double,double);				// ƒmƒbƒgƒxƒNƒgƒ‹‚Ì³‹K‰»sub2
-	double SearchMinVecRange(double [],int,int);			// ƒmƒbƒgƒxƒNƒgƒ‹‚ÌÅ¬ŠÔŠu‚ğ’Tõ
-	void ReverseCOMPELEM(COMPC *);							// COMPELEM”z—ñ‚ğ”½“]
+	// Function: GetStartSection
+	// ã‚¹ã‚¿ãƒ¼ãƒˆéƒ¨ã®èª­ã¿è¾¼ã¿
+	int GetStartSection(FILE *,int);								
+
+	// Function: GetGlobalSection
+	// ã‚°ãƒ­ãƒ¼ãƒãƒ«éƒ¨ã®èª­ã¿è¾¼ã¿
+	int GetGlobalSection(FILE *,GlobalParam *,int);					
+
+	// Function: GetDirectorySection
+	// ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªéƒ¨ã®èª­ã¿è¾¼ã¿
+	int GetDirectorySection(FILE *,DirectoryParam *,int [],int);	
+
+	// Function: GetStatusNumber
+	// ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªéƒ¨ã®æƒ…å ±#9ã‚’å–å¾—
+	void GetStatusNumber(char [],DirectoryParam *);					
+
+	// Function: GetParameterSection
+	// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿éƒ¨ã®èª­ã¿è¾¼ã¿
+	int GetParameterSection(FILE *,DirectoryParam *,BODY,int);		
+
+	// Function: GetTerminateSection
+	// ã‚¿ãƒ¼ãƒŸãƒãƒ¼ãƒˆéƒ¨ã®èª­ã¿è¾¼ã¿ï¼ˆã‚¹ã‚±ãƒ«ãƒˆãƒ³ï¼‰
+	int GetTerminateSection(FILE *);								
+
+	// Function: GetType
+	// å„ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚¿ã‚¤ãƒ—ã®æ•°ã‚’è¨˜æ†¶ã™ã‚‹
+	void GetType(int,int []);										
+
+	// Function: GetCirAPara
+	// Type100 å††ãƒ»å††å¼§ã®èª­ã¿è¾¼ã¿
+	int GetCirAPara(char [],int,DirectoryParam *,BODY);				
+
+	// Function: GetCompCPara
+	// Type102 è¤‡åˆæ›²ç·šã®èª­ã¿è¾¼ã¿
+	int GetCompCPara(char [],int,DirectoryParam *,int,BODY);		
+
+	// Function: GetConAPara
+	// Type104 å††éŒæ›²ç·šã®èª­ã¿è¾¼ã¿
+	int GetConAPara(char [],int,DirectoryParam *,BODY);				
+
+	// Function: GetLinePara
+	// Type110 ç·šåˆ†ã®èª­ã¿è¾¼ã¿
+	int GetLinePara(char [],int,DirectoryParam *,BODY);				
+
+	// Function: GetTMatPara
+	// Type124 å¤‰æ›è¡Œåˆ—ã®èª­ã¿è¾¼ã¿
+	int GetTMatPara(char [],int,DirectoryParam *,BODY);				
+
+	// Function: GetNurbsCPara
+	// Type126 NRBSæ›²ç·šã®èª­ã¿è¾¼ã¿
+	int GetNurbsCPara(char [],int,DirectoryParam *,BODY);			
+
+	// Function: GetNurbsSPara
+	// Type128 NRBSæ›²é¢ã®èª­ã¿è¾¼ã¿
+	int GetNurbsSPara(char [],int,DirectoryParam *,BODY);			
+
+	// Function: GeConpSPara
+	// Type142 é¢ä¸Šç·šã®èª­ã¿è¾¼ã¿
+	int GeConpSPara(char [],int,DirectoryParam *,int,BODY);			
+
+	// Function: GetTrmSPara
+	// Type144 ãƒˆãƒªãƒ é¢ã®èª­ã¿è¾¼ã¿
+	int GetTrmSPara(char [],int,DirectoryParam *,BODY);				
+
+	// Function: CatchStringI
+	// ã‚«ãƒ³ãƒã¾ã§ã®æ•°å€¤ã‚’èª­ã¿è¾¼ã‚“ã§è¿”ã™(int)
+	int CatchStringI(char **);										
+
+	// Function: CatchStringD
+	// ã‚«ãƒ³ãƒã¾ã§ã®æ•°å€¤ã‚’èª­ã¿è¾¼ã‚“ã§è¿”ã™(double)
+	double CatchStringD(char **);									
+
+	// Function: ChangeEntityforNurbs
+	// ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚’å…¨ã¦NURBSã¸å¤‰æ›´ã™ã‚‹
+	int ChangeEntityforNurbs(DirectoryParam *,BODY,int);			
+
+	// Function: SearchMaxCoord
+	// å…¨ã¦ã®ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã«ãŠã‘ã‚‹åº§æ¨™å€¤ã®æœ€å¤§å€¤ã‚’èª¿ã¹ã‚‹
+	int SearchMaxCoord(BODY *,int []);	
+
+	// Function: GetDEPointer
+	// DEéƒ¨ã¸ã®ãƒã‚¤ãƒ³ã‚¿ãŒç¤ºã™å®Ÿéš›ã®æ§‹é€ ä½“ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’è¿”ã™
+	void *GetDEPointer(int ,BODY);		
+
+	// Function: SearchEntType
+	// DEéƒ¨ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã®å€¤ã‹ã‚‰ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã®ã‚¿ã‚¤ãƒ—ã‚’èª¿ã¹ã¦è¿”ã™
+	int SearchEntType(DirectoryParam *,int,int);	
+
+	// Function: InitDisplayStat
+	// å„ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã®è¡¨ç¤ºå±æ€§ã‚’è¨­å®š
+	void InitDisplayStat(DispStat *);	
+
+	// Function: TransformNurbsC
+	// NURBSæ›²ç·šã‚’åº§æ¨™å¤‰æ›ã™ã‚‹
+	int TransformNurbsC(int,int,BODY);
+
+	// Function: ChangeKnotVecRange
+	// ãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«ã®æ­£è¦åŒ–sub1
+	int ChangeKnotVecRange(double [],double [],int,int,int,double);
+
+	// Function: ChangeKnot
+	// ãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«ã®æ­£è¦åŒ–sub2
+	double ChangeKnot(double ,double ,double,double);	
+
+	// Function: SearchMinVecRange
+	// ãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«ã®æœ€å°é–“éš”ã‚’æ¢ç´¢
+	double SearchMinVecRange(double [],int,int);	
+
+	// Function: ReverseCOMPELEM
+	// COMPELEMé…åˆ—ã‚’åè»¢
+	void ReverseCOMPELEM(COMPC *);
+
 
 private:
+	// Variable: *body
+	// (private)BODYã‚¯ãƒ©ã‚¹ã¸ã®ãƒã‚¤ãƒ³ã‚¿(IGESãƒ‡ãƒ¼ã‚¿ã¯ã“ã®BODYæ§‹é€ ä½“ã«å…¨ã¦æ ¼ç´ã•ã‚Œã‚‹)
 	BODY *body;
+
+	// Variable: NFunc
+	// (private)NURBS_Funcã‚¯ãƒ©ã‚¹ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
 	NURBS_Func NFunc;
+
+	// Variable: *TypeNum
+	// (private)ã©ã®BODYã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒå¹¾ã¤ã‚ã‚‹ã‹ã‚’ç¤ºã™
 	int *TypeNum;
-	char buf[COLUMN_MAX_];				 // ”Ä—p•¶š—ñƒoƒbƒtƒ@
-	int  entity[ALL_ENTITY_TYPE_NUM];	 // ƒGƒ“ƒeƒBƒeƒB‚Ì”Ô†‚ğŠi”[‚µ‚½”z—ñ
-	int  TypeCount[ALL_ENTITY_TYPE_NUM]; // ŠeƒGƒ“ƒeƒBƒeƒBƒ^ƒCƒv‚Ì³íƒƒ‚ƒŠ[Šm•Û”‚ğŠi”[
+
+	// Variable: buf[COLUMN_MAX_]
+	// (private)æ±ç”¨æ–‡å­—åˆ—ãƒãƒƒãƒ•ã‚¡
+	char buf[COLUMN_MAX_];				 
+
+	// Variable: entity[ALL_ENTITY_TYPE_NUM]
+	// (private)ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã®ç•ªå·ã‚’æ ¼ç´ã—ãŸé…åˆ—
+	int  entity[ALL_ENTITY_TYPE_NUM];	 
+
+	// Variable: TypeCount[ALL_ENTITY_TYPE_NUM]
+	// (private)å„ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚¿ã‚¤ãƒ—ã®æ­£å¸¸ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿æ•°ã‚’æ ¼ç´
+	int  TypeCount[ALL_ENTITY_TYPE_NUM]; 
 };
 
 #endif

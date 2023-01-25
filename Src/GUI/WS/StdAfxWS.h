@@ -1,4 +1,4 @@
-#ifndef _STD_AFX_WS_H_
+ï»¿#ifndef _STD_AFX_WS_H_
 #define _STD_AFX_WS_H_
 
 #include <WSCfileSelect.h>
@@ -13,44 +13,120 @@
 #include <string.h>
 #include <iostream>
 
-// GUIƒCƒ“ƒ^[ƒtƒF[ƒX‚ÉˆË‘¶‚µ‚½ƒ‰ƒbƒvŠÖ”W
-// Wide Studioƒo[ƒWƒ‡ƒ“
+// Class: GUI_Interface
+// GUIã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹ã«ä¾å­˜ã—ãŸãƒ©ãƒƒãƒ—é–¢æ•°é›†
+// Wide Studioãƒãƒ¼ã‚¸ãƒ§ãƒ³
 class GUI_Interface
 {
 public:
-	int SetMessage(char *);					// ƒRƒ“ƒ\[ƒ‹‚ÉƒƒbƒZ[ƒW‚ğo—Í
-	int SetCommand(char *);					// ƒRƒ“ƒ\[ƒ‹‚ÉƒRƒ}ƒ“ƒh‚ğo—Í
-	void AddBodyNameToWin(const char *);	// V‚½‚É“o˜^‚µ‚½BODY‚Ì–¼‘O‚ğƒEƒBƒ“ƒhƒEƒŠƒXƒg‚É•\¦‚·‚é
-	void DelBodyFromWin(int pos);			// w’è‚³‚ê‚½”Ô†‚ÌBODY‚ğƒŠƒXƒg‚©‚çíœ‚·‚é
-    void SetEnableOpenFile(bool );			// ƒtƒ@ƒCƒ‹OPEN—pƒIƒuƒWƒFƒNƒg‚Ìó‘Ôİ’è
-    void SetEnableDelBody(bool );			// BODYíœ—pƒIƒuƒWƒFƒNƒg‚Ìó‘Ôİ’è
-    void UpdateDescribeWidget();			// •`‰æ—pGUI‚ÌÄ•`‰æw—ß
-	void RedrawDescribeForm();				// •`‰æ—Ìˆæ‚ÌÄ•`‰æw—ß
+	// Function: SetMessage
+	// ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ã«ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å‡ºåŠ›
+	int SetMessage(char *);
 
-    void SetUserFunc1Label(const char *);	// UserFunc1‚Ìƒ‰ƒxƒ‹‚ğƒZƒbƒg
-    void SetUserFunc2Label(const char *);	// UserFunc2‚Ìƒ‰ƒxƒ‹‚ğƒZƒbƒg
-    void SetUserFunc3Label(const char *);	// UserFunc3‚Ìƒ‰ƒxƒ‹‚ğƒZƒbƒg
-    void SetUserFunc4Label(const char *);	// UserFunc4‚Ìƒ‰ƒxƒ‹‚ğƒZƒbƒg
-    void SetUserFunc5Label(const char *);	// UserFunc5‚Ìƒ‰ƒxƒ‹‚ğƒZƒbƒg
-    void SetUserFunc6Label(const char *);	// UserFunc6‚Ìƒ‰ƒxƒ‹‚ğƒZƒbƒg
-    void SetUserFunc7Label(const char *);	// UserFunc7‚Ìƒ‰ƒxƒ‹‚ğƒZƒbƒg
-    void SetUserFunc8Label(const char *);	// UserFunc8‚Ìƒ‰ƒxƒ‹‚ğƒZƒbƒg
+	// Function: SetCommand
+	// ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ã«ã‚³ãƒãƒ³ãƒ‰å‡ºåŠ›
+	int SetCommand(char *);
+
+	// Function: AddBodyNameToWin
+	// æ–°ãŸã«ç™»éŒ²ã—ãŸBODYã®åå‰ã‚’ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒªã‚¹ãƒˆã«è¡¨ç¤ºã™ã‚‹
+	void AddBodyNameToWin(const char *);
+
+	// Function: DelBodyFromWin
+	// æŒ‡å®šã•ã‚ŒãŸç•ªå·ã®BODYã‚’ãƒªã‚¹ãƒˆã‹ã‚‰å‰Šé™¤ã™ã‚‹
+	void DelBodyFromWin(int pos);
+
+	// Function: SetEnableOpenFile
+	// ãƒ•ã‚¡ã‚¤ãƒ«OPENç”¨ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®çŠ¶æ…‹è¨­å®š
+    void SetEnableOpenFile(bool );
+	
+	// Function: SetEnableDelBody
+	// BODYå‰Šé™¤ç”¨ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®çŠ¶æ…‹è¨­å®š
+	void SetEnableDelBody(bool );
+	
+	// Function: UpdateDescribeWidget
+	// æç”»ç”¨GUIã®å†æç”»æŒ‡ä»¤
+	void UpdateDescribeWidget();
+
+	// Function: RedrawDescribeForm
+	// æç”»é ˜åŸŸã®å†æç”»æŒ‡ä»¤
+	void RedrawDescribeForm();
+
+	// Function: SetUserFunc1Label
+	// UserFunc1ã®ãƒ©ãƒ™ãƒ«ã‚’ã‚»ãƒƒãƒˆ
+    void SetUserFunc1Label(const char *);
+
+	// Function: SetUserFunc2Label
+	// UserFunc2ã®ãƒ©ãƒ™ãƒ«ã‚’ã‚»ãƒƒãƒˆ
+    void SetUserFunc2Label(const char *);
+
+	// Function: SetUserFunc3Label
+	// UserFunc3ã®ãƒ©ãƒ™ãƒ«ã‚’ã‚»ãƒƒãƒˆ
+    void SetUserFunc3Label(const char *);
+
+	// Function: SetUserFunc4Label
+	// UserFunc4ã®ãƒ©ãƒ™ãƒ«ã‚’ã‚»ãƒƒãƒˆ
+    void SetUserFunc4Label(const char *);
+
+	// Function: SetUserFunc5Label
+	// UserFunc5ã®ãƒ©ãƒ™ãƒ«ã‚’ã‚»ãƒƒãƒˆ
+    void SetUserFunc5Label(const char *);
+
+	// Function: SetUserFunc6Label
+	// UserFunc6ã®ãƒ©ãƒ™ãƒ«ã‚’ã‚»ãƒƒãƒˆ
+    void SetUserFunc6Label(const char *);
+
+	// Function: SetUserFunc7Label
+	// UserFunc7ã®ãƒ©ãƒ™ãƒ«ã‚’ã‚»ãƒƒãƒˆ
+    void SetUserFunc7Label(const char *);
+
+	// Function: SetUserFunc8Label
+	// UserFunc8ã®ãƒ©ãƒ™ãƒ«ã‚’ã‚»ãƒƒãƒˆ
+    void SetUserFunc8Label(const char *);
   
-    std::string OpenBodyFileDlg();			// ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“ƒ_ƒCƒAƒƒO‚Ì•\¦iBODYj
-    std::string OpenInpFileDlg();			// ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“ƒ_ƒCƒAƒƒO‚Ì•\¦iINPj
-    std::string GetFileName(const std::string fullPath);	// ƒtƒ‹ƒpƒX‚©‚çƒtƒ@ƒCƒ‹–¼’Šo
-    std::string GetFileExt(const std::string fullPath);		// ƒtƒ‹ƒpƒX‚©‚çƒtƒ@ƒCƒ‹‚ÌŠg’£q’Šo
+	// Function: OpenBodyFileDlg
+	// ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³ãƒ€ã‚¤ãƒ¤ãƒ­ã‚°ã®è¡¨ç¤ºï¼ˆBODYï¼‰
+    std::string OpenBodyFileDlg();
 
-    std::string GetConsoleText();			// ƒRƒ“ƒ\[ƒ‹‚©‚ç•¶š—ñ‚ğæ“¾
-    int GetBodyListSelectedPos();			// BODYƒŠƒXƒg‚Ì‘I‘ğ‚³‚ê‚Ä‚¢‚é”Ô†‚ğæ“¾‚·‚é
+	// Function: OpenInpFileDlg
+	// ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³ãƒ€ã‚¤ãƒ¤ãƒ­ã‚°ã®è¡¨ç¤ºï¼ˆINPï¼‰
+    std::string OpenInpFileDlg();
 
-    void ShowNurbsCurveDlg();				// Nurbs‹Èüƒ_ƒCƒAƒƒO•\¦
-    void ShowNurbsSurfDlg();				// Nurbs‹È–Êƒ_ƒCƒAƒƒO•\¦
-    void ShowRotSurfDlg();					// ‰ñ“]ƒT[ƒtƒFƒXƒ_ƒCƒAƒƒO•\¦
-    void ShowSweepSurfDlg();				// ƒXƒC[ƒvƒT[ƒtƒFƒXƒ_ƒCƒAƒƒO•\¦
+	// Function: GetFileName
+	// ãƒ•ãƒ«ãƒ‘ã‚¹ã‹ã‚‰ãƒ•ã‚¡ã‚¤ãƒ«åæŠ½å‡º
+    std::string GetFileName(const std::string fullPath);
+
+	// Function: GetFileExt
+	// ãƒ•ãƒ«ãƒ‘ã‚¹ã‹ã‚‰ãƒ•ã‚¡ã‚¤ãƒ«ã®æ‹¡å¼µå­æŠ½å‡º
+    std::string GetFileExt(const std::string fullPath);
+
+	// Function: GetConsoleText
+	// ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ã‹ã‚‰æ–‡å­—åˆ—ã‚’å–å¾—
+    std::string GetConsoleText();
+
+	// Function: GetBodyListSelectedPos
+	// BODYãƒªã‚¹ãƒˆã®é¸æŠã•ã‚Œã¦ã„ã‚‹ç•ªå·ã‚’å–å¾—ã™ã‚‹
+    int GetBodyListSelectedPos();			// BODYãƒªã‚¹ãƒˆã®é¸æŠã•ã‚Œã¦ã„ã‚‹ç•ªå·ã‚’å–å¾—ã™ã‚‹
+
+	// Function: ShowNurbsCurveDlg
+	// NURBSæ›²ç·šãƒ€ã‚¤ãƒ¤ãƒ­ã‚°è¡¨ç¤º
+    void ShowNurbsCurveDlg();
+
+	// Function: ShowNurbsSurfDlg
+	// NURBSæ›²é¢ãƒ€ã‚¤ãƒ¤ãƒ­ã‚°è¡¨ç¤º
+    void ShowNurbsSurfDlg();
+
+	// Function: ShowRotSurfDlg
+	// å›è»¢ã‚µãƒ¼ãƒ•ã‚§ã‚¹ãƒ€ã‚¤ãƒ¤ãƒ­ã‚°è¡¨ç¤º
+    void ShowRotSurfDlg();
+
+	// Function: ShowSweepSurfDlg
+	// ã‚¹ã‚¤ãƒ¼ãƒ—ã‚µãƒ¼ãƒ•ã‚§ã‚¹ãƒ€ã‚¤ãƒ¤ãƒ­ã‚°è¡¨ç¤º
+    void ShowSweepSurfDlg();
 
 };
 
-extern GUI_Interface GuiIF;		// ƒNƒ‰ƒXGUI_Interface‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğƒOƒ[ƒoƒ‹‚ÅéŒ¾
+// Variable: GuiIF
+// ã‚¯ãƒ©ã‚¹GUI_Interfaceã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ã‚°ãƒ­ãƒ¼ãƒãƒ«ã§å®£è¨€
+extern GUI_Interface GuiIF;
 
 #endif

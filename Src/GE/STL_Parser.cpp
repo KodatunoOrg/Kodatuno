@@ -1,36 +1,43 @@
-/*************************
-* STLƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚Ş  *
+ï»¿/*************************
+* STLãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿è¾¼ã‚€  *
 **************************/
 
 #include "STL_Parser.h"
 
-// *body --- —§‘Ì‚ğ\¬‚·‚éƒGƒ“ƒeƒBƒeƒB‚ÌW‡ƒIƒuƒWƒFƒNƒg‚Ö‚Ìƒ|ƒCƒ“ƒ^
-// TypeNum[] --- ŠeƒGƒ“ƒeƒBƒeƒB‚Ì”‚ªŠi”[‚³‚ê‚é
+// Function: STL_Parser_Main
+// STLãƒ‘ãƒ¼ã‚µãƒ¡ã‚¤ãƒ³
+//
+// Parameter:
+// *body - ç«‹ä½“ã‚’æ§‹æˆã™ã‚‹ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã®é›†åˆã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ãƒã‚¤ãƒ³ã‚¿
+// TypeNum[] - å„ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã®æ•°ãŒæ ¼ç´ã•ã‚Œã‚‹
+//
+// Return:
+// æˆåŠŸï¼šKOD_TRUE, ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³ã‚¨ãƒ©ãƒ¼ï¼šKOD_ERR
 int STL_PARSER::STL_Parser_Main(BODY *body, const char *STL_fname)
 {
 	FILE *fp;
 	NURBS_Func nfunc;
-	char buf[BUFSIZEMAX];		// •¶š—ñˆêŠi”[—pƒoƒbƒtƒ@
-	char label[LABELSIZEMAX];	// ƒ‰ƒxƒ‹•¶š—ñˆêŠi”[—pƒoƒbƒtƒ@
-	char mes[BUFSIZEMAX];		// o—Í—pƒƒbƒZ[ƒWŠi”[ƒoƒbƒtƒ@
-	int facet_num=0;			// ƒtƒ@ƒZƒbƒg‚Ì‘”
-	double maxval = -1.0E+6;	// À•W’l‚ÌÅ‘å’l‚ğŠi”[
+	char buf[BUFSIZEMAX_STL];		// æ–‡å­—åˆ—ä¸€æ™‚æ ¼ç´ç”¨ãƒãƒƒãƒ•ã‚¡
+	char label[LABELSIZEMAX_STL];	// ãƒ©ãƒ™ãƒ«æ–‡å­—åˆ—ä¸€æ™‚æ ¼ç´ç”¨ãƒãƒƒãƒ•ã‚¡
+	char mes[BUFSIZEMAX_STL];		// å‡ºåŠ›ç”¨ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸æ ¼ç´ãƒãƒƒãƒ•ã‚¡
+	int facet_num=0;			// ãƒ•ã‚¡ã‚»ãƒƒãƒˆã®ç·æ•°
+	double maxval = -1.0E+6;	// åº§æ¨™å€¤ã®æœ€å¤§å€¤ã‚’æ ¼ç´
 
-	// ƒtƒ@ƒZƒbƒg‚ğNURBS‚Å•\Œ»‚·‚é‚½‚ß‚ÌŠeíƒpƒ‰ƒ[ƒ^‚ğƒZƒbƒg
-	int K[2] = {2,2};							// ƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒg‚Ì”‚Í2
-	int N[2] = {4,4};							// ƒmƒbƒgƒxƒNƒgƒ‹‚Ì”‚Í4
-	int M[2] = {2,2};							// ŠK”‚Í2
-	double U[2] = {0,1};						// u•ûŒü‚ÌƒmƒbƒgƒxƒNƒgƒ‹‚ÌŠJn’l‚ÆI—¹’l
-	double V[2] = {0,1};						// v•ûŒüƒmƒbƒgƒxƒNƒgƒ‹‚ÌŠJn’l‚ÆI—¹’l
-	Vector S = NewVector(N[0]);					// u•ûŒü‚ÌƒmƒbƒgƒxƒNƒgƒ‹
-	Vector T = NewVector(N[1]);					// v•ûŒüƒmƒbƒgƒxƒNƒgƒ‹
-	Matrix W = NewMatrix(K[0],K[1]);			// ƒEƒGƒCƒg
-	Coord **facet = NewCoord2(2,2);				// ƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒg
-	S[0] = S[1] = T[0] = T[1] = 0;				// u•ûŒü‚ÌƒmƒbƒgƒxƒNƒgƒ‹‚Í•½–Ê‚È‚Ì‚ÅŠù‚ÉŒˆ‚Ü‚Á‚Ä‚¢‚é
-	S[2] = S[3] = T[2] = T[3] = 1;				// v•ûŒüƒmƒbƒgƒxƒNƒgƒ‹‚Í•½–Ê‚È‚Ì‚ÅŠù‚ÉŒˆ‚Ü‚Á‚Ä‚¢‚é
-	W[0][0] = W[0][1] = W[1][0] = W[1][1] = 1;	// ƒEƒGƒCƒg‚Í•½–Ê‚È‚Ì‚ÅŠù‚ÉŒˆ‚Ü‚Á‚Ä‚¢‚é
+	// ãƒ•ã‚¡ã‚»ãƒƒãƒˆã‚’NURBSã§è¡¨ç¾ã™ã‚‹ãŸã‚ã®å„ç¨®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’ã‚»ãƒƒãƒˆ
+	int K[2] = {2,2};							// ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆã®æ•°ã¯2
+	int N[2] = {4,4};							// ãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«ã®æ•°ã¯4
+	int M[2] = {2,2};							// éšæ•°ã¯2
+	double U[2] = {0,1};						// uæ–¹å‘ã®ãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«ã®é–‹å§‹å€¤ã¨çµ‚äº†å€¤
+	double V[2] = {0,1};						// væ–¹å‘ãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«ã®é–‹å§‹å€¤ã¨çµ‚äº†å€¤
+	Vector S = NewVector(N[0]);					// uæ–¹å‘ã®ãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«
+	Vector T = NewVector(N[1]);					// væ–¹å‘ãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«
+	Matrix W = NewMatrix(K[0],K[1]);			// ã‚¦ã‚¨ã‚¤ãƒˆ
+	Coord **facet = NewCoord2(2,2);				// ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆ
+	S[0] = S[1] = T[0] = T[1] = 0;				// uæ–¹å‘ã®ãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«ã¯å¹³é¢ãªã®ã§æ—¢ã«æ±ºã¾ã£ã¦ã„ã‚‹
+	S[2] = S[3] = T[2] = T[3] = 1;				// væ–¹å‘ãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«ã¯å¹³é¢ãªã®ã§æ—¢ã«æ±ºã¾ã£ã¦ã„ã‚‹
+	W[0][0] = W[0][1] = W[1][0] = W[1][1] = 1;	// ã‚¦ã‚¨ã‚¤ãƒˆã¯å¹³é¢ãªã®ã§æ—¢ã«æ±ºã¾ã£ã¦ã„ã‚‹
 
-	// STLƒtƒ@ƒCƒ‹ƒI[ƒvƒ“
+	// STLãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³
 	if((fp = fopen(STL_fname,"r")) == NULL){
 		sprintf(mes,"KOD_ERROR: Cannot open %s",STL_fname);
         GuiIF.SetMessage(mes);
@@ -39,48 +46,48 @@ int STL_PARSER::STL_Parser_Main(BODY *body, const char *STL_fname)
 	sprintf(mes,"Open %s",STL_fname);
     GuiIF.SetMessage(mes);
 
-	// ‚Ü‚¸ƒtƒ@ƒZƒbƒg‚Ì‘”‚ğ”‚¦‚é
+	// ã¾ãšãƒ•ã‚¡ã‚»ãƒƒãƒˆã®ç·æ•°ã‚’æ•°ãˆã‚‹
 	while(fgets(buf,sizeof(buf),fp) != NULL){
-		sscanf(buf,"%s",label);							// ƒ‰ƒxƒ‹’Šo
-		if(!strncmp(label,"facet",LABEL_FASET_SIZE))	// ƒ‰ƒxƒ‹–¼‚ª"facet"‚È‚ç
-			facet_num++;								// ƒtƒ@ƒZƒbƒg”‚ğƒCƒ“ƒNƒŠƒƒ“ƒg
+		sscanf(buf,"%s",label);							// ãƒ©ãƒ™ãƒ«æŠ½å‡º
+		if(!strncmp(label,"facet",LABEL_FASET_SIZE))	// ãƒ©ãƒ™ãƒ«åãŒ"facet"ãªã‚‰
+			facet_num++;								// ãƒ•ã‚¡ã‚»ãƒƒãƒˆæ•°ã‚’ã‚¤ãƒ³ã‚¯ãƒªãƒ¡ãƒ³ãƒˆ
 	}
 	sprintf(mes,"Total facet number is %d.",facet_num);
     GuiIF.SetMessage(mes);
 
-	fseek(fp,0L,SEEK_SET);		// ƒtƒ@ƒCƒ‹æ“ª‚É–ß‚é
+	fseek(fp,0L,SEEK_SET);		// ãƒ•ã‚¡ã‚¤ãƒ«å…ˆé ­ã«æˆ»ã‚‹
 
-	body->NurbsS = (NURBSS *)malloc(sizeof(NURBSS) * facet_num);	// ƒtƒ@ƒZƒbƒg”•ªNURBS‹È–Ê‚ğƒƒ‚ƒŠ[Šm•Û
+	body->NurbsS = (NURBSS *)malloc(sizeof(NURBSS) * facet_num);	// ãƒ•ã‚¡ã‚»ãƒƒãƒˆæ•°åˆ†NURBSæ›²é¢ã‚’ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿
 	body->TypeNum[_NURBSS] = facet_num;
 
-	// À•W’l“Ç‚İ‚İ
+	// åº§æ¨™å€¤èª­ã¿è¾¼ã¿
 	int j=0;
 	while(fgets(buf,sizeof(buf),fp) != NULL){
 		sscanf(buf,"%s",label);
 		if(!strncmp(label,"outer",LABEL_OUTER_SIZE)){
 			int m=0,n=0;
-			for(int i=0;i<VERTEXNUM;i++){	// ƒtƒ@ƒZƒbƒg’¸“_À•W“Ç‚İ‚İ
+			for(int i=0;i<VERTEXNUM;i++){	// ãƒ•ã‚¡ã‚»ãƒƒãƒˆé ‚ç‚¹åº§æ¨™èª­ã¿è¾¼ã¿
 				fgets(buf,sizeof(buf),fp);
 				sscanf(buf,"%s %lf %lf %lf",label,&facet[m][n].x,&facet[m][n].y,&facet[m][n].z);
 				double d = CalcEuclid(facet[m][n]);
-				if(maxval < d) maxval = d;			// •\¦—p‚ÉÀ•W‚ÌÅ‘å’l‚ğ’²‚×‚é
+				if(maxval < d) maxval = d;			// è¡¨ç¤ºç”¨ã«åº§æ¨™ã®æœ€å¤§å€¤ã‚’èª¿ã¹ã‚‹
 				n++;
 				if(n == UVCPNUM){
 					n=0;
 					m++;
 				}
 			}
-			// NURBS‹È–Ê‚Å•½–Ê‚ğ•\Œ»‚·‚éê‡A“_‚ª4‚Â•K—v‚¾‚ªAOŠpƒpƒbƒ`‚Ìê‡‚Í3“_‚µ‚©‚È‚¢‚½‚ßA‚à‚¤ˆê“_’Ç‰Á‚µ‚È‚¯‚ê‚Î‚È‚ç‚È‚¢B
-			// ‚Æ‚è‚ ‚¦‚¸OŠpƒpƒbƒ`‚Ì3“_–Ú‚Æ“¯‚¶À•W’l‚ğ4“_–Ú‚Æ‚µ‚Ä‚İ‚½B--> •\¦‚ª”÷–­B
+			// NURBSæ›²é¢ã§å¹³é¢ã‚’è¡¨ç¾ã™ã‚‹å ´åˆã€ç‚¹ãŒ4ã¤å¿…è¦ã ãŒã€ä¸‰è§’ãƒ‘ãƒƒãƒã®å ´åˆã¯3ç‚¹ã—ã‹ãªã„ãŸã‚ã€ã‚‚ã†ä¸€ç‚¹è¿½åŠ ã—ãªã‘ã‚Œã°ãªã‚‰ãªã„ã€‚
+			// ã¨ã‚Šã‚ãˆãšä¸‰è§’ãƒ‘ãƒƒãƒã®3ç‚¹ç›®ã¨åŒã˜åº§æ¨™å€¤ã‚’4ç‚¹ç›®ã¨ã—ã¦ã¿ãŸã€‚--> è¡¨ç¤ºãŒå¾®å¦™ã€‚
 			facet[UVCPNUM-1][UVCPNUM-1] = SetCoord(facet[UVCPNUM-1][0]);
-			nfunc.GenNurbsS(&body->NurbsS[j],M[0],M[1],K[0],K[1],S,T,W,facet,U[0],U[1],V[0],V[1]);			// NURBSƒtƒ@ƒZƒbƒg¶¬
-			body->NurbsS[j].TrmdSurfFlag = KOD_FALSE;							// ƒgƒŠƒ€‚Ì‚È‚¢’Pƒ‚ÈNURBS‹È–Ê‚Å‚ ‚é‚±‚Æ‚ğ–¾¦
-			body->ChangeStatColor(body->NurbsS[j].Dstat.Color,0.2,0.2,1,0.5);		// ‰ŠúF‚ğÂ‚ÉƒZƒbƒg
+			nfunc.GenNurbsS(&body->NurbsS[j],M[0],M[1],K[0],K[1],S,T,W,facet,U[0],U[1],V[0],V[1]);			// NURBSãƒ•ã‚¡ã‚»ãƒƒãƒˆç”Ÿæˆ
+			body->NurbsS[j].TrmdSurfFlag = KOD_FALSE;							// ãƒˆãƒªãƒ ã®ãªã„å˜ç´”ãªNURBSæ›²é¢ã§ã‚ã‚‹ã“ã¨ã‚’æ˜ç¤º
+			body->ChangeStatColor(body->NurbsS[j].Dstat.Color,0.2,0.2,1,0.5);		// åˆæœŸè‰²ã‚’é’ã«ã‚»ãƒƒãƒˆ
 			j++;
 		}
 	}
 
-	body->MaxCoord = maxval;	// Å‘åÀ•W’l‚ğ“o˜^
+	body->MaxCoord = maxval;	// æœ€å¤§åº§æ¨™å€¤ã‚’ç™»éŒ²
 			
 	FreeVector(S);
 	FreeVector(T);
@@ -91,3 +98,6 @@ int STL_PARSER::STL_Parser_Main(BODY *body, const char *STL_fname)
 
 	return KOD_TRUE;
 }
+
+// Function: ***
+// ***

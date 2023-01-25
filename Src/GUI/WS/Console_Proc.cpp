@@ -1,4 +1,4 @@
-// ƒeƒLƒXƒgƒtƒH[ƒ€‚ÌƒvƒƒV[ƒWƒƒ
+ï»¿// ãƒ†ã‚­ã‚¹ãƒˆãƒ•ã‚©ãƒ¼ãƒ ã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 
 #include <WScom.h>
 #include <WSCfunctionList.h>
@@ -7,16 +7,23 @@
 
 void Console_Expose(WSCbase *);
 void Console_KeyHook(WSCbase *);
-
+// Function: Console_Proc
+// ãƒ†ã‚­ã‚¹ãƒˆãƒ•ã‚©ãƒ¼ãƒ ã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
+//
+// Parameters: 
+// *object - ã“ã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ã‚’å‘¼ã³å‡ºã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ãƒã‚¤ãƒ³ã‚¿
+//
+// Return: 
+// ãªã—
 void Console_Proc(WSCbase* object)
 {
-	WSCprocedure *pwproc = object->getExecutedProcedure();	// Às‚³‚ê‚½ƒvƒƒV[ƒWƒƒ‚ğæ“¾
+	WSCprocedure *pwproc = object->getExecutedProcedure();	// å®Ÿè¡Œã•ã‚ŒãŸãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ã‚’å–å¾—
 
-	switch(pwproc->getTrigger()){		// æ“¾‚µ‚½ƒvƒƒV[ƒWƒƒ‚ª
-		case WSEV_KEY_HOOK:				// ƒL[ƒtƒbƒN‚Ìê‡
+	switch(pwproc->getTrigger()){		// å–å¾—ã—ãŸãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ãŒ
+		case WSEV_KEY_HOOK:				// ã‚­ãƒ¼ãƒ•ãƒƒã‚¯ã®å ´åˆ
 			Console_KeyHook(object);
 			break;
-		case WSEV_EXPOSE:				// Ä•`‰æw—ß‚Ìê‡
+		case WSEV_EXPOSE:				// å†æç”»æŒ‡ä»¤ã®å ´åˆ
 			Console_Expose(object);
 			break;
 		default:
@@ -24,56 +31,64 @@ void Console_Proc(WSCbase* object)
 	}
 }
 
-// Ä•`‰æ‚Ìˆ—
+// Function: Console_Expose
+// å†æç”»æ™‚ã®å‡¦ç†
+//
+// Parameters: 
+// *object - ã“ã®é–¢æ•°ã‚’å‘¼ã³å‡ºã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ãƒã‚¤ãƒ³ã‚¿
 void Console_Expose(WSCbase *object)
 {
 	WSCstring mes = Console_Form->getString();
-	int len = mes.getChars();					// ƒRƒ“ƒ\[ƒ‹’†‚Ì•¶š”‚ğæ“¾
-	Console_Form->setProperty(WSNcursorPos,len);// ƒJ[ƒ\ƒ‹‚ğÅŒã‚É‚à‚Á‚Ä‚­‚é
-	Kodatuno.SetConsoleCharNum(Console_Form->getProperty(WSNuserValue));			// •¶š”‚ğXV
+	int len = mes.getChars();					// ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ä¸­ã®æ–‡å­—æ•°ã‚’å–å¾—
+	Console_Form->setProperty(WSNcursorPos,len);// ã‚«ãƒ¼ã‚½ãƒ«ã‚’æœ€å¾Œã«ã‚‚ã£ã¦ãã‚‹
+	Kodatuno.SetConsoleCharNum(Console_Form->getProperty(WSNuserValue));			// æ–‡å­—æ•°ã‚’æ›´æ–°
 }
 
-// “ü—Í‚³‚ê‚½ƒL[‚ğƒtƒbƒN‚µAƒL[“ü—Í‚ğ§ŒÀ‚·‚é(ƒRƒ“ƒ\[ƒ‹•—‚ÈƒeƒLƒXƒgƒtƒH[ƒ€‚É‚·‚é)
+// Function: Console_KeyHook
+// å…¥åŠ›ã•ã‚ŒãŸã‚­ãƒ¼ã‚’ãƒ•ãƒƒã‚¯ã—ï¼Œã‚­ãƒ¼å…¥åŠ›ã‚’åˆ¶é™ã™ã‚‹ï¼ˆã‚³ãƒ³ã‚½ãƒ¼ãƒ«é¢¨ãªãƒ†ã‚­ã‚¹ãƒˆãƒ•ã‚©ãƒ¼ãƒ ã«ã™ã‚‹ï¼‰
+//
+// Parameters: 
+// *object - ã“ã®é–¢æ•°ã‚’å‘¼ã³å‡ºã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ãƒã‚¤ãƒ³ã‚¿
 void Console_KeyHook(WSCbase *object)
 {
-	int oldlen,newlen;		// •¶š—ñ’·‚ğŠi”[
+	int oldlen,newlen;		// æ–‡å­—åˆ—é•·ã‚’æ ¼ç´
 	int pos;
 	WSCstring mes,com;
 
-	Console_Form->setProperty(WSNdisplayOnly,0);// “ü—Í‰Â”\ó‘Ô‚ÉˆÚs
+	Console_Form->setProperty(WSNdisplayOnly,0);// å…¥åŠ›å¯èƒ½çŠ¶æ…‹ã«ç§»è¡Œ
 	WSDkeyboard *key=WSGIappKeyboard();			// 
-	long keycode = key->getKey();				// “ü—Í‚³‚ê‚½ƒL[‚ğæ“¾
+	long keycode = key->getKey();				// å…¥åŠ›ã•ã‚ŒãŸã‚­ãƒ¼ã‚’å–å¾—
 
 	std::string com_string;
 	std::string s; 
 	switch(keycode){
-		// ƒŠƒ^[ƒ“ƒL[‚ª‰Ÿ‚³‚ê‚½‚çA“ü—Í‚³‚ê‚½ƒRƒ}ƒ“ƒh‚ğ’Šo‚µAƒRƒ}ƒ“ƒh‰ğÍ‚·‚é
+		// ãƒªã‚¿ãƒ¼ãƒ³ã‚­ãƒ¼ãŒæŠ¼ã•ã‚ŒãŸã‚‰ã€å…¥åŠ›ã•ã‚ŒãŸã‚³ãƒãƒ³ãƒ‰ã‚’æŠ½å‡ºã—ã€ã‚³ãƒãƒ³ãƒ‰è§£æã™ã‚‹
 		case WSK_Return:
-			Console_Form->setProperty(WSNdisplayOnly,1);	// “ü—Í•s‰Â”\ó‘Ô‚ÉˆÚs(‚±‚¤‚µ‚È‚¢‚Æ‚È‚º‚©ƒJ[ƒ\ƒ‹‚ğÅŒã‚É‚Á‚Ä‚¢‚¯‚È‚¢)
-			oldlen = Kodatuno.GetConsoleCharNum();			// ÅŒã‚É“o˜^‚µ‚½ƒRƒ“ƒ\[ƒ‹•¶š—ñ’·‚ğæ“¾
-			Console_Form->addString("\n>");					// ƒRƒ“ƒ\[ƒ‹•—‚É–¡•t‚¯
-			mes = Console_Form->getString();				// ‚±‚ê‚Ü‚Å‚Ì•¶š—ñ‚ğ‘S‚Äæ“¾
-			newlen = mes.getChars();						// •¶š”‚ğƒJƒEƒ“ƒg
-			if(newlen == oldlen)	break;					// ‰½‚à“ü—Í‚³‚ê‚Ä‚¢‚È‚©‚Á‚½‚çA‰½‚à‚µ‚È‚¢
-			else{											// ƒRƒ}ƒ“ƒh‚ª“ü—Í‚³‚ê‚Ä‚¢‚½‚ç
-				Console_Form->setProperty(WSNuserValue,newlen);	// Œ»İ‚Ü‚Å‚Ì•¶š”‚ğ•Û
-				mes.deleteChars(0,oldlen);					// ƒRƒ}ƒ“ƒh•”‚Ì‚İ’Šo
-				Kodatuno.ExecCommand((char *)mes);			// ƒRƒ}ƒ“ƒhÀs
+			Console_Form->setProperty(WSNdisplayOnly,1);	// å…¥åŠ›ä¸å¯èƒ½çŠ¶æ…‹ã«ç§»è¡Œ(ã“ã†ã—ãªã„ã¨ãªãœã‹ã‚«ãƒ¼ã‚½ãƒ«ã‚’æœ€å¾Œã«æŒã£ã¦ã„ã‘ãªã„)
+			oldlen = Kodatuno.GetConsoleCharNum();			// æœ€å¾Œã«ç™»éŒ²ã—ãŸã‚³ãƒ³ã‚½ãƒ¼ãƒ«æ–‡å­—åˆ—é•·ã‚’å–å¾—
+			Console_Form->addString("\n>");					// ã‚³ãƒ³ã‚½ãƒ¼ãƒ«é¢¨ã«å‘³ä»˜ã‘
+			mes = Console_Form->getString();				// ã“ã‚Œã¾ã§ã®æ–‡å­—åˆ—ã‚’å…¨ã¦å–å¾—
+			newlen = mes.getChars();						// æ–‡å­—æ•°ã‚’ã‚«ã‚¦ãƒ³ãƒˆ
+			if(newlen == oldlen)	break;					// ä½•ã‚‚å…¥åŠ›ã•ã‚Œã¦ã„ãªã‹ã£ãŸã‚‰ã€ä½•ã‚‚ã—ãªã„
+			else{											// ã‚³ãƒãƒ³ãƒ‰ãŒå…¥åŠ›ã•ã‚Œã¦ã„ãŸã‚‰
+				Console_Form->setProperty(WSNuserValue,newlen);	// ç¾åœ¨ã¾ã§ã®æ–‡å­—æ•°ã‚’ä¿æŒ
+				mes.deleteChars(0,oldlen);					// ã‚³ãƒãƒ³ãƒ‰éƒ¨ã®ã¿æŠ½å‡º
+				Kodatuno.ExecCommand((char *)mes);			// ã‚³ãƒãƒ³ãƒ‰å®Ÿè¡Œ
 				mes.deleteChars(mes.getChars()-2,2);
 				s = std::string(mes);
-				Kodatuno.SetConsoleHistory(s);				// ƒRƒ}ƒ“ƒh‚ğ—š—ğ‚É“o˜^
-				//Kodatuno.SetConsoleCharNum(newlen);		// ƒRƒ“ƒ\[ƒ‹•¶š—ñ’·‚ğXV
+				Kodatuno.SetConsoleHistory(s);				// ã‚³ãƒãƒ³ãƒ‰ã‚’å±¥æ­´ã«ç™»éŒ²
+				//Kodatuno.SetConsoleCharNum(newlen);		// ã‚³ãƒ³ã‚½ãƒ¼ãƒ«æ–‡å­—åˆ—é•·ã‚’æ›´æ–°
 			}
 			break;
-		// ã‰ºƒL[‚É‘Î‚µ‚Ä‚ÍƒRƒ}ƒ“ƒh—š—ğ‚ğ•\¦‚·‚é
+		// ä¸Šä¸‹ã‚­ãƒ¼ã«å¯¾ã—ã¦ã¯ã‚³ãƒãƒ³ãƒ‰å±¥æ­´ã‚’è¡¨ç¤ºã™ã‚‹
 		case WSK_KP_Up:
-			if(Kodatuno.GetUpperConsoleHistory(&com_string) == KOD_TRUE){	// V‚½‚È—š—ğƒRƒ}ƒ“ƒh‚ğæ“¾
+			if(Kodatuno.GetUpperConsoleHistory(&com_string) == KOD_TRUE){	// æ–°ãŸãªå±¥æ­´ã‚³ãƒãƒ³ãƒ‰ã‚’å–å¾—
 				com = com_string.c_str();
-				newlen = Console_Form->getString().getChars();		// ƒRƒ“ƒ\[ƒ‹‚Ì•¶š”‚ğæ“¾
-				oldlen = Kodatuno.GetConsoleCharNum();				// ÅŒã‚É“o˜^‚µ‚½ƒRƒ“ƒ\[ƒ‹•¶š—ñ’·‚ğæ“¾
-				Console_Form->setSelect(oldlen,newlen-oldlen);		// —š—ğƒRƒ}ƒ“ƒh‚ª•\¦Ï‚İ‚Ìê‡A
-				Console_Form->deleteSelectedString();				// Á‚·
-				GuiIF.GUI_Interface::SetCommand((char *)com);							// V‚µ‚¢—š—ğƒRƒ}ƒ“ƒh‚ğƒRƒ“ƒ\[ƒ‹‚Éo—Í
+				newlen = Console_Form->getString().getChars();		// ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ã®æ–‡å­—æ•°ã‚’å–å¾—
+				oldlen = Kodatuno.GetConsoleCharNum();				// æœ€å¾Œã«ç™»éŒ²ã—ãŸã‚³ãƒ³ã‚½ãƒ¼ãƒ«æ–‡å­—åˆ—é•·ã‚’å–å¾—
+				Console_Form->setSelect(oldlen,newlen-oldlen);		// å±¥æ­´ã‚³ãƒãƒ³ãƒ‰ãŒè¡¨ç¤ºæ¸ˆã¿ã®å ´åˆã€
+				Console_Form->deleteSelectedString();				// æ¶ˆã™
+				GuiIF.GUI_Interface::SetCommand((char *)com);							// æ–°ã—ã„å±¥æ­´ã‚³ãƒãƒ³ãƒ‰ã‚’ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ã«å‡ºåŠ›
 			}
 			key->setKey(0);
 			break;
@@ -81,37 +96,37 @@ void Console_KeyHook(WSCbase *object)
 			if(Kodatuno.GetLowerConsoleHistory(&com_string) == KOD_TRUE){
 				com = com_string.c_str();
 				newlen = Console_Form->getString().getChars();
-				oldlen = Kodatuno.GetConsoleCharNum();				// ÅŒã‚É“o˜^‚µ‚½ƒRƒ“ƒ\[ƒ‹•¶š—ñ’·‚ğæ“¾
-				Console_Form->setSelect(oldlen,newlen-oldlen);		// —š—ğƒRƒ}ƒ“ƒh‚ª•\¦Ï‚İ‚Ìê‡A
-				Console_Form->deleteSelectedString();				// Á‚·
-				GuiIF.SetCommand((char *)com);							// V‚µ‚¢—š—ğƒRƒ}ƒ“ƒh‚ğƒRƒ“ƒ\[ƒ‹‚Éo—Í
+				oldlen = Kodatuno.GetConsoleCharNum();				// æœ€å¾Œã«ç™»éŒ²ã—ãŸã‚³ãƒ³ã‚½ãƒ¼ãƒ«æ–‡å­—åˆ—é•·ã‚’å–å¾—
+				Console_Form->setSelect(oldlen,newlen-oldlen);		// å±¥æ­´ã‚³ãƒãƒ³ãƒ‰ãŒè¡¨ç¤ºæ¸ˆã¿ã®å ´åˆã€
+				Console_Form->deleteSelectedString();				// æ¶ˆã™
+				GuiIF.SetCommand((char *)com);							// æ–°ã—ã„å±¥æ­´ã‚³ãƒãƒ³ãƒ‰ã‚’ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ã«å‡ºåŠ›
 			}
 			key->setKey(0);
 			break;
 
-		//@¶‰EƒL[‚É‘Î‚µ‚Ä‚Í‰½‚à‚µ‚È‚¢
+		//ã€€å·¦å³ã‚­ãƒ¼ã«å¯¾ã—ã¦ã¯ä½•ã‚‚ã—ãªã„
 		case WSK_KP_Left:
 		case WSK_KP_Right:
 			break;
-		// ƒJ[ƒ\ƒ‹ˆÊ’u‚ªŒ»İ‚Ì•¶š”‚æ‚è¬‚³‚¢ˆÊ’u‚É‚ ‚éê‡‚Í
-		// BackSpace‚ÆDeleteƒL[‚Í–³Œø‚É‚µ‚ÄA•¶š‚ğÁ‚¹‚È‚¢‚æ‚¤‚É‚·‚é
+		// ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®ãŒç¾åœ¨ã®æ–‡å­—æ•°ã‚ˆã‚Šå°ã•ã„ä½ç½®ã«ã‚ã‚‹å ´åˆã¯
+		// BackSpaceã¨Deleteã‚­ãƒ¼ã¯ç„¡åŠ¹ã«ã—ã¦ã€æ–‡å­—ã‚’æ¶ˆã›ãªã„ã‚ˆã†ã«ã™ã‚‹
 		case WSK_BackSpace:
-			pos = Console_Form->getSelectedPos();		// ƒJ[ƒ\ƒ‹ˆÊ’u‚ğæ“¾
+			pos = Console_Form->getSelectedPos();		// ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®ã‚’å–å¾—
 			oldlen = Kodatuno.GetConsoleCharNum();
 			if(pos <= oldlen)
 				key->setKey(0);
 			break;
 		case WSK_Delete:
-			pos = Console_Form->getSelectedPos();		// ƒJ[ƒ\ƒ‹ˆÊ’u‚ğæ“¾
+			pos = Console_Form->getSelectedPos();		// ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®ã‚’å–å¾—
 			oldlen = Kodatuno.GetConsoleCharNum();
 			if(pos < oldlen)
 				key->setKey(0);
 			break;
 		default:
-			pos = Console_Form->getSelectedPos();		// ƒJ[ƒ\ƒ‹ˆÊ’u‚ğæ“¾
+			pos = Console_Form->getSelectedPos();		// ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®ã‚’å–å¾—
 			oldlen = Kodatuno.GetConsoleCharNum();
-			if(pos < oldlen)									// ƒJ[ƒ\ƒ‹ˆÊ’u‚ªŒ»İ‚Ì•¶š”‚æ‚è¬‚³‚¢ˆÊ’u‚É‚ ‚éê‡‚Í
-				Console_Form->setProperty(WSNcursorPos,Kodatuno.GetConsoleCharNum());	// ƒJ[ƒ\ƒ‹‚ğÅŒã‚É‚à‚Á‚Ä‚­‚é
+			if(pos < oldlen)									// ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®ãŒç¾åœ¨ã®æ–‡å­—æ•°ã‚ˆã‚Šå°ã•ã„ä½ç½®ã«ã‚ã‚‹å ´åˆã¯
+				Console_Form->setProperty(WSNcursorPos,Kodatuno.GetConsoleCharNum());	// ã‚«ãƒ¼ã‚½ãƒ«ã‚’æœ€å¾Œã«ã‚‚ã£ã¦ãã‚‹
 			break;
 	}
 

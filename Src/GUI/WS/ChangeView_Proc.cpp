@@ -1,53 +1,58 @@
-// ‹“_ØŠ·ƒ{ƒ^ƒ“‚ÌƒvƒƒV[ƒWƒƒ
+ï»¿// è¦–ç‚¹åˆ‡æ›ãƒœã‚¿ãƒ³ã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 #include <WScom.h>
 #include <WSCfunctionList.h>
 #include <WSCbase.h>
 #include "Kodatuno.h"
 
+// Function: ChangeView_Proc
+// è¦–ç‚¹åˆ‡æ›ãƒœã‚¿ãƒ³ã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
+// 
+// Parameters: 
+// *object - ã“ã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ã‚’å‘¼ã³å‡ºã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ãƒã‚¤ãƒ³ã‚¿
 void ChangeView_Proc(WSCbase* object)
 {
 
-	int val = object->getProperty(WSNuserValue);	// ƒ†[ƒU[İ’è’l‚ğæ“¾
+	int val = object->getProperty(WSNuserValue);	// ãƒ¦ãƒ¼ã‚¶ãƒ¼è¨­å®šå€¤ã‚’å–å¾—
 
 	switch(val){
 		case 1:
-			Kodatuno.ChangeViewX();		// X•ûŒüƒrƒ…[
+			Kodatuno.ChangeViewX();		// Xæ–¹å‘ãƒ“ãƒ¥ãƒ¼
 			break;
 		case 2:
-			Kodatuno.ChangeViewY();		// Y•ûŒüƒrƒ…[
+			Kodatuno.ChangeViewY();		// Yæ–¹å‘ãƒ“ãƒ¥ãƒ¼
 			break;
 		case 3:
-			Kodatuno.ChangeViewZ();		// Z•ûŒüƒrƒ…[
+			Kodatuno.ChangeViewZ();		// Zæ–¹å‘ãƒ“ãƒ¥ãƒ¼
 			break;
 		case 4:
-			Kodatuno.ChangeViewXYZ();	// ’¹áÕƒrƒ…[
+			Kodatuno.ChangeViewXYZ();	// é³¥ç°ãƒ“ãƒ¥ãƒ¼
 			break;
 		case 5:
-			Kodatuno.FitView();			// ”{—¦‰Šú‰»
+			Kodatuno.FitView();			// å€ç‡åˆæœŸåŒ–
 			break;
 		case 10:
-			Kodatuno.SolidView();		// ƒ\ƒŠƒbƒh•\¦
+			Kodatuno.SolidView();		// ã‚½ãƒªãƒƒãƒ‰è¡¨ç¤º
 			break;
 		case 11:
-			Kodatuno.NoEdgeView();		// ƒGƒbƒW‚ğ”ñ•\¦‚É‚·‚é
+			Kodatuno.NoEdgeView();		// ã‚¨ãƒƒã‚¸ã‚’éè¡¨ç¤ºã«ã™ã‚‹
 			break;
 		case 12:
-			Kodatuno.WireFlameView();	// ƒƒCƒ„[ƒtƒŒ[ƒ€•\¦
+			Kodatuno.WireFlameView();	// ãƒ¯ã‚¤ãƒ¤ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ è¡¨ç¤º
 			break;		
 		case 13:
-			Kodatuno.VoidView();		// •\¦‚µ‚È‚¢
+			Kodatuno.VoidView();		// è¡¨ç¤ºã—ãªã„
 			break;	
 		case 100:
-			Kodatuno.SelectAll();		// ‘S‚ÄƒZƒŒƒNƒg
+			Kodatuno.SelectAll();		// å…¨ã¦ã‚»ãƒ¬ã‚¯ãƒˆ
 			break;
 		case 101:
-			Kodatuno.SelectionCancel();	// ƒZƒŒƒNƒVƒ‡ƒ“ƒLƒƒƒ“ƒZƒ‹
+			Kodatuno.SelectionCancel();	// ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã‚­ãƒ£ãƒ³ã‚»ãƒ«
 			break;
 		case 102:
-			Kodatuno.UserViewCanncel();	// Userfunc()‚É‚æ‚Á‚Ä•`‰æ‚³‚ê‚½‚à‚Ì‚ğÁ‚·
+			Kodatuno.UserViewCanncel();	// Userfunc()ã«ã‚ˆã£ã¦æç”»ã•ã‚ŒãŸã‚‚ã®ã‚’æ¶ˆã™
 			break;
 		case 1000:
-			Kodatuno.ViewBlending();	// BODY‚ğ”¼“§–¾‚É‚·‚é
+			Kodatuno.ViewBlending();	// BODYã‚’åŠé€æ˜ã«ã™ã‚‹
 			break;
 		default:
 			break;

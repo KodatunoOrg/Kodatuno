@@ -1,10 +1,11 @@
-/*************************
-* DXFƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚Ş  *
+ï»¿/*************************
+* DXFãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿è¾¼ã‚€  *
 **************************/
 
 #include "DXF_Parser.h"
 
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// Function: DXF_PARSER
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 DXF_PARSER::DXF_PARSER()
 {
 	for(int i=0;i<ALL_ENTITY_TYPE_NUM;i++){
@@ -12,17 +13,24 @@ DXF_PARSER::DXF_PARSER()
 	}
 }
 
-// *body --- —§‘Ì‚ğ\¬‚·‚éƒGƒ“ƒeƒBƒeƒB‚ÌW‡ƒIƒuƒWƒFƒNƒg‚Ö‚Ìƒ|ƒCƒ“ƒ^
-// TypeNum[] --- ŠeƒGƒ“ƒeƒBƒeƒB‚Ì”‚ªŠi”[‚³‚ê‚é
+// Function: DXF_Parser_Main
+// DXFãƒ‘ãƒ¼ã‚µãƒ¡ã‚¤ãƒ³
+// 
+// Parameter:
+// *body - ç«‹ä½“ã‚’æ§‹æˆã™ã‚‹ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã®é›†åˆã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ãƒã‚¤ãƒ³ã‚¿
+// TypeNum[] - å„ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã®æ•°ãŒæ ¼ç´ã•ã‚Œã‚‹
+//
+// Return:
+// æŒ‡å®šã•ã‚ŒãŸãƒ•ã‚¡ã‚¤ãƒ«ãŒé–‹ã‘ãªã„ï¼šKOD_ERR, èª­ã¿è¾¼ã¿æˆåŠŸï¼šKOD_TRUE
 int DXF_PARSER::DXF_Parser_Main(BODY *body,const char *DXF_fname)
 {
 	FILE *fp;
 	NURBS_Func nfunc;
-	char mes[BUFSIZEMAX];		// o—Í—pƒƒbƒZ[ƒWŠi”[ƒoƒbƒtƒ@
-	int line = 1;				// Œ»İ‚Ìs”Ô†
-	int section = 0;			// ƒZƒNƒVƒ‡ƒ“”Ô†
+	char mes[BUFSIZEMAX_DXF];		// å‡ºåŠ›ç”¨ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸æ ¼ç´ãƒãƒƒãƒ•ã‚¡
+	int line = 1;				// ç¾åœ¨ã®è¡Œç•ªå·
+	int section = 0;			// ã‚»ã‚¯ã‚·ãƒ§ãƒ³ç•ªå·
 
-	// DXFƒtƒ@ƒCƒ‹ƒI[ƒvƒ“
+	// DXFãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³
 	if((fp = fopen(DXF_fname,"r")) == NULL){
 		sprintf(mes,"KOD_ERROR: Cannot open %s",DXF_fname);
 		GuiIF.SetMessage(mes);
@@ -31,30 +39,30 @@ int DXF_PARSER::DXF_Parser_Main(BODY *body,const char *DXF_fname)
 	sprintf(mes,"Open %s",DXF_fname);
 	GuiIF.SetMessage(mes);
 
-	// ƒtƒ@ƒCƒ‹“Ç‚İ‚İ
+	// ãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
 	while(fgets(Buf,sizeof(Buf),fp) != NULL){
 
-		if(EvenOdd(line) == ODD)			// Šï”s‚Ì‚Æ‚«‚ÍƒOƒ‹[ƒvƒR[ƒh‚ğ“Ç‚İ‚Ş
+		if(EvenOdd(line) == ODD)			// å¥‡æ•°è¡Œã®ã¨ãã¯ã‚°ãƒ«ãƒ¼ãƒ—ã‚³ãƒ¼ãƒ‰ã‚’èª­ã¿è¾¼ã‚€
 			sscanf(Buf,"%d",&Gcode);		
 
-		// ƒOƒ‹[ƒvƒR[ƒh‚ªƒZƒNƒVƒ‡ƒ“–¼‚ğ•\‚·"2"‚¾‚Á‚½‚ç
+		// ã‚°ãƒ«ãƒ¼ãƒ—ã‚³ãƒ¼ãƒ‰ãŒã‚»ã‚¯ã‚·ãƒ§ãƒ³åã‚’è¡¨ã™"2"ã ã£ãŸã‚‰
 		if(Gcode == SECTION_NAME){
-			fgets(Buf,sizeof(Buf),fp);		// ‚³‚ç‚É1s“Ç‚İ‚İC
-			section = CheckSection(Buf);	// ƒZƒNƒVƒ‡ƒ“–¼‚ğ”»•Ê
+			fgets(Buf,sizeof(Buf),fp);		// ã•ã‚‰ã«1è¡Œèª­ã¿è¾¼ã¿ï¼Œ
+			section = CheckSection(Buf);	// ã‚»ã‚¯ã‚·ãƒ§ãƒ³åã‚’åˆ¤åˆ¥
 
-			// ƒZƒNƒVƒ‡ƒ“–¼‚²‚Æ‚É“Ç‚İ‚İ
+			// ã‚»ã‚¯ã‚·ãƒ§ãƒ³åã”ã¨ã«èª­ã¿è¾¼ã¿
 			if(section == HEADER_SECTION)
-				ReadHeaderSection(fp,line,body);		// ƒwƒbƒ_ƒZƒNƒVƒ‡ƒ“‚Ì“Ç‚İ‚İ
+				ReadHeaderSection(fp,line,body);		// ãƒ˜ãƒƒãƒ€ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®èª­ã¿è¾¼ã¿
 			else if(section == CLASS_SECTION)
-				ReadClassesSection(fp,line,body);		// ƒNƒ‰ƒXƒZƒNƒVƒ‡ƒ“‚Ì“Ç‚İ‚İ
+				ReadClassesSection(fp,line,body);		// ã‚¯ãƒ©ã‚¹ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®èª­ã¿è¾¼ã¿
 			else if(section == TABLE_SECTION)
-				ReadTablesSection(fp,line,body);		// ƒe[ƒuƒ‹ƒZƒNƒVƒ‡ƒ“‚Ì“Ç‚İ‚İ
+				ReadTablesSection(fp,line,body);		// ãƒ†ãƒ¼ãƒ–ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®èª­ã¿è¾¼ã¿
 			else if(section == BLOCK_SECTION)
-				ReadBlocksSection(fp,line,body);		// ƒuƒƒbƒNƒZƒNƒVƒ‡ƒ“‚Ì“Ç‚İ‚İ
+				ReadBlocksSection(fp,line,body);		// ãƒ–ãƒ­ãƒƒã‚¯ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®èª­ã¿è¾¼ã¿
 			else if(section == ENTITIY_SECTION)
-				ReadEntitiesSection(fp,line,body);		// ƒGƒ“ƒeƒBƒeƒBƒZƒNƒVƒ‡ƒ“‚Ì“Ç‚İ‚İ
+				ReadEntitiesSection(fp,line,body);		// ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®èª­ã¿è¾¼ã¿
 			else if(section == OBJECT_SECTION)
-				ReadObjectsSection(fp,line,body);		// ƒIƒuƒWƒFƒNƒgƒZƒNƒVƒ‡ƒ“‚Ì“Ç‚İ‚İ
+				ReadObjectsSection(fp,line,body);		// ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®èª­ã¿è¾¼ã¿
 			line++;
 		}
 
@@ -68,76 +76,99 @@ int DXF_PARSER::DXF_Parser_Main(BODY *body,const char *DXF_fname)
 	return KOD_TRUE;
 }
 
-// ƒGƒ“ƒeƒBƒeƒBƒZƒNƒVƒ‡ƒ“‚Ì“Ç‚İ‚İ
+// Function: ReadEntitiesSection
+// ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®èª­ã¿è¾¼ã¿
+//
+// Parameter:
+// *fp - DXFãƒ•ã‚¡ã‚¤ãƒ«ã¸ã®ãƒ•ã‚¡ã‚¤ãƒ«ãƒã‚¤ãƒ³ã‚¿
+// Line - ç¾åœ¨ã®è¡Œç•ªå·
+// *body - BODYã¸ã®ãƒã‚¤ãƒ³ã‚¿
+//
+// Return:
+// KOD_TRUE
 int DXF_PARSER::ReadEntitiesSection(FILE *fp,int Line,BODY *body)
 {
 	fpos_t pos;
 
-	fgetpos(fp,&pos);			// Œ»İ‚Ìfp‚ÌˆÊ’u‚ğŠo‚¦‚Ä‚¨‚­
+	fgetpos(fp,&pos);			// ç¾åœ¨ã®fpã®ä½ç½®ã‚’è¦šãˆã¦ãŠã
 
-	ResearchEntNum(fp,body);	// ŠeƒGƒ“ƒeƒBƒeƒB‚Ì”‚ğƒŠƒT[ƒ`
-	body->NewBodyElem();		// BODY\‘¢‘Ì“à‚ÌŠeƒGƒ“ƒeƒBƒeƒB‚Ìƒƒ‚ƒŠ[Šm•Û
-	fseek(fp,pos,SEEK_SET);		// ƒGƒ“ƒeƒBƒeƒBƒZƒNƒVƒ‡ƒ“‚ÌÅ‰‚ÌˆÊ’u‚Ö–ß‚é
-	fgets(Buf,sizeof(Buf),fp);	// 1s“Ç‚İÌ‚Ä
+	ResearchEntNum(fp,body);	// å„ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã®æ•°ã‚’ãƒªã‚µãƒ¼ãƒ
+	body->NewBodyElem();		// BODYæ§‹é€ ä½“å†…ã®å„ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã®ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿
+	fseek(fp,pos,SEEK_SET);		// ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®æœ€åˆã®ä½ç½®ã¸æˆ»ã‚‹
+	fgets(Buf,sizeof(Buf),fp);	// 1è¡Œèª­ã¿æ¨ã¦
 
-	// Àƒf[ƒ^æ“¾
+	// å®Ÿãƒ‡ãƒ¼ã‚¿å–å¾—
 	do{
-		fgets(Buf,sizeof(Buf),fp);	// ‹ô”s
+		fgets(Buf,sizeof(Buf),fp);	// å¶æ•°è¡Œ
 		sscanf(Buf,"%s",&Label);
 
-		if(strcmp(Label,"ARC") == 0)			GetArcData(fp,body);		// ‰~ŒÊ
-		else if(strcmp(Label,"CIRCLE") == 0)	GetCircleData(fp,body);		// ‰~
-		else if(strcmp(Label,"LINE") == 0)		GetLineData(fp,body);		// ’¼ü
-		else	fgets(Buf,sizeof(Buf),fp);	// ƒOƒ‹[ƒvƒR[ƒh(Šï”s)“Ç‚İÌ‚Ä
+		if(strcmp(Label,"ARC") == 0)			GetArcData(fp,body);		// å††å¼§
+		else if(strcmp(Label,"CIRCLE") == 0)	GetCircleData(fp,body);		// å††
+		else if(strcmp(Label,"LINE") == 0)		GetLineData(fp,body);		// ç›´ç·š
+		else	fgets(Buf,sizeof(Buf),fp);	// ã‚°ãƒ«ãƒ¼ãƒ—ã‚³ãƒ¼ãƒ‰(å¥‡æ•°è¡Œ)èª­ã¿æ¨ã¦
 
 	}while(strcmp(Label,"ENDSEC"));
 
-	ChangeEntityforNurbs(body);		// ‰~C’¼üƒGƒ“ƒeƒBƒeƒB‚ğNURBS‚É•ÏŠ·
+	ChangeEntityforNurbs(body);		// å††ï¼Œç›´ç·šã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚’NURBSã«å¤‰æ›
 
 	return KOD_TRUE;
 }
 
-// ‰~C’¼üƒGƒ“ƒeƒBƒeƒB‚ğNURBS‚É•ÏŠ·
+// Function: ChangeEntityforNurbs
+// å††ï¼Œç›´ç·šã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚’NURBSã«å¤‰æ›
+//
+// Parameter:
+// *body - BODYã¸ã®ãƒã‚¤ãƒ³ã‚¿
+//
+// Return:
+// ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿ã«å¤±æ•—ï¼šKOD_ERR
 int DXF_PARSER::ChangeEntityforNurbs(BODY *body)
 {
 	int ncount = 0;
 	for(int i=0;i<body->TypeNum[_LINE];i++){
-		if(body->GetNurbsCFromLine(ncount,i) == KOD_ERR) return KOD_ERR;	// ‰~/‰~ŒÊƒpƒ‰ƒ[ƒ^‚©‚çNURBS‹Èüƒpƒ‰ƒ[ƒ^‚ğ“¾‚é
-		InitDisplayStat(&body->NurbsC[ncount].Dstat);						// •\¦‘®«‚Ì‰Šú‰»
+		if(body->GetNurbsCFromLine(ncount,i) == KOD_ERR) return KOD_ERR;	// å††/å††å¼§ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‹ã‚‰NURBSæ›²ç·šãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’å¾—ã‚‹
+		InitDisplayStat(&body->NurbsC[ncount].Dstat);						// è¡¨ç¤ºå±æ€§ã®åˆæœŸåŒ–
 		ncount++;
 	}
 	for(int i=0;i<body->TypeNum[_CIRCLE_ARC];i++){
-		if(body->GetNurbsCFromCirA(ncount,i) == KOD_ERR) return KOD_ERR;	// ü•ªƒpƒ‰ƒ[ƒ^‚©‚çNURBS‹Èüƒpƒ‰ƒ[ƒ^‚ğ“¾‚é
-		InitDisplayStat(&body->NurbsC[ncount].Dstat);								// •\¦‘®«‚Ì‰Šú‰»
+		if(body->GetNurbsCFromCirA(ncount,i) == KOD_ERR) return KOD_ERR;	// ç·šåˆ†ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‹ã‚‰NURBSæ›²ç·šãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’å¾—ã‚‹
+		InitDisplayStat(&body->NurbsC[ncount].Dstat);								// è¡¨ç¤ºå±æ€§ã®åˆæœŸåŒ–
 		ncount++;
 	}
 }
 
-
-// ‰~ŒÊ‚Ìƒf[ƒ^‚ğæ“¾‚µBODY‚ÉŠi”[
+// Function: GetArcData
+// å††å¼§ã®ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—ã—BODYã«æ ¼ç´
+//
+// Parameter:
+// *fp - DXFãƒ•ã‚¡ã‚¤ãƒ«ã¸ã®ãƒ•ã‚¡ã‚¤ãƒ«ãƒã‚¤ãƒ³ã‚¿
+// *body - BODYã¸ã®ãƒã‚¤ãƒ³ã‚¿
+//
+// Return:
+// KOD_TRUE
 int DXF_PARSER::GetArcData(FILE *fp,BODY *body)
 {
 	while(1){
-		fgets(Buf,sizeof(Buf),fp);		// Šï”s
+		fgets(Buf,sizeof(Buf),fp);		// å¥‡æ•°è¡Œ
 		sscanf(Buf,"%d",&Gcode);
 
-		if(Gcode == ENT_TYPE)	break;	// ƒOƒ‹[ƒvƒR[ƒh:0‚È‚çwhile break
+		if(Gcode == ENT_TYPE)	break;	// ã‚°ãƒ«ãƒ¼ãƒ—ã‚³ãƒ¼ãƒ‰:0ãªã‚‰while break
 
 		else{
-			fgets(Buf,sizeof(Buf),fp);	// ‹ô”s
+			fgets(Buf,sizeof(Buf),fp);	// å¶æ•°è¡Œ
 
 			if(Gcode == COORD_X)
-				sscanf(Buf,"%lf",&body->CirA[Count[_CIRCLE_ARC]].cp[0].x);		// ‰~ŒÊ‚Ì’†SÀ•WX
+				sscanf(Buf,"%lf",&body->CirA[Count[_CIRCLE_ARC]].cp[0].x);		// å††å¼§ã®ä¸­å¿ƒåº§æ¨™X
 			else if(Gcode == COORD_Y)
-				sscanf(Buf,"%lf",&body->CirA[Count[_CIRCLE_ARC]].cp[0].y);		// ‰~ŒÊ‚Ì’†SÀ•WY
+				sscanf(Buf,"%lf",&body->CirA[Count[_CIRCLE_ARC]].cp[0].y);		// å††å¼§ã®ä¸­å¿ƒåº§æ¨™Y
 			else if(Gcode == COORD_Z)
-				sscanf(Buf,"%lf",&body->CirA[Count[_CIRCLE_ARC]].cp[0].z);		// ‰~ŒÊ‚Ì’†SÀ•WZ
+				sscanf(Buf,"%lf",&body->CirA[Count[_CIRCLE_ARC]].cp[0].z);		// å††å¼§ã®ä¸­å¿ƒåº§æ¨™Z
 			else if(Gcode == RADIUS)
-				sscanf(Buf,"%lf",&body->CirA[Count[_CIRCLE_ARC]].R);			// ‰~ŒÊ‚Ì”¼Œa
+				sscanf(Buf,"%lf",&body->CirA[Count[_CIRCLE_ARC]].R);			// å††å¼§ã®åŠå¾„
 			else if(Gcode == START_ANG)
-				sscanf(Buf,"%lf",&body->CirA[Count[_CIRCLE_ARC]].t[0]);			// ‰~ŒÊ‚ÌŠJnŠp“x
+				sscanf(Buf,"%lf",&body->CirA[Count[_CIRCLE_ARC]].t[0]);			// å††å¼§ã®é–‹å§‹è§’åº¦
 			else if(Gcode == END_ANG)
-				sscanf(Buf,"%lf",&body->CirA[Count[_CIRCLE_ARC]].t[1]);			// ‰~ŒÊ‚ÌI—¹Šp“x
+				sscanf(Buf,"%lf",&body->CirA[Count[_CIRCLE_ARC]].t[1]);			// å††å¼§ã®çµ‚äº†è§’åº¦
 		}
 	}
 
@@ -150,29 +181,42 @@ int DXF_PARSER::GetArcData(FILE *fp,BODY *body)
 	//	body->CirA[Count[_CIRCLE_ARC]].t[0],
 	//	body->CirA[Count[_CIRCLE_ARC]].t[1]);
 
-	SetStartEndPtArc(&body->CirA[Count[_CIRCLE_ARC]]);			// ‰~ŒÊ‚Ìn“_CI“_‚ğƒZƒbƒg
-	CalcUVvec(&body->CirA[Count[_CIRCLE_ARC]]);					// CIRA‚ÌUV’¼ŒğÀ•W‚ğİ’è‚·‚é
+	SetStartEndPtArc(&body->CirA[Count[_CIRCLE_ARC]]);			// å††å¼§ã®å§‹ç‚¹ï¼Œçµ‚ç‚¹ã‚’ã‚»ãƒƒãƒˆ
+	CalcUVvec(&body->CirA[Count[_CIRCLE_ARC]]);					// CIRAã®UVç›´äº¤åº§æ¨™ã‚’è¨­å®šã™ã‚‹
 
-	InitDisplayStat(&body->CirA[Count[_CIRCLE_ARC]].Dstat);		// Fw’è
-	body->CirA[Count[_CIRCLE_ARC]].EntUseFlag = GEOMTRYELEM;	// Šô‰½—v‘f‚Å‚ ‚é‚±‚Æ‚ğéŒ¾
-	body->CirA[Count[_CIRCLE_ARC]].pD = NULL;					// IGES‚Å‚È‚¢‚Ì‚ÅŠÖŒW‚È‚µ
+	InitDisplayStat(&body->CirA[Count[_CIRCLE_ARC]].Dstat);		// è‰²æŒ‡å®š
+	body->CirA[Count[_CIRCLE_ARC]].EntUseFlag = GEOMTRYELEM;	// å¹¾ä½•è¦ç´ ã§ã‚ã‚‹ã“ã¨ã‚’å®£è¨€
+	body->CirA[Count[_CIRCLE_ARC]].pD = NULL;					// IGESã§ãªã„ã®ã§é–¢ä¿‚ãªã—
 
 	Count[_CIRCLE_ARC]++;
 
 	return KOD_TRUE;
 }
 
-// CIRA‚ÌUV’¼ŒğÀ•W‚ğİ’è‚·‚é
+// Function: CalcUVvec
+// CIRAã®UVç›´äº¤åº§æ¨™ã‚’è¨­å®šã™ã‚‹
+//
+// Parameter:
+// *Cira - å††/å††å¼§ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+//
+// Return:
+// KOD_TRUE
 int DXF_PARSER::CalcUVvec(CIRA *Cira)
 {
-	// X-Y•½–Ê
+	// X-Yå¹³é¢
 	Cira->U = SetCoord(1,0,0);
 	Cira->V = SetCoord(0,1,0);
 
 	return KOD_TRUE;
 }
 
-// ‰~ŒÊ‚Ìn“_CI“_‚ğƒZƒbƒg
+// Function: SetStartEndPtArc
+// å††å¼§ã®å§‹ç‚¹ï¼Œçµ‚ç‚¹ã‚’ã‚»ãƒƒãƒˆ
+// Parameter:
+// *Cira - å††/å††å¼§ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+//
+// Return:
+// KOD_TRUE
 int DXF_PARSER::SetStartEndPtArc(CIRA *Cira)
 {
 	double sth = Cira->t[0]*PI/180;
@@ -188,26 +232,34 @@ int DXF_PARSER::SetStartEndPtArc(CIRA *Cira)
 	return KOD_TRUE;
 }
 
-// ‰~‚Ìƒf[ƒ^‚ğæ“¾‚µBODY‚ÉŠi”[
+// Function: GetCircleData
+// å††ã®ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—ã—BODYã«æ ¼ç´
+//
+// Parameter:
+// *fp - DXFãƒ•ã‚¡ã‚¤ãƒ«ã¸ã®ãƒ•ã‚¡ã‚¤ãƒ«ãƒã‚¤ãƒ³ã‚¿
+// *body - BODYã¸ã®ãƒã‚¤ãƒ³ã‚¿
+//
+// Return:
+// KOD_TRUE
 int DXF_PARSER::GetCircleData(FILE *fp,BODY *body)
 {
 	while(1){
-		fgets(Buf,sizeof(Buf),fp);		// Šï”s
+		fgets(Buf,sizeof(Buf),fp);		// å¥‡æ•°è¡Œ
 		sscanf(Buf,"%d",&Gcode);
 
-		if(Gcode == ENT_TYPE)	break;	// ƒOƒ‹[ƒvƒR[ƒh:0‚È‚çwhile break
+		if(Gcode == ENT_TYPE)	break;	// ã‚°ãƒ«ãƒ¼ãƒ—ã‚³ãƒ¼ãƒ‰:0ãªã‚‰while break
 
 		else{
-			fgets(Buf,sizeof(Buf),fp);	// ‹ô”s
+			fgets(Buf,sizeof(Buf),fp);	// å¶æ•°è¡Œ
 
 			if(Gcode == COORD_X)
-				sscanf(Buf,"%lf",&body->CirA[Count[_CIRCLE_ARC]].cp[0].x);		// ‰~‚Ì’†SÀ•WX
+				sscanf(Buf,"%lf",&body->CirA[Count[_CIRCLE_ARC]].cp[0].x);		// å††ã®ä¸­å¿ƒåº§æ¨™X
 			else if(Gcode == COORD_Y)
-				sscanf(Buf,"%lf",&body->CirA[Count[_CIRCLE_ARC]].cp[0].y);		// ‰~‚Ì’†SÀ•WY
+				sscanf(Buf,"%lf",&body->CirA[Count[_CIRCLE_ARC]].cp[0].y);		// å††ã®ä¸­å¿ƒåº§æ¨™Y
 			else if(Gcode == COORD_Z)
-				sscanf(Buf,"%lf",&body->CirA[Count[_CIRCLE_ARC]].cp[0].z);		// ‰~‚Ì’†SÀ•WZ
+				sscanf(Buf,"%lf",&body->CirA[Count[_CIRCLE_ARC]].cp[0].z);		// å††ã®ä¸­å¿ƒåº§æ¨™Z
 			else if(Gcode == RADIUS)
-				sscanf(Buf,"%lf",&body->CirA[Count[_CIRCLE_ARC]].R);			// ‰~‚Ì”¼Œa
+				sscanf(Buf,"%lf",&body->CirA[Count[_CIRCLE_ARC]].R);			// å††ã®åŠå¾„
 		}
 	}
 
@@ -218,10 +270,10 @@ int DXF_PARSER::GetCircleData(FILE *fp,BODY *body)
 	//	body->CirA[Count[_CIRCLE_ARC]].cp[0].z,
 	//	body->CirA[Count[_CIRCLE_ARC]].R);
 
-	body->CirA[Count[_CIRCLE_ARC]].t[0] = 0;		// ‰~‚ÌŠJnŠp“x
-	body->CirA[Count[_CIRCLE_ARC]].t[1] = 360;		// ‰~‚ÌI—¹Šp“x
-	SetStartEndPtArc(&body->CirA[Count[_CIRCLE_ARC]]);			// ‰~ŒÊ‚Ìn“_CI“_‚ğƒZƒbƒg
-	CalcUVvec(&body->CirA[Count[_CIRCLE_ARC]]);					// CIRA‚ÌUV’¼ŒğÀ•W‚ğİ’è‚·‚é
+	body->CirA[Count[_CIRCLE_ARC]].t[0] = 0;		// å††ã®é–‹å§‹è§’åº¦
+	body->CirA[Count[_CIRCLE_ARC]].t[1] = 360;		// å††ã®çµ‚äº†è§’åº¦
+	SetStartEndPtArc(&body->CirA[Count[_CIRCLE_ARC]]);			// å††å¼§ã®å§‹ç‚¹ï¼Œçµ‚ç‚¹ã‚’ã‚»ãƒƒãƒˆ
+	CalcUVvec(&body->CirA[Count[_CIRCLE_ARC]]);					// CIRAã®UVç›´äº¤åº§æ¨™ã‚’è¨­å®šã™ã‚‹
 
 	InitDisplayStat(&body->CirA[Count[_CIRCLE_ARC]].Dstat);
 	body->CirA[Count[_CIRCLE_ARC]].EntUseFlag = GEOMTRYELEM;
@@ -232,30 +284,38 @@ int DXF_PARSER::GetCircleData(FILE *fp,BODY *body)
 	return KOD_TRUE;
 }
 
-// ü•ª‚Ìƒf[ƒ^‚ğæ“¾‚µBODY‚ÉŠi”[
+// Function: GetLineData
+// ç·šåˆ†ã®ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—ã—BODYã«æ ¼ç´
+//
+// Parameter:
+// *fp - DXFãƒ•ã‚¡ã‚¤ãƒ«ã¸ã®ãƒ•ã‚¡ã‚¤ãƒ«ãƒã‚¤ãƒ³ã‚¿
+// *body - BODYã¸ã®ãƒã‚¤ãƒ³ã‚¿
+//
+// Return:
+// KOD_TRUE
 int DXF_PARSER::GetLineData(FILE *fp,BODY *body)
 {
 	while(1){
-		fgets(Buf,sizeof(Buf),fp);		// Šï”s
+		fgets(Buf,sizeof(Buf),fp);		// å¥‡æ•°è¡Œ
 		sscanf(Buf,"%d",&Gcode);
 
-		if(Gcode == ENT_TYPE)	break;	// ƒOƒ‹[ƒvƒR[ƒh:0‚È‚çwhile break
+		if(Gcode == ENT_TYPE)	break;	// ã‚°ãƒ«ãƒ¼ãƒ—ã‚³ãƒ¼ãƒ‰:0ãªã‚‰while break
 
 		else{
-			fgets(Buf,sizeof(Buf),fp);	// ‹ô”s
+			fgets(Buf,sizeof(Buf),fp);	// å¶æ•°è¡Œ
 
 			if(Gcode == COORD_X)
-				sscanf(Buf,"%lf",&body->Line[Count[_LINE]].cp[0].x);		// ü•ª‚Ìn“_X
+				sscanf(Buf,"%lf",&body->Line[Count[_LINE]].cp[0].x);		// ç·šåˆ†ã®å§‹ç‚¹X
 			else if(Gcode == COORD_Y)
-				sscanf(Buf,"%lf",&body->Line[Count[_LINE]].cp[0].y);		// ü•ª‚Ìn“_Y
+				sscanf(Buf,"%lf",&body->Line[Count[_LINE]].cp[0].y);		// ç·šåˆ†ã®å§‹ç‚¹Y
 			else if(Gcode == COORD_Z)
-				sscanf(Buf,"%lf",&body->Line[Count[_LINE]].cp[0].z);		// ü•ª‚Ìn“_Z
+				sscanf(Buf,"%lf",&body->Line[Count[_LINE]].cp[0].z);		// ç·šåˆ†ã®å§‹ç‚¹Z
 			else if(Gcode == COORD_X_)
-				sscanf(Buf,"%lf",&body->Line[Count[_LINE]].cp[1].x);		// ü•ª‚ÌI“_X
+				sscanf(Buf,"%lf",&body->Line[Count[_LINE]].cp[1].x);		// ç·šåˆ†ã®çµ‚ç‚¹X
 			else if(Gcode == COORD_Y_)
-				sscanf(Buf,"%lf",&body->Line[Count[_LINE]].cp[1].y);		// ü•ª‚ÌI“_Y
+				sscanf(Buf,"%lf",&body->Line[Count[_LINE]].cp[1].y);		// ç·šåˆ†ã®çµ‚ç‚¹Y
 			else if(Gcode == COORD_Z_)
-				sscanf(Buf,"%lf",&body->Line[Count[_LINE]].cp[1].z);		// ü•ª‚ÌI“_Z
+				sscanf(Buf,"%lf",&body->Line[Count[_LINE]].cp[1].z);		// ç·šåˆ†ã®çµ‚ç‚¹Z
 		}
 	}
 
@@ -277,13 +337,21 @@ int DXF_PARSER::GetLineData(FILE *fp,BODY *body)
 	return KOD_TRUE;
 }
 
-// ŠeƒGƒ“ƒeƒBƒeƒB‚Ì”‚ğƒŠƒT[ƒ`
+// Function: ResearchEntNum
+// å„ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã®æ•°ã‚’ãƒªã‚µãƒ¼ãƒ
+//
+// Parameter:
+// *fp - DXFãƒ•ã‚¡ã‚¤ãƒ«ã¸ã®ãƒ•ã‚¡ã‚¤ãƒ«ãƒã‚¤ãƒ³ã‚¿
+// *body - BODYã¸ã®ãƒã‚¤ãƒ³ã‚¿
+//
+// Return:
+// KOD_TRUE
 int DXF_PARSER::ResearchEntNum(FILE *fp,BODY *body)
 {
 	do{
-		fgets(Buf,sizeof(Buf),fp);	// Šï”s
+		fgets(Buf,sizeof(Buf),fp);	// å¥‡æ•°è¡Œ
 		sscanf(Buf,"%d",&Gcode);
-		fgets(Buf,sizeof(Buf),fp);	// ‹ô”s
+		fgets(Buf,sizeof(Buf),fp);	// å¶æ•°è¡Œ
 		sscanf(Buf,"%s",&Label);
 
 		if(Gcode == ENT_TYPE){
@@ -300,37 +368,84 @@ int DXF_PARSER::ResearchEntNum(FILE *fp,BODY *body)
 	return KOD_TRUE;
 }
 
-// ƒwƒbƒ_ƒZƒNƒVƒ‡ƒ“‚Ì“Ç‚İ‚İ
+// Function:ReadHeaderSection
+// ãƒ˜ãƒƒãƒ€ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®èª­ã¿è¾¼ã¿(ã‚¹ã‚±ãƒ«ãƒˆãƒ³)
+//
+// Parameter:
+// *fp - DXFãƒ•ã‚¡ã‚¤ãƒ«ã¸ã®ãƒ•ã‚¡ã‚¤ãƒ«ãƒã‚¤ãƒ³ã‚¿
+// *body - BODYã¸ã®ãƒã‚¤ãƒ³ã‚¿
+//
+// Return:
+// KOD_TRUE
 int DXF_PARSER::ReadHeaderSection(FILE *fp,int Line,BODY *body)
 {
 	return KOD_TRUE;
 }
 
-// ƒNƒ‰ƒXƒZƒNƒVƒ‡ƒ“‚Ì“Ç‚İ‚İ
+// Function:ReadClassesSection
+// ã‚¯ãƒ©ã‚¹ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®èª­ã¿è¾¼ã¿(ã‚¹ã‚±ãƒ«ãƒˆãƒ³)
+//
+// Parameter:
+// *fp - DXFãƒ•ã‚¡ã‚¤ãƒ«ã¸ã®ãƒ•ã‚¡ã‚¤ãƒ«ãƒã‚¤ãƒ³ã‚¿
+// *body - BODYã¸ã®ãƒã‚¤ãƒ³ã‚¿
+//
+// Return:
+// KOD_TRUE
 int DXF_PARSER::ReadClassesSection(FILE *fp,int Line,BODY *body)
 {
 	return KOD_TRUE;
 }
 
-// ƒe[ƒuƒ‹ƒZƒNƒVƒ‡ƒ“‚Ì“Ç‚İ‚İ
+// Function: ReadTablesSection
+// ãƒ†ãƒ¼ãƒ–ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®èª­ã¿è¾¼ã¿(ã‚¹ã‚±ãƒ«ãƒˆãƒ³)
+//
+// Parameter:
+// *fp - DXFãƒ•ã‚¡ã‚¤ãƒ«ã¸ã®ãƒ•ã‚¡ã‚¤ãƒ«ãƒã‚¤ãƒ³ã‚¿
+// *body - BODYã¸ã®ãƒã‚¤ãƒ³ã‚¿
+//
+// Return:
+// KOD_TRUE
 int DXF_PARSER::ReadTablesSection(FILE *fp,int Line,BODY *body)
 {
 	return KOD_TRUE;
 }
 
-// ƒuƒƒbƒNƒZƒNƒVƒ‡ƒ“‚Ì“Ç‚İ‚İ
+// Function: ReadBlocksSection
+// ãƒ–ãƒ­ãƒƒã‚¯ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®èª­ã¿è¾¼ã¿(ã‚¹ã‚±ãƒ«ãƒˆãƒ³)
+//
+// Parameter:
+// *fp - DXFãƒ•ã‚¡ã‚¤ãƒ«ã¸ã®ãƒ•ã‚¡ã‚¤ãƒ«ãƒã‚¤ãƒ³ã‚¿
+// *body - BODYã¸ã®ãƒã‚¤ãƒ³ã‚¿
+//
+// Return:
+// KOD_TRUE
 int DXF_PARSER::ReadBlocksSection(FILE *fp,int Line,BODY *body)
 {
 	return KOD_TRUE;
 }
 
-// ƒIƒuƒWƒFƒNƒgƒZƒNƒVƒ‡ƒ“‚Ì“Ç‚İ‚İ
+// Function: ReadObjectsSection
+// ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®èª­ã¿è¾¼ã¿(ã‚¹ã‚±ãƒ«ãƒˆãƒ³)
+//
+// Parameter:
+// *fp - DXFãƒ•ã‚¡ã‚¤ãƒ«ã¸ã®ãƒ•ã‚¡ã‚¤ãƒ«ãƒã‚¤ãƒ³ã‚¿
+// *body - BODYã¸ã®ãƒã‚¤ãƒ³ã‚¿
+//
+// Return:
+// KOD_TRUE
 int DXF_PARSER::ReadObjectsSection(FILE *fp,int Line,BODY *body)
 {
 	return KOD_TRUE;
 }
 
-// Šï”‹ô””»•Ê
+// Function: EvenOdd
+// å¥‡æ•°å¶æ•°åˆ¤åˆ¥
+//
+// Parameter:
+// val - æ•´æ•°å€¤
+//
+// Return:
+// å¶æ•°ï¼šEVEN, å¥‡æ•°ï¼šODD
 int DXF_PARSER::EvenOdd(int val)
 {
 	if(val%2 == 0)
@@ -339,10 +454,17 @@ int DXF_PARSER::EvenOdd(int val)
 		return ODD;
 }
 
-// ƒZƒNƒVƒ‡ƒ“”»•Ê
+// Function: CheckSection
+// ã‚»ã‚¯ã‚·ãƒ§ãƒ³åˆ¤åˆ¥
+//
+// Parameter:
+// *str - 1è¡Œ
+//
+// Return:
+// å„ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®ã‚·ãƒ³ãƒœãƒ«
 int DXF_PARSER::CheckSection(char *str)
 {
-	char section[LABELSIZEMAX];
+	char section[LABELSIZEMAX_DXF];
 	sscanf(str,"%s",section);
 
 	if(strcmp(section,"HEADER") == 0)
@@ -361,14 +483,18 @@ int DXF_PARSER::CheckSection(char *str)
 		return KOD_ERR;
 }
 
-// ŠeƒGƒ“ƒeƒBƒeƒB‚Ì•\¦‘®«‚ğİ’è
+// Function: InitDisplayStat
+// å„ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã®è¡¨ç¤ºå±æ€§ã‚’è¨­å®š
+//
+// Parameter:
+// *Dstat - è¡¨ç¤ºå±æ€§
 void DXF_PARSER::InitDisplayStat(DispStat *Dstat)
 {
-	// ”’F‚ğİ’è
+	// ç™½è‰²ã‚’è¨­å®š
 	Dstat->Color[0] = 1.0;
 	Dstat->Color[1] = 1.0;
 	Dstat->Color[2] = 1.0;
 	Dstat->Color[3] = 0.5;
 
-	// •\¦‘®«‚ğ’Ç‰Á‚·‚éê‡‚ÍˆÈ‰º‚É’Ç‰Á‚ÌƒR[ƒh‚ğ‹Lq
+	// è¡¨ç¤ºå±æ€§ã‚’è¿½åŠ ã™ã‚‹å ´åˆã¯ä»¥ä¸‹ã«è¿½åŠ ã®ã‚³ãƒ¼ãƒ‰ã‚’è¨˜è¿°
 }

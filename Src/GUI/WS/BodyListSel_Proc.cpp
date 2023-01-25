@@ -1,12 +1,16 @@
-// BODYƒŠƒXƒg‚ÌƒvƒƒV[ƒWƒƒ[
+ï»¿// BODYãƒªã‚¹ãƒˆã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 #include <WScom.h>
 #include <WSCfunctionList.h>
 #include <WSCbase.h>
 #include "Kodatuno.h"
 
-// BODYƒŠƒXƒg‚ÌƒAƒCƒeƒ€‚ªƒZƒŒƒNƒg‚³‚ê‚½
+// Function: BodyListSel_Proc
+// BODYãƒªã‚¹ãƒˆã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
+//
+// Parameters: 
+// object - ã“ã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ã‚’å‘¼ã³å‡ºã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ãƒã‚¤ãƒ³ã‚¿
 void BodyListSel_Proc(WSCbase* object)
 {
-	Kodatuno.BodyListSelect();		// ƒZƒŒƒNƒg‚³‚ê‚½ƒAƒCƒeƒ€‚Ì”Ô†‚ğ“¾‚é
+	Kodatuno.BodyListSelect();		// ã‚»ãƒ¬ã‚¯ãƒˆã•ã‚ŒãŸã‚¢ã‚¤ãƒ†ãƒ ã®ç•ªå·ã‚’å¾—ã‚‹
 }
 static WSCfunctionRegister  op("BodyListSel_Proc",(void*)BodyListSel_Proc);

@@ -1,7 +1,12 @@
-#include "QtSweepSurfDialog.h"
+﻿#include "QtSweepSurfDialog.h"
 #include "ui_QtSweepSurfDialog.h"
 #include "Kodatuno.h"
 
+// Function: QtSweepSurfDialog
+// SweepSurfダイアログが開いたときに呼び出される
+// 
+// Parameters:
+// 呼び出し元の親ウィジェットを指定
 QtSweepSurfDialog::QtSweepSurfDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::QtSweepSurfDialog)
@@ -9,11 +14,15 @@ QtSweepSurfDialog::QtSweepSurfDialog(QWidget *parent) :
     ui->setupUi(this);
 }
 
+// Function: ~QtSweepSurfDialog
+// スイープサーフェス生成ダイアログの終了
 QtSweepSurfDialog::~QtSweepSurfDialog()
 {
     delete ui;
 }
 
+// Function: on_buttonBox_accepted
+// SweepSurfダイアログのOKボタンが押されたときに呼び出される
 void QtSweepSurfDialog::on_buttonBox_accepted()
 {
     Coord ax;

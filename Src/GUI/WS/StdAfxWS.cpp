@@ -1,126 +1,192 @@
-#include "StdAfxWS.h"
+ï»¿#include "StdAfxWS.h"
 
-GUI_Interface GuiIF;		// ƒNƒ‰ƒXGUI_Interface‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğƒOƒ[ƒoƒ‹‚ÅéŒ¾
+GUI_Interface GuiIF;		// ã‚¯ãƒ©ã‚¹GUI_Interfaceã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ã‚°ãƒ­ãƒ¼ãƒãƒ«ã§å®£è¨€
 
-// ƒRƒ“ƒ\[ƒ‹‚ÉƒƒbƒZ[ƒW‚ğo—Í
+// Function: SetMessage
+// ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ã«ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å‡ºåŠ›
+//
+// Parameters: 
+// *mes - ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸æ–‡å­—åˆ—ã‚’æ ¼ç´
+// Return: 
+// ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®æ–‡å­—æ•°lenã‚’è¿”ã™
 int GUI_Interface::SetMessage(char *mes)
 {
-	fprintf(stderr,"%s\n",mes);						// ƒƒbƒZ[ƒW‚ğ•W€o—Í
-	Console_Form->addString(mes);					// ƒƒbƒZ[ƒW‚ğo—Í
-	Console_Form->addString("\n>");					// Ÿ‚ÌƒRƒ}ƒ“ƒhˆÊ’u‚ÖˆÚ“®
-	int len = Console_Form->getString().getChars();	// •¶š”ƒJƒEƒ“ƒg
-	Console_Form->setProperty(WSNuserValue,len);	// Œ»İ‚Ü‚Å‚Ì•¶š”‚ğ•Û
+	fprintf(stderr,"%s\n",mes);						// ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’æ¨™æº–å‡ºåŠ›
+	Console_Form->addString(mes);					// ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å‡ºåŠ›
+	Console_Form->addString("\n>");					// æ¬¡ã®ã‚³ãƒãƒ³ãƒ‰ä½ç½®ã¸ç§»å‹•
+	int len = Console_Form->getString().getChars();	// æ–‡å­—æ•°ã‚«ã‚¦ãƒ³ãƒˆ
+	Console_Form->setProperty(WSNuserValue,len);	// ç¾åœ¨ã¾ã§ã®æ–‡å­—æ•°ã‚’ä¿æŒ
 	return len;
 }
 
-// ƒRƒ“ƒ\[ƒ‹‚ÉƒRƒ}ƒ“ƒh‚ğo—Í
+// Function: SetCommand
+// ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ã«ã‚³ãƒãƒ³ãƒ‰ã‚’å‡ºåŠ›
+//
+// Parameters: 
+// *cmd - ã‚³ãƒãƒ³ãƒ‰æ–‡å­—åˆ—ã‚’æ ¼ç´
+// Return: 
+// ã‚³ãƒãƒ³ãƒ‰ã®ã®æ–‡å­—æ•°lenã‚’è¿”ã™
 int GUI_Interface::SetCommand(char *cmd)
 {
-	Console_Form->addString(cmd);					// ƒƒbƒZ[ƒW‚ğo—Í
-	int len = Console_Form->getString().getChars();	// •¶š”ƒJƒEƒ“ƒg
-	Console_Form->setProperty(WSNcursorPos,len);	// ƒJ[ƒ\ƒ‹‚ğÅŒã‚É‚à‚Á‚Ä‚­‚é
+	Console_Form->addString(cmd);					// ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å‡ºåŠ›
+	int len = Console_Form->getString().getChars();	// æ–‡å­—æ•°ã‚«ã‚¦ãƒ³ãƒˆ
+	Console_Form->setProperty(WSNcursorPos,len);	// ã‚«ãƒ¼ã‚½ãƒ«ã‚’æœ€å¾Œã«ã‚‚ã£ã¦ãã‚‹
 	return len;
 }
 
-// V‚½‚É“o˜^‚µ‚½BODY‚Ì–¼‘O‚ğƒEƒBƒ“ƒhƒEƒŠƒXƒg‚É•\¦‚·‚é
+// Function: AddBodyNameToWin
+// æ–°ãŸã«ç™»éŒ²ã—ãŸBODYã®åå‰ã‚’ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒªã‚¹ãƒˆã«è¡¨ç¤ºã™ã‚‹
+//
+// Parameters: 
+// *name - BODYåã®æ–‡å­—åˆ—ã‚’æ ¼ç´
 void GUI_Interface::AddBodyNameToWin(const char *name)
 {
 	char* mes = const_cast<char*>(name);
-	Body_List_Win->addItem(mes);					// BodyƒŠƒXƒgƒEƒBƒ“ƒhƒE‚ÉBODY–¼‚ğ“o˜^
+	Body_List_Win->addItem(mes);					// Bodyãƒªã‚¹ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«BODYåã‚’ç™»éŒ²
 }
 
-// w’è‚³‚ê‚½”Ô†‚ÌBODY‚ğƒŠƒXƒg‚©‚çíœ‚·‚é
+// Function: DelBodyFromWin
+// æŒ‡å®šã•ã‚ŒãŸç•ªå·ã®BODYã‚’ãƒªã‚¹ãƒˆã‹ã‚‰å‰Šé™¤ã™ã‚‹
+//
+// Parameters: 
+// pos - 
+// Return: 
+// ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®æ–‡å­—æ•°lenã‚’è¿”ã™
+// æŒ‡å®šã•ã‚ŒãŸç•ªå·ã®BODYã‚’ãƒªã‚¹ãƒˆã‹ã‚‰å‰Šé™¤ã™ã‚‹
 void GUI_Interface::DelBodyFromWin(int pos)
 {
 	Body_List_Win->delPos(pos);
 }
 
-// ƒtƒ@ƒCƒ‹OPEN—pƒIƒuƒWƒFƒNƒg‚Ìó‘Ôİ’è
+// Function: SetEnableOpenFile
+// ãƒ•ã‚¡ã‚¤ãƒ«OPENç”¨ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®çŠ¶æ…‹è¨­å®š
+//
+// Parameters: 
+// flag - 
 void GUI_Interface::SetEnableOpenFile(bool flag)
 {
 	Open_Body_Btn->setSensitive(flag);
 }
 
-// BODYíœ—pƒIƒuƒWƒFƒNƒg‚Ìó‘Ôİ’è
+// Function: SetEnableDelBody
+// BODYå‰Šé™¤ç”¨ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®çŠ¶æ…‹è¨­å®š
+//
+// Parameters: 
+// flag - 
 void GUI_Interface::SetEnableDelBody(bool flag)
 {
 	Del_Body_Btn->setSensitive(flag);
 }
 
-// •`‰æ—pGUI‚ÌÄ•`‰æw—ß
+// Function: UpdateDescribeWidget
+// æç”»ç”¨GUIã®å†æç”»æŒ‡ä»¤
 void GUI_Interface::UpdateDescribeWidget()
 {
 	Describe_Form->execEventProc(WSEV_EXPOSE,NULL);
 }
 
-// •`‰æ—Ìˆæ‚ÌÄ•`‰æw—ß
+// Function: RedrawDescribeForm
+// æç”»é ˜åŸŸã®å†æç”»æŒ‡ä»¤
 void GUI_Interface::RedrawDescribeForm()
 {
 	Describe_Form->redraw();
 }
-
-// UserFunc1‚Ìƒ‰ƒxƒ‹‚ğƒZƒbƒg
+// Function: SetUserFunc1Label
+// UserFunc1ã®ãƒ©ãƒ™ãƒ«ã‚’ã‚»ãƒƒãƒˆ
+//
+// Parameters: 
+// *label - labelã®æ–‡å­—åˆ—ã®æ ¼ç´
 void GUI_Interface::SetUserFunc1Label(const char *label)
 {
 	User_Func_Btn1->setProperty(WSNlabelString,label);
 }
 
-// UserFunc2‚Ìƒ‰ƒxƒ‹‚ğƒZƒbƒg
+// Function: SetUserFunc2Label
+// UserFunc2ã®ãƒ©ãƒ™ãƒ«ã‚’ã‚»ãƒƒãƒˆ
+//
+// Parameters: 
+// *label - labelã®æ–‡å­—åˆ—ã®æ ¼ç´
 void GUI_Interface::SetUserFunc2Label(const char *label)
 {
 	User_Func_Btn2->setProperty(WSNlabelString,label);
 }
 
-// UserFunc3‚Ìƒ‰ƒxƒ‹‚ğƒZƒbƒg
+// Function: SetUserFunc3Label
+// UserFunc3ã®ãƒ©ãƒ™ãƒ«ã‚’ã‚»ãƒƒãƒˆ
+//
+// Parameters: 
+// *label - labelã®æ–‡å­—åˆ—ã®æ ¼ç´
 void GUI_Interface::SetUserFunc3Label(const char *label)
 {
 	User_Func_Btn3->setProperty(WSNlabelString,label);
 }
 
-// UserFunc4‚Ìƒ‰ƒxƒ‹‚ğƒZƒbƒg
+// Function: SetUserFunc4Label
+// UserFunc4ã®ãƒ©ãƒ™ãƒ«ã‚’ã‚»ãƒƒãƒˆ
+//
+// Parameters: 
+// *label - labelã®æ–‡å­—åˆ—ã®æ ¼ç´
 void GUI_Interface::SetUserFunc4Label(const char *label)
 {    
 	User_Func_Btn4->setProperty(WSNlabelString,label);
 }
 
-// UserFunc5‚Ìƒ‰ƒxƒ‹‚ğƒZƒbƒg
+// Function: SetUserFunc5Label
+// UserFunc5ã®ãƒ©ãƒ™ãƒ«ã‚’ã‚»ãƒƒãƒˆ
+//
+// Parameters: 
+// *label - labelã®æ–‡å­—åˆ—ã®æ ¼ç´
 void GUI_Interface::SetUserFunc5Label(const char *label)
 {    
 	User_Func_Btn5->setProperty(WSNlabelString,label);
 }
 
-// UserFunc6‚Ìƒ‰ƒxƒ‹‚ğƒZƒbƒg
+// Function: SetUserFunc6Label
+// UserFunc6ã®ãƒ©ãƒ™ãƒ«ã‚’ã‚»ãƒƒãƒˆ
+//
+// Parameters: 
+// *label - labelã®æ–‡å­—åˆ—ã®æ ¼ç´
 void GUI_Interface::SetUserFunc6Label(const char *label)
 {    
 	User_Func_Btn6->setProperty(WSNlabelString,label);
 }
 
-// UserFunc7‚Ìƒ‰ƒxƒ‹‚ğƒZƒbƒg
+// Function: SetUserFunc7Label
+// UserFunc7ã®ãƒ©ãƒ™ãƒ«ã‚’ã‚»ãƒƒãƒˆ
+//
+// Parameters: 
+// *label - labelã®æ–‡å­—åˆ—ã®æ ¼ç´
 void GUI_Interface::SetUserFunc7Label(const char *label)
 {    
 	User_Func_Btn7->setProperty(WSNlabelString,label);
 }
 
-// UserFunc8‚Ìƒ‰ƒxƒ‹‚ğƒZƒbƒg
+// Function: SetUserFunc8Label
+// UserFunc8ã®ãƒ©ãƒ™ãƒ«ã‚’ã‚»ãƒƒãƒˆ
+//
+// Parameters: 
+// *label - labelã®æ–‡å­—åˆ—ã®æ ¼ç´
 void GUI_Interface::SetUserFunc8Label(const char *label)
 {    
 	User_Func_Btn8->setProperty(WSNlabelString,label);
 }
-
-// ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“ƒ_ƒCƒAƒƒO‚Ì•\¦iBODYj
-// return ƒtƒ@ƒCƒ‹‚Ìƒtƒ‹ƒpƒX
+// Function: OpenBodyFileDlg
+// ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã®è¡¨ç¤ºï¼ˆBODYï¼‰
+//
+// Return: 
+// ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ•ãƒ«ãƒ‘ã‚¹
 std::string GUI_Interface::OpenBodyFileDlg()
 {
-	WSCfileSelect *fs=WSGIappFileSelect();			// ƒtƒ@ƒCƒ‹‘I‘ğƒ_ƒCƒAƒƒO‚ÌƒAƒhƒŒƒX‚ğæ“¾
+	WSCfileSelect *fs=WSGIappFileSelect();			// ãƒ•ã‚¡ã‚¤ãƒ«é¸æŠãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’å–å¾—
 
-	fs->setProperty(WSNmaskFileName,"IGS,igs,STL,stl,WRL,wrl,dxf,DXF");		// IGS,STL,VRML,DXFƒtƒ@ƒCƒ‹‚Ì‚İ‘I‘ğ‰Â
+	fs->setProperty(WSNmaskFileName,"IGS,igs,STL,stl,WRL,wrl,dxf,DXF");		// IGS,STL,VRML,DXFãƒ•ã‚¡ã‚¤ãƒ«ã®ã¿é¸æŠå¯
 
-	fs->setProperty(WSNx,300);						// ƒ_ƒCƒAƒƒO•\¦ˆÊ’u
+	fs->setProperty(WSNx,300);						// ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤ºä½ç½®
 	fs->setProperty(WSNy,320);
 
-	long fchoice_dlg = fs->popup();					// ƒtƒ@ƒCƒ‹‘I‘ğƒ_ƒCƒAƒƒO‚ğŠJ‚­
+	long fchoice_dlg = fs->popup();					// ãƒ•ã‚¡ã‚¤ãƒ«é¸æŠãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’é–‹ã
 	if(fchoice_dlg == WS_DIALOG_OK){
-		WSCstring full_name = fs->getFileName();	// ƒtƒ@ƒCƒ‹‚Ìƒtƒ‹ƒpƒXæ“¾
+		WSCstring full_name = fs->getFileName();	// ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ•ãƒ«ãƒ‘ã‚¹å–å¾—
 		std::string s= std::string(full_name);
 		return s;
 	}
@@ -128,79 +194,105 @@ std::string GUI_Interface::OpenBodyFileDlg()
 	return "";
 }
 
-// ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“ƒ_ƒCƒAƒƒO‚Ì•\¦iINPj
-//return ƒtƒ@ƒCƒ‹‚Ìƒtƒ‹ƒpƒX
+// Function: OpenInpFileDlg
+// ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã®è¡¨ç¤ºï¼ˆINPï¼‰
+//
+// Return: 
+// ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ•ãƒ«ãƒ‘ã‚¹
 std::string GUI_Interface::OpenInpFileDlg()
 {
-	WSCfileSelect *fs=WSGIappFileSelect();			// ƒtƒ@ƒCƒ‹‘I‘ğƒ_ƒCƒAƒƒO‚ÌƒAƒhƒŒƒX‚ğæ“¾
+	WSCfileSelect *fs=WSGIappFileSelect();			// ãƒ•ã‚¡ã‚¤ãƒ«é¸æŠãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’å–å¾—
 
-	fs->setProperty(WSNmaskFileName,"INP,inp");		// inpƒtƒ@ƒCƒ‹‚Ì‚İ‘I‘ğ‰Â
+	fs->setProperty(WSNmaskFileName,"INP,inp");		// inpãƒ•ã‚¡ã‚¤ãƒ«ã®ã¿é¸æŠå¯
 
-	long fchoice_dlg = fs->popup();					// ƒtƒ@ƒCƒ‹‘I‘ğƒ_ƒCƒAƒƒO‚ğŠJ‚­
+	long fchoice_dlg = fs->popup();					// ãƒ•ã‚¡ã‚¤ãƒ«é¸æŠãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’é–‹ã
 
-	if(fchoice_dlg == WS_DIALOG_OK){				// ƒ_ƒCƒAƒƒO‚ÌOKƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚½‚ç
-		WSCstring full_name = fs->getFileName();	// ƒtƒ@ƒCƒ‹‚Ìƒtƒ‹ƒpƒXæ“¾
-		InpFileName->setProperty(WSNlabelString,full_name);	// ƒtƒ@ƒCƒ‹‚Ìƒtƒ‹ƒpƒX‚ğƒ†[ƒU[İ’è•¶š—ñ‚ÉƒZƒbƒg
+	if(fchoice_dlg == WS_DIALOG_OK){				// ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã®OKãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚ŒãŸã‚‰
+		WSCstring full_name = fs->getFileName();	// ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ•ãƒ«ãƒ‘ã‚¹å–å¾—
+		InpFileName->setProperty(WSNlabelString,full_name);	// ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ•ãƒ«ãƒ‘ã‚¹ã‚’ãƒ¦ãƒ¼ã‚¶ãƒ¼è¨­å®šæ–‡å­—åˆ—ã«ã‚»ãƒƒãƒˆ
 		std::string s= std::string(full_name);
 		return s;
 	}
 	return "";
 }
 
-// ƒtƒ‹ƒpƒX‚©‚çƒtƒ@ƒCƒ‹–¼’Šo
+// Function: GetFileName
+// ãƒ•ãƒ«ãƒ‘ã‚¹ã‹ã‚‰ãƒ•ã‚¡ã‚¤ãƒ«åæŠ½å‡º
+//
+// Parameters: 
+// fullPath - ãƒ•ãƒ«ãƒ‘ã‚¹
+//
+// Return: 
+// ãƒ•ã‚¡ã‚¤ãƒ«å
 std::string GUI_Interface::GetFileName(const std::string fullPath)
 {
 	WSCstring full_name = fullPath.c_str();
-	int priodnum = full_name.getWords("/");				// ƒtƒ@ƒCƒ‹–¼‚ÉŠÜ‚Ü‚ê‚Ä‚¢‚éƒXƒ‰ƒbƒVƒ…‚Ì”‚ğ’²‚×‚é
-	WSCstring fname = full_name.getWord(priodnum-1,"/");	// ƒtƒ@ƒCƒ‹–¼‚ğæ“¾
+	int priodnum = full_name.getWords("/");				// ãƒ•ã‚¡ã‚¤ãƒ«åã«å«ã¾ã‚Œã¦ã„ã‚‹ã‚¹ãƒ©ãƒƒã‚·ãƒ¥ã®æ•°ã‚’èª¿ã¹ã‚‹
+	WSCstring fname = full_name.getWord(priodnum-1,"/");	// ãƒ•ã‚¡ã‚¤ãƒ«åã‚’å–å¾—
 	std::string s= std::string(fname);
 	return s;
 }
 
-// ƒtƒ‹ƒpƒX‚©‚çƒtƒ@ƒCƒ‹‚ÌŠg’£q’Šo
+// Function: GetFileExt
+// ãƒ•ãƒ«ãƒ‘ã‚¹ã‹ã‚‰ãƒ•ã‚¡ã‚¤ãƒ«ã®æ‹¡å¼µå­æŠ½å‡º
+//
+// Parameters: 
+// fullPath - ãƒ•ãƒ«ãƒ‘ã‚¹
+//
+// Return: 
+// ãƒ•ã‚¡ã‚¤ãƒ«ã®æ‹¡å¼µå­
 std::string GUI_Interface::GetFileExt(const std::string fullPath)
 {
 	WSCstring full_name = fullPath.c_str();
-	int priodnum = full_name.getWords(".");				// ƒtƒ@ƒCƒ‹–¼‚ÉŠÜ‚Ü‚ê‚Ä‚¢‚éƒXƒ‰ƒbƒVƒ…‚Ì”‚ğ’²‚×‚é
-	WSCstring ext = full_name.getWord(priodnum-1,".");	// ƒtƒ@ƒCƒ‹–¼‚ğæ“¾
+	int priodnum = full_name.getWords(".");				// ãƒ•ã‚¡ã‚¤ãƒ«åã«å«ã¾ã‚Œã¦ã„ã‚‹ã‚¹ãƒ©ãƒƒã‚·ãƒ¥ã®æ•°ã‚’èª¿ã¹ã‚‹
+	WSCstring ext = full_name.getWord(priodnum-1,".");	// ãƒ•ã‚¡ã‚¤ãƒ«åã‚’å–å¾—
 	std::string s= std::string(ext);
 	return s;
 }
 
-// ƒRƒ“ƒ\[ƒ‹‚©‚ç•¶š—ñ‚ğæ“¾
+// Function: GetConsoleText
+// ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ã‹ã‚‰æ–‡å­—åˆ—ã‚’å–å¾—
+//
+// Return: 
+// å–å¾—ã—ãŸæ–‡å­—åˆ—
 std::string GUI_Interface::GetConsoleText()
 {
 	std::string mes = std::string(Console_Form->getString());
     return mes;
 }
 
-// BODYƒŠƒXƒg‚Ì‘I‘ğ‚³‚ê‚Ä‚¢‚é”Ô†‚ğæ“¾‚·‚é
+// Function: GetBodyListSelectedPos
+// BODYãƒªã‚¹ãƒˆã®é¸æŠã•ã‚Œã¦ã„ã‚‹ç•ªå·ã‚’å–å¾—ã™ã‚‹
 int GUI_Interface::GetBodyListSelectedPos()
 {
     return Body_List_Win->getSelectedPos();
 }
 
-// Nurbs‹Èüƒ_ƒCƒAƒƒO•\¦
+// Function: ShowNurbsCurveDlg
+// Nurbsæ›²ç·šãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
 void GUI_Interface::ShowNurbsCurveDlg()
 {
 	NurbsCurve_Dlg->setVisible(True);
 }
 
-// Nurbs‹È–Êƒ_ƒCƒAƒƒO•\¦
+// Function: ShowNurbsSurfDlg
+// Nurbsæ›²é¢ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
 void GUI_Interface::ShowNurbsSurfDlg()
 { 
 	NurbsSurface_Dlg->setVisible(True);
 }
 
-// ‰ñ“]ƒT[ƒtƒFƒXƒ_ƒCƒAƒƒO•\¦
+// Function: ShowRotSurfDlg
+// å›è»¢ã‚µãƒ¼ãƒ•ã‚§ã‚¹ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
 void GUI_Interface::ShowRotSurfDlg()
 {
-	RotSurf_Dlg->setVisible(True);		// ‰ñ“]ƒT[ƒtƒFƒX¶¬ƒ_ƒCƒAƒƒO‚ğ•\¦
+	RotSurf_Dlg->setVisible(True);		// å›è»¢ã‚µãƒ¼ãƒ•ã‚§ã‚¹ç”Ÿæˆãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’è¡¨ç¤º
 }
 
-// ƒXƒC[ƒvƒT[ƒtƒFƒXƒ_ƒCƒAƒƒO•\¦
+// Function: ShowSweepSurfDlg
+// ã‚¹ã‚¤ãƒ¼ãƒ—ã‚µãƒ¼ãƒ•ã‚§ã‚¹ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
 void GUI_Interface::ShowSweepSurfDlg()
 {
-	SweepSurf_Dlg->setVisible(True);	// ƒXƒC[ƒvƒT[ƒtƒFƒX¶¬ƒ_ƒCƒAƒƒO‚ğ•\¦
+	SweepSurf_Dlg->setVisible(True);	// ã‚¹ã‚¤ãƒ¼ãƒ—ã‚µãƒ¼ãƒ•ã‚§ã‚¹ç”Ÿæˆãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’è¡¨ç¤º
 }
 

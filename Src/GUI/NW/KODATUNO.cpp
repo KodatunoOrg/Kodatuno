@@ -1,5 +1,5 @@
 /*************************************************
-* KODatUNO Ver2.0 ƒÀ  Takasugi 2009/6            
+* KODatUNO Ver2.0 Î²  Takasugi 2009/6            
 * KODatUNO Juza       Takasugi Kumasaka 2009/9   
 * KODatUNO Mamiya	  Takasugi Kumasaka 2009/11
 * Takasugi Last Cording 2010/03/04
@@ -10,15 +10,15 @@
 
 int main(int argc,char *argv[])
 {
-	KODatUNO Kakuma;					// KODatUNOƒNƒ‰ƒX‚ÌƒIƒuƒWƒFƒNƒg‚ğ¶¬
+	KODatUNO Kakuma;					// KODatUNOã‚¯ãƒ©ã‚¹ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ç”Ÿæˆ
 
-	Kakuma.Kodatuno_Main(argc,argv);	// KODatUNOƒAƒvƒŠƒP[ƒVƒ‡ƒ“ƒXƒ^[ƒg
+	Kakuma.Kodatuno_Main(argc,argv);	// KODatUNOã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚¹ã‚¿ãƒ¼ãƒˆ
 }
 
-// KODatUNOƒƒCƒ“
+// KODatUNOãƒ¡ã‚¤ãƒ³
 void KODatUNO::Kodatuno_Main(int argc,char *argv[])
 {
-	// OpenGL‚É‚æ‚é•`‰æƒNƒ‰ƒX
-	static DESCRIBE Describe;			// IGES•`‰æ—pƒIƒuƒWƒFƒNƒg‚ğ¶¬
+	// OpenGLã«ã‚ˆã‚‹æç”»ã‚¯ãƒ©ã‚¹
+	static DESCRIBE Describe;			// IGESæç”»ç”¨ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ç”Ÿæˆ
 	Describe.BODY_Describe_Main(argc,argv);
 }

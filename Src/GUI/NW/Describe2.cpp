@@ -1,41 +1,41 @@
 /**********************************************************
-* IGES_Parser()‚Å“Ç‚İ‚ñ‚¾IGESƒtƒ@ƒCƒ‹‚ğOpenGL‚Å•`‰æ‚·‚é *
+* IGES_Parser()ã§èª­ã¿è¾¼ã‚“ã IGESãƒ•ã‚¡ã‚¤ãƒ«ã‚’OpenGLã§æç”»ã™ã‚‹ *
 ***********************************************************/
 
 #include "Describe.h"
 
 
-// IGESƒf[ƒ^‚Ì•`‰æ
+// IGESãƒ‡ãƒ¼ã‚¿ã®æç”»
 void DESCRIBE::glDrawBODY()
 {	
 	int i;
 	BODY *body;
 
-	// body•`‰æ
-	for(int k=0;k<BodyList.getNum();k++){					// Œ»İƒŠƒXƒg‚É“o˜^‚³‚ê‚Ä‚¢‚éBODY‚Ì”‚¾‚¯ƒ‹[ƒv
-		if((body = (BODY *)BodyList.getData(k)) != NULL){	// k”Ô–Ú‚ÌƒŠƒXƒg‚É“o˜^‚³‚ê‚Ä‚¢‚éBODY‚Ìƒf[ƒ^‚ğæ“¾
-			glPushName(k);									// ƒZƒŒƒNƒVƒ‡ƒ“ƒoƒbƒtƒ@‚ğŠK‘w‰»
-			// Šeƒ^ƒCƒv‚²‚Æ‚É•`‰æ‚ğÀs‚µ‚Ä‚¢‚­(“à•”•\Œ»‚ğNURBS‚ÉŒÀ’è‚µ‚½‚Ì‚ÅAü•ª‚â‰~‚È‚Ç‚Í•`‰æ‚µ‚È‚¢)
+	// bodyæç”»
+	for(int k=0;k<BodyList.getNum();k++){					// ç¾åœ¨ãƒªã‚¹ãƒˆã«ç™»éŒ²ã•ã‚Œã¦ã„ã‚‹BODYã®æ•°ã ã‘ãƒ«ãƒ¼ãƒ—
+		if((body = (BODY *)BodyList.getData(k)) != NULL){	// kç•ªç›®ã®ãƒªã‚¹ãƒˆã«ç™»éŒ²ã•ã‚Œã¦ã„ã‚‹BODYã®ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—
+			glPushName(k);									// ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ãƒãƒƒãƒ•ã‚¡ã‚’éšå±¤åŒ–
+			// å„ã‚¿ã‚¤ãƒ—ã”ã¨ã«æç”»ã‚’å®Ÿè¡Œã—ã¦ã„ã(å†…éƒ¨è¡¨ç¾ã‚’NURBSã«é™å®šã—ãŸã®ã§ã€ç·šåˆ†ã‚„å††ãªã©ã¯æç”»ã—ãªã„)
 			for(i=0;i<ALL_ENTITY_TYPE_NUM;i++){
-				if(i == _CIRCLE_ARC){						// ‰~E‰~ŒÊ
-					// ‰~E‰~ŒÊ‚ÍNRBS‹Èü‚É•ÏŠ·‚³‚ê‚é
-					//glPushName(_CIRCLE_ARC);				// ƒZƒŒƒNƒVƒ‡ƒ“ƒoƒbƒtƒ@‚ğŠK‘w‰»
+				if(i == _CIRCLE_ARC){						// å††ãƒ»å††å¼§
+					// å††ãƒ»å††å¼§ã¯NRBSæ›²ç·šã«å¤‰æ›ã•ã‚Œã‚‹
+					//glPushName(_CIRCLE_ARC);				// ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ãƒãƒƒãƒ•ã‚¡ã‚’éšå±¤åŒ–
 					//Draw_CircleArc();
 					//glPopName();
 				}
-				else if(i == _CONIC_ARC){					// ‰~‹Èü
-					//glPushName(_CONIC_ARC);				// ƒZƒŒƒNƒVƒ‡ƒ“ƒoƒbƒtƒ@‚ğŠK‘w‰»
+				else if(i == _CONIC_ARC){					// å††éŒæ›²ç·š
+					//glPushName(_CONIC_ARC);				// ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ãƒãƒƒãƒ•ã‚¡ã‚’éšå±¤åŒ–
 					//Draw_ConicArc();
 					//glPopName();
 				}
-				else if(i == _LINE){						// ü•ª
-					// ü•ª‚ÍNURBS‹Èü‚É•ÏŠ·‚³‚ê‚é
-					//glPushName(_LINE);					// ƒZƒŒƒNƒVƒ‡ƒ“ƒoƒbƒtƒ@‚ğŠK‘w‰»
+				else if(i == _LINE){						// ç·šåˆ†
+					// ç·šåˆ†ã¯NURBSæ›²ç·šã«å¤‰æ›ã•ã‚Œã‚‹
+					//glPushName(_LINE);					// ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ãƒãƒƒãƒ•ã‚¡ã‚’éšå±¤åŒ–
 					//Draw_Line();
 					//glPopName();
 				}
-				else if(i == _NURBSC){						// NURBS‹Èü
-					//glPushName(_NURBSC);					// ƒZƒŒƒNƒVƒ‡ƒ“ƒoƒbƒtƒ@‚ğŠK‘w‰»
+				else if(i == _NURBSC){						// NURBSæ›²ç·š
+					//glPushName(_NURBSC);					// ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ãƒãƒƒãƒ•ã‚¡ã‚’éšå±¤åŒ–
 					//Draw_NurbsCurve(body);
 					//glPopName();
 				}
@@ -44,12 +44,12 @@ void DESCRIBE::glDrawBODY()
 					Draw_NurbsSurface(body);
 					glPopName();
 				}
-				else if(i == _TRIMMED_SURFACE){				// ƒgƒŠƒ€–Ê(NURBS‹È–Ê)
+				else if(i == _TRIMMED_SURFACE){				// ãƒˆãƒªãƒ é¢(NURBSæ›²é¢)
 					glPushName(_TRIMMED_SURFACE);
 					Draw_TrimSurfe(body);
 					glPopName();
 				}
-				else if(i == _MESH){						// ƒƒbƒVƒ…
+				else if(i == _MESH){						// ãƒ¡ãƒƒã‚·ãƒ¥
 					glPushName(_MESH);
 					Draw_Mesh(body);
 					glPopName();
@@ -60,57 +60,57 @@ void DESCRIBE::glDrawBODY()
 	}
 }
 
-// ü•ª‚Ì•`‰æ
+// ç·šåˆ†ã®æç”»
 void DESCRIBE::glDraw_Line()
 {
 	for(int i=0;i<glbody->TypeNum[_LINE];i++){
-		glPushName(i);		// ƒl[ƒ€ƒXƒ^ƒbƒN‚Ìæ“ª‚Éi‚ğ‘}“ü
+		glPushName(i);		// ãƒãƒ¼ãƒ ã‚¹ã‚¿ãƒƒã‚¯ã®å…ˆé ­ã«iã‚’æŒ¿å…¥
 		glColor3f(glbody->Line[i].Dstat.Color[0],glbody->Line[i].Dstat.Color[1],glbody->Line[i].Dstat.Color[2]);
-		if(glbody->Line[i].EntUseFlag == GEOMTRYELEM){				// IGESƒfƒBƒŒƒNƒgƒŠ•”‚Ì"Entity Use Flag"‚ª0‚Ìê‡‚ÍÀÛ‚Ìƒ‚ƒfƒ‹—v‘f‚Æ‚µ‚Ä•`‰æ‚·‚é
+		if(glbody->Line[i].EntUseFlag == GEOMTRYELEM){				// IGESãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªéƒ¨ã®"Entity Use Flag"ãŒ0ã®å ´åˆã¯å®Ÿéš›ã®ãƒ¢ãƒ‡ãƒ«è¦ç´ ã¨ã—ã¦æç”»ã™ã‚‹
 			DrawLine(glbody->Line[i]);
 		}
-		glPopName();	// ƒl[ƒ€ƒXƒ^ƒbƒN‚Ìæ“ª‚ğíœ
+		glPopName();	// ãƒãƒ¼ãƒ ã‚¹ã‚¿ãƒƒã‚¯ã®å…ˆé ­ã‚’å‰Šé™¤
 	}
 	glFlush();
 }
 
-// NURBS‹Èü‚Ì•`‰æ
+// NURBSæ›²ç·šã®æç”»
 void DESCRIBE::Draw_NurbsCurve(BODY *Curr_body)
 {
 	for(int i=0;i<Curr_body->TypeNum[_NURBSC];i++){
-		glPushName(i);		// ƒl[ƒ€ƒXƒ^ƒbƒN‚Ìæ“ª‚Éi‚ğ‘}“ü
+		glPushName(i);		// ãƒãƒ¼ãƒ ã‚¹ã‚¿ãƒƒã‚¯ã®å…ˆé ­ã«iã‚’æŒ¿å…¥
 		glColor3f(Curr_body->NurbsC[i].Dstat.Color[0],Curr_body->NurbsC[i].Dstat.Color[1],Curr_body->NurbsC[i].Dstat.Color[2]);
-		if(Curr_body->NurbsC[i].EntUseFlag == GEOMTRYELEM){				// IGESƒfƒBƒŒƒNƒgƒŠ•”‚Ì"Entity Use Flag"‚ª0‚Ìê‡‚ÍÀÛ‚Ìƒ‚ƒfƒ‹—v‘f‚Æ‚µ‚Ä•`‰æ‚·‚é
-			DrawNurbsCurve(Curr_body->NurbsC[i]);						// •`‰æ
+		if(Curr_body->NurbsC[i].EntUseFlag == GEOMTRYELEM){				// IGESãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªéƒ¨ã®"Entity Use Flag"ãŒ0ã®å ´åˆã¯å®Ÿéš›ã®ãƒ¢ãƒ‡ãƒ«è¦ç´ ã¨ã—ã¦æç”»ã™ã‚‹
+			DrawNurbsCurve(Curr_body->NurbsC[i]);						// æç”»
 		}
-		glPopName();		// ƒl[ƒ€ƒXƒ^ƒbƒN‚Ìæ“ª‚ğíœ
+		glPopName();		// ãƒãƒ¼ãƒ ã‚¹ã‚¿ãƒƒã‚¯ã®å…ˆé ­ã‚’å‰Šé™¤
 	}
 }
 
-// NURBS‹È–Ê‚Ì•`‰æ
+// NURBSæ›²é¢ã®æç”»
 void DESCRIBE::Draw_NurbsSurface(BODY *Curr_body)
 {
 	for(int i=0;i<Curr_body->TypeNum[_NURBSS];i++){
-		if(Curr_body->NurbsS[i].TrmdSurfFlag == KOD_TRUE)	// ƒgƒŠƒ€–Ê‚Æ‚µ‚ÄNURBS‹È–Ê‚ª“o˜^‚³‚ê‚Ä‚¢‚é‚È‚ç
-			continue;		// •`‰æ‚µ‚È‚¢
+		if(Curr_body->NurbsS[i].TrmdSurfFlag == KOD_TRUE)	// ãƒˆãƒªãƒ é¢ã¨ã—ã¦NURBSæ›²é¢ãŒç™»éŒ²ã•ã‚Œã¦ã„ã‚‹ãªã‚‰
+			continue;		// æç”»ã—ãªã„
 		else{
 			glPushName(i);
-			DrawNurbsSurfe(Curr_body->NurbsS[i]);	// NURBS‹È–Ê•`‰æ
+			DrawNurbsSurfe(Curr_body->NurbsS[i]);	// NURBSæ›²é¢æç”»
 			glPopName();
 		}
 	}
 }
-// ƒgƒŠƒ€–Ê‚Ì•`‰æ
+// ãƒˆãƒªãƒ é¢ã®æç”»
 void DESCRIBE::Draw_TrimSurfe(BODY *Curr_body)
 {
 	for(int i=0;i<Curr_body->TypeNum[_TRIMMED_SURFACE];i++){
-		glPushName(i);			// ƒl[ƒ€ƒXƒ^ƒbƒN‚Ìæ“ª‚Éi‚ğ‘}“ü
+		glPushName(i);			// ãƒãƒ¼ãƒ ã‚¹ã‚¿ãƒƒã‚¯ã®å…ˆé ­ã«iã‚’æŒ¿å…¥
 		DrawTrimdSurf(Curr_body->TrmS[i]);
-		glPopName();			// ƒl[ƒ€ƒXƒ^ƒbƒN‚Ìæ“ª‚ğíœ
+		glPopName();			// ãƒãƒ¼ãƒ ã‚¹ã‚¿ãƒƒã‚¯ã®å…ˆé ­ã‚’å‰Šé™¤
 	}
 }
 
-// NURBS‹È–Ê‚Ìƒlƒbƒg•\¦
+// NURBSæ›²é¢ã®ãƒãƒƒãƒˆè¡¨ç¤º
 void DESCRIBE::glDraw_SurfLine()
 {
 	Coord p;
@@ -121,13 +121,13 @@ void DESCRIBE::glDraw_SurfLine()
 	for(int i=0;i<glbody->TypeNum[_TRIMMED_SURFACE];i++){
 		for(int j=0;j<11;j++){			
 			glBegin(GL_LINE_STRIP);
-			for(int k=0;k<51;k++){		// v•ûŒüƒpƒ‰ƒ[ƒ^ƒ‰ƒCƒ“•`‰æ
+			for(int k=0;k<51;k++){		// væ–¹å‘ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ©ã‚¤ãƒ³æç”»
 				p = NFunc.CalcNurbsSCoord(glbody->TrmS[i].pts,0.1*(double)j,0.02*(double)k);
 				glVertex3d(p.x,p.y,p.z);
 			}
 			glEnd();
 			glBegin(GL_LINE_STRIP);
-			for(int k=0;k<51;k++){		// u•ûŒüƒpƒ‰ƒ[ƒ^ƒ‰ƒCƒ“•`‰æ
+			for(int k=0;k<51;k++){		// uæ–¹å‘ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ©ã‚¤ãƒ³æç”»
 				p = NFunc.CalcNurbsSCoord(glbody->TrmS[i].pts,0.02*(double)k,0.1*(double)j);
 				glVertex3d(p.x,p.y,p.z);
 			}
@@ -138,7 +138,7 @@ void DESCRIBE::glDraw_SurfLine()
 	glEnable(GL_LIGHTING);
 }
 
-// ƒƒbƒVƒ…‚Ì•`‰æ
+// ãƒ¡ãƒƒã‚·ãƒ¥ã®æç”»
 void DESCRIBE::Draw_Mesh(BODY *body)
 {
 	for(int i=0;i<body->TypeNum[_MESH];i++){

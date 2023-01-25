@@ -1,19 +1,24 @@
-// •`‰æ—Ìˆæ‚ÌƒvƒƒV[ƒWƒƒ[
+ï»¿// æç”»é ˜åŸŸã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 
 #include <WScom.h>
 #include <WSCfunctionList.h>
 #include <WSCbase.h>
 #include "Kodatuno.h"
 
+// Function: Describe_Proc
+// æç”»é ˜åŸŸã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
+// 
+// Parameters: 
+// *object - ã“ã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ã‚’å‘¼ã³å‡ºã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ãƒã‚¤ãƒ³ã‚¿
 void Describe_Proc(WSCbase* object)
 {		
-	WSCprocedure *pwproc = object->getExecutedProcedure();	// ƒvƒƒV[ƒWƒƒ‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğ¶¬
-	WSDmouse *mouse = WSGIappMouse();						// ƒ}ƒEƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğ¶¬
+	WSCprocedure *pwproc = object->getExecutedProcedure();	// ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ç”Ÿæˆ
+	WSDmouse *mouse = WSGIappMouse();						// ãƒã‚¦ã‚¹ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ç”Ÿæˆ
 
 	short x,y;
-	mouse->getMousePosition(&x,&y,Describe_Form);			// ƒ}ƒEƒXˆÊ’u‚ğæ“¾
-	long btn=mouse->getTargetBtn();							// ‚Ç‚Ìƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚½‚©‚ğæ“¾
-	long trig=pwproc->getTrigger();							// ƒgƒŠƒK[æ“¾
+	mouse->getMousePosition(&x,&y,Describe_Form);			// ãƒã‚¦ã‚¹ä½ç½®ã‚’å–å¾—
+	long btn=mouse->getTargetBtn();							// ã©ã®ãƒœã‚¿ãƒ³ã‚’æŠ¼ã—ãŸã‹ã‚’å–å¾—
+	long trig=pwproc->getTrigger();							// ãƒˆãƒªã‚¬ãƒ¼å–å¾—
 	
 	long KODbtn;
 	switch(btn){
@@ -48,20 +53,20 @@ void Describe_Proc(WSCbase* object)
 	}
 	switch(trig){
 
-		// Ä•`‰æw—ß‚Ìê‡
+		// å†æç”»æŒ‡ä»¤ã®å ´åˆ
 		case WSEV_EXPOSE:
-			Kodatuno.ReDraw(x,y);				// BODY•`‰æ
-			Kodatuno.ReDrawUserFunc();			// UserFunc‚É‚æ‚é•`‰æw—ß‚ğÀs
-			Kodatuno.ReDrawUserCommand();		// UserCommand‚É‚æ‚é•`‰æw—ß‚ğÀs
+			Kodatuno.ReDraw(x,y);				// BODYæç”»
+			Kodatuno.ReDrawUserFunc();			// UserFuncã«ã‚ˆã‚‹æç”»æŒ‡ä»¤ã‚’å®Ÿè¡Œ
+			Kodatuno.ReDrawUserCommand();		// UserCommandã«ã‚ˆã‚‹æç”»æŒ‡ä»¤ã‚’å®Ÿè¡Œ
 			break;
 
-		// ƒ}ƒEƒX‚Ìˆ—
-		case WSEV_MOUSE_PRESS:					// ƒ}ƒEƒX‰Ÿ‰º	
-		case WSEV_MOUSE_RELEASE:				// ƒ}ƒEƒX‚Ìƒ{ƒ^ƒ“‚ğ—£‚µ‚½
-			Kodatuno.MouseEvent(KODtrig,KODbtn,x,y);	// ƒ}ƒEƒXƒCƒxƒ“ƒg‚ğˆ—
+		// ãƒã‚¦ã‚¹ã®å‡¦ç†
+		case WSEV_MOUSE_PRESS:					// ãƒã‚¦ã‚¹æŠ¼ä¸‹	
+		case WSEV_MOUSE_RELEASE:				// ãƒã‚¦ã‚¹ã®ãƒœã‚¿ãƒ³ã‚’é›¢ã—ãŸ
+			Kodatuno.MouseEvent(KODtrig,KODbtn,x,y);	// ãƒã‚¦ã‚¹ã‚¤ãƒ™ãƒ³ãƒˆã‚’å‡¦ç†
 			break;	
-		case WSEV_MOUSE_MOVE:					// ƒ}ƒEƒXˆÚ“®’†
-			Kodatuno.MouseMotionEvent(KODbtn,KODkey,x,y);	// ‰Ÿ‚³‚ê‚Ä‚¢‚éƒ{ƒ^ƒ“‚É‰‚¶‚ÄƒCƒxƒ“ƒg‚ğÀs
+		case WSEV_MOUSE_MOVE:					// ãƒã‚¦ã‚¹ç§»å‹•ä¸­
+			Kodatuno.MouseMotionEvent(KODbtn,KODkey,x,y);	// æŠ¼ã•ã‚Œã¦ã„ã‚‹ãƒœã‚¿ãƒ³ã«å¿œã˜ã¦ã‚¤ãƒ™ãƒ³ãƒˆã‚’å®Ÿè¡Œ
 			break;
 		default:
 			break;

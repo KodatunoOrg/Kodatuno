@@ -1,220 +1,682 @@
-#ifndef _STD_AFX_H_
+﻿#ifndef _STD_AFX_H_
 #define _STD_AFX_H_
 
 #include "Kutil.h"
 
-#define KOD_ERR	-1					// ERROR�̃V���{��
-#define KOD_FALSE	0				// �U�̃V���{��
-#define KOD_TRUE	1				// �^�̃V���{��
-#define KOD_DONE	2				// ���s�ς݂������V���{��
-#define KOD_ONEDGE	2				// �_���G�b�W��ɂ��邱�Ƃ������V���{��
-#define KOD_LARGE	0				// a > b�@�̃V���{��
-#define KOD_SMALL	1				// a < b�@�̃V���{��
-#define KOD_EQUAL	2				// a = b�@�̃V���{��
-#define KOD_LARGE_EQ 3				// a >= b�@�̃V���{��
-#define KOD_SMALL_EQ 4				// a <= b�@�̃V���{��
-#define LOW_LOW_ACCURACY -1			// ��ᐸ�x�̃V���{��
-#define LOW_ACCURACY  0				// �ᐸ�x�̃V���{��
-#define MID_ACCURACY  1				// ���ʐ��x�̃V���{��
-#define HIGH_ACCURACY 2				// �����x�̃V���{��
-#define FNAMEMAX	256				// �t�@�C�����̍ő啶����
-#define PI 3.141592653589793		// �~����
-#define APPROX_ZERO_L_L 1.0e-3		// �[���ƌ��Ȃ���l(��ᐸ�x)
-#define APPROX_ZERO_L 1.0e-6		// �[���ƌ��Ȃ���l(�ᐸ�x)
-#define APPROX_ZERO	1.0e-9			// �[���ƌ��Ȃ���l(���ʐ��x)
-#define APPROX_ZERO_H 1.0e-12		// �[���ƌ��Ȃ���l(�����x)
-#define LOOPCOUNTMAX	10000		// �����v�Z�񐔂̏���
-#define COORDINDEX 3				// 3�������W�������C���f�b�N�X��
-#define QUADINDEX 4					// 3�����������W�������C���f�b�N�X��
-#define CW  0						// ���]�̃V���{��
-#define CCW 1						// �t�]�̃V���{��
+// Constants: General Defines
+// KOD_ERR -					ERRORのシンボル(-1)
+// KOD_FALSE -					偽のシンボル(0)
+// KOD_TRUE -					真のシンボル(1)
+// KOD_DONE -					実行済みを示すシンボル(2)
+// KOD_ONEDGE -					点がエッジ上にあることを示すシンボル(2)
+// KOD_LARGE -					a > b　のシンボル(0)
+// KOD_SMALL -					a < b　のシンボル(1)
+// KOD_EQUAL -					a = b　のシンボル(2)
+// KOD_LARGE_EQ -				a >= b　のシンボル(3)
+// KOD_SMALL_EQ -				a <= b　のシンボル(4)
+// LOW_LOW_ACCURACY -			低低精度のシンボル(-1)
+// LOW_ACCURACY -				低精度のシンボル(0)
+// MID_ACCURACY -				普通精度のシンボル(1)
+// HIGH_ACCURACY -				高精度のシンボル(2)
+// FNAMEMAX -					ファイル名の最大文字数(256)
+// PI -							円周率(3.141592653589793)
+// APPROX_ZERO_L_L -			ゼロと見なせる値(低低精度)(1.0e-3)
+// APPROX_ZERO_L -				ゼロと見なせる値(低精度)(1.0e-6)
+// APPROX_ZERO -				ゼロと見なせる値(普通精度)(1.0e-9)
+// APPROX_ZERO_H -				ゼロと見なせる値(高精度)(1.0e-12)
+// LOOPCOUNTMAX -				収束計算回数の条件(10000)
+// COORDINDEX -					3次元座標を示すインデックス数(3)
+// QUADINDEX -					3次元同次座標を示すインデックス数(4)
+// CW -							正転のシンボル(0)
+// CCW -						逆転のシンボル(1)
+#define KOD_ERR	-1
+#define KOD_FALSE	0
+#define KOD_TRUE	1
+#define KOD_DONE	2
+#define KOD_ONEDGE	2
+#define KOD_LARGE	0
+#define KOD_SMALL	1
+#define KOD_EQUAL	2
+#define KOD_LARGE_EQ 3
+#define KOD_SMALL_EQ 4
+#define LOW_LOW_ACCURACY -1
+#define LOW_ACCURACY  0
+#define MID_ACCURACY  1
+#define HIGH_ACCURACY 2
+#define FNAMEMAX	256
+#define PI 3.141592653589793
+#define APPROX_ZERO_L_L 1.0e-3
+#define APPROX_ZERO_L 1.0e-6
+#define APPROX_ZERO	1.0e-9
+#define APPROX_ZERO_H 1.0e-12
+#define LOOPCOUNTMAX	10000
+#define COORDINDEX 3
+#define QUADINDEX 4
+#define CW  0
+#define CCW 1
 
+// Typedef: double **
+// Matrix - double形の2次元配列をMatrixとして定義
+typedef double **Matrix;
 
-typedef double **Matrix;	// double�`��2�����z���Matrix�Ƃ��Ē�`
-typedef double *Vector;		// double�`��1�����z���Vector�Ƃ��Ē�`
+// Typedef: double *
+// Vector - double形の1次元配列をVectorとして定義
+typedef double *Vector;
 
-// ���W�p�\���̂��`
-//typedef struct{
-//	double x,y,z;	// x,y,z���W�l
-//	double dmy;		// �ėp
-//}Coord;
-
-// ���W�l�p�N���X���`
+// Class: Coord 
+// 座標値用クラスを定義
 class Coord
 {
 public:
 
-	double x,y,z;	// x,y,z���W�l
-	double dmy;		// �ėp
+	// Variables: x,y,z,dmy
+	// 三次元座標値(x, y, z)及び，汎用としてdmyを用意
+	double x,y,z,dmy;
 
-	// �I�y���[�^�̃I�[�o�[���[�h
-	Coord operator +(Coord);	// ���W�l���m�̑����Z(AddCoord())
-	Coord operator -(Coord);	// ���W�l���m�̈����Z(SubCoord())
-	Coord operator *(Coord);	// ���W�l���m�̊|���Z(MulCoord())
-	Coord operator *(double);	// �I�[�o�[���[�h
-	Coord operator /(Coord);	// ���W�l���m�̊���Z(DivCoord())
-	Coord operator /(double);	// �I�[�o�[���[�h
-	double operator &(Coord);	// ���W�l���m�̓���(CalcInnerProduct())
-	Coord operator &&(Coord);	// ���W�l���m�̊O��(CalcOuterProduct())
+	// Operator: +
+	// Coord同士の足し算(AddCoord())
+	Coord operator +(Coord);
+
+	// Oeprator: -
+	// Coord同士の引き算(SubCoord())
+	Coord operator -(Coord);	
+
+	// Oeprator: *
+	// Coord同士の掛け算(MulCoord())
+	Coord operator *(Coord);
+
+	// Oeprator: *
+	// Coordとdoubleとの掛け算（オーバーロード）
+	Coord operator *(double);
+
+	// Operator: /
+	// Coord同士の割り算(DivCoord())
+	Coord operator /(Coord);
+
+	// Operator: /
+	// Coordとdoubleとの割り算（オーバーロード）
+	Coord operator /(double);	// オーバーロード
+
+	// Operator: &
+	// Coord同士の内積(CalcInnerProduct())
+	double operator &(Coord);
+
+	// Operator: &&
+	// Coord同士の外積(CalcOuterProduct())
+	Coord operator &&(Coord);
 };
 
-// �����ϊ��s��p�\����
+
+// Structure: FRAME
+// 同次変換行列用構造体
+//
+// Variables:
+// Coord Rot[COORINDEX] -	// 回転行列
+// Coord Trl -				// 並進成分
 typedef struct{
-	Coord Rot[COORDINDEX];		// ��]�s��
-	Coord Trl;					// ���i����
+	Coord Rot[COORDINDEX];		
+	Coord Trl;
 }FRAME;
 
-// �\�������p�\����
+
+// Structure: DispStat
+// 表示属性用構造体
+//
+// Variables:
+// float Color[4] -	// 色(r,g,b,?)
 typedef struct{
-	float Color[4];	// �F(r,g,b,?)
-	// �\�������̒ǉ��͂����ɋL�q
+	float Color[4];	
+	// 表示属性の追加はここに記述
 }DispStat;
 
-// �O���[�o���Ȋ֐��̒�` ///////////////////////////////////////////////////////////////////////////
 
-// �� 2,3�����x�N�g�����Z
-void InitCoord(Coord *);						// ���W�l�̏�����
-void InitCoord(Coord *,int);					// �I�[�o�[���[�h
-Coord InitCoord();								// �I�[�o�[���[�h
-Coord AddCoord(Coord,Coord);					// ���W�l�̑����Z
-Coord AddCoord(Coord,double);					// �I�[�o�[���[�h
-Coord AddCoord(Coord,double,double,double);		// �I�[�o�[���[�h
-Coord DivCoord(Coord,Coord);					// ���W�l�̊���Z
-Coord DivCoord(Coord,double);					// �I�[�o�[���[�h
-Coord DivCoord(Coord,double,double,double);		// �I�[�o�[���[�h
-Coord MulCoord(Coord,Coord);					// ���W�l�̊|���Z(�x�N�g���̓���,�O�ςł͂Ȃ��̂Œ���)
-Coord MulCoord(Coord,double);					// �I�[�o�[���[�h
-Coord MulCoord(Coord,double,double,double);		// �I�[�o�[���[�h
-Coord SubCoord(Coord,Coord);					// ���W�l�̈����Z
-Coord SubCoord(Coord,double);					// �I�[�o�[���[�h
-Coord SubCoord(Coord,double,double,double);		// �I�[�o�[���[�h
-Coord SetCoord(Coord);							// ���W�l����
-Coord SetCoord(double,double,double);			// �I�[�o�[���[�h
-void CopyCoord(Coord *,int,Coord *);			// ���W�l�Q���R�s�[
-int DiffCoord(Coord,Coord);						// ���W�l�������Ȃ�KOD_TRUE�A�قȂ��Ă���Ȃ�KOD_FALSE��Ԃ�
-int DiffCoord(Coord,Coord,double);				// �I�[�o�[���[�h(���x�w��)
-Coord AbsCoord(Coord);							// ���W�l�̐�Βl��Ԃ�
-int ZoroCoord(Coord);							// (0,0,0)�̏ꍇ��KOD_TRUE��Ԃ�
-double CalcEuclid(Coord);						// ���[�N���b�h���������Ƃ߂�
-double CalcDistance(Coord,Coord);				// 2�_�Ԃ̃��[�N���b�h���������߂�
-Coord CalcRotVec(Coord,Coord,double);			// �C�ӂ̃x�N�g�������_��ʂ�C�ӎ�����ɉ�]�������x�N�g�������߂�(3D����)
-double CalcVecAngle(Coord,Coord);				// 2�̃x�N�g���̂Ȃ��p�����߂�
-double CalcAnglePlaneVec(Coord,Coord);			// ���ʂƒ����Ƃ̂Ȃ��p�����߂�
-Coord NormalizeVec(Coord);						// 3�����x�N�g���𐳋K��(�P�ʃx�N�g����)
-Coord NormalizeVec(double,double,double);		// �I�[�o�[���[�h
-double CalcInnerProduct(Coord,Coord);			// ���ς����߂�
-double CalcInnerProduct(Coord,double,double,double);	// �I�[�o�[���[�h
-Coord CalcOuterProduct(Coord,Coord);			// �O�ς����߂�
-Coord CalcInterDivPt(Coord,Coord,double);		// 2�_�Ԃ̓����_�����߂�
-Coord CalcOrthoProjection(Coord,Coord,Coord);	// �C�ӂ̓_��C�ӂ̕��ʂ֐��ˉe����
-double CalcDistPtToPlane(Coord,Coord,Coord);	// �C�ӂ̓_����C�ӂ̕��ʂ܂ł̋��������߂�
-double CalcScalarTriProduct(Coord,Coord,Coord);	// �X�J���[�O�d�ς����߂�
-Coord CalcNormalLine(Coord,Coord,Coord);		// �C�ӂ̓_����C�ӂ̒����։��낵���_�����߂�
-Coord Arc_CP(Coord,Coord,double);				// �~�̒��S�_(vec[0])����~��ɐڂ���C�ӂ�2�{�̐ڐ��������_�ւ̃x�N�g��(���S�p0<��<��)
-int IsPointInPolygon(Coord,Coord *,int);		// ���ړ_�̑��p�`���O����
-Coord CalcNormVecFrom3Pts(Coord,Coord,Coord);	// ��ԏ��3�_����Ȃ镽�ʂ̖@���x�N�g�������߂�
+// Package: グローバルな関数の定義
 
-Coord AddCoord2D(Coord,Coord);					// ���W�l�̑����Z (2D Ver.)
-Coord AddCoord2D(Coord,double);					// �I�[�o�[���[�h (2D Ver.)
-Coord AddCoord2D(Coord,double,double);			// �I�[�o�[���[�h (2D Ver.)
-Coord DivCoord2D(Coord,Coord);					// ���W�l�̊���Z (2D Ver.)
-Coord DivCoord2D(Coord,double);					// �I�[�o�[���[�h (2D Ver.)
-Coord DivCoord2D(Coord,double,double);			// �I�[�o�[���[�h (2D Ver.)
-Coord MulCoord2D(Coord,Coord);					// ���W�l�̊|���Z(�x�N�g���̓���,�O�ςł͂Ȃ��̂Œ���) (2D Ver.)
-Coord MulCoord2D(Coord,double);					// �I�[�o�[���[�h (2D Ver.)
-Coord MulCoord2D(Coord,double,double);			// �I�[�o�[���[�h (2D Ver.)
-Coord SubCoord2D(Coord,Coord);					// ���W�l�̈����Z (2D Ver.)
-Coord SubCoord2D(Coord,double);					// �I�[�o�[���[�h (2D Ver.)
-Coord SubCoord2D(Coord,double,double);			// �I�[�o�[���[�h (2D Ver.)
-Coord SetCoord2D(Coord);						// ���W�l���� (2D Ver.)
-Coord SetCoord2D(double,double);				// �I�[�o�[���[�h (2D Ver.)
-void CopyCoord2D(Coord *,int,Coord *);			// ���W�l�Q���R�s�[ (2D Ver.)
-int DiffCoord2D(Coord,Coord);					// ���W�l�������Ȃ�KOD_TRUE�A�قȂ��Ă���Ȃ�KOD_FALSE��Ԃ� (2D Ver.)
-int DiffCoord2D(Coord,Coord,double);			// �I�[�o�[���[�h(���x�w��) (2D Ver.)
-Coord AbsCoord2D(Coord);						// ���W�l�̐�Βl��Ԃ� (2D Ver.)
-int ZoroCoord2D(Coord);							// (0,0,0)�̏ꍇ��KOD_TRUE��Ԃ� (2D Ver.)
-double CalcEuclid2D(double,double);				// ���[�N���b�h���������Ƃ߂� (2D Ver.)
-double CalcDistance2D(Coord,Coord);				// 2�������W��ł�2�_�Ԃ̃��[�N���b�h�������Z�o (2D Ver.)
-double CalcVecAngle2D(Coord,Coord);				// 2�̃x�N�g���̂Ȃ��p�����߂� (2D Ver.)
-Coord CalcRotVec2D(Coord,double);				// �C�ӂ̃x�N�g������]�������x�N�g�������߂�(2D����)
-double CalcOuterProduct2D(Coord,Coord);			// �O�ς����߂� (2D Ver.)
-double ClacPolygonArea2D(Coord [],int);			// 2D���ʏ�̑��p�`�̕����t���ʐς𓾂�
-int DiscriminateCW2D(Coord [],int);				// 2D���ʏ�̑��p�`�����v��肩�����v��肩�𔻕ʂ���
+// Group: Functions(3次元ベクトル幾何演算)
+
+// Function: InitCoord
+// 座標値の初期化
+void InitCoord(Coord *);
+
+// Function: InitCoord
+// 座標値の初期化(オーバーロード)
+void InitCoord(Coord *,int);				
+
+// Function: InitCoord
+// 座標値の初期化(オーバーロード)
+Coord InitCoord();
+
+// Function: AddCoord
+// 座標値の足し算
+Coord AddCoord(Coord,Coord);					
+
+// Function: AddCoord
+// 座標値の足し算(オーバーロード)
+Coord AddCoord(Coord,double);					
+
+// Function: AddCoord
+//  座標値の足し算(オーバーロード)
+Coord AddCoord(Coord,double,double,double);		
+
+// Function: DivCoord
+// 座標値の割り算
+Coord DivCoord(Coord,Coord);					
+
+// Function: DivCoord
+// 座標値の割り算(オーバーロード)
+Coord DivCoord(Coord,double);					
+
+// Function: DivCoord
+// 座標値の割り算(オーバーロード)
+Coord DivCoord(Coord,double,double,double);		
+
+// Function: MulCoord
+// 座標値の掛け算(ベクトルの内積,外積ではないので注意)
+Coord MulCoord(Coord,Coord);					
+
+// Function: MulCoord
+// 座標値の掛け算(オーバーロード)
+Coord MulCoord(Coord,double);					
+
+// Function: MulCoord
+// 座標値の掛け算(オーバーロード)
+Coord MulCoord(Coord,double,double,double);		
+
+// Function: SubCoord
+// 座標値の引き算
+Coord SubCoord(Coord,Coord);					
+
+// Function: SubCoord
+// 座標値の引き算(オーバーロード)
+Coord SubCoord(Coord,double);					
+
+// Function: SubCoord
+// 座標値の引き算(オーバーロード)
+Coord SubCoord(Coord,double,double,double);
+
+// Function: SetCoord
+// 座標値を代入
+Coord SetCoord(Coord);							
+
+// Function: SetCoord
+// 座標値を代入(オーバーロード)
+Coord SetCoord(double,double,double);			
+
+// Function: CopyCoord
+// 座標値群をコピー
+void CopyCoord(Coord *,int,Coord *);			
+
+// Function: DiffCoord
+// 座標値が同じならKOD_TRUE、異なっているならKOD_FALSEを返す
+int DiffCoord(Coord,Coord);						
+
+// Function: DiffCoord
+// 座標値が同じならKOD_TRUE、異なっているならKOD_FALSEを返す(オーバーロード(精度指定))
+int DiffCoord(Coord,Coord,double);				
+
+// Function: AbsCoord
+// 座標値の絶対値を返す
+Coord AbsCoord(Coord);							
+
+// Function: ZoroCoord
+// (0,0,0)の場合にKOD_TRUEを返す
+int ZoroCoord(Coord);							
+
+// Function: CalcEuclid
+// ユークリッド距離をもとめる
+double CalcEuclid(Coord);						
+
+// Function: CalcDistance
+// 2点間のユークリッド距離を求める
+double CalcDistance(Coord,Coord);				
+
+// Function: CalcRotVec
+// 任意のベクトルを原点を通る任意軸周りに回転させたベクトルを求める(3D平面)
+Coord CalcRotVec(Coord,Coord,double);			
+
+// Function: CalcVecAngle
+// 2つのベクトルのなす角を求める
+double CalcVecAngle(Coord,Coord);				
+
+// Function: CalcAnglePlaneVec
+// 平面と直線とのなす角を求める
+double CalcAnglePlaneVec(Coord,Coord);			
+
+// Function: NormalizeVec
+// 3次元ベクトルを正規化(単位ベクトル化)
+Coord NormalizeVec(Coord);						
+
+// Function: NormalizeVec
+// 3次元ベクトルを正規化(単位ベクトル化)(オーバーロード)
+Coord NormalizeVec(double,double,double);		
+
+// Function: CalcInnerProduct
+// 内積を求める
+double CalcInnerProduct(Coord,Coord);			
+
+// Function: CalcInnerProduct
+// 内積を求める(オーバーロード)
+double CalcInnerProduct(Coord,double,double,double);	
+
+// Function: CalcOuterProduct
+// 外積を求める
+Coord CalcOuterProduct(Coord,Coord);			
+
+// Function: CalcInterDivPt
+// 2点間の内分点を求める
+Coord CalcInterDivPt(Coord,Coord,double);		
+
+// Function: CalcOrthoProjection
+// 任意の点を任意の平面へ正射影する
+Coord CalcOrthoProjection(Coord,Coord,Coord);	
+
+// Function: CalcDistPtToPlane
+// 任意の点から任意の平面までの距離を求める
+double CalcDistPtToPlane(Coord,Coord,Coord);	
+
+// Function: CalcScalarTriProduct
+// スカラー三重積を求める
+double CalcScalarTriProduct(Coord,Coord,Coord);	
+
+// Function: CalcNormalLine
+// 任意の点から任意の直線へ下ろした点を求める
+Coord CalcNormalLine(Coord,Coord,Coord);		
+
+// Function: Arc_CP
+// 円の中心点(vec[0])から円上に接する任意の2本の接線が交わる点へのベクトル(中心角0<θ<π)
+Coord Arc_CP(Coord,Coord,double);				
+
+// Function: IsPointInPolygon
+// 注目点の多角形内外判別
+int IsPointInPolygon(Coord,Coord *,int);		
+
+// Function: CalcNormVecFrom3Pts
+// 空間上の3点からなる平面の法線ベクトルを求める
+Coord CalcNormVecFrom3Pts(Coord,Coord,Coord);	
 
 
-// �����ϊ��s��A��]�s��̉��Z
-Coord MulFrameCoord(double[][3],double[],Coord);	// �����ϊ��s��ƍ��W�l(3D�x�N�g��)�Ƃ̊|���Z
-Coord MulFrameCoord(FRAME,Coord);				// �I�[�o�[���[�h 
-FRAME MulFrame(FRAME ,FRAME);					// �����ϊ��s��̊|���Z
-FRAME InvFrame(FRAME);							// �����ϊ��s��̋t�s��𓾂�
-Coord RotToZYZEuler(Coord []);					// ��]�s���ZYZ�I�C���[�p�֕ϊ�
-void InitFrame(FRAME *);						// FRAME�̏�����
+// Group: Functions(2次元ベクトル幾何演算)
 
-// �������x�N�g���A�������s��̉��Z
-void InitVector(Vector,int);					// 1�����z��̏�����(����:�x�N�g��,�z��)
-void InitMatrix(Matrix,int,int);				// 2�����z��̏�����
-void CopyVector(Vector,int,Vector);				// �x�N�g���̃R�s�[
-void AddMxMx(Matrix,Matrix,Matrix,int,int);		// �s�񓯎m�̑����Z
-void MulMxMx(Matrix,int,int,Matrix,int,int,Matrix);	// �s�񓯎m�̊|���Z
-void MulMxVec(Matrix,int,int,Vector,int,Vector);	// �s��ƃx�N�g���̊|���Z
-void MulMxVec(Matrix,int,int,Coord *,Coord *);	// �s��ƍ��W�l�x�N�g���̊|���Z
-Coord MulMxCoord(Coord [],Coord);				// Coord�ŕ\�������3x3�s���Coord�x�N�g���Ƃ̊|���Z
-Coord MulMxCoord(Matrix,Coord);					// 3x3�s���Coord�x�N�g���Ƃ̊|���Z
-void TranMx(Matrix,int,int,Matrix);				// �]�u�s��𓾂�
-void TranMx(Coord **,int,int,Coord **);			// �]�u�s��𓾂�(�I�[�o�[���[�h)
-void TranMx(Coord [],Coord []);					// �]�u�s��𓾂�(�I�[�o�[���[�h)
-double Gauss(int,Matrix,Vector,Vector);			// �A��1���������̉������߂�
-double Gauss(int,Matrix,Coord *,Coord *);		// �A��1���������̉������߂�(�I�[�o�[���[�h)
-void LU_Solver(int,Matrix,Vector,int *,Vector);	// LU�����̌��ʂ���A��1��������������
-void LU_Solver(int,Matrix,Coord *,int *,Coord *);// LU�����̌��ʂ���A��1��������������(�I�[�o�[���[�h)
-double LU(int,Matrix,int *);					// LU����
-double MatInv(int,Matrix,Matrix);				// �t�s������߂�
-double MatInv3(Matrix,Matrix);					// 3x3�̋t�s��
-double MatInv2(Matrix,Matrix);					// 2x2�̋t�s��
+// Function: AddCoord2D
+// 座標値の足し算 (2D Ver.)
+Coord AddCoord2D(Coord,Coord);
 
-// ���l�v�Z
-double DegToRad(double degree);					// �p�x�P�ʂ�degree����radian��
-double RadToDeg(double radian);					// �p�x�P�ʂ�radian����degree��
-int CalcCubicEquation(double *,double *);		// 3���������̉������߂�
-int CalcQuadraticEquation(double *,double *);	// 2���������̉������߂�
-int CalcLinearEquation(double *,double *);		// 1���������̉������߂�
-int nCr(int n,int r);							// 2���W��(nCr�̑g��������)�����߂�
-int Factorial(int n);							// ���R��n�̊K������߂�
-double Round(double);							// �l�̌ܓ�
+// Function: AddCoord2D
+// 座標値の足し算(オーバーロード) (2D Ver.)
+Coord AddCoord2D(Coord,double);					
 
-// �`��֘A
-void DrawPoint(Coord,double,double,double []);			// �_��`��
-void DrawPoints(Coord *,int,double,double,double []);	// �_�Q��`��
-void DrawVector(Coord,Coord,double,double,double []);	// �x�N�g����`��
-void DrawLine(Coord,Coord,double,double []);			// 2�_�Ԃɐ�����`��
-void SetColorStat(DispStat *ds,float r, float g, float b, float a=0.5);	// �J���[�X�e�[�^�X��ύX
+// Function: AddCoord2D
+// 座標値の足し算(オーバーロード) (2D Ver.)
+Coord AddCoord2D(Coord,double,double);			
+
+// Function: DivCoord2D
+// 座標値の割り算 (2D Ver.)
+Coord DivCoord2D(Coord,Coord);					
+
+// Function: DivCoord2D
+// 座標値の割り算(オーバーロード) (2D Ver.)
+Coord DivCoord2D(Coord,double);					
+
+// Function: DivCoord2D
+// 座標値の割り算(オーバーロード) (2D Ver.)
+Coord DivCoord2D(Coord,double,double);			
+
+// Function: MulCoord2D
+// 座標値の掛け算(ベクトルの内積,外積ではないので注意) (2D Ver.)
+Coord MulCoord2D(Coord,Coord);					
+
+// Function: MulCoord2D
+// 座標値の掛け算(ベクトルの内積,外積ではないので注意)(オーバーロード) (2D Ver.)
+Coord MulCoord2D(Coord,double);					
+
+// Function: MulCoord2D
+// 座標値の掛け算(ベクトルの内積,外積ではないので注意)(オーバーロード) (2D Ver.)
+Coord MulCoord2D(Coord,double,double);			
+
+// Function: SubCoord2D
+// 座標値の引き算 (2D Ver.)
+Coord SubCoord2D(Coord,Coord);					
+
+// Function: SubCoord2D
+// 座標値の引き算(オーバーロード) (2D Ver.)
+Coord SubCoord2D(Coord,double);					
+
+// Function: SubCoord2D
+// 座標値の引き算(オーバーロード) (2D Ver.)
+Coord SubCoord2D(Coord,double,double);			
+
+// Function: SetCoord2D
+// 座標値を代入 (2D Ver.)
+Coord SetCoord2D(Coord);						
+
+// Function: SetCoord2D
+// オーバーロード (2D Ver.)
+Coord SetCoord2D(double,double);				
+
+// Function: CopyCoord2D
+// 座標値群をコピー (2D Ver.)
+void CopyCoord2D(Coord *,int,Coord *);			
+
+// Function: DiffCoord2D
+// 座標値が同じならKOD_TRUE、異なっているならKOD_FALSEを返す (2D Ver.)
+int DiffCoord2D(Coord,Coord);					
+
+// Function: DiffCoord2D
+// 座標値が同じならKOD_TRUE、異なっているならKOD_FALSEを返す(オーバーロード(精度指定)) (2D Ver.)
+int DiffCoord2D(Coord,Coord,double);			
+
+// Function: AbsCoord2D
+// 座標値の絶対値を返す (2D Ver.)
+Coord AbsCoord2D(Coord);						
+
+// Function: ZoroCoord2D
+// (0,0,0)の場合にKOD_TRUEを返す (2D Ver.)
+int ZoroCoord2D(Coord);							
+
+// Function: CalcEuclid2D
+// ユークリッド距離をもとめる (2D Ver.)
+double CalcEuclid2D(double,double);				
+
+// Function: CalcDistance2D
+// 2次元座標上での2点間のユークリッド距離を算出 (2D Ver.)
+double CalcDistance2D(Coord,Coord);				
+
+// Function: CalcVecAngle2D
+// 2つのベクトルのなす角を求める (2D Ver.)
+double CalcVecAngle2D(Coord,Coord);				
+
+// Function: CalcRotVec2D
+// 任意のベクトルを回転させたベクトルを求める(2D平面)
+Coord CalcRotVec2D(Coord,double);				
+
+// Function: CalcOuterProduct2D
+// 外積を求める (2D Ver.)
+double CalcOuterProduct2D(Coord,Coord);			
+
+// Function: ClacPolygonArea2D
+// 2D平面上の多角形の符号付き面積を得る
+double ClacPolygonArea2D(Coord [],int);			
+
+// Function: DiscriminateCW2D
+// 2D平面上の多角形が時計回りか反時計回りかを判別する
+int DiscriminateCW2D(Coord [],int);				
 
 
-// �������[�֘A
-Matrix NewMatrix(int,int);			// 2����double�^�z��̃������[�m��
-Vector NewVector(int);				// 1����double�^�z��̃������[�m��
-void FreeMatrix(Matrix,int);		// 2����double�^�z��̃������[���
-void FreeVector(Vector);			// 1����double�^�z��̃������[���
-Coord *NewCoord1(int);				// 1����Coord�^�z��̃������[�m��
-void FreeCoord1(Coord *);			// 1����Coord�^�z��̃������[���
-Coord **NewCoord2(int,int);			// 2����Coord�^�z��̃������[�m��
-void FreeCoord2(Coord **,int);		// 2����Coord�^�z��̃������[���
+// Group: Functions(同次変換行列、回転行列の演算)
 
-// ���̑�
-double sgn(double);						// ��������
-int CheckZero(double,int);				// �l��APPROX_ZERO�͈̔͂�0�ł��邩�`�F�b�N
-int CheckRange(double,double,double,int);	// �w�肵���l���w�肵���͈͓��ł��邩���`�F�b�N
-int CheckMag(double,double,int);		// 2�̒l�̑召��r 
-void BubbleSort(int[],int);				// �o�u���\�[�g(��{�����@)
-void BubbleSort(double[],int);			// �I�[�o�[���[�h
-int QCmp(const void *,const void *);	// �N�C�b�N�\�[�g 
-void Reverse(Coord [],int);				// Coord�z��̔��]����
-void Reverse(double [],int);			// double�z��̔��]����
-int CatCoord(Coord [],Coord [],int,int,int);	// ����z��̌��ɐV���Ȕz����q����
-int CheckTheSamePoints(Coord *,int);	// ����_����������
-int CheckTheSamePoints(double *,int);	// ����_����������
-int CheckTheSamePoints2D(Coord *,int);	// 2D���ʓ��̓���_����������
-void CoordToArray(Coord,double []);		// Coord��double�z��ɑ��
-void CoordToArray2D(Coord,double []);	// Coord��double�z��ɑ��
+// Function: MulFrameCoord
+// 同次変換行列と座標値(3Dベクトル)との掛け算
+Coord MulFrameCoord(double[][3],double[],Coord);	
+
+// Function: MulFrameCoord
+// 同次変換行列と座標値(3Dベクトル)との掛け算(オーバーロード)
+Coord MulFrameCoord(FRAME,Coord);				 
+
+// Function: MulFrame
+// 同次変換行列の掛け算
+FRAME MulFrame(FRAME ,FRAME);					
+
+// Function: InvFrame
+// 同次変換行列の逆行列を得る
+FRAME InvFrame(FRAME);							
+
+// Function: RotToZYZEuler
+// 回転行列をZYZオイラー角へ変換
+Coord RotToZYZEuler(Coord []);					
+
+// Function: InitFrame
+// FRAMEの初期化
+void InitFrame(FRAME *);						
+
+
+// Group: Functions(多次元ベクトル、多次元行列の演算)
+
+// Function: InitVector
+// 1次元配列の初期化(引数:ベクトル,配列長)
+void InitVector(Vector,int);					
+
+// Function: InitMatrix
+// 2次元配列の初期化
+void InitMatrix(Matrix,int,int);				
+
+// Function: CopyVector
+// ベクトルのコピー
+void CopyVector(Vector,int,Vector);				
+
+// Function: AddMxMx
+// 行列同士の足し算
+void AddMxMx(Matrix,Matrix,Matrix,int,int);		
+
+// Function: MulMxMx
+// 行列同士の掛け算
+void MulMxMx(Matrix,int,int,Matrix,int,int,Matrix);	
+
+// Function: MulMxVec
+// 行列とベクトルの掛け算
+void MulMxVec(Matrix,int,int,Vector,int,Vector);	
+
+// Function: MulMxVec
+// 行列と座標値ベクトルの掛け算
+void MulMxVec(Matrix,int,int,Coord *,Coord *);	
+
+// Function: MulMxCoord
+// Coordで表現される3x3行列とCoordベクトルとの掛け算
+Coord MulMxCoord(Coord [],Coord);				
+
+// Function: MulMxCoord
+// 3x3行列とCoordベクトルとの掛け算
+Coord MulMxCoord(Matrix,Coord);					
+
+// Function: TranMx
+// 転置行列を得る
+void TranMx(Matrix,int,int,Matrix);				
+
+// Function: TranMx
+// 転置行列を得る(オーバーロード)
+void TranMx(Coord **,int,int,Coord **);			
+
+// Function: TranMx
+// 転置行列を得る(オーバーロード)
+void TranMx(Coord [],Coord []);					
+
+// Function: Gauss
+// 連立1次方程式の解を求める
+double Gauss(int,Matrix,Vector,Vector);			
+
+// Function: Gauss
+// 連立1次方程式の解を求める(オーバーロード)
+double Gauss(int,Matrix,Coord *,Coord *);		
+
+// Function: LU_Solver
+// LU分解の結果から連立1次方程式を解く
+void LU_Solver(int,Matrix,Vector,int *,Vector);	
+
+// Function: LU_Solver
+// LU分解の結果から連立1次方程式を解く(オーバーロード)
+void LU_Solver(int,Matrix,Coord *,int *,Coord *);
+
+// Function: LU
+// LU分解
+double LU(int,Matrix,int *);					
+
+// Function: MatInv
+// 逆行列を求める
+double MatInv(int,Matrix,Matrix);				
+
+// Function: MatInv3
+// 3x3の逆行列
+double MatInv3(Matrix,Matrix);					
+
+// Function: MatInv2
+// 2x2の逆行列
+double MatInv2(Matrix,Matrix);					
+
+
+// Group: Functions(数値計算)
+
+// Function: DegToRad
+// 角度単位をdegreeからradianへ
+double DegToRad(double degree);					
+
+// Function: RadToDeg
+// 角度単位をradianからdegreeへ
+double RadToDeg(double radian);					
+
+// Function: CalcCubicEquation
+// 3次方程式の解を求める
+int CalcCubicEquation(double *,double *);		
+
+// Function: CalcQuadraticEquation
+// 2次方程式の解を求める
+int CalcQuadraticEquation(double *,double *);	
+
+// Function: CalcLinearEquation
+// 1次方程式の解を求める
+int CalcLinearEquation(double *,double *);		
+
+// Function: nCr
+// 2項係数(nCrの組合せ総数)を求める
+int nCr(int n,int r);							
+
+// Function: Factorial
+// 自然数nの階乗を求める
+int Factorial(int n);							
+
+// Function: Round
+// 四捨五入
+double Round(double);							
+
+
+// Group: Functions(描画関連)
+
+// Function: DrawPoint
+// 点を描画
+void DrawPoint(Coord,double,double,double []);			
+
+// Function: DrawPoints
+// 点群を描画
+void DrawPoints(Coord *,int,double,double,double []);	
+
+// Function: DrawVector
+// ベクトルを描画
+void DrawVector(Coord,Coord,double,double,double []);	
+
+// Function: DrawLine
+// 2点間に線分を描画
+void DrawLine(Coord,Coord,double,double []);			
+
+// Function: SetColorStat
+// カラーステータスを変更
+void SetColorStat(DispStat *ds,float r, float g, float b, float a=0.5);	
+
+// Function: DrawSolidCone
+// 四角錐を描画する
+void DrawSolidCone(double,double);		
+
+
+// Group: Functions(メモリー関連)
+
+// Function: NewMatrix
+// 2次元double型配列のメモリー確保
+Matrix NewMatrix(int,int);			
+
+// Function: NewVector
+// 1次元double型配列のメモリー確保
+Vector NewVector(int);				
+
+// Function: FreeMatrix
+// 2次元double型配列のメモリー解放
+void FreeMatrix(Matrix,int);		
+
+// Function: FreeVector
+// 1次元double型配列のメモリー解放
+void FreeVector(Vector);			
+
+// Function: NewCoord1
+// 1次元Coord型配列のメモリー確保
+Coord *NewCoord1(int);				
+
+// Function: FreeCoord1
+// 1次元Coord型配列のメモリー解放
+void FreeCoord1(Coord *);			
+
+// Function: NewCoord2
+// 2次元Coord型配列のメモリー確保
+Coord **NewCoord2(int,int);			
+
+// Function: FreeCoord2
+// 2次元Coord型配列のメモリー解放
+void FreeCoord2(Coord **,int);		
+
+// Function: NewCoord3
+// 3次元Coord型配列のメモリー確保
+Coord ***NewCoord3(int,int,int);	
+
+// Function: FreeCoord3
+// 3次元Coord型配列のメモリー解放
+void FreeCoord3(Coord ***,int,int);	
+
+
+// Group: Functions(その他)
+
+// Function: sgn
+// 符号判定
+double sgn(double);						
+
+// Function: CheckZero
+// 値がAPPROX_ZEROの範囲で0であるかチェック
+int CheckZero(double,int);				
+
+// Function: CheckRange
+// 指定した値が指定した範囲内であるかをチェック
+int CheckRange(double,double,double,int);	
+
+// Function: CheckMag
+// 2つの値の大小比較 
+int CheckMag(double,double,int);		
+
+// Function: BubbleSort
+// バブルソート(基本交換法)
+void BubbleSort(int[],int);				
+
+// Function: BubbleSort
+// オーバーロード
+void BubbleSort(double[],int);			
+
+// Function: QCmp
+// クイックソート 
+int QCmp(const void *,const void *);	
+
+// Function: Reverse
+// Coord配列の反転操作
+void Reverse(Coord [],int);				
+
+// Function: Reverse
+// double配列の反転操作
+void Reverse(double [],int);			
+
+// Function: CatCoord
+// ある配列の後ろに新たな配列を繋げる
+int CatCoord(Coord [],Coord [],int,int,int);	
+
+// Function: CheckTheSamePoints
+// 同一点を除去する
+int CheckTheSamePoints(Coord *,int);	
+
+// Function: CheckTheSamePoints
+// 同一点を除去する
+int CheckTheSamePoints(double *,int);	
+
+// Function: CheckTheSamePoints2D
+// 2D平面内の同一点を除去する
+int CheckTheSamePoints2D(Coord *,int);	
+
+// Function: CoordToArray
+// Coordをdouble配列に代入
+void CoordToArray(Coord,double []);		
+
+// Function: CoordToArray2D
+// Coordをdouble配列に代入
+void CoordToArray2D(Coord,double []);	
 
 #endif

@@ -1,18 +1,23 @@
-// UserƒXƒe[ƒ^ƒXİ’è‚ÌƒvƒƒV[ƒWƒƒ
+ï»¿// Userã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹è¨­å®šã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 #include <WScom.h>
 #include <WSCfunctionList.h>
 #include <WSCbase.h>
 #include "Kodatuno.h"
 
+// Function: UserStatDlg_Proc
+// Userã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹è¨­å®šã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
+//
+// Parameters: 
+// *object - ã“ã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ã‚’å‘¼ã³å‡ºã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ãƒã‚¤ãƒ³ã‚¿
 void UserStatDlg_Proc(WSCbase* object)
 {
 	if(User_Stat_Dlg == NULL)	return;
 
-	if(User_Stat_Dlg->getStatus() == WS_DIALOG_OK){	// OKƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚½
+	if(User_Stat_Dlg->getStatus() == WS_DIALOG_OK){	// OKãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚ŒãŸ
 
-		int mode = UserMode1->getGroupValue();	// ƒ‰ƒWƒIƒ{ƒ^ƒ“‚Ì‘I‘ğ”Ô†‚ğ“¾‚é
+		int mode = UserMode1->getGroupValue();	// ãƒ©ã‚¸ã‚ªãƒœã‚¿ãƒ³ã®é¸æŠç•ªå·ã‚’å¾—ã‚‹
 
-		// ƒvƒƒpƒeƒB’l‚ğ“¾‚é
+		// ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£å€¤ã‚’å¾—ã‚‹
 		double prop[USERPROPNUM];
 		prop[0] = User_Prop1->getProperty(WSNlabelString);
 		prop[1] = User_Prop2->getProperty(WSNlabelString);
@@ -30,9 +35,9 @@ void UserStatDlg_Proc(WSCbase* object)
 		prop[13] = User_Prop14->getProperty(WSNlabelString);
 		prop[14] = User_Prop15->getProperty(WSNlabelString);
 
-		Kodatuno.AcceptUserStat(mode,prop);			// İ’è’l‚ğæ“¾
+		Kodatuno.AcceptUserStat(mode,prop);			// è¨­å®šå€¤ã‚’å–å¾—
 
-		User_Stat_Dlg->setVisible(False);			// ƒ_ƒCƒAƒƒO‚ğ•Â‚¶‚é
+		User_Stat_Dlg->setVisible(False);			// ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’é–‰ã˜ã‚‹
 
 		GuiIF.SetMessage("User Status were Accepted."); 
 	}

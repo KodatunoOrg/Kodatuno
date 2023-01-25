@@ -1,25 +1,46 @@
-#ifndef _COMMAND_H_
+ï»¿#ifndef _COMMAND_H_
 #define _COMMAND_H_
 
 #include"StdAfx.h"
 
-#define MAXCOMMANDLEN	16			// ƒRƒ}ƒ“ƒh•¶š”‚ÌÅ‘å’l
-#define MAXCOMMANDOPNUM 5			// “o˜^‚Å‚«‚éƒRƒ}ƒ“ƒhƒIƒvƒVƒ‡ƒ“”
-#define COMMANDNUMMAX   200			// “o˜^‚Å‚«‚éƒRƒ}ƒ“ƒh”
-#define SYSCOMMANDNUM	100			// Kodatuno‚ª‚ ‚ç‚©‚¶‚ß—pˆÓ‚·‚éƒRƒ}ƒ“ƒh‚ÌÅ‘å’l(0-99)
-#define USERCOMMANDNUM	100			// ƒ†[ƒU[‚ª“Æ©‚É“o˜^‚Å‚«‚éƒRƒ}ƒ“ƒh‚ÌÅ‘å’l(100-199)
+// Constants: General Defines
+// MAXCOMMANDLEN -					ã‚³ãƒãƒ³ãƒ‰æ–‡å­—æ•°ã®æœ€å¤§å€¤(16)
+// MAXCOMMANDOPNUM -				ç™»éŒ²ã§ãã‚‹ã‚³ãƒãƒ³ãƒ‰ã‚ªãƒ—ã‚·ãƒ§ãƒ³æ•°(5)
+// COMMANDNUMMAX -					ç™»éŒ²ã§ãã‚‹ã‚³ãƒãƒ³ãƒ‰æ•°(200)
+// SYSCOMMANDNUM -					KodatunoãŒã‚ã‚‰ã‹ã˜ã‚ç”¨æ„ã™ã‚‹ã‚³ãƒãƒ³ãƒ‰ã®æœ€å¤§å€¤(100)
+// USERCOMMANDNUM - 				ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒç‹¬è‡ªã«ç™»éŒ²ã§ãã‚‹ã‚³ãƒãƒ³ãƒ‰ã®æœ€å¤§å€¤(100)
+#define MAXCOMMANDLEN	16			
+#define MAXCOMMANDOPNUM 5			
+#define COMMANDNUMMAX   200			
+#define SYSCOMMANDNUM	100			
+#define USERCOMMANDNUM	100			
 
-// ƒRƒ}ƒ“ƒh—p\‘¢‘Ì
+// Structures: CommandMap
+// ã‚³ãƒãƒ³ãƒ‰ç”¨æ§‹é€ ä½“
+// 
+// Variables:
+// char Name[MAXCOMMANDLEN] - 		ã‚³ãƒãƒ³ãƒ‰å
+// char Op[MAXCOMMANDOPNUM] - 		ã‚ªãƒ—ã‚·ãƒ§ãƒ³å
+// int  CmdNo -						ã‚­ãƒ¼
+// void (*Command)(int,char *[]) - 	ã‚³ãƒãƒ³ãƒ‰å®Ÿè¡Œé–¢æ•°ã¸ã®ãƒã‚¤ãƒ³ã‚¿
 typedef struct{
-	char Name[MAXCOMMANDLEN];	// ƒRƒ}ƒ“ƒh–¼
-	char Op[MAXCOMMANDOPNUM];	// ƒIƒvƒVƒ‡ƒ“–¼
-	int  CmdNo;					// ƒL[
-	void (*Command)(int,char *[]);			// ƒRƒ}ƒ“ƒhÀsŠÖ”‚Ö‚Ìƒ|ƒCƒ“ƒ^
+	char Name[MAXCOMMANDLEN];	
+	char Op[MAXCOMMANDOPNUM];	
+	int  CmdNo;					
+	void (*Command)(int,char *[]);			
 }CommandMap;
 
-void SetCmdList(CommandMap *,char *,char *,int,void (*Command)(int,char *[]));	// ƒRƒ}ƒ“ƒh‚ğ“o˜^
-int AnalCommandLine(char *,char *[]);				// ƒRƒ}ƒ“ƒh‰ğÍ
-int SearchRegdCmdNum(CommandMap *,char *);			// ˆø”‚Åw’è‚µ‚½ƒRƒ}ƒ“ƒh‚Ì“o˜^No‚ğ’²‚×‚é
+// Function: SetCmdList
+// ã‚³ãƒãƒ³ãƒ‰ã‚’è¿½åŠ ã™ã‚‹
+void SetCmdList(CommandMap *,const char *,const char *,int,void (*Command)(int,char *[]));	
+
+// Function: AnalCommandLine
+// ã‚³ãƒãƒ³ãƒ‰ã‚’è§£æã™ã‚‹
+int AnalCommandLine(char *,char *[]);				
+
+// Function: SearchRegdCmdNum
+// å¼•æ•°ã§æŒ‡å®šã—ãŸã‚³ãƒãƒ³ãƒ‰ã®ç™»éŒ²Noã‚’èª¿ã¹ã‚‹
+int SearchRegdCmdNum(CommandMap *,char *);			
 
 
 

@@ -3,11 +3,11 @@
 
 #include "Describe.h"
 
-// アプリケーションクラスKODatUNOを定義
+// 繧｢繝励Μ繧ｱ繝ｼ繧ｷ繝ｧ繝ｳ繧ｯ繝ｩ繧ｹKODatUNO繧貞ｮ夂ｾｩ
 class KODatUNO
 {
 public:
-	void Kodatuno_Main(int,char **);	// KODatUNOアプリケーションメイン
+	void Kodatuno_Main(int,char **);	// KODatUNO繧｢繝励Μ繧ｱ繝ｼ繧ｷ繝ｧ繝ｳ繝｡繧､繝ｳ
 };
 
 #endif

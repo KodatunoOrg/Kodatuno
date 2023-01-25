@@ -1,9 +1,9 @@
 #include "StdAfx__.h"
 
-GUI_Interface GuiIF;		// ƒNƒ‰ƒXGUI_Interface‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğƒOƒ[ƒoƒ‹‚ÅéŒ¾
+GUI_Interface GuiIF;		// ã‚¯ãƒ©ã‚¹GUI_Interfaceã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ã‚°ãƒ­ãƒ¼ãƒãƒ«ã§å®£è¨€
 
 
-// ƒRƒ}ƒ“ƒhƒvƒƒ“ƒvƒg‚ÉƒƒbƒZ[ƒW‚ğo—Í
+// ã‚³ãƒãƒ³ãƒ‰ãƒ—ãƒ­ãƒ³ãƒ—ãƒˆã«ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å‡ºåŠ›
 int GUI_Interface::SetMessage(char *mes)
 {
 	fprintf(stderr,"%s\n",mes);
@@ -12,7 +12,7 @@ int GUI_Interface::SetMessage(char *mes)
 }
 
 
-// V‚½‚É“o˜^‚µ‚½BODY‚Ì–¼‘O‚ğƒEƒBƒ“ƒhƒEƒŠƒXƒg‚É•\¦‚·‚é
+// æ–°ãŸã«ç™»éŒ²ã—ãŸBODYã®åå‰ã‚’ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒªã‚¹ãƒˆã«è¡¨ç¤ºã™ã‚‹
 void GUI_Interface::AddBodyNameToWin(const char *name)
 {
 	// void

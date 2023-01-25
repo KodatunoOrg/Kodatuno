@@ -1,7 +1,7 @@
-#ifndef QTMAINWINDOW_H
+ï»¿#ifndef QTMAINWINDOW_H
 #define QTMAINWINDOW_H
 
-// KodatunoƒƒCƒ“ƒEƒBƒ“ƒhƒE
+// Kodatunoãƒ¡ã‚¤ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
 
 #include <QMainWindow>
 #include <QFileDialog>
@@ -11,72 +11,179 @@
 #include "Kodatuno.h"
 #include "QtUserStatDialog.h"
 
+// Constants: General Defines
+// Non
+
+// Namespace: Ui
+// QtMainWindowã‚¯ãƒ©ã‚¹ã‚’åå‰ç©ºé–“Uiã§å®šç¾©
 namespace Ui {
     class QtMainWindow;
 }
 
-// KodatunoƒƒCƒ“ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX
+// Class: QtMainWindow
+// Kodatunoãƒ¡ã‚¤ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹
 class QtMainWindow : public QMainWindow
 {
+// Macro: Q_OBJECT
+// ã‚·ã‚°ãƒŠãƒ«ã¨ã‚¹ãƒ­ãƒƒãƒˆã‚’å®šç¾©ã™ã‚‹ãŸã‚ã«å¿…è¦
     Q_OBJECT
 
 public:
+// Constructor: QtMainWindow
+// QtMainWindowã‚¯ãƒ©ã‚¹ã®ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼æš—é»™å‘¼ã³å‡ºã—ã‚’ç¦æ­¢
     explicit QtMainWindow(QWidget *parent = 0);
+	
+// Destructor: ~QtMainWindow
+// GUIã®çµ‚äº†
     ~QtMainWindow();
 
 private:
+// Variable: *ui
+// Kodatunoãƒ¡ã‚¤ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
     Ui::QtMainWindow *ui;
+
+// Variable: *setting
+// QSettingsã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
     QSettings *setting;
 
-    void initGUI();			// Initializing GUI
+// Function: initGUI
+// GUIã®åˆæœŸåŒ–
+    void initGUI();			
 
-// ƒXƒƒbƒgŠÖ”
+
 private slots:
-    // ƒ{ƒ^ƒ“‘€ìƒCƒxƒ“ƒg
-    // BODY‚Ì•\¦ŠÖ˜A
-    void on_actionViewOnX_triggered();          // X•ûŒüƒrƒ…[
-    void on_actionViewOnY_triggered();          // Y•ûŒüƒrƒ…[
-    void on_actionViewOnZ_triggered();          // Z•ûŒüƒrƒ…[
-    void on_actionViewOnXYZ_triggered();        // ’¹áÕƒrƒ…[
-    void on_actionViewFit_triggered();          // ”{—¦‰Šú‰»
-    void on_actionViewSolid_triggered();        // ƒ\ƒŠƒbƒh•\¦
-    void on_actionViewNoEdge_triggered();       // ƒGƒbƒW”ñ•\¦
-    void on_actionViewWireFlame_triggered();    // ƒƒCƒ„[ƒtƒŒ[ƒ€
-    void on_actionViewVoid_triggered();         // •\¦‚µ‚È‚¢
-    void on_actionSelectAll_triggered();        // ‚·‚×‚Ä‘I‘ğ
-    void on_actionSelect_Cancel_triggered();    // ‘I‘ğ‰ğœ
-    void on_actionViewErase_triggered();        // Userfunc()‚É‚æ‚Á‚Ä•`‰æ‚³‚ê‚½‚à‚Ì‚ğÁ‚·
-    void on_actionViewBlend_triggered();        // BODY‚ğ”¼“§–¾
+	
+// Function: om_actionViewOnX_triggered
+// (private)Xæ–¹å‘ãƒ“ãƒ¥ãƒ¼
+    void on_actionViewOnX_triggered();         
+	
+// on_actionViewOnY_triggered
+// (private)Yæ–¹å‘ãƒ“ãƒ¥ãƒ¼
+    void on_actionViewOnY_triggered();          
+	
+// Function: on_actionViewOnZ_triggered
+// (private)Zæ–¹å‘ãƒ“ãƒ¥ãƒ¼
+    void on_actionViewOnZ_triggered();          
+	
+// Function: on_actionViewOnXYZ_triggered
+// (private)é³¥ç°ãƒ“ãƒ¥ãƒ¼
+    void on_actionViewOnXYZ_triggered();        
+	
+// Function: on_actionViewFit_triggered
+// (private)å€ç‡åˆæœŸåŒ–
+    void on_actionViewFit_triggered();          
+	
+// Function: on_actionViewSolid_triggered
+// (private)ã‚½ãƒªãƒƒãƒ‰è¡¨ç¤º
+    void on_actionViewSolid_triggered();        
+	
+// Fnction: on_actionViewNoEdge_triggered
+// (private)ã‚¨ãƒƒã‚¸éè¡¨ç¤º
+    void on_actionViewNoEdge_triggered();       
+	
+// on_actionViewWireFlame_triggered
+// (private)ãƒ¯ã‚¤ãƒ¤ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ 
+    void on_actionViewWireFlame_triggered();    
+	
+// Function: on_actionViewVoid_triggered
+// (private)è¡¨ç¤ºã—ãªã„
+    void on_actionViewVoid_triggered();         
+	
+// Function: on_actionSelectAll_triggered
+// (private)ã™ã¹ã¦é¸æŠ
+    void on_actionSelectAll_triggered();        
+	
+// Function: on_actionSelect_Cancel_triggered
+// (private)é¸æŠè§£é™¤
+    void on_actionSelect_Cancel_triggered();    
+	
+// Function: on_actionViewErase_triggered
+// (private)UserFunc()ã«ã‚ˆã£ã¦æç”»ã•ã‚ŒãŸã‚‚ã®ã‚’æ¶ˆã™
+    void on_actionViewErase_triggered();        
+	
+// Function: on_actionViewBlend_triggered
+// (private)BODYã‚’åŠé€æ˜
+    void on_actionViewBlend_triggered();        
 
-    // BODY‚Ì‘€ì
-    void on_bodyList_itemClicked(QListWidgetItem *item);    // BODYƒŠƒXƒg‚ÅBODY‚ğ‘I‘ğ
-    void on_actionDeleteBody_triggered();       // BODY‚ÌÁ‹
-    void on_actionOpenBody_triggered();         // BODYƒtƒ@ƒCƒ‹‚ÌƒI[ƒvƒ“
+// Function: on_bodyList_itemClicked
+// (private)VODYãƒªã‚¹ãƒˆã§BODYã‚’é¸æŠ
+    void on_bodyList_itemClicked(QListWidgetItem *item);    
+	
+// Function: on_actionDeleteBody_triggered
+// (private)BODYã®æ¶ˆå»
+    void on_actionDeleteBody_triggered();       
+	
+// Function: on_actionOpenBody_triggered
+// BODYãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚ªãƒ¼ãƒ—ãƒ³
+    void on_actionOpenBody_triggered();         
 
-    // ƒ‚ƒfƒ‹ì¬ŠÖ˜A
-    void on_actionNURBSSarface_triggered();     // NURBS‹È–Ê¶¬
-    void on_actionNURBSCurve_triggered();       // NURBS‹Èü¶¬
-    void on_actionSweepSurface_triggered();     // ƒXƒC[ƒvƒT[ƒtƒFƒX¶¬
-    void on_actionRotationSurface_triggered();  // ‰ñ“]ƒT[ƒtƒFƒX¶¬
+// Function: on_actionNURBSSurface_triggered
+// NURBSæ›²é¢ç”Ÿæˆ
+    void on_actionNURBSSurface_triggered();     
+	
+// Function: on_actionNURBSCurve_triggered
+// NURBSæ›²ç·šç”Ÿæˆ
+    void on_actionNURBSCurve_triggered();       
+	
+// Function: on_actionSweepSurface_triggered
+// ã‚¹ã‚¤ãƒ¼ãƒ—ã‚µãƒ¼ãƒ•ã‚§ã‚¹ç”Ÿæˆ
+	void on_actionSweepSurface_triggered();     
+	
+// Function: on_actionRotationSurface_triggered
+// å›è»¢ã‚µãƒ¼ãƒ•ã‚§ã‚¹ç”Ÿæˆ
+    void on_actionRotationSurface_triggered();  
 
-    // DOCK‚Ì•\¦ON
-    void on_actionShowBodyList_triggered();     // BODY List‚ÌDOCK•\¦
-    void on_actionShowConsole_triggered();      // Console‚ÌDOCK•\¦
+// Function: on_actionShowBodyList_triggered
+// BODYListã®DOCKè¡¨ç¤º
+    void on_actionShowBodyList_triggered();     
+	
+// Function: on_actionShowConsole_triggered
+// Consoleã®DOCKè¡¨ç¤º
+	void on_actionShowConsole_triggered();      
 
-    // UserFuncŠÖ˜A
-    void on_actionUserStatus_triggered();       // ƒ†[ƒU[ƒXƒe[ƒ^ƒXƒ_ƒCƒAƒƒO‚Ì•\¦
-    void on_actionUserFunc1_triggered();        // ƒ†[ƒU[ŠÖ”1‚ÌÀs
-    void on_actionUserFunc2_triggered();        // ƒ†[ƒU[ŠÖ”2‚ÌÀs
-    void on_actionUserFunc3_triggered();        // ƒ†[ƒU[ŠÖ”3‚ÌÀs
-    void on_actionUserFunc4_triggered();        // ƒ†[ƒU[ŠÖ”4‚ÌÀs
-    void on_actionUserFunc5_triggered();        // ƒ†[ƒU[ŠÖ”5‚ÌÀs
-    void on_actionUserFunc6_triggered();        // ƒ†[ƒU[ŠÖ”6‚ÌÀs
-    void on_actionUserFunc7_triggered();        // ƒ†[ƒU[ŠÖ”7‚ÌÀs
-    void on_actionUserFunc8_triggered();        // ƒ†[ƒU[ŠÖ”8‚ÌÀs
+// Function: on_actionUserStatus_triggered
+// ãƒ¦ãƒ¼ã‚¶ãƒ¼ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã®è¡¨ç¤º
+    void on_actionUserStatus_triggered();       
+	
+// Function: on_actionUserFunc1_triggered
+// ãƒ¦ãƒ¼ã‚¶ãƒ¼é–¢æ•°1ã®å®Ÿè¡Œ
+    void on_actionUserFunc1_triggered();        
+	
+// Function: on_actionUserFunc2_triggered
+// ãƒ¦ãƒ¼ã‚¶ãƒ¼é–¢æ•°2ã®å®Ÿè¡Œ
+    void on_actionUserFunc2_triggered();        
+	
+// Function: on_actionUserFunc3_triggered
+// ãƒ¦ãƒ¼ã‚¶ãƒ¼é–¢æ•°3ã®å®Ÿè¡Œ
+	void on_actionUserFunc3_triggered();        
+	
+// Function: on_actionUserFunc4_triggered
+// ãƒ¦ãƒ¼ã‚¶ãƒ¼é–¢æ•°4ã®å®Ÿè¡Œ
+    void on_actionUserFunc4_triggered();        
 
-    void on_actionAboutKodatuno_triggered();    // AboutBOX‚Ì•\¦
+// Function: on_actionUserFunc5_triggered
+// ãƒ¦ãƒ¼ã‚¶ãƒ¼é–¢æ•°5ã®å®Ÿè¡Œ
+    void on_actionUserFunc5_triggered();        
+	
+// Function: on_actionUserFunc6_triggered
+// ãƒ¦ãƒ¼ã‚¶ãƒ¼é–¢æ•°6ã®å®Ÿè¡Œ
+    void on_actionUserFunc6_triggered();        
+	
+// Function: on_actionUserFunc7_triggered
+// ãƒ¦ãƒ¼ã‚¶ãƒ¼é–¢æ•°7ã®å®Ÿè¡Œ
+    void on_actionUserFunc7_triggered();        
+	
+// Function: on_actionUserFunc8_triggered
+// ãƒ¦ãƒ¼ã‚¶ãƒ¼é–¢æ•°8ã®å®Ÿè¡Œ
+    void on_actionUserFunc8_triggered();        
+
+// FUnction: on_actionAboutKodatuno_triggered
+// AboutBOXã®è¡¨ç¤º
+    void on_actionAboutKodatuno_triggered();    
 
 protected:
+// Function: closeEvent
+// KodatunoGUIã‚¯ãƒ­ãƒ¼ã‚ºæ™‚ã®ã‚¤ãƒ™ãƒ³ãƒˆ. ä»®æƒ³é–¢æ•°ã§å®£è¨€
     virtual void closeEvent(QCloseEvent *event);
 };
 

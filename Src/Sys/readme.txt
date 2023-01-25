@@ -1,1 +1,1 @@
-No Widget�ł��g�p�̍ۂ́C�����ł�Kutil.h�̂݃v���W�F�N�g�ɒǉ����Ă�������
+﻿No Widget版を使用の際は，ここではKutil.hのみプロジェクトに追加してください

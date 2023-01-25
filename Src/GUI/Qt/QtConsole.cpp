@@ -1,15 +1,25 @@
-#include "QtConsole.h"
+ï»¿#include "QtConsole.h"
 #include <QByteArray>
 
+// Constructor: QtConsole
+// QtConsoleã‚¯ãƒ©ã‚¹ã®ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+//
+// Parameters: 
+// *parent - å‘¼ã³å‡ºã—å…ƒã®è¦ªã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆã‚’æŒ‡å®š
 QtConsole::QtConsole(QWidget *parent):
     QTextEdit(parent)
 {
     this->setReadOnly(false);
 }
 
+// Function: keyPressEvent
+// ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ä¸Šã§ã‚­ãƒ¼ã«ã‚ˆã‚‹å…¥åŠ›ãŒè¡Œã‚ã‚ŒãŸå ´åˆï¼Œã‚­ãƒ¼ã«å¿œã˜ã¦å‡¦ç†ã‚’è¡Œã†
+//
+// Parameters:
+// *e - ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã‹ã‚‰ã®æƒ…å ±
 void QtConsole::keyPressEvent(QKeyEvent *e)
 {
-    int curPos;         // ƒJ[ƒ\ƒ‹‚ÌŒ»ÝˆÊ’u
+    int curPos;         // ã‚«ãƒ¼ã‚½ãƒ«ã®ç¾åœ¨ä½ç½®
     int lastLen;
     QString text, textTemp, cmd;
     std::string cmdTemp;
@@ -18,16 +28,16 @@ void QtConsole::keyPressEvent(QKeyEvent *e)
     if(!e) return;
 
     switch (e->key()){
-    // ƒŠƒ^[ƒ“ƒL[“ü—Í‚³‚ê‚½‚çCƒRƒ}ƒ“ƒh’ŠoE‰ðÍEŽÀs
+    // ãƒªã‚¿ãƒ¼ãƒ³ã‚­ãƒ¼å…¥åŠ›ã•ã‚ŒãŸã‚‰ï¼Œã‚³ãƒžãƒ³ãƒ‰æŠ½å‡ºãƒ»è§£æžãƒ»å®Ÿè¡Œ
     case Qt::Key_Return:
     case Qt::Key_Enter:
-        text = this->toPlainText();    // console‚©‚çƒeƒLƒXƒg‚ðŽæ“¾
-        cmd = text.split(">").last();   // ">"‚Å•ªŠ„‚µ‚½ÅŒã‚ÌƒeƒLƒXƒg‚ðŽæ“¾ = ƒRƒ}ƒ“ƒh‚Ì’Šo
-        this->append(">");               // console•—‚É–¡•t‚¯
+        text = this->toPlainText();    // consoleã‹ã‚‰ãƒ†ã‚­ã‚¹ãƒˆã‚’å–å¾—
+        cmd = text.split(">").last();   // ">"ã§åˆ†å‰²ã—ãŸæœ€å¾Œã®ãƒ†ã‚­ã‚¹ãƒˆã‚’å–å¾— = ã‚³ãƒžãƒ³ãƒ‰ã®æŠ½å‡º
+        this->append(">");               // consoleé¢¨ã«å‘³ä»˜ã‘
 
-        if(cmd == "") break;            // ‹ó”’‚È‚ç
+        if(cmd == "") break;            // ç©ºç™½ãªã‚‰
         else{
-            // ƒRƒ}ƒ“ƒh‚ðŽÀs‚µC—š—ð‚É“o˜^
+            // ã‚³ãƒžãƒ³ãƒ‰ã‚’å®Ÿè¡Œã—ï¼Œå±¥æ­´ã«ç™»éŒ²
             QString temp = cmd + "\n>";
             Kodatuno.ExecCommand(temp.toUtf8().data());
             Kodatuno.SetConsoleHistory(cmd.toStdString());
@@ -35,68 +45,68 @@ void QtConsole::keyPressEvent(QKeyEvent *e)
 
         break;
 
-    // ãƒL[“ü—Í‚É‘Î‚µ‚ÄCƒRƒ}ƒ“ƒh—š—ð•\Ž¦
+    // ä¸Šã‚­ãƒ¼å…¥åŠ›ã«å¯¾ã—ã¦ï¼Œã‚³ãƒžãƒ³ãƒ‰å±¥æ­´è¡¨ç¤º
     case Qt::Key_Up:
         if(Kodatuno.GetUpperConsoleHistory(&cmdTemp) == KOD_TRUE){
-            text = this->toPlainText();                 // console‚©‚çƒeƒLƒXƒg‚ðŽæ“¾
-            lastLen = text.split(">").last().count();   // ">"‚Å•ªŠ„‚µ‚½ÅŒã‚ÌƒeƒLƒXƒg‚Ì•¶Žš”‚ðŽæ“¾
-            text.resize(text.count() - lastLen);        // “ü—Í‚³‚ê‚Ä‚¢‚½•¶Žš‚ðíœ
+            text = this->toPlainText();                 // consoleã‹ã‚‰ãƒ†ã‚­ã‚¹ãƒˆã‚’å–å¾—
+            lastLen = text.split(">").last().count();   // ">"ã§åˆ†å‰²ã—ãŸæœ€å¾Œã®ãƒ†ã‚­ã‚¹ãƒˆã®æ–‡å­—æ•°ã‚’å–å¾—
+            text.resize(text.count() - lastLen);        // å…¥åŠ›ã•ã‚Œã¦ã„ãŸæ–‡å­—ã‚’å‰Šé™¤
             text += QString(cmdTemp.c_str());
-            this->setText(text);                        // console‚É•\Ž¦
+            this->setText(text);                        // consoleã«è¡¨ç¤º
 
-            // ƒJ[ƒ\ƒ‹‚ð––”ö‚ÉˆÚ“®
+            // ã‚«ãƒ¼ã‚½ãƒ«ã‚’æœ«å°¾ã«ç§»å‹•
             cursor = this->textCursor();
             cursor.movePosition(QTextCursor::End);
             this->setTextCursor(cursor);
         }
         break;
 
-    // ‰ºƒL[“ü—Í‚É‘Î‚µ‚ÄCƒRƒ}ƒ“ƒh—š—ð•\Ž¦
+    // ä¸‹ã‚­ãƒ¼å…¥åŠ›ã«å¯¾ã—ã¦ï¼Œã‚³ãƒžãƒ³ãƒ‰å±¥æ­´è¡¨ç¤º
     case Qt::Key_Down:
         if(Kodatuno.GetLowerConsoleHistory(&cmdTemp) == KOD_TRUE){
-            text = this->toPlainText();                 // console‚©‚çƒeƒLƒXƒg‚ðŽæ“¾
-            lastLen = text.split(">").last().count();   // ">"‚Å•ªŠ„‚µ‚½ÅŒã‚ÌƒeƒLƒXƒg‚Ì•¶Žš”‚ðŽæ“¾
-            text.resize(text.count() - lastLen);        // “ü—Í‚³‚ê‚Ä‚¢‚½•¶Žš‚ðíœ
+            text = this->toPlainText();                 // consoleã‹ã‚‰ãƒ†ã‚­ã‚¹ãƒˆã‚’å–å¾—
+            lastLen = text.split(">").last().count();   // ">"ã§åˆ†å‰²ã—ãŸæœ€å¾Œã®ãƒ†ã‚­ã‚¹ãƒˆã®æ–‡å­—æ•°ã‚’å–å¾—
+            text.resize(text.count() - lastLen);        // å…¥åŠ›ã•ã‚Œã¦ã„ãŸæ–‡å­—ã‚’å‰Šé™¤
             text += QString(cmdTemp.c_str());
-            this->setText(text);                        // console‚É•\Ž¦
+            this->setText(text);                        // consoleã«è¡¨ç¤º
 
-            // ƒJ[ƒ\ƒ‹‚ð––”ö‚ÉˆÚ“®
+            // ã‚«ãƒ¼ã‚½ãƒ«ã‚’æœ«å°¾ã«ç§»å‹•
             cursor = this->textCursor();
             cursor.movePosition(QTextCursor::End);
             this->setTextCursor(cursor);
         }
         break;
 
-    // ">"‚ÅŽ~‚ß‚é
+    // ">"ã§æ­¢ã‚ã‚‹
     case Qt::Key_Left:
-        text = this->toPlainText();                 // console‚©‚çƒeƒLƒXƒg‚ðŽæ“¾
-        lastLen = text.split(">").last().count();   // ">"‚Å•ªŠ„‚µ‚½ÅŒã‚ÌƒeƒLƒXƒg‚Ì•¶Žš”‚ðŽæ“¾
+        text = this->toPlainText();                 // consoleã‹ã‚‰ãƒ†ã‚­ã‚¹ãƒˆã‚’å–å¾—
+        lastLen = text.split(">").last().count();   // ">"ã§åˆ†å‰²ã—ãŸæœ€å¾Œã®ãƒ†ã‚­ã‚¹ãƒˆã®æ–‡å­—æ•°ã‚’å–å¾—
 
-        // ƒJ[ƒ\ƒ‹‚ÌˆÊ’uŽæ“¾
+        // ã‚«ãƒ¼ã‚½ãƒ«ã®ä½ç½®å–å¾—
         cursor = this->textCursor();
         curPos = cursor.position();
 
-        // ">"‚ÅŽ~‚ß‚é
+        // ">"ã§æ­¢ã‚ã‚‹
         if( curPos > (text.count() - lastLen) ){
-            QTextEdit::keyPressEvent(e);    // ’Êí‚Ìˆ—
+            QTextEdit::keyPressEvent(e);    // é€šå¸¸ã®å‡¦ç†
         }
         break;
 
-    // ">"‚ÅŽ~‚ß‚é
+    // ">"ã§æ­¢ã‚ã‚‹
     case Qt::Key_Backspace:
     case Qt::Key_Delete:
         if(CheckCurPos() == false || this->textCursor().hasSelection()==true)
             break;
-        text = this->toPlainText();         // console‚©‚çƒeƒLƒXƒg‚ðŽæ“¾
-        textTemp = text.split(">").last();  // ">"‚Å•ªŠ„‚µ‚½ÅŒã‚ÌƒeƒLƒXƒg‚Ì•¶Žš‚ðŽæ“¾
+        text = this->toPlainText();         // consoleã‹ã‚‰ãƒ†ã‚­ã‚¹ãƒˆã‚’å–å¾—
+        textTemp = text.split(">").last();  // ">"ã§åˆ†å‰²ã—ãŸæœ€å¾Œã®ãƒ†ã‚­ã‚¹ãƒˆã®æ–‡å­—ã‚’å–å¾—
         if(textTemp != ""){
-            QTextEdit::keyPressEvent(e);    // ’Êí‚Ìˆ—
+            QTextEdit::keyPressEvent(e);    // é€šå¸¸ã®å‡¦ç†
         }
         break;
 
-    // ‚»‚êˆÈŠO‚ÌƒL[‚Í’Êí‚Ìˆ—
+    // ãã‚Œä»¥å¤–ã®ã‚­ãƒ¼ã¯é€šå¸¸ã®å‡¦ç†
     default:
-        // Œ»Ý‚ÌƒJ[ƒ\ƒ‹ˆÊ’u‚ªÅŒã‚Ì">"‚æ‚è‘O‚É‚ ‚éê‡‚ÍCƒRƒ“ƒ\[ƒ‹‚ÌÅŒã‚ÉƒJ[ƒ\ƒ‹‚ðŽ‚Á‚Ä‚­‚é
+        // ç¾åœ¨ã®ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®ãŒæœ€å¾Œã®">"ã‚ˆã‚Šå‰ã«ã‚ã‚‹å ´åˆã¯ï¼Œã‚³ãƒ³ã‚½ãƒ¼ãƒ«ã®æœ€å¾Œã«ã‚«ãƒ¼ã‚½ãƒ«ã‚’æŒã£ã¦ãã‚‹
         if(CheckCurPos() == false || this->textCursor().hasSelection()==true){
             cursor = this->textCursor();
             cursor.movePosition(QTextCursor::End);
@@ -107,8 +117,12 @@ void QtConsole::keyPressEvent(QKeyEvent *e)
     }
 }
 
-// ƒJ[ƒ\ƒ‹‚ÌŒ»ÝˆÊ’u‚ªÅŒã‚Ì">"ˆÈ~‚É‚ ‚é‚Ì‚©‚ð’²‚×‚é
-// •Ô’l@">"ˆÈ~Fture@@@">"ˆÈ‘OFfalse
+// Function: CheckCurPos
+// ã‚«ãƒ¼ã‚½ãƒ«ã®ç¾åœ¨ä½ç½®ãŒæœ€å¾Œã®">"ä»¥é™ã«ã‚ã‚‹ã®ã‹ã‚’èª¿ã¹ã‚‹
+//
+// Return:
+// true - ã‚«ãƒ¼ã‚½ãƒ«ã®ä½ç½®ãŒ">"ä»¥é™
+// false - ã‚«ãƒ¼ã‚½ãƒ«ã®ä½ç½®ãŒ">"ä»¥å‰
 bool QtConsole::CheckCurPos()
 {
     int curpos = this->textCursor().position();

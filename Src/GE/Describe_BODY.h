@@ -1,4 +1,4 @@
-// BODY•`‰æ—pƒNƒ‰ƒX‚ğ’è‹`
+ï»¿// BODYæç”»ç”¨ã‚¯ãƒ©ã‚¹ã‚’å®šç¾©
 
 #ifndef _DESCRIBE_BODY_H_
 #define _DESCRIBE_BODY_H_
@@ -6,50 +6,123 @@
 #include "BODY.h"
 #include "NURBS_Func.h"
 
-#define COMMAND_DRAW_BODY  1			// BODY•`‰æ—pƒfƒBƒXƒvƒŒƒCƒŠƒXƒg‚Ì“o˜^”Ô†
-#define COMMAND_DRAW_USER  2			// UserƒƒCƒ“ŠÖ”‚É‚æ‚Á‚ÄƒR[ƒ‹‚³‚ê‚½OpenGL•`‰æŠÖ”—pƒfƒBƒXƒvƒŒƒCƒŠƒXƒg‚Ì“o˜^”Ô†
-#define COMMAND_DRAW_USER_COMMAND 100	// User Command‚É‚æ‚Á‚ÄƒR[ƒ‹‚³‚ê‚½OpenGL•`‰æŠÖ”—pƒfƒBƒXƒvƒŒƒCƒŠƒXƒg‚Ì“o˜^”Ô†
+// Constants: General Defines
+// COMMAND_DRAW_BOD					BODYæç”»ç”¨ãƒ‡ã‚£ã‚¹ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã®ç™»éŒ²ç•ªå·(1)
+// COMMAND_DRAW_USER				Userãƒ¡ã‚¤ãƒ³é–¢æ•°ã«ã‚ˆã£ã¦ã‚³ãƒ¼ãƒ«ã•ã‚ŒãŸOpenGLæç”»é–¢æ•°ç”¨ãƒ‡ã‚£ã‚¹ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã®ç™»éŒ²ç•ªå·(2)
+// COMMAND_DRAW_USER_COMMAND		User Commandã«ã‚ˆã£ã¦ã‚³ãƒ¼ãƒ«ã•ã‚ŒãŸOpenGLæç”»é–¢æ•°ç”¨ãƒ‡ã‚£ã‚¹ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã®ç™»éŒ²ç•ªå·(100)
+#define COMMAND_DRAW_BODY  1
+#define COMMAND_DRAW_USER  2
+#define COMMAND_DRAW_USER_COMMAND 100
 
-
-// BODYƒGƒ“ƒeƒBƒeƒB‚ğ•`‰æ‚·‚éŠÖ”‚ğW‚ß‚½ƒNƒ‰ƒX
+// Class: Describe_BODY
+// BODYã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚’æç”»ã™ã‚‹é–¢æ•°ã‚’é›†ã‚ãŸã‚¯ãƒ©ã‚¹
 class Describe_BODY
 {
 public:
+	// Constructor: Describe_BODY
+	// Describe_BODYã‚¯ãƒ©ã‚¹ã®ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼NURBSæç”»ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã®è¨­å®š
 	Describe_BODY();
+
+	// Destructor: ~Describe_BODY
+	// Describe_BODYã‚¯ãƒ©ã‚¹ã®ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ã‚¹ã‚±ãƒ«ãƒˆãƒ³ã§ã™ï¼
 	~Describe_BODY();
-	static void DrawBody(BODY *);					// BODY‚ğ•`‰æ
-	static void DrawCompositeCurve(COMPC *);		// •¡‡‹Èü‚ğ•`‰æ
-	static void DrawLine(LINE_);					// ’¼ü‚ğ•`‰æ
-	static void DrawCircleArc(CIRA);				// ‰~E‰~ŒÊ‚ğ•`‰æ
-	static void DrawNurbsCurve(NURBSC);				// NURBS‹Èü‚ğ•`‰æ
-	static void DrawTrimdNurbsSurfe(NURBSS *);		// NURBS‹È–Ê‚Ì•`‰æ(ƒgƒŠƒ€‚ ‚è)
-	static void DrawNurbsSurfe(NURBSS);				// NURBS‹È–Ê‚Ì•`‰æ(ƒgƒŠƒ€‚È‚µ)
-	static void DrawCurveOnParamSurfe(CONPS *);		// –Êãü‚ğ•`‰æ
-	static void DrawTrimdSurf(TRMS);				// ƒgƒŠƒ€–Ê‚ğ•`‰æ
-	static void DrawNurbsCurve_Param(NURBSC *);		// 2Dƒpƒ‰ƒƒgƒŠƒbƒNNURBS‹Èü—v‘f‚Ì•`‰æ
-	static void Draw_Lines(BODY *Body);				// BODY‚ÉŠÜ‚Ü‚ê‚éü•ª‚ğ‘S‚Ä•`‰æ
-	static void Draw_CircleArcs(BODY *Body);		// BODY‚ÉŠÜ‚Ü‚ê‚é‰~C‰~ŒÊ‚ğ‘S‚Ä•`‰æ
-	static void Draw_NurbsCurves(BODY *Body);		// BODY‚ÉŠÜ‚Ü‚ê‚éNURBS‹Èü‚ğ‘S‚Ä•`‰æ
-	static void Draw_NurbsSurfaces(BODY *Body);		// BODY‚ÉŠÜ‚Ü‚ê‚éNURBS‹È–Ê‚ğ‘S‚Ä•`‰æ
-	static void Draw_TrimSurfes(BODY *Body);		// BODY‚ÉŠÜ‚Ü‚ê‚éƒgƒŠƒ€–Ê‚ğ‘S‚Ä•`‰æ
-	static void SetNurbsStat();						// NURBS•`‰æ‚Ì•`‰æƒXƒe[ƒ^ƒX‚ğİ’è
-	static void SetNurbsSTolerance(GLfloat);		// NURBS‹È–Ê‚Ì‘e‚³‚ğw’è
-	static void NURBS_Err(GLenum error_code);		// NURBS•`‰æ‚ÌƒGƒ‰[ƒR[ƒ‹ƒoƒbƒN
-	static void SetNurbsSProperty(GLenum,GLfloat);	// NURBS‹È–Ê‚Ì•`‰æŒ`®‚ğ•ÏX‚·‚é
 
-	static void DrawMesh(MESH *,int);				// ƒƒbƒVƒ…‚Ì•`‰æ
+	// Function: DrawBody
+	// BODYã‚’æç”»
+	static void DrawBody(BODY *);					
 
-// –¢À‘•
-	static void DrawCircleArc();					// ‰~E‰~ŒÊ‚ğ•`‰æ
-	static void DrawConicArc();						// ‰~‹Èü‚ğ•`‰æ
-	static void DrawCircleArc_Param(CIRA *);		// 2Dƒpƒ‰ƒƒgƒŠƒbƒN‰~—v‘f‚Ì•`‰æ
-	static void DrawConicArc_Param(CONA *);			// 2Dƒpƒ‰ƒƒgƒŠƒbƒN‰~‹Èü—v‘f‚Ì•`‰æ
-	static void DrawLine_Param(LINE_ *);			// 2Dƒpƒ‰ƒƒgƒŠƒbƒN’¼ü—v‘f‚Ì•`‰æ
+	// Function: DrawCompositeCurve
+	// è¤‡åˆæ›²ç·šã‚’æç”»
+	static void DrawCompositeCurve(COMPC *);		
+
+	// Function: DrawLine
+	// ç›´ç·šã‚’æç”»
+	static void DrawLine(LINE_);					
+
+	// Function: DrawCircleArc
+	// å††ãƒ»å††å¼§ã‚’æç”»
+	static void DrawCircleArc(CIRA);				
+
+	// Function: DrawNurbsCurve
+	// NURBSæ›²ç·šã‚’æç”»
+	static void DrawNurbsCurve(NURBSC);				
+
+	// Function: DrawTrimdNurbsSurfe
+	// NURBSæ›²é¢ã®æç”»(ãƒˆãƒªãƒ ã‚ã‚Š)
+	static void DrawTrimdNurbsSurfe(NURBSS *);		
+
+	// Function: DrawNurbsSurfe
+	// NURBSæ›²é¢ã®æç”»(ãƒˆãƒªãƒ ãªã—)
+	static void DrawNurbsSurfe(NURBSS);				
+
+	// Function: DrawCurveOnParamSurfe
+	// é¢ä¸Šç·šã‚’æç”»
+	static void DrawCurveOnParamSurfe(CONPS *);		
+
+	// Function: DrawTrimdSurf
+	// ãƒˆãƒªãƒ é¢ã‚’æç”»
+	static void DrawTrimdSurf(TRMS);				
+
+	// Function: DrawNurbsCurve_Param
+	// 2Dãƒ‘ãƒ©ãƒ¡ãƒˆãƒªãƒƒã‚¯NURBSæ›²ç·šè¦ç´ ã®æç”»
+	static void DrawNurbsCurve_Param(NURBSC *);		
+
+	// Function: Draw_Lines
+	// BODYã«å«ã¾ã‚Œã‚‹ç·šåˆ†ã‚’å…¨ã¦æç”»
+	static void Draw_Lines(BODY *Body);				
+
+	// Function: Draw_CircleArcs
+	// BODYã«å«ã¾ã‚Œã‚‹å††ï¼Œå††å¼§ã‚’å…¨ã¦æç”»
+	static void Draw_CircleArcs(BODY *Body);		
+
+	// Function: Draw_NurbsCurves
+	// BODYã«å«ã¾ã‚Œã‚‹NURBSæ›²ç·šã‚’å…¨ã¦æç”»
+	static void Draw_NurbsCurves(BODY *Body);		
+
+	// Function: Draw_NurbsSurfaces
+	// BODYã«å«ã¾ã‚Œã‚‹NURBSæ›²é¢ã‚’å…¨ã¦æç”»
+	static void Draw_NurbsSurfaces(BODY *Body);		
+
+	// Function: Draw_TrimSurfes
+	// BODYã«å«ã¾ã‚Œã‚‹ãƒˆãƒªãƒ é¢ã‚’å…¨ã¦æç”»
+	static void Draw_TrimSurfes(BODY *Body);		
+
+	// Function: 
+	// NURBSæç”»æ™‚ã®æç”»ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’è¨­å®š
+	static void SetNurbsStat();						
+
+	// Function: SetNurbsSTolerance
+	// NURBSæ›²é¢ã®ç²—ã•ã‚’æŒ‡å®š
+	static void SetNurbsSTolerance(GLfloat);		
+
+	// Function: NURBS_Err
+	// NURBSæç”»æ™‚ã®ã‚¨ãƒ©ãƒ¼ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯
+	static void NURBS_Err(GLenum error_code);		
+
+	// Function: SetNurbsSProperty
+	// NURBSæ›²é¢ã®æç”»å½¢å¼ã‚’å¤‰æ›´ã™ã‚‹
+	static void SetNurbsSProperty(GLenum,GLfloat);	
+
+	// Function: DrawMesh
+	// ãƒ¡ãƒƒã‚·ãƒ¥ã®æç”»
+	static void DrawMesh(MESH *,int);				
+
+	// æœªå®Ÿè£…
+	static void DrawCircleArc();					// å††ãƒ»å††å¼§ã‚’æç”»
+	static void DrawConicArc();						// å††éŒæ›²ç·šã‚’æç”»
+	static void DrawCircleArc_Param(CIRA *);		// 2Dãƒ‘ãƒ©ãƒ¡ãƒˆãƒªãƒƒã‚¯å††è¦ç´ ã®æç”»
+	static void DrawConicArc_Param(CONA *);			// 2Dãƒ‘ãƒ©ãƒ¡ãƒˆãƒªãƒƒã‚¯å††éŒæ›²ç·šè¦ç´ ã®æç”»
+	static void DrawLine_Param(LINE_ *);			// 2Dãƒ‘ãƒ©ãƒ¡ãƒˆãƒªãƒƒã‚¯ç›´ç·šè¦ç´ ã®æç”»
 
 
 protected:
-	static GLUnurbsObj *NurbsSurf;					// NURBS‹È–Ê—pƒIƒuƒWƒFƒNƒg
-	static GLUnurbsObj *NurbsCurve;					// NURBS‹Èü—pƒIƒuƒWƒFƒNƒg
+	// Variable:
+	// NURBSæ›²é¢ç”¨ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+	static GLUnurbsObj *NurbsSurf;			
+
+	// Variable:
+	// NURBSæ›²ç·šç”¨ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+	static GLUnurbsObj *NurbsCurve;					
 };
 
 #endif

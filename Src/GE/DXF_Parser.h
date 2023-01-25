@@ -1,65 +1,147 @@
-#ifndef _DXF_PARSER_MAIN_H_
+ï»¿#ifndef _DXF_PARSER_MAIN_H_
 #define _DXF_PARSER_MAIN_H_
 
 #include "BODY.h"
 
-#define SECTION_NAME	2		// ƒZƒNƒVƒ‡ƒ“–¼‚ğ•\‚·ƒVƒ“ƒ{ƒ‹
-#define HEADER_SECTION	1		// ƒwƒbƒ_ƒZƒNƒVƒ‡ƒ“‚ÌƒVƒ“ƒ{ƒ‹
-#define CLASS_SECTION	2		// ƒNƒ‰ƒXƒZƒNƒVƒ‡ƒ“‚ÌƒVƒ“ƒ{ƒ‹
-#define TABLE_SECTION	3		// ƒe[ƒuƒ‹ƒZƒNƒVƒ‡ƒ“‚ÌƒVƒ“ƒ{ƒ‹
-#define BLOCK_SECTION	4		// ƒuƒƒbƒNƒZƒNƒVƒ‡ƒ“‚ÌƒVƒ“ƒ{ƒ‹
-#define ENTITIY_SECTION	5		// ƒGƒ“ƒeƒBƒeƒBƒZƒNƒVƒ‡ƒ“‚ÌƒVƒ“ƒ{ƒ‹
-#define OBJECT_SECTION	6		// ƒIƒuƒWƒFƒNƒgƒZƒNƒVƒ‡ƒ“‚ÌƒVƒ“ƒ{ƒ‹
-#define ENT_TYPE		0		// ƒGƒ“ƒeƒBƒeƒBƒ^ƒCƒv‚ğ•\‚·ƒVƒ“ƒ{ƒ‹
+// Constants: General Defines
+// SECTION_NAME -		ã‚»ã‚¯ã‚·ãƒ§ãƒ³åã‚’è¡¨ã™ã‚·ãƒ³ãƒœãƒ«(2)
+// HEADER_SECTIO -		ãƒ˜ãƒƒãƒ€ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®ã‚·ãƒ³ãƒœãƒ«(1)
+// CLASS_SECTION -		ã‚¯ãƒ©ã‚¹ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®ã‚·ãƒ³ãƒœãƒ«(2)
+// TABLE_SECTION -		ãƒ†ãƒ¼ãƒ–ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®ã‚·ãƒ³ãƒœãƒ«(3)
+// BLOCK_SECTION -		ãƒ–ãƒ­ãƒƒã‚¯ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®ã‚·ãƒ³ãƒœãƒ«(4)
+// ENTITIY_SECTION -	ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®ã‚·ãƒ³ãƒœãƒ«(5)
+// OBJECT_SECTION -		ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®ã‚·ãƒ³ãƒœãƒ«(6)
+// ENT_TYPE -			ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚¿ã‚¤ãƒ—ã‚’è¡¨ã™ã‚·ãƒ³ãƒœãƒ«(0)
+// COORD_X -			Xåº§æ¨™ã‚’è¡¨ã™ã‚·ãƒ³ãƒœãƒ«(10)
+// COORD_Y -			Yåº§æ¨™ã‚’è¡¨ã™ã‚·ãƒ³ãƒœãƒ«(20)
+// COORD_Z -			Zåº§æ¨™ã‚’è¡¨ã™ã‚·ãƒ³ãƒœãƒ«(30)
+// COORD_X_ -			Xåº§æ¨™ã‚’è¡¨ã™ã‚·ãƒ³ãƒœãƒ«(11)
+// COORD_Y_ -			Yåº§æ¨™ã‚’è¡¨ã™ã‚·ãƒ³ãƒœãƒ«(21)
+// COORD_Z_ -			Zåº§æ¨™ã‚’è¡¨ã™ã‚·ãƒ³ãƒœãƒ«(31)
+// RADIUS -				åŠå¾„ã‚’è¡¨ã™ã‚·ãƒ³ãƒœãƒ«(40)
+// START_ANG -			å††å¼§é–‹å§‹è§’åº¦ã‚’è¡¨ã™ã‚·ãƒ³ãƒœãƒ«(50)
+// END_ANG -			å††å¼§çµ‚äº†è§’åº¦ã‚’è¡¨ã™ã‚·ãƒ³ãƒœãƒ«(51)
+// BUFSIZEMAX_DXF -		æ–‡å­—åˆ—ä¸€æ™‚æ ¼ç´ç”¨ãƒãƒƒãƒ•ã‚¡ã®ã‚µã‚¤ã‚º(256)
+// LABELSIZEMAX_DXF -	ãƒ©ãƒ™ãƒ«æ–‡å­—åˆ—ä¸€æ™‚æ ¼ç´ç”¨ãƒãƒƒãƒ•ã‚¡ã®ã‚µã‚¤ã‚º(256)
+// EVEN -				å¶æ•°ã®ã‚·ãƒ³ãƒœãƒ«(0)
+// ODD -				å¥‡æ•°ã®ã‚·ãƒ³ãƒœãƒ«(1)
+#define SECTION_NAME	2
+#define HEADER_SECTION	1
+#define CLASS_SECTION	2
+#define TABLE_SECTION	3
+#define BLOCK_SECTION	4
+#define ENTITIY_SECTION	5
+#define OBJECT_SECTION	6
+#define ENT_TYPE		0
+#define COORD_X			10
+#define COORD_Y			20
+#define COORD_Z			30
+#define COORD_X_		11
+#define COORD_Y_		21
+#define COORD_Z_		31
+#define RADIUS			40
+#define START_ANG		50
+#define END_ANG			51
+#define BUFSIZEMAX_DXF		256
+#define LABELSIZEMAX_DXF	256
+#define EVEN			0
+#define ODD				1
 
-#define COORD_X			10		// XÀ•W‚ğ•\‚·ƒVƒ“ƒ{ƒ‹
-#define COORD_Y			20		// YÀ•W‚ğ•\‚·ƒVƒ“ƒ{ƒ‹
-#define COORD_Z			30		// ZÀ•W‚ğ•\‚·ƒVƒ“ƒ{ƒ‹
-#define COORD_X_		11		// XÀ•W‚ğ•\‚·ƒVƒ“ƒ{ƒ‹
-#define COORD_Y_		21		// YÀ•W‚ğ•\‚·ƒVƒ“ƒ{ƒ‹
-#define COORD_Z_		31		// ZÀ•W‚ğ•\‚·ƒVƒ“ƒ{ƒ‹
-#define RADIUS			40		// ”¼Œa‚ğ•\‚·ƒVƒ“ƒ{ƒ‹
-#define START_ANG		50		// ‰~ŒÊŠJnŠp“x‚ğ•\‚·ƒVƒ“ƒ{ƒ‹
-#define END_ANG			51		// ‰~ŒÊI—¹Šp“x‚ğ•\‚·ƒVƒ“ƒ{ƒ‹
-
-#define BUFSIZEMAX		256		// •¶š—ñˆêŠi”[—pƒoƒbƒtƒ@‚ÌƒTƒCƒY
-#define LABELSIZEMAX	256		// ƒ‰ƒxƒ‹•¶š—ñˆêŠi”[—pƒoƒbƒtƒ@‚ÌƒTƒCƒY
-#define EVEN			0		// ‹ô”‚ÌƒVƒ“ƒ{ƒ‹
-#define ODD				1		// Šï”‚ÌƒVƒ“ƒ{ƒ‹
-
-// DXFƒp[ƒT[—pƒNƒ‰ƒX‚ğ’è‹`
+// Class: DXF_PARSER
+// DXFãƒ‘ãƒ¼ã‚µãƒ¼ç”¨ã‚¯ãƒ©ã‚¹
 class DXF_PARSER
 {
 public:
+	// Function: DXF_PARSER
+	// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	DXF_PARSER();
-	int DXF_Parser_Main(BODY *,const char *);	// DXFƒtƒ@ƒCƒ‹‚Ìƒp[ƒTmain
+
+	// Function: DXF_Parser_Main
+	// DXFãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ãƒ¼ã‚µmain
+	int DXF_Parser_Main(BODY *,const char *);	
 
 private:
-	int ReadHeaderSection(FILE *,int,BODY *);		// ƒwƒbƒ_ƒZƒNƒVƒ‡ƒ“‚Ì“Ç‚İ‚İ
-	int ReadClassesSection(FILE *,int,BODY *);		// ƒNƒ‰ƒXƒZƒNƒVƒ‡ƒ“‚Ì“Ç‚İ‚İ
-	int ReadTablesSection(FILE *,int,BODY *);		// ƒe[ƒuƒ‹ƒZƒNƒVƒ‡ƒ“‚Ì“Ç‚İ‚İ
-	int ReadBlocksSection(FILE *,int,BODY *);		// ƒuƒƒbƒNƒZƒNƒVƒ‡ƒ“‚Ì“Ç‚İ‚İ
-	int ReadEntitiesSection(FILE *,int,BODY *);		// ƒGƒ“ƒeƒBƒeƒBƒZƒNƒVƒ‡ƒ“‚Ì“Ç‚İ‚İ
-	int ReadObjectsSection(FILE *,int,BODY *);		// ƒIƒuƒWƒFƒNƒgƒZƒNƒVƒ‡ƒ“‚Ì“Ç‚İ‚İ
-	int ResearchEntNum(FILE *,BODY *);				// ŠeƒGƒ“ƒeƒBƒeƒB‚Ì”‚ğƒŠƒT[ƒ`
-	int GetArcData(FILE *,BODY *);					// ‰~ŒÊ‚Ìƒf[ƒ^‚ğæ“¾‚µBODY‚ÉŠi”[
-	int GetCircleData(FILE *,BODY *);				// ‰~‚Ìƒf[ƒ^‚ğæ“¾‚µBODY‚ÉŠi”[
-	int GetLineData(FILE *,BODY *);					// ü•ª‚Ìƒf[ƒ^‚ğæ“¾‚µBODY‚ÉŠi”[
-	int SetStartEndPtArc(CIRA *);					// ‰~ŒÊ‚Ìn“_CI“_‚ğƒZƒbƒg
-	int CalcUVvec(CIRA *);							// CIRA‚ÌUV’¼ŒğÀ•W‚ğİ’è‚·‚é
-	int EvenOdd(int);								// Šï”‹ô””»•Ê
-	int CheckSection(char *);						// ƒZƒNƒVƒ‡ƒ“”»•Ê
-	void InitDisplayStat(DispStat *);				// ŠeƒGƒ“ƒeƒBƒeƒB‚Ì•\¦‘®«‚ğİ’è
-	int ChangeEntityforNurbs(BODY *);				// NURBS‹ÈüˆÈŠO‚ÌƒGƒ“ƒeƒBƒeƒB‚ğNURBS‹Èü‚É•ÏŠ·
+	// Function: ReadHeaderSection
+	// (private)ãƒ˜ãƒƒãƒ€ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®èª­ã¿è¾¼ã¿
+	int ReadHeaderSection(FILE *,int,BODY *);
+
+	// Function: ReadClassesSection
+	// (private)ã‚¯ãƒ©ã‚¹ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®èª­ã¿è¾¼ã¿
+	int ReadClassesSection(FILE *,int,BODY *);
+	
+	// Function: ReadTablesSection
+	// (private)ãƒ†ãƒ¼ãƒ–ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®èª­ã¿è¾¼ã¿
+	int ReadTablesSection(FILE *,int,BODY *);
+	
+	// Function: ReadBlocksSection
+	// (private)ãƒ–ãƒ­ãƒƒã‚¯ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®èª­ã¿è¾¼ã¿
+	int ReadBlocksSection(FILE *,int,BODY *);
+	
+	// Function: ReadEntitiesSection
+	// (private)ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®èª­ã¿è¾¼ã¿
+	int ReadEntitiesSection(FILE *,int,BODY *);
+	
+	// Function: ReadObjectsSection
+	// (private)ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®èª­ã¿è¾¼ã¿
+	int ReadObjectsSection(FILE *,int,BODY *);
+	
+	// Function: ResearchEntNum
+	// (private)å„ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã®æ•°ã‚’ãƒªã‚µãƒ¼ãƒ
+	int ResearchEntNum(FILE *,BODY *);
+	
+	// Function: GetArcData
+	// (private)å††å¼§ã®ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—ã—BODYã«æ ¼ç´
+	int GetArcData(FILE *,BODY *);
+	
+	// Function: GetCircleData
+	// (private)å††ã®ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—ã—BODYã«æ ¼ç´
+	int GetCircleData(FILE *,BODY *);
+	
+	// Function: GetLineData
+	// (private)ç·šåˆ†ã®ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—ã—BODYã«æ ¼ç´
+	int GetLineData(FILE *,BODY *);
+	
+	// Function: SetStartEndPtArc
+	// (private)å††å¼§ã®å§‹ç‚¹ï¼Œçµ‚ç‚¹ã‚’ã‚»ãƒƒãƒˆ
+	int SetStartEndPtArc(CIRA *);
+	
+	// Function: CalcUVvec
+	// (private)CIRAã®UVç›´äº¤åº§æ¨™ã‚’è¨­å®šã™ã‚‹
+	int CalcUVvec(CIRA *);
+	
+	// Function: EvenOdd
+	// (private)å¥‡æ•°å¶æ•°åˆ¤åˆ¥
+	int EvenOdd(int);
+	
+	// Function: CheckSection
+	// (private)ã‚»ã‚¯ã‚·ãƒ§ãƒ³åˆ¤åˆ¥
+	int CheckSection(char *);
+	
+	// Function: InitDisplayStat
+	// (private)å„ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã®è¡¨ç¤ºå±æ€§ã‚’è¨­å®š
+	void InitDisplayStat(DispStat *);
+	
+	// Function: ChangeEntityforNurbs
+	// (private)NURBSæ›²ç·šä»¥å¤–ã®ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚’NURBSæ›²ç·šã«å¤‰æ›
+	int ChangeEntityforNurbs(BODY *);
 
 
 private:
-	char Buf[BUFSIZEMAX];		// •¶š—ñˆêŠi”[—pƒoƒbƒtƒ@
-	char Label[LABELSIZEMAX];	// ƒ‰ƒxƒ‹•¶š—ñˆêŠi”[—pƒoƒbƒtƒ@
-	int  Gcode;					// ƒOƒ‹[ƒvƒR[ƒhŠi”[ƒoƒbƒtƒ@
-	int  Count[ALL_ENTITY_TYPE_NUM];	// ƒGƒ“ƒeƒBƒeƒBƒJƒEƒ“ƒ^
+	// Variable: Buf
+	// (private)æ–‡å­—åˆ—ä¸€æ™‚æ ¼ç´ç”¨ãƒãƒƒãƒ•ã‚¡
+	char Buf[BUFSIZEMAX_DXF];
 
-
+	// Variable: Label
+	// (private)ãƒ©ãƒ™ãƒ«æ–‡å­—åˆ—ä¸€æ™‚æ ¼ç´ç”¨ãƒãƒƒãƒ•ã‚¡
+	char Label[LABELSIZEMAX_DXF];
+	
+	// Variable: Gcode
+	// (private)ã‚°ãƒ«ãƒ¼ãƒ—ã‚³ãƒ¼ãƒ‰æ ¼ç´ãƒãƒƒãƒ•ã‚¡
+	int  Gcode;
+	
+	// Variable: Count
+	// (private)ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚«ã‚¦ãƒ³ã‚¿
+	int  Count[ALL_ENTITY_TYPE_NUM];
 };
 
 

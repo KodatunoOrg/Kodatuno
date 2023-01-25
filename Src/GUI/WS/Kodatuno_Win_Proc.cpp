@@ -1,4 +1,4 @@
-// KodatunoƒƒCƒ“ƒtƒH[ƒ€‚ÌƒvƒƒV[ƒWƒƒ
+ï»¿// Kodatunoãƒ¡ã‚¤ãƒ³ãƒ•ã‚©ãƒ¼ãƒ ã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 
 #include <WScom.h>
 #include <WSCfunctionList.h>
@@ -6,12 +6,21 @@
 #include <WSDkeyboard.h>
 #include "Kodatuno.h"
 
-KODatUNO Kodatuno;		// KodatunoƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğƒOƒ[ƒoƒ‹‚ÅéŒ¾
+KODatUNO Kodatuno;		// Kodatunoã‚¯ãƒ©ã‚¹ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ã‚°ãƒ­ãƒ¼ãƒãƒ«ã§å®£è¨€
 
-// ƒOƒ[ƒoƒ‹ƒL[ƒtƒbƒN
+// Function: keyhook
+// ã‚°ãƒ­ãƒ¼ãƒãƒ«ã‚­ãƒ¼ãƒ•ãƒƒã‚¯
+//
+// Parameters: 
+// key - ã‚­ãƒ¼ã‚³ãƒ¼ãƒ‰ã‚’æ ¼ç´
+// onoff - ã‚­ãƒ¼ã®ã‚ªãƒ³ãƒ»ã‚ªãƒ•ã‚’æ ¼ç´ï¼ˆTrue:ã‚ªãƒ³ï¼ŒFalse:ã‚ªãƒ•ï¼‰
+//
+// Return: 
+// ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã‚­ãƒ¼ãŒæŠ¼ã•ã‚Œã¦ã„ãªã„å ´åˆã¯Trueã‚’ãƒªã‚¿ãƒ¼ãƒ³ã—ã€ã‚­ãƒ¼ã‚¤ãƒ™ãƒ³ãƒˆã‚’é…ã‚‹
+// ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã‚­ãƒ¼ãŒæŠ¼ã•ã‚Œã¦ã„ã‚‹å ´åˆã¯Falseã‚’ãƒªã‚¿ãƒ¼ãƒ³ã—ã€çŸ¢å°ã‚­ãƒ¼ã‚¤ãƒ™ãƒ³ãƒˆã¯é…ã‚‰ãªã„
 WSCbool keyhook(long key,WSCbool onoff)
 {
-	if(onoff == False)	return True;	// ƒ{ƒ^ƒ“ƒŠƒŠ[ƒX‚Í‰½‚à‚µ‚È‚¢
+	if(onoff == False)	return True;	// ãƒœã‚¿ãƒ³ãƒªãƒªãƒ¼ã‚¹æ™‚ã¯ä½•ã‚‚ã—ãªã„
 
 	WSCbool flag=True;
 
@@ -34,28 +43,33 @@ WSCbool keyhook(long key,WSCbool onoff)
 		}
 	}
 
-	// ƒRƒ“ƒgƒ[ƒ‹ƒL[‚ª‰Ÿ‚³‚ê‚Ä‚¢‚È‚¢ê‡‚ÍTrue‚ğƒŠƒ^[ƒ“‚µAƒL[ƒCƒxƒ“ƒg‚ğ”z‚é
-	// ƒRƒ“ƒgƒ[ƒ‹ƒL[‚ª‰Ÿ‚³‚ê‚Ä‚¢‚éê‡‚ÍFalse‚ğƒŠƒ^[ƒ“‚µA–îˆóƒL[ƒCƒxƒ“ƒg‚Í”z‚ç‚È‚¢
-	// ‚±‚ê‚ÅConsole‚Ì—š—ğ•\¦‚ÆView‚Ì‰ñ“]‚Æ‚ğg‚¢•ª‚¯‚é
+	// ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã‚­ãƒ¼ãŒæŠ¼ã•ã‚Œã¦ã„ãªã„å ´åˆã¯Trueã‚’ãƒªã‚¿ãƒ¼ãƒ³ã—ã€ã‚­ãƒ¼ã‚¤ãƒ™ãƒ³ãƒˆã‚’é…ã‚‹
+	// ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã‚­ãƒ¼ãŒæŠ¼ã•ã‚Œã¦ã„ã‚‹å ´åˆã¯Falseã‚’ãƒªã‚¿ãƒ¼ãƒ³ã—ã€çŸ¢å°ã‚­ãƒ¼ã‚¤ãƒ™ãƒ³ãƒˆã¯é…ã‚‰ãªã„
+	// ã“ã‚Œã§Consoleã®å±¥æ­´è¡¨ç¤ºã¨Viewã®å›è»¢ã¨ã‚’ä½¿ã„åˆ†ã‘ã‚‹
 	return flag;
 }
 
+// Function: Kodatuno_Win_Proc
+// Kodatunoãƒ¡ã‚¤ãƒ³ãƒ•ã‚©ãƒ¼ãƒ ã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
+//
+// Parameters: 
+// *object - ã“ã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ã‚’å‘¼ã³å‡ºã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ãƒã‚¤ãƒ³ã‚¿
 void Kodatuno_Win_Proc(WSCbase* object)
 {
-  	WSCprocedure *pwproc = object->getExecutedProcedure();	// ƒvƒƒV[ƒWƒƒ‚ğæ“¾
+  	WSCprocedure *pwproc = object->getExecutedProcedure();	// ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ã‚’å–å¾—
 
-	switch(pwproc->getTrigger()){		// æ“¾‚µ‚½ƒvƒƒV[ƒWƒƒ‚ª
-		case WSEV_INITIALIZE:			// INITIALIZE‚¾‚Á‚½‚ç
-			Kodatuno.InitializeWin(Describe_Form->getProperty(WSNwidth),Describe_Form->getProperty(WSNheight));	// ƒEƒBƒ“ƒhƒE‰Šú‰»ŠÖ”‚ğÀs
-			WSGIappKeyboard()->setGlobalKeyHook(keyhook);	// ƒOƒ[ƒoƒ‹ƒL[ƒtƒbƒN‚Ìİ’è
+	switch(pwproc->getTrigger()){		// å–å¾—ã—ãŸãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ãŒ
+		case WSEV_INITIALIZE:			// INITIALIZEã ã£ãŸã‚‰
+			Kodatuno.InitializeWin(Describe_Form->getProperty(WSNwidth),Describe_Form->getProperty(WSNheight));	// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦åˆæœŸåŒ–é–¢æ•°ã‚’å®Ÿè¡Œ
+			WSGIappKeyboard()->setGlobalKeyHook(keyhook);	// ã‚°ãƒ­ãƒ¼ãƒãƒ«ã‚­ãƒ¼ãƒ•ãƒƒã‚¯ã®è¨­å®š
 			break;
-		case WSEV_EXIT:					// EXIT‚Á‚¾‚½‚ç
-			Kodatuno.DeleteWin();		// ƒEƒBƒ“ƒhƒEI—¹ˆ—ŠÖ”‚ğÀs
+		case WSEV_EXIT:					// EXITã£ã ãŸã‚‰
+			Kodatuno.DeleteWin();		// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦çµ‚äº†å‡¦ç†é–¢æ•°ã‚’å®Ÿè¡Œ
 			break;
 		case WSEV_RESIZE:
 			Kodatuno.GetResizeWindow(Describe_Form->getProperty(WSNwidth),Describe_Form->getProperty(WSNheight));
 			break;
-		default:						// ‚»‚êˆÈŠO‚Í‰½‚à‚µ‚È‚¢
+		default:						// ãã‚Œä»¥å¤–ã¯ä½•ã‚‚ã—ãªã„
 			break;
 	}
 }

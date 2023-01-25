@@ -1,14 +1,19 @@
-// 3Dƒf[ƒ^ƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İƒ{ƒ^ƒ“‚ÌƒvƒƒV[ƒWƒƒ
+ï»¿// 3Dãƒ‡ãƒ¼ã‚¿ãƒ•ã‚¡ã‚¤ãƒ«ã®èª­ã¿è¾¼ã¿ãƒœã‚¿ãƒ³ã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 
 #include <WScom.h>
 #include <WSCfunctionList.h>
 #include <WSCbase.h>
 #include "Kodatuno.h"
 
+// Function: OpenFile_Proc
+// 3Dãƒ‡ãƒ¼ã‚¿ãƒ•ã‚¡ã‚¤ãƒ«ã®èª­ã¿è¾¼ã¿ãƒœã‚¿ãƒ³ã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
+// 
+// Parameters:
+// *object - ã“ã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ã‚’å‘¼ã³å‡ºã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ãƒã‚¤ãƒ³ã‚¿
 void OpenFile_Proc(WSCbase* object)
 {
-	Kodatuno.OpenFile();			// ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“
-	Kodatuno.SetModelScale();		// ƒ‚ƒfƒ‹ƒXƒP[ƒ‹‚ğİ’è
-	Describe_Form->redraw();		// •`‰æ—Ìˆæ‚ÉÄ•`‰æ‚ğw¦
+	Kodatuno.OpenFile();			// ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³
+	Kodatuno.SetModelScale();		// ãƒ¢ãƒ‡ãƒ«ã‚¹ã‚±ãƒ¼ãƒ«ã‚’è¨­å®š
+	Describe_Form->redraw();		// æç”»é ˜åŸŸã«å†æç”»ã‚’æŒ‡ç¤º
 }
 static WSCfunctionRegister  op("OpenFile_Proc",(void*)OpenFile_Proc);

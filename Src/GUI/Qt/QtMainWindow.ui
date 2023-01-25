@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>QtMainWindow</class>
  <widget class="QMainWindow" name="QtMainWindow">
@@ -23,7 +23,7 @@
    <enum>Qt::DefaultContextMenu</enum>
   </property>
   <property name="windowTitle">
-   <string>Kodatuno</string>
+   <string>Kodatuno Qt</string>
   </property>
   <property name="windowIcon">
    <iconset resource="icons.qrc">
@@ -582,8 +582,14 @@
    </property>
   </action>
   <action name="actionUserFunc7">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>User Func 7</string>
+   </property>
+   <property name="visible">
+    <bool>true</bool>
    </property>
   </action>
   <action name="actionUserFunc8">

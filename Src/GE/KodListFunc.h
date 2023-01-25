@@ -1,65 +1,200 @@
-#ifndef _KOD_LIST_FUNC_H_
+ï»¿#ifndef _KOD_LIST_FUNC_H_
 #define _KOD_LIST_FUNC_H_
 
 #include "StdAfx.h"
 
-// ƒŠƒXƒgKODListadata—pƒf[ƒ^‚ÌÀ‘Ì‚ğŠi”[‚·‚é‚½‚ß‚ÌƒNƒ‰ƒX
+// Constants: General Defines
+// Non
+
+// Class: Data (friend class KODlistData)
+// ãƒªã‚¹ãƒˆKODListadataç”¨ãƒ‡ãƒ¼ã‚¿ã®å®Ÿä½“ã‚’æ ¼ç´ã™ã‚‹ãŸã‚ã®ã‚¯ãƒ©ã‚¹
 class Data
 {
 	friend class KODlistData;
 
 public:
-	Data(void *a) { data = a; next = NULL; before = NULL;}		// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
-	Data()		  { data = NULL; next = NULL; before = NULL;}	// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
-	void SetNextpData(Data *d)		{next = d;}					// Ÿ‚ÌDataƒIƒuƒWƒFƒNƒg‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğƒZƒbƒg‚·‚é
-	void SetBeforepData(Data *d)	{before = d;}				// ‘O‚ÌDataƒIƒuƒWƒFƒNƒg‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğƒZƒbƒg‚·‚é
-	Data *GetNextpData()			{return next;}				// Ÿ‚ÌDataƒIƒuƒWƒFƒNƒg‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğ“¾‚é
-	Data *GetBeforepData()			{return before;}			// ‘O‚ÌDataƒIƒuƒWƒFƒNƒg‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğ“¾‚é
-	void *GetData()					{return data;}				// ƒf[ƒ^‚ÌÀ‘Ì‚ğ“¾‚é
+	// Constructor: Data
+	// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿(ãƒ‡ãƒ¼ã‚¿ã‚’ã‚»ãƒƒãƒˆã™ã‚‹)
+	//
+	// Parameters:
+	// *a - ãƒ‡ãƒ¼ã‚¿ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’æ ¼ç´
+	Data(void *a) { data = a; next = NULL; before = NULL;}
+
+	// Constructor: Data
+	// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿(å…¨ã¦ã‚’NULLã§åˆæœŸåŒ–)
+	Data() { data = NULL; next = NULL; before = NULL;}
+
+	// Function: SetNextpData
+	// æ¬¡ã®Dataã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
+	//
+	// Parameters:
+	// *d - æ¬¡ã®ãƒ‡ãƒ¼ã‚¿ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+	void SetNextpData(Data *d) {next = d;}
+
+	// Function: SetBeforepData
+	// å‰ã®Dataã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
+	//
+	// Parameters:
+	// *d - å‰ã®ãƒ‡ãƒ¼ã‚¿ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+	void SetBeforepData(Data *d) {before = d;}
+
+	// Function: GetNextpData
+	// æ¬¡ã®Dataã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’å¾—ã‚‹
+	//
+	// Return:
+	// æ¬¡ã®ãƒ‡ãƒ¼ã‚¿ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+	Data *GetNextpData() {return next;}	
+
+	// Function: GetNextpData
+	// å‰ã®Dataã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’å¾—ã‚‹
+	//
+	// Return:
+	// å‰ã®ãƒ‡ãƒ¼ã‚¿ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+	Data *GetBeforepData() {return before;}
+
+	// Function: GetData
+	// ãƒ‡ãƒ¼ã‚¿ã®å®Ÿä½“ã‚’å¾—ã‚‹
+	//
+	// Return:
+	// ãƒ‡ãƒ¼ã‚¿ã®å®Ÿä½“
+	void *GetData() {return data;}		
+
 
 protected:
-	void *data;			// ƒf[ƒ^‚ÌÀ‘Ì‚Í‚±‚ÌƒAƒhƒŒƒX‚ÉŠi”[‚³‚ê‚é
-	Data *next;			// ƒŠƒXƒg‚Ì‘O•û‚ğw‚·ƒ|ƒCƒ“ƒ^
-	Data *before;		// ƒŠƒXƒg‚ÌŒã•û‚ğw‚·ƒ|ƒCƒ“ƒ^
+	// Variable: *data
+	// (protected)ãƒ‡ãƒ¼ã‚¿ã®å®Ÿä½“ã¯ã“ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã«æ ¼ç´ã•ã‚Œã‚‹
+	void *data;		
+
+	// Variable: *next
+	// (protected)ãƒªã‚¹ãƒˆã®å‰æ–¹ã‚’æŒ‡ã™ãƒã‚¤ãƒ³ã‚¿
+	Data *next;			
+
+	// Variable: *before
+	// (protected)ãƒªã‚¹ãƒˆã®å¾Œæ–¹ã‚’æŒ‡ã™ãƒã‚¤ãƒ³ã‚¿
+	Data *before;		
 };
 
-// ƒŠƒXƒg‘€ìƒNƒ‰ƒX
+// Class: KODlistData
+// ãƒªã‚¹ãƒˆæ“ä½œã‚¯ãƒ©ã‚¹
 class KODlistData
 {
 public:
-	KODlistData();					// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
-	int getNum();					// ƒŠƒXƒg‚Ö‚Ì“o˜^”‚ğ“¾‚é
-	void *getData(int);				// n”Ô‚Ìƒf[ƒ^‚ğ“¾‚é(ƒf[ƒ^”Ô†‚Í0‚©‚çƒXƒ^[ƒg‚·‚éj
-	int clear();					// ©g‚ÌÁ–Å
-	Data *add(void *);				// V‚½‚Èƒf[ƒ^‚ğƒŠƒXƒg‚É“o˜^
-	Data *addData(Data *,void *);	// V‚½‚Èƒf[ƒ^‚ğw’è‚µ‚½ƒf[ƒ^‚ÌŒã‚ë‚É‰Á‚¦‚é	
-	Data *addData(int n,void *);	// V‚½‚Èƒf[ƒ^‚ğn”Ô‚Ìƒf[ƒ^‚ÌŒã‚ë‚É‰Á‚¦‚é
-	int delData(int);				// n”Ô‚Ìƒf[ƒ^‚ğƒŠƒXƒg‚©‚çÁ‹
-	int delData(Data *);			// w’è‚µ‚½ƒf[ƒ^‚ğƒŠƒXƒg‚©‚çÁ‹
-	Data *snipData(Data *);			// w’è‚µ‚½ƒf[ƒ^‚ğƒŠƒXƒg‚©‚ç‚Í‚¸‚·iÁ‹‚Í‚µ‚È‚¢j
-	int insData(Data *,Data *);		// w’è‚µ‚½ƒf[ƒ^A‚ğw’è‚µ‚½ƒf[ƒ^B‚ÌŒã‚ë‚É•ÏX‚·‚é
-	void ChangeHead(Data *);		// ƒŠƒXƒg‚Ìæ“ª‚ğ•ÏX
-	void ChangeEnd(Data *);			// ƒŠƒXƒg‚Ì––”ö‚ğ•ÏX
 
-	Data *getpData(int);			// n”Ô‚ÌDataƒIƒuƒWƒFƒNƒg‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğ“¾‚é(ƒf[ƒ^”Ô†‚Í0‚©‚çƒXƒ^[ƒg‚·‚éj
-	Data *getNextpData(Data *);		// w’è‚µ‚½Data‚ÌŸ‚ÌDataƒIƒuƒWƒFƒNƒg‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğ“¾‚é
-	Data *getPrevpData(Data *);		// w’è‚µ‚½Data‚Ì‘O‚ÌDataƒIƒuƒWƒFƒNƒg‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğ“¾‚é
-	Data *getEndpData();			// ÅŒã‚ÌDataƒIƒuƒWƒFƒNƒg‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğ“¾‚é
+	// Function: KODlistData
+	// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	KODlistData();					
+	
+	// Function: getNum
+	// ãƒªã‚¹ãƒˆã¸ã®ç™»éŒ²æ•°ã‚’å¾—ã‚‹
+	int getNum();					
+	
+	// Function: getData
+	// nç•ªã®ãƒ‡ãƒ¼ã‚¿ã‚’å¾—ã‚‹(ãƒ‡ãƒ¼ã‚¿ç•ªå·ã¯0ã‹ã‚‰ã‚¹ã‚¿ãƒ¼ãƒˆã™ã‚‹ï¼‰
+	void *getData(int);				
+	
+	// Function: clear
+	// è‡ªèº«ã®æ¶ˆæ»…
+	int clear();					
+	
+	// Function: add
+	// æ–°ãŸãªãƒ‡ãƒ¼ã‚¿ã‚’ãƒªã‚¹ãƒˆã«ç™»éŒ²
+	Data *add(void *);				
 
-	// ƒZƒ“ƒ`ƒlƒ‹‘€ì
-	void *setSentinel(int);			// w’è‚µ‚½ˆÊ’u‚ÉŠø‚ğ—§‚Ä‚é
-	void *getDataFromSentinel(int);	// Šø‚©‚çn”Ô–ÚŒãor‘O‚Ìƒf[ƒ^‚ğ“¾‚é
-	void *shiftSentinel(int);		// Šø‚ğŒ»İ‚ÌˆÊ’u‚©‚çn”Ô–ÚŒãor‘O‚ÉˆÚ“®‚³‚¹‚é
-	void *getSentinelData();		// Šø‚Ì‚ ‚éêŠ‚Ìƒf[ƒ^‚ğæ“¾‚·‚é
-	void *getNextSentData();		// Šø‚Ì‚ ‚éƒf[ƒ^‚ÌŸ‚Ìƒf[ƒ^‚ğæ“¾‚·‚é
+	// Function: addData
+	// æ–°ãŸãªãƒ‡ãƒ¼ã‚¿ã‚’æŒ‡å®šã—ãŸãƒ‡ãƒ¼ã‚¿ã®å¾Œã‚ã«åŠ ãˆã‚‹	
+	Data *addData(Data *,void *);	
+
+	// Function: addData
+	// æ–°ãŸãªãƒ‡ãƒ¼ã‚¿ã‚’nç•ªã®ãƒ‡ãƒ¼ã‚¿ã®å¾Œã‚ã«åŠ ãˆã‚‹
+	Data *addData(int n,void *);	
+
+	// Function: delData
+	// nç•ªã®ãƒ‡ãƒ¼ã‚¿ã‚’ãƒªã‚¹ãƒˆã‹ã‚‰æ¶ˆå»
+	int delData(int);				
+
+	// Function: delData
+	// æŒ‡å®šã—ãŸãƒ‡ãƒ¼ã‚¿ã‚’ãƒªã‚¹ãƒˆã‹ã‚‰æ¶ˆå»
+	int delData(Data *);			
+
+	// Function: snipData
+	// æŒ‡å®šã—ãŸãƒ‡ãƒ¼ã‚¿ã‚’ãƒªã‚¹ãƒˆã‹ã‚‰ã¯ãšã™ï¼ˆæ¶ˆå»ã¯ã—ãªã„ï¼‰
+	Data *snipData(Data *);			
+
+	// Function: insData
+	// æŒ‡å®šã—ãŸãƒ‡ãƒ¼ã‚¿Aã‚’æŒ‡å®šã—ãŸãƒ‡ãƒ¼ã‚¿Bã®å¾Œã‚ã«å¤‰æ›´ã™ã‚‹
+	int insData(Data *,Data *);		
+
+	// Function: ChangeHead
+	// ãƒªã‚¹ãƒˆã®å…ˆé ­ã‚’å¤‰æ›´
+	void ChangeHead(Data *);		
+
+	// Function: ChangeEnd
+	// ãƒªã‚¹ãƒˆã®æœ«å°¾ã‚’å¤‰æ›´
+	void ChangeEnd(Data *);			
+
+	// Function: getpData
+	// nç•ªã®Dataã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’å¾—ã‚‹(ãƒ‡ãƒ¼ã‚¿ç•ªå·ã¯0ã‹ã‚‰ã‚¹ã‚¿ãƒ¼ãƒˆã™ã‚‹ï¼‰
+	Data *getpData(int);			
+
+	// Function: getNextpData
+	// æŒ‡å®šã—ãŸDataã®æ¬¡ã®Dataã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’å¾—ã‚‹
+	Data *getNextpData(Data *);		
+
+	// Function: getPrevpData
+	// æŒ‡å®šã—ãŸDataã®å‰ã®Dataã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’å¾—ã‚‹
+	Data *getPrevpData(Data *);		
+
+	// Function: getEndpData
+	// æœ€å¾Œã®Dataã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’å¾—ã‚‹
+	Data *getEndpData();			
+
+	// ã‚»ãƒ³ãƒãƒãƒ«æ“ä½œ
+
+	// Function: setSentinel
+	// æŒ‡å®šã—ãŸä½ç½®ã«æ——ã‚’ç«‹ã¦ã‚‹
+	void *setSentinel(int);			
+	
+	// Function: getDataFromSentinel
+	// æ——ã‹ã‚‰nç•ªç›®å¾Œorå‰ã®ãƒ‡ãƒ¼ã‚¿ã‚’å¾—ã‚‹
+	void *getDataFromSentinel(int);	
+	
+	// Function: shiftSentinel
+	// æ——ã‚’ç¾åœ¨ã®ä½ç½®ã‹ã‚‰nç•ªç›®å¾Œorå‰ã«ç§»å‹•ã•ã›ã‚‹
+	void *shiftSentinel(int);		
+	
+	// Function: getSentinelData
+	// æ——ã®ã‚ã‚‹å ´æ‰€ã®ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—ã™ã‚‹
+	void *getSentinelData();		
+	
+	// Function: getNextSentData
+	// æ——ã®ã‚ã‚‹ãƒ‡ãƒ¼ã‚¿ã®æ¬¡ã®ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—ã™ã‚‹
+	void *getNextSentData();		
 
 private:
-	Data *head;				// ƒŠƒXƒg‚Ìæ“ª
-	Data *end;				// ƒŠƒXƒg‚Ì––”ö
-	Data *sentinel;			// ƒf[ƒ^’Tõ—p
-	Data *curr;				// ì‹Æ—p
-	Data *old;				// ì‹Æ—p
-	int  num;				// ƒf[ƒ^”iÅ‰‚Ìƒf[ƒ^(0”Ô)‚ª1ŒÂ–Új
+
+	// Variable: *head
+	// (private)ãƒªã‚¹ãƒˆã®å…ˆé ­
+	Data *head;
+
+	// Variable: *end
+	// ãƒªã‚¹ãƒˆã®æœ«å°¾
+	Data *end;	
+
+	// Variable: *sentinel
+	// ãƒ‡ãƒ¼ã‚¿æ¢ç´¢ä½œæ¥­ç”¨
+	Data *sentinel;
+
+	// Variable: *curr
+	// ãƒ‡ãƒ¼ã‚¿æ¢ç´¢ä½œæ¥­ç”¨
+	Data *curr;	
+
+	// Variable: *old
+	// ãƒ‡ãƒ¼ã‚¿æ¢ç´¢ä½œæ¥­ç”¨
+	Data *old;
+
+	// Variable: num
+	// ãƒ‡ãƒ¼ã‚¿æ•°ï¼ˆæœ€åˆã®ãƒ‡ãƒ¼ã‚¿(0ç•ª)ãŒ1å€‹ç›®ï¼‰
+	int  num;				
 };
 
 #endif

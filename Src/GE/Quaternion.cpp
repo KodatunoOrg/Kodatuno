@@ -1,6 +1,14 @@
-#include "Quaternion.h"
+﻿#include "Quaternion.h"
 
-// �N�H�[�^�j�I���̏�����
+// Function: QInit
+// クォータニオンを引数で指定した数値で初期化
+//
+// Parameters: 
+// t - 実部
+// x,y,z -虚部
+// 
+// Return:
+// 初期化されたQuat
 Quat QUATERNION::QInit(double t,double x,double y,double z)
 {
 	Quat q;
@@ -13,8 +21,15 @@ Quat QUATERNION::QInit(double t,double x,double y,double z)
 	return q;
 }
 
-
-// ��]�N�H�[�^�j�I��q�𐶐� q = {cos(r/2):x*sin(r/2),y*sin(r/2),z*sin(r/2)}
+// Function: QGenRot
+// 回転クォータニオンqを生成 q = {cos(r/2):x*sin(r/2),y*sin(r/2),z*sin(r/2)}
+//
+// Parameters: 
+// r - 回転角[rad] 
+// x,y,z - 回転軸ベクトル
+// 
+// Return:
+// 回転クォータニオンq
 Quat QUATERNION::QGenRot(double r,double x,double y,double z)
 {
 	Quat q;
@@ -27,8 +42,14 @@ Quat QUATERNION::QGenRot(double r,double x,double y,double z)
 	return q;
 }
 
-
-// �����N�H�[�^�j�I���𐶐�
+// Function: QConjugation
+// 共役クォータニオンを生成
+//
+// Parameters: 
+// q - クォータニオン
+// 
+// Return:
+// qの共役クォータニオン
 Quat QUATERNION::QConjugation(Quat q)
 {
 	Quat p;
@@ -41,7 +62,14 @@ Quat QUATERNION::QConjugation(Quat q)
 	return p;
 }
 
-// �N�H�[�^�j�I���̐� r <- p x q
+// Function: QMult
+// クォータニオンの積を求める
+//
+// Parameters: 
+// p,q - p x q
+//
+// Return:
+// 計算結果
 Quat QUATERNION::QMult(Quat p,Quat q)
 {
 	Quat r;
@@ -54,13 +82,27 @@ Quat QUATERNION::QMult(Quat p,Quat q)
 	return r;
 }
 
-// �N�H�[�^�j�I���ɂ���]�x�N�g�����Z
+// Function: QRot
+// クォータニオンによる回転ベクトル演算
+//
+// Parameters: 
+// r - qの共役クォータニオン  
+// p - 回転したい座標値を持ったクォータニオン  
+// q - 回転クォータニオン 
+//
+// Return:
+// 計算結果
 Quat QUATERNION::QRot(Quat r,Quat p,Quat q)
 {
 	return QMult(QMult(r,p),q);
 }
 
-// �N�H�[�^�j�I��q����]�s��r�֕ϊ�
+// Function: QtoR
+// クォータニオンqを回転行列rへ変換
+//
+// Parameters: 
+// r[16] - 4*4行列を１次元配列で表現したもの
+// q - 変換するクォータニオン
 void QUATERNION::QtoR(double r[],Quat q)
 {
 	double x2 = q.x * q.x * 2.0;
@@ -86,7 +128,12 @@ void QUATERNION::QtoR(double r[],Quat q)
 	r[15] = 1.0;
 }
 
-// �N�H�[�^�j�I��q����]�s��r�֕ϊ�(�I�[�o�[���[�h)
+// Function: QtoR
+// クォータニオンqを回転行列rへ変換(オーバーロード)
+//
+// Parameters: 
+// r[16] - 4*4行列を１次元配列で表現したもの
+// t,x,y,z - 変換するクォータニオンの要素表現
 void QUATERNION::QtoR(double r[],double t,double x,double y,double z)
 {
 	double x2 = x * x * 2.0;
@@ -112,19 +159,27 @@ void QUATERNION::QtoR(double r[],double t,double x,double y,double z)
 	r[15] = 1.0;
 }
 
-// �N�H�[�^�j�I���̃R�s�[ p <- q
+// Function: QCopy
+// クォータニオンのコピー p <- q
+//
+// Parameters: 
+// q - コピー元クォータニオン
+//
+// Return:
+// コピー先クォータニオン
 Quat QUATERNION::QCopy(Quat q)
 {
-	Quat p;
-
-	p.t = q.t;
-	p.x = q.x;
-	p.y = q.y;
-	p.z = q.z;
-
-	return p;
+	return q;
 }
 
+// Function: QtoC
+// クォータニオンの3つの虚部をCoord構造体に代入する
+// 
+// Parameters: 
+// q - 代入するクォータニオン
+//
+// Return:
+// クォータニオン虚部(x,y,z)をそのままCoord値(x,y,z)としたもの
 Coord QUATERNION::QtoC(Quat q)
 {
 	Coord a;
@@ -136,7 +191,14 @@ Coord QUATERNION::QtoC(Quat q)
 	return a;
 }
 
-// �N�H�[�^�j�I��������0�A������Coord�Ƃ��ăN�H�[�^�j�I���𐶐�
+// Function: CtoQ
+// クォータニオン実部を0、虚部をCoordとしてクォータニオンを生成
+//
+// Parameters: 
+// a - 虚部となるCoord値
+//
+// Return:
+// 生成されたクォータニオン 
 Quat QUATERNION::CtoQ(Coord a)
 {
 	Quat q;
@@ -149,10 +211,18 @@ Quat QUATERNION::CtoQ(Coord a)
 	return q;
 }
 
-
-// �N�H�[�^�j�I���ɂ�鋅�ʐ��`���
-// 2�̃x�N�g��p(t=0)�Aq(t=1)�Ԃ�t�Ŏw�肵��������ɋ��ʐ��`��Ԃ���
-// p,q�͒P�ʃx�N�g���ł��邱��
+// Function: QSlerp
+// クォータニオンによる球面線形補間
+//
+// 2つのベクトルp(t=0)、q(t=1)間をtで指定した内分上に球面線形補間する.
+// p,qは単位ベクトルであること.
+//
+// Parameters: 
+// p, q - 分割したい両端の点の座標を虚部としたクォータニオン
+// t - 内分比
+//
+// Return:
+// 補間された点を表すクォータニオン
 Quat QUATERNION::QSlerp(Quat p,Quat q,double t)
 {
 	double ca = CalcInnerProduct(QtoC(p),QtoC(q));	// cos(a)

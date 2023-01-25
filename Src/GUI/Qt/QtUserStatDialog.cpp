@@ -1,8 +1,12 @@
-#include "QtUserStatDialog.h"
+ï»¿#include "QtUserStatDialog.h"
 #include "ui_QtUserStatDialog.h"
 #include "Kodatuno.h"
 
-// UserStatƒ_ƒCƒAƒƒO‚ªƒI[ƒvƒ“‚µ‚½‚Æ‚«‚ÉŒÄ‚Ño‚³‚ê‚é
+// Function: QtUserStatDialog
+// UserStatãƒ€ã‚¤ã‚¢ãƒ­ã‚°ãŒã‚ªãƒ¼ãƒ—ãƒ³ã—ãŸã¨ãã«å‘¼ã³å‡ºã•ã‚Œã‚‹
+// 
+// Parameters:
+// *parent - å‘¼ã³å‡ºã—å…ƒã®è¦ªã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆã‚’æŒ‡å®š
 QtUserStatDialog::QtUserStatDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::QtUserStatDialog)
@@ -25,7 +29,7 @@ QtUserStatDialog::QtUserStatDialog(QWidget *parent) :
     ui->buttonGroup->setId(ui->mode14RadBtn,13);
     ui->buttonGroup->setId(ui->mode15RadBtn,14);
 
-    // UserStatus‚ÌŒ»Ý’l‚ð“Ç‚Ýž‚ÝCUserStatƒ_ƒCƒAƒƒO‚É”½‰f‚³‚¹‚é
+    // UserStatusã®ç¾åœ¨å€¤ã‚’èª­ã¿è¾¼ã¿ï¼ŒUserStatãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã«åæ˜ ã•ã›ã‚‹
     int mode;
     double prop[USERPROPNUM];
     Kodatuno.GetUserStat(&mode,prop);
@@ -66,12 +70,15 @@ QtUserStatDialog::QtUserStatDialog(QWidget *parent) :
 
 }
 
+// Function: ~QtUserStatDialog
+// UserStatãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã®çµ‚äº†
 QtUserStatDialog::~QtUserStatDialog()
 {
     delete ui;
 }
 
-// UserStatƒ_ƒCƒAƒƒO‚ÌOKƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚½‚Æ‚«‚ÉŒÄ‚Ño‚³‚ê‚é
+// Function: on_buttonBox_accepted
+// UserStatãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã®OKãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚ŒãŸã¨ãã«å‘¼ã³å‡ºã•ã‚Œã‚‹
 void QtUserStatDialog::on_buttonBox_accepted()
 {
     int mode = ui->buttonGroup->checkedId();

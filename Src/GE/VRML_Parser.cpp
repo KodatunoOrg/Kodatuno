@@ -1,26 +1,35 @@
-/*********************************************************
-* VRML1.0ƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚İAƒn[ƒtƒGƒbƒW\‘¢‚ÖŠi”[‚·‚é  *
+ï»¿/*********************************************************
+* VRML1.0ãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿è¾¼ã¿ã€ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸æ§‹é€ ã¸æ ¼ç´ã™ã‚‹  *
 * 2012/4 K.Takasugi                                      *
 **********************************************************/
 
 #include "VRML_Parser.h"
 
+// Function: Vrml_Parser_Main
+// VRMLãƒ‘ãƒ¼ã‚µãƒ¡ã‚¤ãƒ³
+//
+// Parameter:
+// *body - BODYã¸ã®ãƒã‚¤ãƒ³ã‚¿
+// *fname - VRMLãƒ•ã‚¡ã‚¤ãƒ«å
+//
+// Return:
+// KOD_ERR:ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³ã‚¨ãƒ©ãƒ¼ï¼ŒVRMLãƒãƒ¼ã‚¸ãƒ§ãƒ³ã‚¨ãƒ©ãƒ¼		KOD_TRUE:æ­£å¸¸çµ‚äº†
 int VRML_PARSER::Vrml_Parser_Main(BODY *body, const char *fname)
 {
 	FILE *fp;
-	char mes[BUFSIZEMAX];		// o—Í—pƒƒbƒZ[ƒWŠi”[ƒoƒbƒtƒ@
-	char buf[BUFSIZEMAX];		// •¶š—ñˆêŠi”[—pƒoƒbƒtƒ@
-	int tag;					// ƒ^ƒO”»•Ê—p
+	char mes[BUFSIZEMAX];		// å‡ºåŠ›ç”¨ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸æ ¼ç´ãƒãƒƒãƒ•ã‚¡
+	char buf[BUFSIZEMAX];		// æ–‡å­—åˆ—ä¸€æ™‚æ ¼ç´ç”¨ãƒãƒƒãƒ•ã‚¡
+	int tag;					// ã‚¿ã‚°åˆ¤åˆ¥ç”¨
 	int flag;
 
-	// VRMLƒtƒ@ƒCƒ‹ƒI[ƒvƒ“
+	// VRMLãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³
 	if((fp = fopen(fname,"r")) == NULL){
 		sprintf(mes,"KOD_ERROR: Cannot open %s",fname);
         GuiIF.SetMessage(mes);
 		return(KOD_ERR);
 	}
 
-	// ƒwƒbƒ_“Ç‚İ‚İ
+	// ãƒ˜ãƒƒãƒ€èª­ã¿è¾¼ã¿
 	fgets(buf,sizeof(buf),fp);
 	if(strcmp(buf,"#VRML V1.0 ascii\n")){
 		sprintf(mes,"KOD_ERROR: Kodatuno supports only #VRML V1.0 ascii.     Please check VRML file version.");
@@ -29,24 +38,24 @@ int VRML_PARSER::Vrml_Parser_Main(BODY *body, const char *fname)
 		return(KOD_ERR);
 	}
 
-	body->Mesh = new MESH;		// MESHƒNƒ‰ƒX‚Ìƒƒ‚ƒŠ[Šm•Û
+	body->Mesh = new MESH;		// MESHã‚¯ãƒ©ã‚¹ã®ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿
 
-	// 1s‚¸‚Â“Ç‚İ‚İ‚È‚ª‚çAƒ^ƒO‰ğÍ‚µ‚Ä‚¢‚­
+	// 1è¡Œãšã¤èª­ã¿è¾¼ã¿ãªãŒã‚‰ã€ã‚¿ã‚°è§£æã—ã¦ã„ã
 	while(fgets(buf,sizeof(buf),fp) != NULL){
-		if((tag = CheckTags(buf)) == KOD_ERR){	// ƒ^ƒO‰ğÍ
-			continue;							// “o˜^‚³‚ê‚½ƒ^ƒO‚ª‘‚©‚ê‚Ä‚¢‚È‚¢s‚Í“Ç‚İ”ò‚Î‚·
+		if((tag = CheckTags(buf)) == KOD_ERR){	// ã‚¿ã‚°è§£æ
+			continue;							// ç™»éŒ²ã•ã‚ŒãŸã‚¿ã‚°ãŒæ›¸ã‹ã‚Œã¦ã„ãªã„è¡Œã¯èª­ã¿é£›ã°ã™
 		}
 
-		if(tag == Coordinate3){					// OŸŒ³À•W—pƒ^ƒO‚ğ”­Œ©
-			flag = GetCoords(fp,body->Mesh);	// OŸŒ³À•W’l‚ğMESH‚ÉŠi”[
+		if(tag == Coordinate3){					// ä¸‰æ¬¡å…ƒåº§æ¨™ç”¨ã‚¿ã‚°ã‚’ç™ºè¦‹
+			flag = GetCoords(fp,body->Mesh);	// ä¸‰æ¬¡å…ƒåº§æ¨™å€¤ã‚’MESHã«æ ¼ç´
 			if(flag == KOD_ERR){
 				body->Mesh->clear();
 				return KOD_ERR;
 			}
 
 		}
-		else if(tag == IndexedFaceSet){			// ƒtƒ@ƒZƒbƒg’è‹`—pƒ^ƒO‚ğ”­Œ©
-			flag = GetFacets(fp,body->Mesh);	// ƒtƒ@ƒZƒbƒg‚ğMESH‚ÉŠi”[
+		else if(tag == IndexedFaceSet){			// ãƒ•ã‚¡ã‚»ãƒƒãƒˆå®šç¾©ç”¨ã‚¿ã‚°ã‚’ç™ºè¦‹
+			flag = GetFacets(fp,body->Mesh);	// ãƒ•ã‚¡ã‚»ãƒƒãƒˆã‚’MESHã«æ ¼ç´
 			if(flag == KOD_ERR){
 				body->Mesh->clear();
 				return KOD_ERR;
@@ -56,112 +65,137 @@ int VRML_PARSER::Vrml_Parser_Main(BODY *body, const char *fname)
 
 	fclose(fp);
 
-	// ƒn[ƒtƒGƒbƒWA’¸“_A–Ê‚»‚ê‚¼‚ê‚Ì‘”‚ğ“¾‚é
+	// ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã€é ‚ç‚¹ã€é¢ãã‚Œãã‚Œã®ç·æ•°ã‚’å¾—ã‚‹
 	body->Mesh->EdgeNum = body->Mesh->Edge.getNum();
 	body->Mesh->VertNum = body->Mesh->Vert.getNum();
 	body->Mesh->FaceNum = body->Mesh->Face.getNum();
 
-	GetHalfEdgePair(body->Mesh);	// ‘Î‚Æ‚È‚é‹t•ûŒüƒn[ƒtƒGƒbƒW‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğ“¾‚é
+	GetHalfEdgePair(body->Mesh);	// å¯¾ã¨ãªã‚‹é€†æ–¹å‘ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’å¾—ã‚‹
 
-	SetFaceParam(body->Mesh);		// Še–Ê‚É–ÊÏ‚Æ’PˆÊ–@üƒxƒNƒgƒ‹‚Ìî•ñ‚ğ•t‰Á‚·‚é
+	SetFaceParam(body->Mesh);		// å„é¢ã«é¢ç©ã¨å˜ä½æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã®æƒ…å ±ã‚’ä»˜åŠ ã™ã‚‹
 
-	body->MaxCoord = 10;			// ”{—¦‚Í‚Æ‚è‚ ‚¦‚¸10‚É‚µ‚Ä‚¨‚­
+	body->MaxCoord = 10;			// å€ç‡ã¯ã¨ã‚Šã‚ãˆãš10ã«ã—ã¦ãŠã
 
-	body->TypeNum[_MESH] = 1;		// TypeNum‚Í1
+	body->TypeNum[_MESH] = 1;		// TypeNumã¯1
 
 	return KOD_TRUE;
 }
 
-// Še–Ê‚É–ÊÏ‚Ìî•ñ‚ğ•t‰Á‚·‚é
+// Function: SetFaceParam
+// å„é¢ã«é¢ç©ã®æƒ…å ±ã‚’ä»˜åŠ ã™ã‚‹
+//
+// Parameter:
+// *mesh - MESHã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã¸ã®ãƒã‚¤ãƒ³ã‚¿
 void VRML_PARSER::SetFaceParam(MESH *mesh)
 {
 	for(int i=0;i<mesh->FaceNum;i++){
 		HEface *f = (HEface *)mesh->Face.getData(i);
-		mesh->CalcFaceArea(f);		// –ÊÏ‚Ìî•ñ‚ğ•t‰Á‚·‚é
-		mesh->CalcFaceNorm(f);		// ’PˆÊ–@üƒxƒNƒgƒ‹‚Ìî•ñ‚ğ•t‰Á‚·‚é
+		mesh->CalcFaceArea(f);		// é¢ç©ã®æƒ…å ±ã‚’ä»˜åŠ ã™ã‚‹
+		mesh->CalcFaceNorm(f);		// å˜ä½æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã®æƒ…å ±ã‚’ä»˜åŠ ã™ã‚‹
 	}
 }
 
-// ‘Î‚Æ‚È‚é‹t•ûŒüƒn[ƒtƒGƒbƒW‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğ“¾‚é
+// Function: GetHalfEdgePair
+// å¯¾ã¨ãªã‚‹é€†æ–¹å‘ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’å¾—ã‚‹
+//
+// Parameter:
+// *mesh - MESHã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+//
+// Return:
+// KOD_TRUE
 int VRML_PARSER::GetHalfEdgePair(MESH *mesh)
 {
 	bool flag = false;
 
-	// ‘Sƒn[ƒtƒGƒbƒW‚É‘Î‚µ‚Ä
+	// å…¨ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã«å¯¾ã—ã¦
 	for(int i=0;i<mesh->EdgeNum;i++){
-		HEedge *e = (HEedge *)mesh->Edge.getData(i);	// i”Ô‚Ìƒn[ƒtƒGƒbƒW‚ğæ‚èo‚·
-		mesh->Edge.setSentinel(0);						// Šø‚ğÅ‰‚Ìƒn[ƒtƒGƒbƒW‚É—§‚Ä‚é
-		flag = false;									// Œ©‚Â‚¯‚½ƒtƒ‰ƒO‚n‚e‚e
-		for(int j=0;j<mesh->EdgeNum;j++){				// i”Ô‚Ìƒn[ƒtƒGƒbƒW‚Ì‘Î‚ğ’T‚·
-			if(j==i){									// “¯‚¶ƒn[ƒtƒGƒbƒW‚ğŒ©‚Ä‚¢‚éê‡‚Í
-				mesh->Edge.shiftSentinel(1);			// Šø‚ğ1‚Â‚¸‚ç‚·
+		HEedge *e = (HEedge *)mesh->Edge.getData(i);	// iç•ªã®ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã‚’å–ã‚Šå‡ºã™
+		mesh->Edge.setSentinel(0);						// æ——ã‚’æœ€åˆã®ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã«ç«‹ã¦ã‚‹
+		flag = false;									// è¦‹ã¤ã‘ãŸãƒ•ãƒ©ã‚°ï¼¯ï¼¦ï¼¦
+		for(int j=0;j<mesh->EdgeNum;j++){				// iç•ªã®ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã®å¯¾ã‚’æ¢ã™
+			if(j==i){									// åŒã˜ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã‚’è¦‹ã¦ã„ã‚‹å ´åˆã¯
+				mesh->Edge.shiftSentinel(1);			// æ——ã‚’1ã¤ãšã‚‰ã™
 				continue;
 			}
-			HEedge *e_ = (HEedge *)mesh->Edge.getSentinelData();	// Šø‚Ì—§‚Á‚Ä‚¢‚éƒn[ƒtƒGƒbƒW‚Ìƒf[ƒ^‚ğ“¾‚é
-			if(e_->ne->vert->index == e->vert->index &&				// j”Ô‚Ìƒn[ƒtƒGƒbƒW‚ÌŸ‚Ìƒn[ƒtƒGƒbƒW‚ÌƒCƒ“ƒfƒbƒNƒX‚ªi”Ô‚Ìƒn[ƒtƒGƒbƒW‚ÌƒCƒ“ƒfƒbƒNƒX‚Æ“™‚µ‚¢‚©‚Â
-				e_->vert->index == e->ne->vert->index){				// i”Ô‚Ìƒn[ƒtƒGƒbƒW‚ÌŸ‚Ìƒn[ƒtƒGƒbƒW‚ÌƒCƒ“ƒfƒbƒNƒX‚ªj”Ô‚Ìƒn[ƒtƒGƒbƒW‚ÌƒCƒ“ƒfƒbƒNƒX‚Æ“™‚µ‚¢‚È‚ç
-				e->pair = e_;										// ‘Î‚ğŒ©‚Â‚¯‚½
-				flag = true;							// Œ©‚Â‚¯‚½ƒtƒ‰ƒO‚n‚m
-				break;									// Ÿ‚Ìƒn[ƒtƒGƒbƒW‚ÉˆÚ“®
+			HEedge *e_ = (HEedge *)mesh->Edge.getSentinelData();	// æ——ã®ç«‹ã£ã¦ã„ã‚‹ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã®ãƒ‡ãƒ¼ã‚¿ã‚’å¾—ã‚‹
+			if(e_->ne->vert->index == e->vert->index &&				// jç•ªã®ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã®æ¬¡ã®ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãŒiç•ªã®ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã¨ç­‰ã—ã„ã‹ã¤
+				e_->vert->index == e->ne->vert->index){				// iç•ªã®ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã®æ¬¡ã®ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãŒjç•ªã®ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã¨ç­‰ã—ã„ãªã‚‰
+				e->pair = e_;										// å¯¾ã‚’è¦‹ã¤ã‘ãŸ
+				flag = true;							// è¦‹ã¤ã‘ãŸãƒ•ãƒ©ã‚°ï¼¯ï¼®
+				break;									// æ¬¡ã®ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã«ç§»å‹•
 			}
-			mesh->Edge.shiftSentinel(1);				// ‘Î‚ğŒ©‚Â‚¯‚Ä‚¢‚È‚¢ê‡‚ÍAŠø‚ğ1‚Â‚¸‚ç‚·
+			mesh->Edge.shiftSentinel(1);				// å¯¾ã‚’è¦‹ã¤ã‘ã¦ã„ãªã„å ´åˆã¯ã€æ——ã‚’1ã¤ãšã‚‰ã™
 		}
-		if(flag == false){								// Œ©‚Â‚©‚ç‚È‚©‚Á‚½‚ç(–Ê‚Ì‹«ŠEƒGƒbƒW)
-			e->pair = NULL;								// ‘Î‚ÍNULL
+		if(flag == false){								// è¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸã‚‰(é¢ã®å¢ƒç•Œã‚¨ãƒƒã‚¸)
+			e->pair = NULL;								// å¯¾ã¯NULL
 		}
 	}
 
 	return KOD_TRUE;
 }
 
-// ƒtƒ@ƒZƒbƒg‚ğMESH‚ÉŠi”[
+// Function: GetFacets
+// ãƒ•ã‚¡ã‚»ãƒƒãƒˆã‚’MESHã«æ ¼ç´
+//
+// Parameter:
+// *fp - VRMLãƒ•ã‚¡ã‚¤ãƒ«ã¸ã®ãƒ•ã‚¡ã‚¤ãƒ«ãƒã‚¤ãƒ³ã‚¿
+// *mesh - MESHã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+//
+// Return:
+// KOD_TRUE:æ­£å¸¸ã«èª­ã¿è¾¼ã¿çµ‚äº†		KOD_ERR:ä¸‰æ¬¡å…ƒåº§æ¨™å€¤ã‚’å–å¾—ä¸­ã«ãƒ•ã‚¡ã‚¤ãƒ«ãŒçµ‚äº†
 int VRML_PARSER::GetFacets(FILE *fp,MESH *mesh)
 {
 	char *p,*q;
 	char buf[BUFSIZEMAX],word[BUFSIZEMAX];
-	int index[MAXVERTNUMINFACE]={-1,-1,-1,-1};	// ’¸“_‚ÌƒCƒ“ƒfƒbƒNƒXƒZƒbƒg
-	int edgecount = 0;							// ƒGƒbƒW‚Ì‘”
+	int index[MAXVERTNUMINFACE]={-1,-1,-1,-1};	// é ‚ç‚¹ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚»ãƒƒãƒˆ
+	int edgecount = 0;							// ã‚¨ãƒƒã‚¸ã®ç·æ•°
 
-	// OŸŒ³À•W’l‚ğ‘S‚Ä“Ç‚İ‚Ş‚Ü‚Å1s‚Ã‚Â“Ç‚İ‚Ş
+	// ä¸‰æ¬¡å…ƒåº§æ¨™å€¤ã‚’å…¨ã¦èª­ã¿è¾¼ã‚€ã¾ã§1è¡Œã¥ã¤èª­ã¿è¾¼ã‚€
 	while(!feof(fp)){
-		GetLine(fp,buf);						// 1sæ“¾
-		if(strstr(buf,"coordIndex") == NULL)	// "coordIndex"ƒ^ƒO‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½‚ç
-			continue;							// Œ©‚Â‚©‚é‚Ü‚Å“Ç‚İ‘±‚¯‚é
+		GetLine(fp,buf);						// 1è¡Œå–å¾—
+		if(strstr(buf,"coordIndex") == NULL)	// "coordIndex"ã‚¿ã‚°ãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸã‚‰
+			continue;							// è¦‹ã¤ã‹ã‚‹ã¾ã§èª­ã¿ç¶šã‘ã‚‹
 
-		//  "coordIndex"ƒ^ƒO‚ªŒ©‚Â‚©‚Á‚Ä‚¢‚½‚ç’¸“_À•Wæ“¾
-		while(GetLine(fp,buf)){							// 1sæ“¾
-			if(strchr(buf,']') != NULL) break;			// ƒf[ƒ^I‚í‚è‚ğ¦‚·ƒg[ƒNƒ“']'‚¾‚¯‚Ìs‚¾‚Á‚½‚ç“Ç‚İ‚İI—¹
+		//  "coordIndex"ã‚¿ã‚°ãŒè¦‹ã¤ã‹ã£ã¦ã„ãŸã‚‰é ‚ç‚¹åº§æ¨™å–å¾—
+		while(GetLine(fp,buf)){							// 1è¡Œå–å¾—
+			if(strchr(buf,']') != NULL) break;			// ãƒ‡ãƒ¼ã‚¿çµ‚ã‚ã‚Šã‚’ç¤ºã™ãƒˆãƒ¼ã‚¯ãƒ³']'ã ã‘ã®è¡Œã ã£ãŸã‚‰èª­ã¿è¾¼ã¿çµ‚äº†
 			int i=0;
-			p = strtok(buf,",");						// ƒJƒ“ƒ}‹æØ‚è‚Å•¶š—ñ‚ğ’Šo‚µ‚Ä‚¢‚­
-			sscanf(p,"%d",&index[i]);					// ’Šo‚µ‚½•¶š—ñ‚ğ®”‚É•ÏŠ·
+			p = strtok(buf,",");						// ã‚«ãƒ³ãƒåŒºåˆ‡ã‚Šã§æ–‡å­—åˆ—ã‚’æŠ½å‡ºã—ã¦ã„ã
+			sscanf(p,"%d",&index[i]);					// æŠ½å‡ºã—ãŸæ–‡å­—åˆ—ã‚’æ•´æ•°ã«å¤‰æ›
 			i++;
 			while(p != NULL){
 				if((p = strtok(NULL,",")) != NULL){
 					sscanf(p,"%d",&index[i]);
-					if(index[i] == -1){					// ƒtƒ@ƒZƒbƒg‚ÌI‚í‚è‚ğ¦‚·-1‚ğŒ©‚Â‚¯‚½‚ç
-						edgecount += i;					// ƒGƒbƒW‘”‚ğƒCƒ“ƒNƒŠƒƒ“ƒg
-						SetMesh(mesh,index,edgecount);	// ‚»‚ê‚Ü‚Å‚ÌƒCƒ“ƒfƒbƒNƒXƒZƒbƒg‚ÅƒƒbƒVƒ…‚ğ¶¬
-						i = 0;							// ƒCƒ“ƒfƒbƒNƒX”Ô†‚ğƒŠƒZƒbƒg
+					if(index[i] == -1){					// ãƒ•ã‚¡ã‚»ãƒƒãƒˆã®çµ‚ã‚ã‚Šã‚’ç¤ºã™-1ã‚’è¦‹ã¤ã‘ãŸã‚‰
+						edgecount += i;					// ã‚¨ãƒƒã‚¸ç·æ•°ã‚’ã‚¤ãƒ³ã‚¯ãƒªãƒ¡ãƒ³ãƒˆ
+						SetMesh(mesh,index,edgecount);	// ãã‚Œã¾ã§ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚»ãƒƒãƒˆã§ãƒ¡ãƒƒã‚·ãƒ¥ã‚’ç”Ÿæˆ
+						i = 0;							// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ç•ªå·ã‚’ãƒªã‚»ãƒƒãƒˆ
 					}
 					else i++;
 				}
 			}
 		}
 
-		return KOD_TRUE;	// ³í‚É“Ç‚İ‚İI—¹
+		return KOD_TRUE;	// æ­£å¸¸ã«èª­ã¿è¾¼ã¿çµ‚äº†
 	}
 
-	return KOD_ERR;			// OŸŒ³À•W’l‚ğæ“¾’†‚Éƒtƒ@ƒCƒ‹‚ªI—¹:ƒGƒ‰[
+	return KOD_ERR;			// ä¸‰æ¬¡å…ƒåº§æ¨™å€¤ã‚’å–å¾—ä¸­ã«ãƒ•ã‚¡ã‚¤ãƒ«ãŒçµ‚äº†:ã‚¨ãƒ©ãƒ¼
 }
 
-// ’¸“_‚ÌƒCƒ“ƒfƒbƒNƒXƒZƒbƒg‚©‚çAƒƒbƒVƒ…ƒf[ƒ^‚ğ¶¬‚·‚é
+// Function: SetMesh
+// é ‚ç‚¹ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚»ãƒƒãƒˆã‹ã‚‰ã€ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ã‚’ç”Ÿæˆã™ã‚‹
+//
+// Parameter:
+// *mesh - MESHã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+// vindex[] - é ‚ç‚¹ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚»ãƒƒãƒˆ
+// edgecount - ã‚¨ãƒƒã‚¸ã®ç·æ•°
 void VRML_PARSER::SetMesh(MESH *mesh,int vindex[],int edgecount)
 {
 	int vcount=MAXVERTNUMINFACE;
 	HEface *f;
 	HEvert *v;
 
-	// ’¸“_”‚ğ”F¯
+	// é ‚ç‚¹æ•°ã‚’èªè­˜
 	for(int i=0;i<MAXVERTNUMINFACE;i++){
 		if(vindex[i] == -1)
 			vcount = i;
@@ -169,63 +203,71 @@ void VRML_PARSER::SetMesh(MESH *mesh,int vindex[],int edgecount)
 
 	int startnum = edgecount - vcount;
 
-	// ƒn[ƒtƒGƒbƒW‚ğ“o˜^
+	// ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã‚’ç™»éŒ²
 	for(int i=0;i<vcount;i++){
-		HEedge *e = new HEedge();		// ƒn[ƒtƒGƒbƒW‚ğ1‚Âƒƒ‚ƒŠŠm•Û
+		HEedge *e = new HEedge();		// ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã‚’1ã¤ãƒ¡ãƒ¢ãƒªç¢ºä¿
 		v = (HEvert *)mesh->Vert.getData(vindex[i]);
-		e->SetVert(v);					// æ‚É“o˜^‚µ‚Ä‚¨‚¢‚½’¸“_ƒŠƒXƒg‚©‚ç“¯‚¶ƒCƒ“ƒfƒbƒNƒX‚Ì‚à‚Ì‚ğ’T‚µo‚µƒGƒbƒW‚ÆŠÖ˜A•t‚¯
+		e->SetVert(v);					// å…ˆã«ç™»éŒ²ã—ã¦ãŠã„ãŸé ‚ç‚¹ãƒªã‚¹ãƒˆã‹ã‚‰åŒã˜ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®ã‚‚ã®ã‚’æ¢ã—å‡ºã—ã‚¨ãƒƒã‚¸ã¨é–¢é€£ä»˜ã‘
 		v->SetEdge(e);
-		e->SetIndex(startnum + i);		// ƒGƒbƒW‚ÌƒCƒ“ƒfƒbƒNƒX‚ğ“o˜^
-		e->mom = mesh->Edge.add(e);				// ƒn[ƒtƒGƒbƒW‚ğƒƒbƒVƒ…‚ÌƒGƒbƒWƒŠƒXƒg‚É“o˜^(e‚ğ“ü‚ê‚½” ‚ÌƒAƒhƒŒƒX‚à•Û)
-		// –Ê‚ğ“o˜^
+		e->SetIndex(startnum + i);		// ã‚¨ãƒƒã‚¸ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’ç™»éŒ²
+		e->mom = mesh->Edge.add(e);				// ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã‚’ãƒ¡ãƒƒã‚·ãƒ¥ã®ã‚¨ãƒƒã‚¸ãƒªã‚¹ãƒˆã«ç™»éŒ²(eã‚’å…¥ã‚ŒãŸç®±ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚‚ä¿æŒ)
+		// é¢ã‚’ç™»éŒ²
 		if(!i){
-			f = new HEface();					// –Ê‚ğ1‚Âƒƒ‚ƒŠŠm•Û
-			f->SetEdge(e);						// –Ê‚É‘°‚·‚éƒn[ƒtƒGƒbƒW‚ğ1‚Â‚Â
-			f->SetIndex(int(edgecount/vcount)-1);	// –Ê‚ÌƒCƒ“ƒfƒbƒNƒX‚ğ“o˜^
-			f->SetVertNum(vcount);				// –Ê‚Ì’¸“_”‚ğ“o˜^
-			SetColorStat(&f->Dstat,0.2,0.2,1);	// Fw¦
-			f->mom = mesh->Face.add(f);			// –Ê‚ğƒƒbƒVƒ…‚Ì–ÊƒŠƒXƒg‚É“o˜^(f‚ğ“ü‚ê‚½” ‚ÌƒAƒhƒŒƒX‚à•Û)
+			f = new HEface();					// é¢ã‚’1ã¤ãƒ¡ãƒ¢ãƒªç¢ºä¿
+			f->SetEdge(e);						// é¢ã«æ—ã™ã‚‹ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã‚’1ã¤æŒã¤
+			f->SetIndex(int(edgecount/vcount)-1);	// é¢ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’ç™»éŒ²
+			f->SetVertNum(vcount);				// é¢ã®é ‚ç‚¹æ•°ã‚’ç™»éŒ²
+			SetColorStat(&f->Dstat,0.2,0.2,1);	// è‰²æŒ‡ç¤º
+			f->mom = mesh->Face.add(f);			// é¢ã‚’ãƒ¡ãƒƒã‚·ãƒ¥ã®é¢ãƒªã‚¹ãƒˆã«ç™»éŒ²(fã‚’å…¥ã‚ŒãŸç®±ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚‚ä¿æŒ)
 		}
-		e->SetFace(f);							// ƒn[ƒtƒGƒbƒW‚ª‘®‚·‚é–Ê‚ğ“o˜^
+		e->SetFace(f);							// ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ãŒå±ã™ã‚‹é¢ã‚’ç™»éŒ²
 	}
 
-	// ƒn[ƒtƒGƒbƒW‚ÌŸ‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ÆA‚»‚ê‚ª‘®‚·‚é–Ê‚ğ“o˜^
-	HEedge *e_ = (HEedge *)mesh->Edge.setSentinel(startnum);		// 1–{–Ú‚ÌƒGƒbƒW‚ÉŠø‚ğ—§‚Ä‚é
+	// ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã®æ¬¡ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã¨ã€ãã‚ŒãŒå±ã™ã‚‹é¢ã‚’ç™»éŒ²
+	HEedge *e_ = (HEedge *)mesh->Edge.setSentinel(startnum);		// 1æœ¬ç›®ã®ã‚¨ãƒƒã‚¸ã«æ——ã‚’ç«‹ã¦ã‚‹
 	for(int i=0;i<vcount;i++){
 		if(i==vcount-1){
-			e_->ne = (HEedge *)mesh->Edge.getSentinelData();		// ÅŒã‚ÌƒGƒbƒW‚Ìnext‚ÍÅ‰‚ÌƒGƒbƒW
+			e_->ne = (HEedge *)mesh->Edge.getSentinelData();		// æœ€å¾Œã®ã‚¨ãƒƒã‚¸ã®nextã¯æœ€åˆã®ã‚¨ãƒƒã‚¸
 		}
 		else{
-			e_->ne = (HEedge *)mesh->Edge.getDataFromSentinel(i+1);	// ƒGƒbƒW‚ğƒŠƒXƒg‰»
+			e_->ne = (HEedge *)mesh->Edge.getDataFromSentinel(i+1);	// ã‚¨ãƒƒã‚¸ã‚’ãƒªã‚¹ãƒˆåŒ–
 			e_ = e_->ne;
 		}
 	}
 
 }
 
-// OŸŒ³À•W’l‚ğMESH‚ÉŠi”[
+// Function: GetCoords
+// ä¸‰æ¬¡å…ƒåº§æ¨™å€¤ã‚’MESHã«æ ¼ç´
+//
+// Parameter:
+// *fp - VRMLãƒ•ã‚¡ã‚¤ãƒ«ã¸ã®ãƒ•ã‚¡ã‚¤ãƒ«ãƒã‚¤ãƒ³ã‚¿
+// *mesh - MESHã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+//
+// Return:
+// KOD_TRUE:æ­£å¸¸ã«èª­ã¿è¾¼ã¿çµ‚äº†		KOD_ERR:ä¸‰æ¬¡å…ƒåº§æ¨™å€¤ã‚’å–å¾—ä¸­ã«ãƒ•ã‚¡ã‚¤ãƒ«ãŒçµ‚äº†
 int VRML_PARSER::GetCoords(FILE *fp,MESH *mesh)
 {
 	char *p,*q;
 	char buf[BUFSIZEMAX],words[BUFSIZEMAX];
-	int index=0;	// ’¸“_‚ÌƒCƒ“ƒfƒbƒNƒX
+	int index=0;	// é ‚ç‚¹ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	Coord c;
 
-	// OŸŒ³À•W’l‚ğ‘S‚Ä“Ç‚İ‚Ş‚Ü‚Å1s‚Ã‚Â“Ç‚İ‚Ş
+	// ä¸‰æ¬¡å…ƒåº§æ¨™å€¤ã‚’å…¨ã¦èª­ã¿è¾¼ã‚€ã¾ã§1è¡Œã¥ã¤èª­ã¿è¾¼ã‚€
 	while(!feof(fp)){
-		GetLine(fp,buf);				// 1sæ“¾
-		if(strstr(buf,"point") == NULL)	// "point"ƒ^ƒO‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½‚ç
-			continue;					// Œ©‚Â‚©‚é‚Ü‚Å“Ç‚İ‘±‚¯‚é
+		GetLine(fp,buf);				// 1è¡Œå–å¾—
+		if(strstr(buf,"point") == NULL)	// "point"ã‚¿ã‚°ãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸã‚‰
+			continue;					// è¦‹ã¤ã‹ã‚‹ã¾ã§èª­ã¿ç¶šã‘ã‚‹
 
-		//  "point"ƒ^ƒO‚ªŒ©‚Â‚©‚Á‚Ä‚¢‚½‚ç’¸“_À•Wæ“¾
-		while(GetLine(fp,buf)){							// 1sæ“¾
-			if(strchr(buf,']') != NULL) break;			// ƒf[ƒ^I‚í‚è‚ğ¦‚·ƒg[ƒNƒ“']'‚¾‚¯‚Ìs‚¾‚Á‚½‚ç“Ç‚İ‚İI—¹
+		//  "point"ã‚¿ã‚°ãŒè¦‹ã¤ã‹ã£ã¦ã„ãŸã‚‰é ‚ç‚¹åº§æ¨™å–å¾—
+		while(GetLine(fp,buf)){							// 1è¡Œå–å¾—
+			if(strchr(buf,']') != NULL) break;			// ãƒ‡ãƒ¼ã‚¿çµ‚ã‚ã‚Šã‚’ç¤ºã™ãƒˆãƒ¼ã‚¯ãƒ³']'ã ã‘ã®è¡Œã ã£ãŸã‚‰èª­ã¿è¾¼ã¿çµ‚äº†
 			HEvert *v = new HEvert();
-			p = strtok(buf,",");						// ƒJƒ“ƒ}‹æØ‚è‚Å•¶š—ñ‚ğ’Šo‚µ‚Ä‚¢‚­
-			sscanf(p,"%lf %lf %lf",&c.x,&c.y,&c.z);					// ƒf[ƒ^Ši”[
+			p = strtok(buf,",");						// ã‚«ãƒ³ãƒåŒºåˆ‡ã‚Šã§æ–‡å­—åˆ—ã‚’æŠ½å‡ºã—ã¦ã„ã
+			sscanf(p,"%lf %lf %lf",&c.x,&c.y,&c.z);					// ãƒ‡ãƒ¼ã‚¿æ ¼ç´
 			v->SetCod(c);
 			v->SetIndex(index);
-			v->mom = mesh->Vert.add(v);		// v‚ğƒŠƒXƒg‚É“o˜^(v‚ğ“ü‚ê‚½” ‚ÌƒAƒhƒŒƒX‚à•Û)
+			v->mom = mesh->Vert.add(v);		// vã‚’ãƒªã‚¹ãƒˆã«ç™»éŒ²(vã‚’å…¥ã‚ŒãŸç®±ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚‚ä¿æŒ)
 			//fprintf(stderr,"%p (%lf,%lf,%lf)\n",v,v->cod.x,v->cod.y,v->cod.z);	// debug
 			index++;
 			while(p != NULL){
@@ -239,35 +281,50 @@ int VRML_PARSER::GetCoords(FILE *fp,MESH *mesh)
 				}
 			}
 		}
-		return KOD_TRUE;	// ³í‚É“Ç‚İ‚İI—¹
+		return KOD_TRUE;	// æ­£å¸¸ã«èª­ã¿è¾¼ã¿çµ‚äº†
 	}
 
-	return KOD_ERR;		// OŸŒ³À•W’l‚ğæ“¾’†‚Éƒtƒ@ƒCƒ‹‚ªI—¹:ƒGƒ‰[
+	return KOD_ERR;		// ä¸‰æ¬¡å…ƒåº§æ¨™å€¤ã‚’å–å¾—ä¸­ã«ãƒ•ã‚¡ã‚¤ãƒ«ãŒçµ‚äº†:ã‚¨ãƒ©ãƒ¼
 }
 
-// ƒtƒ@ƒCƒ‹‚©‚ç1sæ“¾‚µA‰üs•¶š‚ğI’[•¶š‚É•ÏX‚·‚é
+// Function: GetLine
+// ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰1è¡Œå–å¾—ã—ã€æ”¹è¡Œæ–‡å­—ã‚’çµ‚ç«¯æ–‡å­—ã«å¤‰æ›´ã™ã‚‹
+//
+// Parameter: 
+// *fp - VRMLãƒ•ã‚¡ã‚¤ãƒ«ã¸ã®ãƒ•ã‚¡ã‚¤ãƒ«ãƒã‚¤ãƒ³ã‚¿
+// buf[] - 1è¡Œ
+//
+// Return: 
+// æ–‡å­—æ•°
 int VRML_PARSER::GetLine(FILE *fp,char buf[])
 {
-	fgets(buf,BUFSIZEMAX,fp);			// 1sæ“¾
-	int len = strlen(buf);				// 1s‚Ì’·‚³‚ğ’²‚×‚é
-	if(len > 0 && buf[len-1] == '\n')	// ÅŒã‚Ì‰üs•¶š\n‚ğI’[•¶š\0‚É•ÏX
+	fgets(buf,BUFSIZEMAX,fp);			// 1è¡Œå–å¾—
+	int len = strlen(buf);				// 1è¡Œã®é•·ã•ã‚’èª¿ã¹ã‚‹
+	if(len > 0 && buf[len-1] == '\n')	// æœ€å¾Œã®æ”¹è¡Œæ–‡å­—\nã‚’çµ‚ç«¯æ–‡å­—\0ã«å¤‰æ›´
 		buf[len-1] = '\0';
 
 	return len-1;
 }
 
-// ƒ^ƒO‰ğÍ
+// Function: CheckTags
+// ã‚¿ã‚°è§£æ
+//
+// Parameter: 
+// buf[] - 1è¡Œ
+//
+// Return:
+// å„ã‚¿ã‚°ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ç•ªå·,	KOD_ERRï¼šã‚¿ã‚°ãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸ
 int VRML_PARSER::CheckTags(char buf[])
 {
 	if(strstr(buf,"AsciiText") != NULL)			return AsciiText;		// 1
 	if(strstr(buf,"Cone") != NULL)				return Cone;			// 2
-	if(strstr(buf,"Coordinate3") != NULL)		return Coordinate3;		// 3:OŸŒ³À•W
+	if(strstr(buf,"Coordinate3") != NULL)		return Coordinate3;		// 3:ä¸‰æ¬¡å…ƒåº§æ¨™
 	if(strstr(buf,"Cube") != NULL)				return Cube;			// 4
 	if(strstr(buf,"Cylinder") != NULL)			return Cylinder;		// 5
 	if(strstr(buf,"DirectionalLight") != NULL)	return DirectionalLight;// 6
 	if(strstr(buf,"FontStyle") != NULL)			return FontStyle;		// 7
 	if(strstr(buf,"Group") != NULL)				return Group;			// 8
-	if(strstr(buf,"IndexedFaceSet") != NULL)	return IndexedFaceSet;	// 9:ƒtƒ@ƒZƒbƒg’¸“_‚ÌƒCƒ“ƒfƒbƒNƒX
+	if(strstr(buf,"IndexedFaceSet") != NULL)	return IndexedFaceSet;	// 9:ãƒ•ã‚¡ã‚»ãƒƒãƒˆé ‚ç‚¹ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	if(strstr(buf,"IndexedLineSet") != NULL)	return IndexedLineSet;	// 10
 	if(strstr(buf,"Info") != NULL)				return Info;			// 11
 	if(strstr(buf,"LOD") != NULL)				return LOD;				// 12
@@ -297,5 +354,5 @@ int VRML_PARSER::CheckTags(char buf[])
 	if(strstr(buf,"WWWAnchor") != NULL)			return WWWAnchor;		// 36
 	if(strstr(buf,"WWWInline") != NULL)			return WWWInline;		// 37
 
-	return KOD_ERR;	// TAG‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½
+	return KOD_ERR;	// TAGãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸ
 }

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>QtNurbsCurveDialog</class>
  <widget class="QDialog" name="QtNurbsCurveDialog">
@@ -75,9 +75,9 @@
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="closedIntRadBtn">
+       <widget class="QRadioButton" name="nullRadBtn">
         <property name="text">
-         <string>Interpolated (closed)</string>
+         <string>Interpolated(closed)</string>
         </property>
         <attribute name="buttonGroup">
          <string notr="true">buttonGroup</string>

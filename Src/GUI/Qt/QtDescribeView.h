@@ -1,36 +1,85 @@
-#ifndef QTDESCRIBEVIEW_H
+ï»¿#ifndef QTDESCRIBEVIEW_H
 #define QTDESCRIBEVIEW_H
 
 #include <QGLWidget>
 #include <QMouseEvent>
 #include "Kodatuno.h"
 
-// OpenGL•`‰æ—Ìˆæ‚ÌƒCƒxƒ“ƒgˆ—ƒNƒ‰ƒX
+// Constants: General Difines
+// Non
+
+// Class: QtDescribeView
+// OpenGLæç”»é ˜åŸŸã®ã‚¤ãƒ™ãƒ³ãƒˆå‡¦ç†ã‚¯ãƒ©ã‚¹
 class QtDescribeView : public QGLWidget
 {
 public:
+// Constructor: QtDescribeView
+// QtDescribeViewã‚¯ãƒ©ã‚¹ã®ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼
+// æš—é»™å‘¼ã³å‡ºã—ã‚’ç¦æ­¢
     explicit QtDescribeView( QWidget *parent = 0);
-    void drawPoint(Coord,double,double,double []);			// “_‚ğ•`‰æ
-    void drawPoints(Coord *,int,double,double,double []);	// “_ŒQ‚ğ•`‰æ
-    void drawVector(Coord,Coord,double,double,double []);	// ƒxƒNƒgƒ‹‚ğ•`‰æ
-    void drawLine(Coord,Coord,double,double []);			// 2“_ŠÔ‚Éü•ª‚ğ•`‰æ
+	
+// Function: drawPoint
+// ç‚¹ã‚’æç”»ã™ã‚‹
+    void drawPoint(Coord,double,double,double []);			
+	
+// Function: drawPoints
+// ç‚¹ç¾¤ã‚’æç”»ã™ã‚‹
+    void drawPoints(Coord *,int,double,double,double []);	
+	
+// Function: drawVector
+// ãƒ™ã‚¯ãƒˆãƒ«ã‚’æç”»ã™ã‚‹
+    void drawVector(Coord,Coord,double,double,double []);	
+	
+// Function: drawLine
+// 2ç‚¹é–“ã«ç·šåˆ†ã‚’æç”»ã™ã‚‹
+    void drawLine(Coord,Coord,double,double []);			
     
 protected :
-    void initializeGL();                            // OpenGL‰Šú‰»
-    void resizeGL( int w, int h );                  // ƒŠƒTƒCƒY
-    void paintGL();                                 // OpenGLŠÖ”‚Í‚±‚±‚Åg‚¤
-    void mousePressEvent( QMouseEvent *event );     // ƒ}ƒEƒX‰Ÿ‰º‚ÌƒCƒxƒ“ƒg
-    void mouseReleaseEvent( QMouseEvent *event );   // ƒ}ƒEƒXƒŠƒŠ[ƒX‚ÌƒCƒxƒ“ƒg
-    void mouseMoveEvent( QMouseEvent *event );      // ƒ}ƒEƒXˆÚ“®‚ÌƒCƒxƒ“ƒg
-    void wheelEvent( QWheelEvent *event );          // ƒ}ƒEƒXƒzƒC[ƒ‹‚ÌƒCƒxƒ“ƒg
-    void keyPressEvent( QKeyEvent *event );         // ƒL[ƒ{[ƒh‚ÌƒCƒxƒ“ƒg
+// Function: initializeGL
+// OpenGLã‚’åˆæœŸåŒ–ã™ã‚‹
+    void initializeGL();                            
+	
+// Function: realizeGL
+// ãƒªã‚¶ã‚¤ã‚ºã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
+    void resizeGL( int w, int h );                  
+	
+// Function: paintGL
+// OpenGLé–¢æ•°ã¯ã“ã“ã§ä½¿ã†
+    void paintGL();                                 
+	
+// Function: mousePressEvent
+// ãƒã‚¦ã‚¹æŠ¼ä¸‹æ™‚ã®ã‚¤ãƒ™ãƒ³ãƒˆ
+    void mousePressEvent( QMouseEvent *event );     
+	
+// Function: mouseReleaseEvent
+// ãƒã‚¦ã‚¹ãƒªãƒªãƒ¼ã‚¹æ™‚ã®ã‚¤ãƒ™ãƒ³ãƒˆ
+    void mouseReleaseEvent( QMouseEvent *event );   
+	
+// Function: mouseMoveEvent
+// ãƒã‚¦ã‚¹ç§»å‹•æ™‚ã®ã‚¤ãƒ™ãƒ³ãƒˆ
+    void mouseMoveEvent( QMouseEvent *event );      
+
+// Function: wheelEvent
+// ãƒã‚¦ã‚¹ãƒ›ã‚¤ãƒ¼ãƒ«ã®ã‚¤ãƒ™ãƒ³ãƒˆ
+    void wheelEvent( QWheelEvent *event );          
+	
+// Function: keyPressEvent
+// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã®ã‚¤ãƒ™ãƒ³ãƒˆ
+    void keyPressEvent( QKeyEvent *event );         
     
 private :
-	long getMouseBtn(QMouseEvent *event );		//‰Ÿ‚³‚ê‚Ä‚¢‚éƒ}ƒEƒXƒ{ƒ^ƒ“‚Ìæ“¾
-	long getModifierKey(QMouseEvent *event );	//‰Ÿ‚³‚ê‚Ä‚¢‚éCüƒL[‚Ìæ“¾
+// Function: getMouseBtn
+// (private)æŠ¼ã•ã‚Œã¦ã„ã‚‹ãƒã‚¦ã‚¹ãƒœã‚¿ãƒ³ã®å–å¾—
+	long getMouseBtn(QMouseEvent *event );		
+
+// Function: getModidierKey
+// (private)æŠ¼ã•ã‚Œã¦ã„ã‚‹ä¿®é£¾ã‚­ãƒ¼ã®å–å¾—
+	long getModifierKey(QMouseEvent *event );	
 
 private:
-    int MouseX,MouseY;      // Œ»İ‚Ìƒ}ƒEƒXˆÊ’u
+// Variable: MouseX,MouseY
+// ç¾åœ¨ã®ãƒã‚¦ã‚¹ä½ç½®
+    int MouseX,MouseY;      // ç¾åœ¨ã®ãƒã‚¦ã‚¹ä½ç½®
 	
 };
 

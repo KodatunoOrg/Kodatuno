@@ -1,4 +1,4 @@
-// UserSample‚ğ‹Lq
+ï»¿// UserSampleã‚’è¨˜è¿°
 #include "SampleFunc.h"
 #include <iostream>
 #include <fstream>
@@ -6,51 +6,61 @@
 
 using namespace std;
 
-
-// Sample6: “™‚ü‚ğ¶¬‚·‚é
-// ‹ï‘Ì“I‚É‚ÍCNURBS‹È–Ê‚Æ•½–Ê‚Æ‚ÌŒğü(Œğ“_ŒQ)‚ğZ•ûŒü‚É‡Ÿ‹‚ß‚Ä‚¢‚­
-// ‚³‚ç‚ÉC‚»‚ÌŒğ“_ŒQ‚Ì–@üƒxƒNƒgƒ‹‚àZo‚·‚é
+// Function: SmpContourLine
+// Sample6(ç­‰é«˜ç·šã‚’ç”Ÿæˆã™ã‚‹)
+//
+// Parameter:
+// *BodyList - BODYã®å®Ÿä½“ãŒç™»éŒ²é †ã«ãƒªã‚¹ãƒˆã•ã‚Œã¦ã„ã‚‹
+// *ObjList - ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚ŒãŸã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£æƒ…å ±
+// PickCount - ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚ŒãŸã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã®æ•°
+// Prop[] - ãƒ¦ãƒ¼ã‚¶ãƒ¼æŒ‡å®šãƒ—ãƒ­ãƒ‘ãƒ†ã‚£å€¤
+//
+// Return:
+// ä½•ã‚‚é¸æŠã•ã‚Œã¦ã„ãªã„ï¼šKOD_ERR,		æ­£å¸¸çµ‚äº†ï¼šKOD_TRUE
 int SmpContourLine(BODYList *BodyList,OBJECTList *ObjList, int PickCount, double Prop[])
 {
-	if(!PickCount)	return KOD_ERR;		// ƒZƒŒƒNƒVƒ‡ƒ“‚³‚ê‚Ä‚¢‚È‚©‚Á‚½‚çA‰½‚à‚µ‚È‚¢
+	// NURBSæ›²é¢ã¨å¹³é¢ã¨ã®äº¤ç·š(äº¤ç‚¹ç¾¤)ã‚’Zæ–¹å‘ã«é †æ¬¡æ±‚ã‚ã¦ã„ã
+	// ã•ã‚‰ã«ï¼Œãã®äº¤ç‚¹ç¾¤ã®æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã‚‚ç®—å‡ºã™ã‚‹
 
-	NURBS_Func	nfunc;					// NURBS‚ğˆµ‚¤ŠÖ”W‚ğŒÄ‚Ño‚·
+	if(!PickCount)	return KOD_ERR;		// ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚Œã¦ã„ãªã‹ã£ãŸã‚‰ã€ä½•ã‚‚ã—ãªã„
 
-	OBJECT *obj = (OBJECT *)ObjList->getData(0);		// ˆê”ÔÅ‰‚ÉƒZƒŒƒNƒVƒ‡ƒ“‚³‚ê‚½ƒGƒ“ƒeƒBƒeƒB‚Ìî•ñ‚ğ“¾‚é
-	BODY *body = (BODY *)BodyList->getData(obj->Body);	// ˆê”ÔÅ‰‚ÉƒZƒŒƒNƒVƒ‡ƒ“‚³‚ê‚½BODY‚ÌÀ‘Ì‚ğ“¾‚é
-	if(obj->Type != _TRIMMED_SURFACE)	return KOD_ERR;	// ƒZƒŒƒNƒVƒ‡ƒ“‚³‚ê‚½‹È–Ê‚ªƒgƒŠƒ€–Ê‚Å‚È‚¢ê‡‚ÍI—¹
+	NURBS_Func	nfunc;					// NURBSã‚’æ‰±ã†é–¢æ•°é›†ã‚’å‘¼ã³å‡ºã™
 
-	NURBSS *S = body->TrmS[obj->Num].pts;				// BODY‚©‚çNURBS‹È–Ê‚ğæ‚èo‚·
+	OBJECT *obj = (OBJECT *)ObjList->getData(0);		// ä¸€ç•ªæœ€åˆã«ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚ŒãŸã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã®æƒ…å ±ã‚’å¾—ã‚‹
+	BODY *body = (BODY *)BodyList->getData(obj->Body);	// ä¸€ç•ªæœ€åˆã«ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚ŒãŸBODYã®å®Ÿä½“ã‚’å¾—ã‚‹
+	if(obj->Type != _TRIMMED_SURFACE)	return KOD_ERR;	// ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚ŒãŸæ›²é¢ãŒãƒˆãƒªãƒ é¢ã§ãªã„å ´åˆã¯çµ‚äº†
 
-	Coord t[5000];					// ‰ğŠi—p”[
-	double red[3] = {1,0,0};		// –@üƒxƒNƒgƒ‹•\¦‚ÌF
-	double blue[3] = {0,0,1};		// “_•\¦‚ÌF
-	char mes[256];					// ƒƒbƒZ[ƒWo—Í—p
+	NURBSS *S = body->TrmS[obj->Num].pts;				// BODYã‹ã‚‰NURBSæ›²é¢ã‚’å–ã‚Šå‡ºã™
 
-	double feed = Prop[0];			// Œğ“_ŒQ‚Ì“_ŠÔŠu
-	double under = Prop[1];			// “™‚ü‚ÌZ_min
-	double upper = Prop[2];			// “™‚ü‚ÌZ_max
-	double delta = Prop[3];			// “™‚ü¶¬‚ÌZŠÔŠu
-	int step = fabs(upper - under)/delta + 1;	// “™‚ü‚Ì–{”‚ğZo
+	Coord t[5000];					// è§£æ ¼ç”¨ç´
+	double red[3] = {1,0,0};		// æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«è¡¨ç¤ºã®è‰²
+	double blue[3] = {0,0,1};		// ç‚¹è¡¨ç¤ºã®è‰²
+	char mes[256];					// ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å‡ºåŠ›ç”¨
 
-	Coord nvec = SetCoord(0,0,1);	// •½–Ê‚Ì–@üƒxƒNƒgƒ‹‚ğw’è(X-Y•½–Ê‚Æ‚·‚é)
+	double feed = Prop[0];			// äº¤ç‚¹ç¾¤ã®ç‚¹é–“éš”
+	double under = Prop[1];			// ç­‰é«˜ç·šã®Z_min
+	double upper = Prop[2];			// ç­‰é«˜ç·šã®Z_max
+	double delta = Prop[3];			// ç­‰é«˜ç·šç”Ÿæˆã®Zé–“éš”
+	int step = fabs(upper - under)/delta + 1;	// ç­‰é«˜ç·šã®æœ¬æ•°ã‚’ç®—å‡º
 
-	// •½–Ê‚ğZ•ûŒü‚ÉƒVƒtƒg‚µ‚Ä‚¢‚«‚È‚ª‚çC“™‚ü‚ğZo‚·‚é
+	Coord nvec = SetCoord(0,0,1);	// å¹³é¢ã®æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã‚’æŒ‡å®š(X-Yå¹³é¢ã¨ã™ã‚‹)
+
+	// å¹³é¢ã‚’Zæ–¹å‘ã«ã‚·ãƒ•ãƒˆã—ã¦ã„ããªãŒã‚‰ï¼Œç­‰é«˜ç·šã‚’ç®—å‡ºã™ã‚‹
 	for(int i=0;i<step;i++){
-		double z = under + delta*(double)i;	// Œ»İ‚Ì•½–Ê‚ÌZˆÊ’u
-		Coord pt = SetCoord(0,0,z);			// Œ»İ‚Ì•½–Êã‚Ì1“_‚ğw’è
+		double z = under + delta*(double)i;	// ç¾åœ¨ã®å¹³é¢ã®Zä½ç½®
+		Coord pt = SetCoord(0,0,z);			// ç¾åœ¨ã®å¹³é¢ä¸Šã®1ç‚¹ã‚’æŒ‡å®š
 
 		sprintf(mes,"z=%.3lf  calculating...",z);
 		GuiIF.SetMessage(mes);
 
-		int num = nfunc.CalcIntersecPtsPlaneSearch(S,pt,nvec,feed,3,t,5000,RUNGE_KUTTA);		// NURBS‹È–Ê‚Æ•½–Ê‚Æ‚ÌŒğ“_ŒQ‚ğŒğü’ÇÕ–@‚Å‹‚ß‚é
+		int num = nfunc.CalcIntersecPtsPlaneSearch(S,pt,nvec,feed,3,t,5000,RUNGE_KUTTA);		// NURBSæ›²é¢ã¨å¹³é¢ã¨ã®äº¤ç‚¹ç¾¤ã‚’äº¤ç·šè¿½è·¡æ³•ã§æ±‚ã‚ã‚‹
 
-		for(int i=0;i<num;i++){		// Œğ“_‚Ì”‚¾‚¯ƒ‹[ƒv
-			Coord p = nfunc.CalcNurbsSCoord(S,t[i].x,t[i].y);			// Œğ“_‚ğƒpƒ‰ƒ[ƒ^’l‚©‚çÀ•W’l‚Ö•ÏŠ·
-			Coord nt = nfunc.CalcNormVecOnNurbsS(S,t[i].x,t[i].y);		// Œğ“_ã‚Ì–@üƒxƒNƒgƒ‹‚ğŒvZ
-			nt = MulCoord(nt,-2);											// ŠOŒü‚«–@üƒxƒNƒgƒ‹‚Ö•ÏŠ·‚µ“K“–‚È’·‚³‚É‚·‚é
-			DrawPoint(p,1,3,blue);			// Œğ“_‚ğ•`‰æ
-			DrawVector(p,nt,1,1,red);		// –@üƒxƒNƒgƒ‹‚ğ•`‰æ
+		for(int i=0;i<num;i++){		// äº¤ç‚¹ã®æ•°ã ã‘ãƒ«ãƒ¼ãƒ—
+			Coord p = nfunc.CalcNurbsSCoord(S,t[i].x,t[i].y);			// äº¤ç‚¹ã‚’ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å€¤ã‹ã‚‰åº§æ¨™å€¤ã¸å¤‰æ›
+			Coord nt = nfunc.CalcNormVecOnNurbsS(S,t[i].x,t[i].y);		// äº¤ç‚¹ä¸Šã®æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã‚’è¨ˆç®—
+			nt = MulCoord(nt,-2);											// å¤–å‘ãæ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã¸å¤‰æ›ã—é©å½“ãªé•·ã•ã«ã™ã‚‹
+			DrawPoint(p,1,3,blue);			// äº¤ç‚¹ã‚’æç”»
+			DrawVector(p,nt,1,1,red);		// æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã‚’æç”»
 		}
 	}
 	GuiIF.SetMessage("END");
@@ -59,69 +69,89 @@ int SmpContourLine(BODYList *BodyList,OBJECTList *ObjList, int PickCount, double
 	return KOD_TRUE;
 }
 
-// Sample7: ‹È–Ê“¯m‚ÌŒğü‚ğZo‚·‚é
+// Function: SmpIntersectSurfs
+// Sample7(æ›²é¢åŒå£«ã®äº¤ç·šã‚’ç®—å‡ºã™ã‚‹)
+//
+// Parameter:
+// *BodyList - BODYã®å®Ÿä½“ãŒç™»éŒ²é †ã«ãƒªã‚¹ãƒˆã•ã‚Œã¦ã„ã‚‹
+// *ObjList - ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚ŒãŸã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£æƒ…å ±
+// PickCount - ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚ŒãŸã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã®æ•°
+// Prop[] - ãƒ¦ãƒ¼ã‚¶ãƒ¼æŒ‡å®šãƒ—ãƒ­ãƒ‘ãƒ†ã‚£å€¤
+//
+// Return:
+// ä½•ã‚‚é¸æŠã•ã‚Œã¦ã„ãªã„ï¼šKOD_ERR,		ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚ŒãŸ2ã¤ã®ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ãŒãƒˆãƒªãƒ é¢ã§ãªã„ï¼šKOD_ERR,		æ­£å¸¸çµ‚äº†ï¼šKOD_TRUE
 int SmpIntersectSurfs(BODYList *BodyList,OBJECTList *ObjList, int PickCount, double Prop[])
 {
-	if(!PickCount)	return KOD_ERR;		// ƒZƒŒƒNƒVƒ‡ƒ“‚³‚ê‚Ä‚¢‚È‚©‚Á‚½‚çA‰½‚à‚µ‚È‚¢
+	if(!PickCount)	return KOD_ERR;		// ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚Œã¦ã„ãªã‹ã£ãŸã‚‰ã€ä½•ã‚‚ã—ãªã„
 
-	NURBS_Func nfunc;				// NURBSŠÖ˜A‚ÌŠÖ”‚ğW‚ß‚½ƒNƒ‰ƒX‚ÌƒIƒuƒWƒFƒNƒg‚ğ¶¬
-	Coord Rt[5000];					// NURBS‹È–ÊR(w,t)‚É‚¨‚¯‚é‰ğ
-	Coord St[5000];					// NURBS‹È–ÊS(u,v)‚É‚¨‚¯‚é‰ğ
-	double green[3] = {0,1,0};		// “_•\¦‚ÌF
+	NURBS_Func nfunc;				// NURBSé–¢é€£ã®é–¢æ•°ã‚’é›†ã‚ãŸã‚¯ãƒ©ã‚¹ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ç”Ÿæˆ
+	Coord Rt[5000];					// NURBSæ›²é¢R(w,t)ã«ãŠã‘ã‚‹è§£
+	Coord St[5000];					// NURBSæ›²é¢S(u,v)ã«ãŠã‘ã‚‹è§£
+	double green[3] = {0,1,0};		// ç‚¹è¡¨ç¤ºã®è‰²
 
-	double feed = Prop[0];			// Œğ“_ŒQ‚Ì“_ŠÔŠu
+	double feed = Prop[0];			// äº¤ç‚¹ç¾¤ã®ç‚¹é–“éš”
 
     GuiIF.SetMessage("Start calcu....");
 
-	// 1”Ô–Ú‚ÉƒZƒŒƒNƒVƒ‡ƒ“‚³‚ê‚½BODYƒf[ƒ^‚ğ“¾‚é
+	// 1ç•ªç›®ã«ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚ŒãŸBODYãƒ‡ãƒ¼ã‚¿ã‚’å¾—ã‚‹
 	OBJECT *obj1 = (OBJECT *)ObjList->getData(0);
 	BODY *body1 = (BODY *)BodyList->getData(obj1->Body);
 
-	// 2”Ô–Ú‚ÉƒZƒŒƒNƒVƒ‡ƒ“‚³‚ê‚½BODYƒf[ƒ^‚ğ“¾‚é
+	// 2ç•ªç›®ã«ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚ŒãŸBODYãƒ‡ãƒ¼ã‚¿ã‚’å¾—ã‚‹
 	OBJECT *obj2 = (OBJECT *)ObjList->getData(1);
 	BODY *body2 = (BODY *)BodyList->getData(obj2->Body);
 
-	if(obj1->Type != _TRIMMED_SURFACE || obj2->Type != _TRIMMED_SURFACE)	// ƒZƒŒƒNƒVƒ‡ƒ“‚³‚ê‚½2‚Â‚ÌƒGƒ“ƒeƒBƒeƒB‚ªƒgƒŠƒ€–Ê‚Å‚È‚¢ê‡‚ÍI—¹
+	if(obj1->Type != _TRIMMED_SURFACE || obj2->Type != _TRIMMED_SURFACE)	// ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚ŒãŸ2ã¤ã®ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ãŒãƒˆãƒªãƒ é¢ã§ãªã„å ´åˆã¯çµ‚äº†
 		return KOD_ERR;
 
-	NURBSS *S1 = body1->TrmS[obj1->Num].pts;	// BODY1‚©‚çNURBS‹È–Ê‚ğæ‚èo‚·
-	NURBSS *S2 = body2->TrmS[obj2->Num].pts;	// BODY2‚©‚çNURBS‹È–Ê‚ğæ‚èo‚·
+	NURBSS *S1 = body1->TrmS[obj1->Num].pts;	// BODY1ã‹ã‚‰NURBSæ›²é¢ã‚’å–ã‚Šå‡ºã™
+	NURBSS *S2 = body2->TrmS[obj2->Num].pts;	// BODY2ã‹ã‚‰NURBSæ›²é¢ã‚’å–ã‚Šå‡ºã™
 
-	int num = nfunc.CalcIntersecPtsNurbsSSearch(S1,S2,10,feed,Rt,St,5000);	// NURBS‹È–Ê“¯m‚ÌŒğüZo
+	int num = nfunc.CalcIntersecPtsNurbsSSearch(S1,S2,10,feed,Rt,St,5000);	// NURBSæ›²é¢åŒå£«ã®äº¤ç·šç®—å‡º
 
 	for(int i=0;i<num;i++){
-		Coord p = nfunc.CalcNurbsSCoord(S1,Rt[i].x,Rt[i].y);	// uvÀ•Wã‚Ì“_‚ğxyzÀ•W’l‚É•ÏŠ·
-		DrawPoint(p,1,3,green);									// •`‰æ
+		Coord p = nfunc.CalcNurbsSCoord(S1,Rt[i].x,Rt[i].y);	// uvåº§æ¨™ä¸Šã®ç‚¹ã‚’xyzåº§æ¨™å€¤ã«å¤‰æ›
+		DrawPoint(p,1,3,green);									// æç”»
 	}
 
     GuiIF.SetMessage("END");
 	return KOD_TRUE;
 }
 
-// Sample8: NURBS‹È–Ê‚Ì“K“–‚È(u,v)‚É‚¨‚¯‚é•½‹Ï‹È—¦–@üƒxƒNƒgƒ‹‚ğZo‚·‚é
+// Function: SmpMeanCurvature
+// Sample8(NURBSæ›²é¢ã®é©å½“ãª(u,v)ã«ãŠã‘ã‚‹å¹³å‡æ›²ç‡æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã‚’ç®—å‡ºã™ã‚‹)
+//
+// Parameter:
+// *BodyList - BODYã®å®Ÿä½“ãŒç™»éŒ²é †ã«ãƒªã‚¹ãƒˆã•ã‚Œã¦ã„ã‚‹
+// *ObjList - ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚ŒãŸã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£æƒ…å ±
+// PickCount - ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚ŒãŸã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã®æ•°
+// Prop[] - ãƒ¦ãƒ¼ã‚¶ãƒ¼æŒ‡å®šãƒ—ãƒ­ãƒ‘ãƒ†ã‚£å€¤
+//
+// Return:
+// ä½•ã‚‚é¸æŠã•ã‚Œã¦ã„ãªã„ï¼šKOD_ERR,		ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚ŒãŸ2ã¤ã®ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ãŒãƒˆãƒªãƒ é¢ã§ãªã„ï¼šKOD_ERR,		æ­£å¸¸çµ‚äº†ï¼šKOD_TRUE
 int SmpMeanCurvature(BODYList *BodyList,OBJECTList *ObjList, int PickCount, double Prop[])
 {
-	if(!PickCount)	return KOD_ERR;		// ƒZƒŒƒNƒVƒ‡ƒ“‚³‚ê‚Ä‚¢‚È‚©‚Á‚½‚çA‰½‚à‚µ‚È‚¢
+	if(!PickCount)	return KOD_ERR;		// ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚Œã¦ã„ãªã‹ã£ãŸã‚‰ã€ä½•ã‚‚ã—ãªã„
 
 	NURBS_Func nfunc;
 	double blue[3] = {0,0,1};
 
-	OBJECT *obj = (OBJECT *)ObjList->getData(0);		// ˆê”ÔÅ‰‚ÉƒZƒŒƒNƒVƒ‡ƒ“‚³‚ê‚½ƒGƒ“ƒeƒBƒeƒB‚Ìî•ñ‚ğ“¾‚é
-	BODY *body = (BODY *)BodyList->getData(obj->Body);	// ˆê”ÔÅ‰‚ÉƒZƒŒƒNƒVƒ‡ƒ“‚³‚ê‚½BODY‚ÌÀ‘Ì‚ğ“¾‚é
-	if(obj->Type != _TRIMMED_SURFACE)	return KOD_ERR;	// ƒZƒŒƒNƒVƒ‡ƒ“‚³‚ê‚½‹È–Ê‚ªƒgƒŠƒ€–Ê‚Å‚È‚¢ê‡‚ÍI—¹
+	OBJECT *obj = (OBJECT *)ObjList->getData(0);		// ä¸€ç•ªæœ€åˆã«ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚ŒãŸã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã®æƒ…å ±ã‚’å¾—ã‚‹
+	BODY *body = (BODY *)BodyList->getData(obj->Body);	// ä¸€ç•ªæœ€åˆã«ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚ŒãŸBODYã®å®Ÿä½“ã‚’å¾—ã‚‹
+	if(obj->Type != _TRIMMED_SURFACE)	return KOD_ERR;	// ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚ŒãŸæ›²é¢ãŒãƒˆãƒªãƒ é¢ã§ãªã„å ´åˆã¯çµ‚äº†
 
-	NURBSS *S = body->TrmS[obj->Num].pts;				// BODY‚©‚çNURBS‹È–Ê‚ğæ‚èo‚·
+	NURBSS *S = body->TrmS[obj->Num].pts;				// BODYã‹ã‚‰NURBSæ›²é¢ã‚’å–ã‚Šå‡ºã™
 
-	int udiv = (int)Prop[0];		// u•ûŒü•ªŠ„”
-	int vdiv = (int)Prop[1];		// v•ûŒü•ªŠ„”
+	int udiv = (int)Prop[0];		// uæ–¹å‘åˆ†å‰²æ•°
+	int vdiv = (int)Prop[1];		// væ–¹å‘åˆ†å‰²æ•°
 
 	for(int i=0;i<=udiv;i++){
 		double u = S->U[0]+(double)i*(S->U[1] - S->U[0])/(udiv+1);
 		for(int j=0;j<=vdiv;j++){
 			double v = S->V[0]+(double)j*(S->V[1] - S->V[0])/(vdiv+1);
-			Coord P = nfunc.CalcNurbsSCoord(S,u,v);				// Œ»İ‚Ì(u,v)ã‚Ì(x,y,z)‚ğ‹‚ß‚é
-			Coord Hn = nfunc.CalcMeanCurvatureNormVec(S,u,v);	// •½‹Ï‹È—¦–@üƒxƒNƒgƒ‹‚ğ‹‚ß‚é
-			DrawVector(P,Hn,100,1,blue);						// •½‹Ï‹È—¦–@üƒxƒNƒgƒ‹‚ğ•\¦
+			Coord P = nfunc.CalcNurbsSCoord(S,u,v);				// ç¾åœ¨ã®(u,v)ä¸Šã®(x,y,z)ã‚’æ±‚ã‚ã‚‹
+			Coord Hn = nfunc.CalcMeanCurvatureNormVec(S,u,v);	// å¹³å‡æ›²ç‡æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã‚’æ±‚ã‚ã‚‹
+			DrawVector(P,Hn,100,1,blue);						// å¹³å‡æ›²ç‡æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã‚’è¡¨ç¤º
 		}
 	}
 

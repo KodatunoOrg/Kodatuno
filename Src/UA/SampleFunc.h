@@ -1,17 +1,40 @@
-// UserSampleƒwƒbƒ_
+ï»¿// UserSampleãƒ˜ãƒƒãƒ€
 
-#include "StdAfx.h"			// ”Ä—p
-#include "NURBS_Func.h"		// NURBSŠô‰½ŒvZŠÖ˜A
-#include "Describe_BODY.h"	// BODY•`‰æŠÖ˜A
-#include "BODY.h" 			// BODYƒNƒ‰ƒX
-#include "IGES_Parser.h"  	// IGES“Ç‚İ‚İŠÖ˜A
+#include "StdAfx.h"			// æ±ç”¨
+#include "NURBS_Func.h"		// NURBSå¹¾ä½•è¨ˆç®—é–¢é€£
+#include "Describe_BODY.h"	// BODYæç”»é–¢é€£
+#include "BODY.h" 			// BODYã‚¯ãƒ©ã‚¹
+#include "IGES_Parser.h"  	// IGESèª­ã¿è¾¼ã¿é–¢é€£
 
-int SmpRegistBody(BODYList *,OBJECTList *);							// Sample1: IGESƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚İCBody‚Æ‚µ‚Ä“o˜^‚·‚é
-int SmpTransBody(BODYList *,OBJECTList *,int,double []);			// Sample2: w’è‚µ‚½Body‚É‘Î‚µƒAƒtƒBƒ“•ÏŠ·‚ğs‚¤
-int SmpDivCurves(BODYList *,OBJECTList *,int,double []);			// Sample3: ‹Èü‚ğw’è‚µ‚½•ªŠ„”‚Å•ªŠ„‚µ‚½“_‚ğ¶¬‚·‚é
-int SmpNearestPt(BODYList *,OBJECTList *,int,double []);			// Sample4: ”CˆÓ‚Ì“_‚©‚ç‚Ì‹È–Êã‚ÌÅ‹ß–T“_‚ğ‹‚ß‚é
-int SmpUVDivLine(BODYList *,OBJECTList *,int,double []);			// Sample5: ‹È–Ê‚ÌUVƒpƒ‰ƒ[ƒ^‚Å“™ŠÔŠu‚É•ªŠ„‚µ‚½“_‚ğ¶¬‚·‚é
-int SmpContourLine(BODYList *,OBJECTList *,int,double []);			// Sample6: “™‚ü‚ğ¶¬‚·‚é
-int SmpIntersectSurfs(BODYList *,OBJECTList *,int,double []);		// Sample7: ‹È–Ê“¯m‚ÌŒğü‚ğZo‚·‚é
-int SmpMeanCurvature(BODYList *,OBJECTList *,int,double []);		// Sample8: •½‹Ï‹È—¦–@üƒxƒNƒgƒ‹‚ğZo‚·‚é
+// Function: SmpRegistBody
+// Sample1: IGESãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿è¾¼ã¿ï¼ŒBodyã¨ã—ã¦ç™»éŒ²ã™ã‚‹
+int SmpRegistBody(BODYList *,OBJECTList *);							
+
+// Function: SmpTransBody
+// Sample2: æŒ‡å®šã—ãŸBodyã«å¯¾ã—ã‚¢ãƒ•ã‚£ãƒ³å¤‰æ›ã‚’è¡Œã†
+int SmpTransBody(BODYList *,OBJECTList *,int,double []);
+
+// Function: SmpDivCurves
+// Sample3: æ›²ç·šã‚’æŒ‡å®šã—ãŸåˆ†å‰²æ•°ã§åˆ†å‰²ã—ãŸç‚¹ã‚’ç”Ÿæˆã™ã‚‹
+int SmpDivCurves(BODYList *,OBJECTList *,int,double []);
+
+// Function: SmpNearestPt
+// Sample4: ä»»æ„ã®ç‚¹ã‹ã‚‰ã®æ›²é¢ä¸Šã®æœ€è¿‘å‚ç‚¹ã‚’æ±‚ã‚ã‚‹
+int SmpNearestPt(BODYList *,OBJECTList *,int,double []);
+
+// Function: SmpUVDivLine
+// Sample5: æ›²é¢ã®UVãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã§ç­‰é–“éš”ã«åˆ†å‰²ã—ãŸç‚¹ã‚’ç”Ÿæˆã™ã‚‹
+int SmpUVDivLine(BODYList *,OBJECTList *,int,double []);
+
+// Function: SmpContourLine
+// Sample6: ç­‰é«˜ç·šã‚’ç”Ÿæˆã™ã‚‹
+int SmpContourLine(BODYList *,OBJECTList *,int,double []);
+
+// Function: SmpIntersectSurfs
+// Sample7: æ›²é¢åŒå£«ã®äº¤ç·šã‚’ç®—å‡ºã™ã‚‹
+int SmpIntersectSurfs(BODYList *,OBJECTList *,int,double []);
+
+// Function: SmpMeanCurvature
+// Sample8: å¹³å‡æ›²ç‡æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã‚’ç®—å‡ºã™ã‚‹
+int SmpMeanCurvature(BODYList *,OBJECTList *,int,double []);
 

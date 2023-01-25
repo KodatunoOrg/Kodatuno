@@ -1,24 +1,29 @@
-// ƒƒjƒ…[ƒo[‚ÌƒvƒƒV[ƒWƒƒ
+ï»¿// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼ã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 #include <WScom.h>
 #include <WSCfunctionList.h>
 #include <WSCbase.h>
 #include "Kodatuno.h"
 
+// Function: Menu_Proc
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼ã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
+//
+// Parameters: 
+// *object - ã“ã®ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ã‚’å‘¼ã³å‡ºã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ãƒã‚¤ãƒ³ã‚¿
 void Menu_Proc(WSCbase* object)
 {
-	int val = object->getProperty(WSNuserValue);	// ƒ†[ƒU[İ’è’l‚ğæ“¾
+	int val = object->getProperty(WSNuserValue);	// ãƒ¦ãƒ¼ã‚¶ãƒ¼è¨­å®šå€¤ã‚’å–å¾—
 
 	switch(val){
 		case 1:
-  			Kodatuno.OpenFile();			// ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“
-			Kodatuno.OpenDelBtn();			// OpenCDeleteƒ{ƒ^ƒ“‚Ì•\¦‘®«‚Ì•ÏX
+  			Kodatuno.OpenFile();			// ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³
+			Kodatuno.OpenDelBtn();			// Openï¼ŒDeleteãƒœã‚¿ãƒ³ã®è¡¨ç¤ºå±æ€§ã®å¤‰æ›´
 			break;
 		case 2:
-			Kodatuno.DeleteBody();			// ‘I‘ğ‚³‚ê‚Ä‚¢‚éBODY‚ğÁ‹
-			Kodatuno.OpenDelBtn();			// OpenCDeleteƒ{ƒ^ƒ“‚Ì•\¦‘®«‚Ì•ÏX
+			Kodatuno.DeleteBody();			// é¸æŠã•ã‚Œã¦ã„ã‚‹BODYã‚’æ¶ˆå»
+			Kodatuno.OpenDelBtn();			// Openï¼ŒDeleteãƒœã‚¿ãƒ³ã®è¡¨ç¤ºå±æ€§ã®å¤‰æ›´
 			break;
 		case 100:
-			User_Stat_Dlg->setVisible(True);	// UserƒXƒe[ƒ^ƒXƒ_ƒCƒAƒƒO‚ğ•\¦
+			User_Stat_Dlg->setVisible(True);	// Userã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’è¡¨ç¤º
 			break;
 		case 101:
 		case 102:
@@ -28,12 +33,12 @@ void Menu_Proc(WSCbase* object)
 		case 106:
 		case 107:
 		case 108:
-			Kodatuno.ExecuteUserFuncMain(val%100-1);	// UserŠÖ”‚ÌÀs
+			Kodatuno.ExecuteUserFuncMain(val%100-1);	// Useré–¢æ•°ã®å®Ÿè¡Œ
 			break;
 		default:
 			break;
 	}
 
-	Describe_Form->redraw();		// •`‰æ—Ìˆæ‚ÉÄ•`‰æ‚ğw¦
+	Describe_Form->redraw();		// æç”»é ˜åŸŸã«å†æç”»ã‚’æŒ‡ç¤º
 }
 static WSCfunctionRegister  op("Menu_Proc",(void*)Menu_Proc);

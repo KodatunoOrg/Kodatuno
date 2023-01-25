@@ -1,53 +1,60 @@
-#include "UserFunc.h"
+ï»¿#include "UserFunc.h"
 
-// User—pŠÖ”‚ğ5‚Â‚Ü‚Å“o˜^‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚·B
-// ŠJ”­Ò‚Í‚±‚ê‚ç‚É“Æ©‚Ìˆ—‚ğ’Ç‰Á‚µ‚Ä‚­‚¾‚³‚¢
-// ŠeŠÖ”‚ÍˆÈ‰º‚Ìˆø”‚ğ‚¿‚Ü‚·  
+// Userç”¨é–¢æ•°ã‚’5ã¤ã¾ã§ç™»éŒ²ã™ã‚‹ã“ã¨ãŒã§ãã¾ã™ã€‚
+// é–‹ç™ºè€…ã¯ã“ã‚Œã‚‰ã«ç‹¬è‡ªã®å‡¦ç†ã‚’è¿½åŠ ã—ã¦ãã ã•ã„
+// å„é–¢æ•°ã¯ä»¥ä¸‹ã®å¼•æ•°ã‚’æŒã¡ã¾ã™  
 
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// Function: USER
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿(ã“ã“ã§UserFuncé–¢æ•°ãƒã‚¤ãƒ³ã‚¿ã®æŒ‡ã™é–¢æ•°ã‚’æŒ‡å®šã™ã‚‹)
 USER::USER()
 {
-	// ‚±‚±‚ÅUserFuncŠÖ”ƒ|ƒCƒ“ƒ^‚Ìw‚·ŠÖ”‚ğw’è‚·‚é
+	// ã“ã“ã§UserFuncé–¢æ•°ãƒã‚¤ãƒ³ã‚¿ã®æŒ‡ã™é–¢æ•°ã‚’æŒ‡å®šã™ã‚‹
 	for(int i=0;i<USERFUNCNUMMAX;i++){
 		if(i==0)
-			UserFunc[i] = &USER::ExecSampleFunc0;		// ƒTƒ“ƒvƒ‹
+			UserFunc[i] = &USER::ExecSampleFunc0;		// ã‚µãƒ³ãƒ—ãƒ«
 		else if(i==1)
-			UserFunc[i] = &USER::ExecSampleFunc1;		// ƒTƒ“ƒvƒ‹
+			UserFunc[i] = &USER::ExecSampleFunc1;		// ã‚µãƒ³ãƒ—ãƒ«
 		else if(i==2)
-			UserFunc[i] = &USER::ExecSampleFunc2;		// ƒTƒ“ƒvƒ‹
+			UserFunc[i] = &USER::ExecSampleFunc2;		// ã‚µãƒ³ãƒ—ãƒ«
 		else if(i==3)
-            UserFunc[i] = &USER::ExecSampleFunc3;		// ƒTƒ“ƒvƒ‹
+            UserFunc[i] = &USER::ExecSampleFunc3;		// ã‚µãƒ³ãƒ—ãƒ«
 		else if(i==4)
-            UserFunc[i] = &USER::MasterUserFunc;		// –¢g—p‚ÌUserFunc[i]‚É‚ÍMasterUserFunc()‚ğ“o˜^‚µ‚Ä‚¨‚­
+            UserFunc[i] = &USER::MasterUserFunc;		// æœªä½¿ç”¨ã®UserFunc[i]ã«ã¯MasterUserFunc()ã‚’ç™»éŒ²ã—ã¦ãŠã
         else if(i==5)
-            UserFunc[i] = &USER::MasterUserFunc;		// –¢g—p‚ÌUserFunc[i]‚É‚ÍMasterUserFunc()‚ğ“o˜^‚µ‚Ä‚¨‚­
+            UserFunc[i] = &USER::MasterUserFunc;		// æœªä½¿ç”¨ã®UserFunc[i]ã«ã¯MasterUserFunc()ã‚’ç™»éŒ²ã—ã¦ãŠã
         else if(i==6)
-            UserFunc[i] = &USER::MasterUserFunc;		// –¢g—p‚ÌUserFunc[i]‚É‚ÍMasterUserFunc()‚ğ“o˜^‚µ‚Ä‚¨‚­
+            UserFunc[i] = &USER::MasterUserFunc;		// æœªä½¿ç”¨ã®UserFunc[i]ã«ã¯MasterUserFunc()ã‚’ç™»éŒ²ã—ã¦ãŠã
         else if(i==7)
-            UserFunc[i] = &USER::MasterUserFunc;		// –¢g—p‚ÌUserFunc[i]‚É‚ÍMasterUserFunc()‚ğ“o˜^‚µ‚Ä‚¨‚­
+            UserFunc[i] = &USER::MasterUserFunc;		// æœªä½¿ç”¨ã®UserFunc[i]ã«ã¯MasterUserFunc()ã‚’ç™»éŒ²ã—ã¦ãŠã
         else
-            UserFunc[i] = &USER::MasterUserFunc;		// –¢g—p‚ÌUserFunc[i]‚É‚ÍMasterUserFunc()‚ğ“o˜^‚µ‚Ä‚¨‚­
+            UserFunc[i] = &USER::MasterUserFunc;		// æœªä½¿ç”¨ã®UserFunc[i]ã«ã¯MasterUserFunc()ã‚’ç™»éŒ²ã—ã¦ãŠã
 	}
 
-	// UserƒXƒe[ƒ^ƒX‚Ì‰Šú‰»
+	// Userã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã®åˆæœŸåŒ–
 	UserStat.Mode = 0;
 	for(int i=0;i<USERPROPNUM;i++)
 		UserStat.Prop[i] = 0;
 }
 
-// Userƒ{ƒ^ƒ““o˜^ŠÖ”0‚ÌÀ‘Ì‚ğ‹Lq
-// *BodyList:BODY‚ÌÀ‘Ì‚ª“o˜^‡‚ÉƒŠƒXƒg‚³‚ê‚Ä‚¢‚é
-// *ObjList:ƒZƒŒƒNƒVƒ‡ƒ“‚³‚ê‚½ƒGƒ“ƒeƒBƒeƒBî•ñ
-// PickCount:ƒZƒŒƒNƒVƒ‡ƒ“‚³‚ê‚½ƒGƒ“ƒeƒBƒeƒB‚Ì”
+// Function: ExecSampleFunc0
+// Userãƒœã‚¿ãƒ³ç™»éŒ²é–¢æ•°0ã®å®Ÿä½“ã‚’è¨˜è¿°
+//
+// Parameter:
+// *BodyList - BODYã®å®Ÿä½“ãŒç™»éŒ²é †ã«ãƒªã‚¹ãƒˆã•ã‚Œã¦ã„ã‚‹
+// *ObjList - ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚ŒãŸã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£æƒ…å ±
+// PickCount - ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚ŒãŸã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã®æ•°
+//
+// Return:
+// KOD_TRUE
 int USER::ExecSampleFunc0(BODYList *BodyList,OBJECTList *ObjList,int PickCount)
 {
 	char mes[256];
 
-	// ƒ†[ƒU[ƒXƒe[ƒ^ƒX‚Å‚Ì‘I‘ğ‚³‚ê‚½ƒ‚[ƒh”Ô†‚ğƒRƒ“ƒ\[ƒ‹o—Í
+	// ãƒ¦ãƒ¼ã‚¶ãƒ¼ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã§ã®é¸æŠã•ã‚ŒãŸãƒ¢ãƒ¼ãƒ‰ç•ªå·ã‚’ã‚³ãƒ³ã‚½ãƒ¼ãƒ«å‡ºåŠ›
 	sprintf(mes,"Selected Mode : %d",UserStat.Mode);
     GuiIF.SetMessage(mes);
 
-	// ƒ†[ƒU[ƒXƒe[ƒ^ƒX‚Å‚ÌƒvƒƒpƒeƒB’l(Å‰‚Ì2‚Â)‚ğƒRƒ“ƒ\[ƒ‹o—Í
+	// ãƒ¦ãƒ¼ã‚¶ãƒ¼ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã§ã®ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£å€¤(æœ€åˆã®2ã¤)ã‚’ã‚³ãƒ³ã‚½ãƒ¼ãƒ«å‡ºåŠ›
 	sprintf(mes,"User Property 1: %lf",UserStat.Prop[0]);
     GuiIF.SetMessage(mes);
 	sprintf(mes,"User Property 2: %lf",UserStat.Prop[1]);
@@ -55,12 +62,12 @@ int USER::ExecSampleFunc0(BODYList *BodyList,OBJECTList *ObjList,int PickCount)
 
     GuiIF.SetMessage("....");
 
-	// ƒZƒŒƒNƒVƒ‡ƒ“”‚ğƒRƒ“ƒ\[ƒ‹o—Í
+	// ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³æ•°ã‚’ã‚³ãƒ³ã‚½ãƒ¼ãƒ«å‡ºåŠ›
 	sprintf(mes,"All Pick Count : %d",PickCount);
     GuiIF.SetMessage(mes);
 
 	for(int i=0;i<PickCount;i++){
-		OBJECT *obj = (OBJECT *)ObjList->getData(i);			// i”Ô–Ú‚ÉƒZƒŒƒNƒVƒ‡ƒ“‚³‚ê‚½ƒGƒ“ƒeƒBƒeƒB‚Ìî•ñ‚ğ“¾‚é
+		OBJECT *obj = (OBJECT *)ObjList->getData(i);			// iç•ªç›®ã«ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚ŒãŸã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã®æƒ…å ±ã‚’å¾—ã‚‹
 		sprintf(mes,"#%d",i+1);
         GuiIF.SetMessage(mes);
 		sprintf(mes,"Body No. : %d",obj->Body);
@@ -75,31 +82,37 @@ int USER::ExecSampleFunc0(BODYList *BodyList,OBJECTList *ObjList,int PickCount)
 }
 	
 
-// Userƒ{ƒ^ƒ““o˜^ŠÖ”1‚ÌÀ‘Ì‚ğ‹Lq
-// *BodyList:BODY‚ÌÀ‘Ì‚ª“o˜^‡‚ÉƒŠƒXƒg‚³‚ê‚Ä‚¢‚é
-// *ObjList:ƒZƒŒƒNƒVƒ‡ƒ“‚³‚ê‚½ƒGƒ“ƒeƒBƒeƒBî•ñ
-// PickCount:ƒZƒŒƒNƒVƒ‡ƒ“‚³‚ê‚½ƒGƒ“ƒeƒBƒeƒB‚Ì”
+// Function: ExecSampleFunc1
+// Userãƒœã‚¿ãƒ³ç™»éŒ²é–¢æ•°1ã®å®Ÿä½“ã‚’è¨˜è¿°
+//
+// Parameter:
+// *BodyList - BODYã®å®Ÿä½“ãŒç™»éŒ²é †ã«ãƒªã‚¹ãƒˆã•ã‚Œã¦ã„ã‚‹
+// *ObjList - ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚ŒãŸã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£æƒ…å ±
+// PickCount - ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚ŒãŸã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã®æ•°
+//
+// Return:
+// ãƒ¦ãƒ¼ã‚¶ãƒ¼æŒ‡å®šã®ãƒ¢ãƒ¼ãƒ‰ç•ªå·ãŒç¯„å›²å¤–ï¼šKOD_FALSE,		æ­£å¸¸çµ‚äº†ï¼šKOD_TRUE
 int USER::ExecSampleFunc1(BODYList *BodyList,OBJECTList *ObjList,int pickcount)
 {
-	// User Status‚ÌMode‚É‚æ‚Á‚Äˆ—‚ğ•ª‚¯‚é
+	// User Statusã®Modeã«ã‚ˆã£ã¦å‡¦ç†ã‚’åˆ†ã‘ã‚‹
 	if(UserStat.Mode == 0){
-		SmpRegistBody(BodyList,ObjList);	// IGESƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚İCBody‚Æ‚µ‚Ä“o˜^‚·‚é
+		SmpRegistBody(BodyList,ObjList);	// IGESãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿è¾¼ã¿ï¼ŒBodyã¨ã—ã¦ç™»éŒ²ã™ã‚‹
 		return KOD_TRUE;
 	}
 	else if(UserStat.Mode == 1){
-		SmpTransBody(BodyList,ObjList,pickcount,UserStat.Prop);		// w’è‚µ‚½Body‚É‘Î‚µƒAƒtƒBƒ“•ÏŠ·‚ğs‚¤
+		SmpTransBody(BodyList,ObjList,pickcount,UserStat.Prop);		// æŒ‡å®šã—ãŸBodyã«å¯¾ã—ã‚¢ãƒ•ã‚£ãƒ³å¤‰æ›ã‚’è¡Œã†
 		return KOD_TRUE;
 	}
 	else if(UserStat.Mode == 2){
-		SmpDivCurves(BodyList,ObjList,pickcount,UserStat.Prop);		// ‹Èü‚ğw’è‚µ‚½•ªŠ„”‚Å•ªŠ„‚µ‚½“_‚ğ¶¬‚·‚é
+		SmpDivCurves(BodyList,ObjList,pickcount,UserStat.Prop);		// æ›²ç·šã‚’æŒ‡å®šã—ãŸåˆ†å‰²æ•°ã§åˆ†å‰²ã—ãŸç‚¹ã‚’ç”Ÿæˆã™ã‚‹
 		return KOD_TRUE;
 	}
 	else if(UserStat.Mode == 3){
-		SmpNearestPt(BodyList,ObjList,pickcount,UserStat.Prop);		// ”CˆÓ‚Ì“_‚©‚ç‚Ì‹È–Êã‚ÌÅ‹ß–T“_‚ğ‹‚ß‚é
+		SmpNearestPt(BodyList,ObjList,pickcount,UserStat.Prop);		// ä»»æ„ã®ç‚¹ã‹ã‚‰ã®æ›²é¢ä¸Šã®æœ€è¿‘å‚ç‚¹ã‚’æ±‚ã‚ã‚‹
 		return KOD_TRUE;
 	}
 	else if(UserStat.Mode == 4){
-		SmpUVDivLine(BodyList,ObjList,pickcount,UserStat.Prop);		// ‹È–Ê‚ÌUVƒpƒ‰ƒ[ƒ^‚Å“™ŠÔŠu‚É•ªŠ„‚µ‚½“_‚ğ¶¬‚·‚é
+		SmpUVDivLine(BodyList,ObjList,pickcount,UserStat.Prop);		// æ›²é¢ã®UVãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã§ç­‰é–“éš”ã«åˆ†å‰²ã—ãŸç‚¹ã‚’ç”Ÿæˆã™ã‚‹
 		return KOD_TRUE;
 	}
 	else{
@@ -108,20 +121,29 @@ int USER::ExecSampleFunc1(BODYList *BodyList,OBJECTList *ObjList,int pickcount)
 	}
 }
 
-// Userƒ{ƒ^ƒ““o˜^ŠÖ”2‚ÌÀ‘Ì‚ğ‹Lq
+// Function: ExecSampleFunc2
+// Userãƒœã‚¿ãƒ³ç™»éŒ²é–¢æ•°2ã®å®Ÿä½“ã‚’è¨˜è¿°
+//
+// Parameter:
+// *BodyList - BODYã®å®Ÿä½“ãŒç™»éŒ²é †ã«ãƒªã‚¹ãƒˆã•ã‚Œã¦ã„ã‚‹
+// *ObjList - ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚ŒãŸã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£æƒ…å ±
+// PickCount - ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚ŒãŸã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã®æ•°
+//
+// Return:
+// ãƒ¦ãƒ¼ã‚¶ãƒ¼æŒ‡å®šã®ãƒ¢ãƒ¼ãƒ‰ç•ªå·ãŒç¯„å›²å¤–ï¼šKOD_FALSE,		æ­£å¸¸çµ‚äº†ï¼šKOD_TRUE
 int USER::ExecSampleFunc2(BODYList *BodyList,OBJECTList *ObjList,int pickcount)
 {
-	// User Status‚ÌMode‚É‚æ‚Á‚Äˆ—‚ğ•ª‚¯‚é
+	// User Statusã®Modeã«ã‚ˆã£ã¦å‡¦ç†ã‚’åˆ†ã‘ã‚‹
 	if(UserStat.Mode == 0){
-		SmpContourLine(BodyList,ObjList,pickcount,UserStat.Prop);		// “™‚ü‚ğ¶¬‚·‚é
+		SmpContourLine(BodyList,ObjList,pickcount,UserStat.Prop);		// ç­‰é«˜ç·šã‚’ç”Ÿæˆã™ã‚‹
         return KOD_TRUE;
 	}
 	else if(UserStat.Mode == 1){
-		SmpIntersectSurfs(BodyList,ObjList,pickcount,UserStat.Prop);	// ‹È–Ê“¯m‚ÌŒğü‚ğZo‚·‚é
+		SmpIntersectSurfs(BodyList,ObjList,pickcount,UserStat.Prop);	// æ›²é¢åŒå£«ã®äº¤ç·šã‚’ç®—å‡ºã™ã‚‹
 		return KOD_TRUE;
 	}
 	else if(UserStat.Mode == 2){
-		SmpMeanCurvature(BodyList,ObjList,pickcount,UserStat.Prop);		// •½‹Ï‹È—¦–@üƒxƒNƒgƒ‹‚ğZo‚·‚é
+		SmpMeanCurvature(BodyList,ObjList,pickcount,UserStat.Prop);		// å¹³å‡æ›²ç‡æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã‚’ç®—å‡ºã™ã‚‹
 		return KOD_TRUE;
 	}
 	else{
@@ -130,64 +152,79 @@ int USER::ExecSampleFunc2(BODYList *BodyList,OBJECTList *ObjList,int pickcount)
 	}
 }
 
-// Userƒ{ƒ^ƒ““o˜^ŠÖ”3‚ÌÀ‘Ì‚ğ‹Lq
+// Function: ExecSampleFunc3
+// Userãƒœã‚¿ãƒ³ç™»éŒ²é–¢æ•°3ã®å®Ÿä½“ã‚’è¨˜è¿°
+//
+// Parameter:
+// *BodyList - BODYã®å®Ÿä½“ãŒç™»éŒ²é †ã«ãƒªã‚¹ãƒˆã•ã‚Œã¦ã„ã‚‹
+// *ObjList - ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚ŒãŸã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£æƒ…å ±
+// PickCount - ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚ŒãŸã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã®æ•°
+//
+// Return:
+// KOD_TRUE
 int USER::ExecSampleFunc3(BODYList *BodyList,OBJECTList *ObjList,int pickcount)
 {
     GuiIF.SetMessage("aaaaaaa");
     return KOD_TRUE;
 }
 
-
-// User‚ªWidget‚Ì‹@”\‚ğg‚¢V‚½‚ÈDialog‚ğƒ|ƒbƒvƒAƒbƒv‚³‚¹‚½‚¢ê‡‚ÍA‚±‚±‚É‚»‚ÌWSˆ—‚ğ‹Lq
-// ˆø”   val:Userƒ{ƒ^ƒ“‚ÌƒVƒ“ƒ{ƒ‹(0`5)
+// Function: ExecWidgetFunc
+// UserãŒWidgetã®æ©Ÿèƒ½ã‚’ä½¿ã„æ–°ãŸãªDialogã‚’ãƒãƒƒãƒ—ã‚¢ãƒƒãƒ—ã•ã›ãŸã„å ´åˆã¯ã€ã“ã“ã«ãã®WSå‡¦ç†ã‚’è¨˜è¿°
+//
+// Parameter:
+// val - Userãƒœã‚¿ãƒ³ã®ã‚·ãƒ³ãƒœãƒ«(0ï½5)
+//
+// Return:
+// KOD_TRUE
 int USER::ExecWidgetFunc(int val)
 {
-	// Userƒ{ƒ^ƒ“1‚ª‰Ÿ‚³‚ê‚½
+	// Userãƒœã‚¿ãƒ³1ãŒæŠ¼ã•ã‚ŒãŸ
 	if(val == 0){
-		// ˆ—‚ğ’Ç‰Á‚Å‚«‚Ü‚·
+		// å‡¦ç†ã‚’è¿½åŠ ã§ãã¾ã™
 	}
-	// Userƒ{ƒ^ƒ“2‚ª‰Ÿ‚³‚ê‚½
+	// Userãƒœã‚¿ãƒ³2ãŒæŠ¼ã•ã‚ŒãŸ
 	else if(val == 1){
-		// ˆ—‚ğ’Ç‰Á‚Å‚«‚Ü‚·
+		// å‡¦ç†ã‚’è¿½åŠ ã§ãã¾ã™
 	}
-	// Userƒ{ƒ^ƒ“3‚ª‰Ÿ‚³‚ê‚½
+	// Userãƒœã‚¿ãƒ³3ãŒæŠ¼ã•ã‚ŒãŸ
 	else if(val == 2){
-		// ˆ—‚ğ’Ç‰Á‚Å‚«‚Ü‚·
+		// å‡¦ç†ã‚’è¿½åŠ ã§ãã¾ã™
 	}
-	// Userƒ{ƒ^ƒ“4‚ª‰Ÿ‚³‚ê‚½
+	// Userãƒœã‚¿ãƒ³4ãŒæŠ¼ã•ã‚ŒãŸ
 	else if(val == 3){
-		// ˆ—‚ğ’Ç‰Á‚Å‚«‚Ü‚·
+		// å‡¦ç†ã‚’è¿½åŠ ã§ãã¾ã™
 	}
-	// Userƒ{ƒ^ƒ“5‚ª‰Ÿ‚³‚ê‚½
+	// Userãƒœã‚¿ãƒ³5ãŒæŠ¼ã•ã‚ŒãŸ
 	else if(val == 4){
-		// ˆ—‚ğ’Ç‰Á‚Å‚«‚Ü‚·
+		// å‡¦ç†ã‚’è¿½åŠ ã§ãã¾ã™
 	}
     else if(val == 5){
-        // ˆ—‚ğ’Ç‰Á‚Å‚«‚Ü‚·
+        // å‡¦ç†ã‚’è¿½åŠ ã§ãã¾ã™
     }
 
     else if(val == 6){
-        // ˆ—‚ğ’Ç‰Á‚Å‚«‚Ü‚·
+        // å‡¦ç†ã‚’è¿½åŠ ã§ãã¾ã™
     }
 
     else if(val == 7){
-        // ˆ—‚ğ’Ç‰Á‚Å‚«‚Ü‚·
+        // å‡¦ç†ã‚’è¿½åŠ ã§ãã¾ã™
     }
 
 	return KOD_TRUE;
 }
 
-// KODATUNO‚ÌViewƒƒjƒ…[‚ÌCanncelƒ{ƒ^ƒ“(Á‚µƒSƒ€ƒ}[ƒN)‚ª‰Ÿ‚³‚ê‚é‚Æ‚±‚ÌŠÖ”‚ªÀs‚³‚ê‚é
-// ‚±‚±‚ÉCanncelƒ{ƒ^ƒ“‰Ÿ‰º‚ÌUser‰Šú‰»ƒR[ƒh‚ğ‹Lq
+// Function: ExecdClear
+// KODATUNOã®Viewãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®Canncelãƒœã‚¿ãƒ³(æ¶ˆã—ã‚´ãƒ ãƒãƒ¼ã‚¯)ãŒæŠ¼ã•ã‚Œã‚‹ã¨ã“ã®é–¢æ•°ãŒå®Ÿè¡Œã•ã‚Œã‚‹(ã“ã“ã«Canncelãƒœã‚¿ãƒ³æŠ¼ä¸‹æ™‚ã®UseråˆæœŸåŒ–ã‚³ãƒ¼ãƒ‰ã‚’è¨˜è¿°)
 void USER::ExecdClear()
 {
-	// ˆ—‚ğ’Ç‰Á‚Å‚«‚Ü‚·
+	// å‡¦ç†ã‚’è¿½åŠ ã§ãã¾ã™
 }
 
-// Userƒƒjƒ…[–¼‚ğ“o˜^(Userƒ{ƒ^ƒ“‚Ì•\¦–¼)
+// Function: SetMenuLabelName
+// Userãƒ¡ãƒ‹ãƒ¥ãƒ¼åã‚’ç™»éŒ²(Userãƒœã‚¿ãƒ³ã®è¡¨ç¤ºå)
 void USER::SetMenuLabelName()
 {
-	// “Æ©‚Ìƒƒjƒ…[–¼‚ğ‚±‚±‚É‹Lq‚µ‚Ä‚­‚¾‚³‚¢
+	// ç‹¬è‡ªã®ãƒ¡ãƒ‹ãƒ¥ãƒ¼åã‚’ã“ã“ã«è¨˜è¿°ã—ã¦ãã ã•ã„
 	strcpy(MenuLabel1,"Sample Func 0");
 	strcpy(MenuLabel2,"Sample Func 1");
 	strcpy(MenuLabel3,"Sample Func 2");
@@ -198,20 +235,31 @@ void USER::SetMenuLabelName()
     strcpy(MenuLabel8,"User Func 8");
 }
 
-// UserƒRƒ}ƒ“ƒh‚ğ“o˜^
+// Function: RegistUserCommand
+// Userã‚³ãƒãƒ³ãƒ‰ã‚’ç™»éŒ²
+// 
+// Parameter:
+// *CmdMap - ã‚³ãƒãƒ³ãƒ‰ç”¨æ§‹é€ ä½“
 void USER::RegistUserCommand(CommandMap *CmdMap)
 {
-	// “Æ©‚ÌƒRƒ}ƒ“ƒhî•ñ‚ğ‚±‚±‚É‹Lq‚µ‚Ä‚­‚¾‚³‚¢
-	// ‘æ5ˆø”‚ÍNULL‚ğw’è
+	// ç‹¬è‡ªã®ã‚³ãƒãƒ³ãƒ‰æƒ…å ±ã‚’ã“ã“ã«è¨˜è¿°ã—ã¦ãã ã•ã„
+	// ç¬¬5å¼•æ•°ã¯NULLã‚’æŒ‡å®š
 
 }
 
-// UserƒRƒ}ƒ“ƒh‚ğÀs
-// ˆø”   *BodList:BODYƒŠƒXƒg‚Ìæ“ªƒAƒhƒŒƒX    *ObjList:ƒZƒŒƒNƒVƒ‡ƒ“‚³‚ê‚½ƒGƒ“ƒeƒBƒeƒB‚Ìî•ñ(ƒZƒŒƒNƒVƒ‡ƒ“‚Ì”‚¾‚¯ƒŠƒXƒg‰»)
-//        pickcount:ƒZƒŒƒNƒVƒ‡ƒ“”    CmdNo:Às‚³‚ê‚½ƒRƒ}ƒ“ƒh”Ô†      argc,*argv[]:‚¢‚Â‚à‚ÌƒAƒŒ
+// Function: Command
+// Userã‚³ãƒãƒ³ãƒ‰ã‚’å®Ÿè¡Œ
+//
+// Parameter:
+// *BodList - BODYãƒªã‚¹ãƒˆã®å…ˆé ­ã‚¢ãƒ‰ãƒ¬ã‚¹
+// *ObjList - ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚ŒãŸã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã®æƒ…å ±(ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã®æ•°ã ã‘ãƒªã‚¹ãƒˆåŒ–)
+// pickcount - ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³æ•°
+// CmdNo - å®Ÿè¡Œã•ã‚ŒãŸã‚³ãƒãƒ³ãƒ‰ç•ªå·
+// argc - ã„ã¤ã‚‚ã®ã‚¢ãƒ¬
+// *argv[] - ã„ã¤ã‚‚ã®ã‚¢ãƒ¬
 void USER::Command(BODYList *BodyList,OBJECTList *ObjList,int pickcount,int CmdNo,int argc,char *argv[])
 {
-	// “o˜^‚µ‚½ƒRƒ}ƒ“ƒh‚²‚Æ‚Éˆ—‚ğ‹Lq‚µ‚Ä‚­‚¾‚³‚¢
+	// ç™»éŒ²ã—ãŸã‚³ãƒãƒ³ãƒ‰ã”ã¨ã«å‡¦ç†ã‚’è¨˜è¿°ã—ã¦ãã ã•ã„
 
 }
 
@@ -223,10 +271,15 @@ void USER::Command(BODYList *BodyList,OBJECTList *ObjList,int pickcount,int CmdN
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// ‚±‚êˆÈ~‚ÍKodatunoŠJ”­ÒˆÈŠO‚Í•ÏX‚µ‚È‚¢‚±‚Æ
+// ã“ã‚Œä»¥é™ã¯Kodatunoé–‹ç™ºè€…ä»¥å¤–ã¯å¤‰æ›´ã—ãªã„ã“ã¨
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// UserƒXƒe[ƒ^ƒX‚ğUserStat\‘¢‘Ì‚ÉŠi”[(User Statusƒ_ƒCƒAƒƒOOKƒ{ƒ^ƒ“‰Ÿ‰º‚ÉÀs‚³‚ê‚é)(‚±‚±‚É‚Í‰½‚à‹Lq‚µ‚È‚¢)
+// Function: SetUserStatus
+// Userã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’UserStatæ§‹é€ ä½“ã«æ ¼ç´(User Statusãƒ€ã‚¤ã‚¢ãƒ­ã‚°OKãƒœã‚¿ãƒ³æŠ¼ä¸‹æ™‚ã«å®Ÿè¡Œã•ã‚Œã‚‹)(é–‹ç™ºè€…ä»¥å¤–ã¯å¤‰æ›´ã—ãªã„)
+// 
+// Parameter:
+// mode - ãƒ¦ãƒ¼ã‚¶ãƒ¼æŒ‡å®šãƒ¢ãƒ¼ãƒ‰ç•ªå·
+// prop[] - ãƒ¦ãƒ¼ã‚¶ãƒ¼æŒ‡å®šãƒ—ãƒ­ãƒ‘ãƒ†ã‚£å€¤
 void USER::SetUserStatus(int mode,double prop[])
 {
 	UserStat.Mode = mode;
@@ -235,13 +288,24 @@ void USER::SetUserStatus(int mode,double prop[])
 	}
 }
 
-// UserƒXƒe[ƒ^ƒX‚ğ•Ô‚·
+// Function: GetUserStatus
+// Userã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’è¿”ã™
+//
+// Return:
+// Userã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹
 UserStat_ *USER::GetUserStatus()
 {
     return &UserStat;
 }
 
-// Userƒ{ƒ^ƒ“ƒ‰ƒxƒ‹–¼‚ğæ“¾(‚±‚±‚É‚Í‰½‚à‹Lq‚µ‚È‚¢)
+// Function: GetMenuLabelName
+// Userãƒœã‚¿ãƒ³ãƒ©ãƒ™ãƒ«åã‚’å–å¾—(é–‹ç™ºè€…ä»¥å¤–ã¯å¤‰æ›´ã—ãªã„)
+//
+// Parameter:
+// val - ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒ©ãƒ™ãƒ«ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+//
+// Return:
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒ©ãƒ™ãƒ«å
 char *USER::GetMenuLabelName(int val)
 {
 	switch(val){
@@ -266,7 +330,16 @@ char *USER::GetMenuLabelName(int val)
 	return NULL;
 }
 
-// UserFuncŠÖ”‚Ö‚Ìƒ|ƒCƒ“ƒ^‚Ì‰Šú’l‚Æ‚µ‚Äg—p(‚±‚±‚É‚Í‰½‚à‹Lq‚µ‚È‚¢)
+// Function: MasterUserFunc
+// UserFuncé–¢æ•°ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã®åˆæœŸå€¤ã¨ã—ã¦ä½¿ç”¨(é–‹ç™ºè€…ä»¥å¤–ã¯å¤‰æ›´ã—ãªã„)
+//
+// Parameter:
+// *BodyList - BODYã®å®Ÿä½“ãŒç™»éŒ²é †ã«ãƒªã‚¹ãƒˆã•ã‚Œã¦ã„ã‚‹
+// *ObjList - ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚ŒãŸã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£æƒ…å ±
+// PickCount - ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚ŒãŸã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã®æ•°
+//
+// Return:
+// KOD_TRUE
 int USER::MasterUserFunc(BODYList *BodyList,OBJECTList *Obj,int PickCount)
 {
     GuiIF.SetMessage("User Func is not registered.");

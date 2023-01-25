@@ -1,21 +1,45 @@
-#ifndef _SFQUANT_H_
+ï»¿#ifndef _SFQUANT_H_
 #define _SFQUANT_H_
 
 #include "BODY.h"
 
-// ‹È–Ê‚Ì‘æˆêC‘æ“ñŠî–{—Ê‚ğŠi”[‚·‚éƒNƒ‰ƒX‚ğ’è‹`
+// Constants: General Defines
+// Non
+
+// Class: SFQuant
+// æ›²é¢ã®ç¬¬ä¸€ï¼Œç¬¬äºŒåŸºæœ¬é‡ã‚’æ ¼ç´ã™ã‚‹ã‚¯ãƒ©ã‚¹ã‚’å®šç¾©
 class SFQuant
 {
 public:
-	SFQuant();									// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
-	SFQuant(NURBSS *S,double u, double v);		// S(u,v)‚Å‚ÌŠî–{—Ê‚ğ“¾‚é(ƒRƒ“ƒXƒgƒ‰ƒNƒ^)
-	int SetSFQ(NURBSS *S,double u, double v);	// S(u,v)‚Å‚ÌŠî–{—Ê‚ğ“¾‚é
+	// Constructor: SFQuant
+	// å¤‰æ•°åˆæœŸåŒ–
+	SFQuant();
+
+	// Constructor: SFQuant
+	// S(u,v)ã§ã®åŸºæœ¬é‡ã‚’å¾—ã‚‹
+	SFQuant(NURBSS *S,double u, double v);
+
+	// Function: SetSFQ
+	// S(u,v)ã§ã®åŸºæœ¬é‡ã‚’å¾—ã‚‹
+	int SetSFQ(NURBSS *S,double u, double v);
 
 public:
-	double U,V;			// ‹È–Êƒpƒ‰ƒ[ƒ^
-	Coord  n;			// –@üƒxƒNƒgƒ‹
-	double E,F,G;		// ‘æˆêŠî–{—Ê
-	double L,M,N;		// ‘æ“ñŠî–{—Ê
+
+	// Variables: U,V
+	// æ›²é¢ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
+	double U,V;			
+
+	// Variables: n
+	// æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«
+	Coord  n;		
+
+	// Variables:  E,F,G
+	// ç¬¬ä¸€åŸºæœ¬é‡
+	double E,F,G;		
+
+	// Variables: L,M,N
+	// ç¬¬äºŒåŸºæœ¬é‡
+	double L,M,N;		
 };
 
 

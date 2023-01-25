@@ -1,93 +1,156 @@
-//GE‚©‚çGUI‚Öƒf[ƒ^‚ðƒZƒbƒg‚·‚é‚½‚ß‚ÌƒNƒ‰ƒX
+ï»¿//GEã‹ã‚‰GUIã¸ãƒ‡ãƒ¼ã‚¿ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ãŸã‚ã®ã‚¯ãƒ©ã‚¹
 
 #include "StdAfxQt.h"
 
-GUI_Interface GuiIF;		// ƒNƒ‰ƒXGUI_Interface‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ðƒOƒ[ƒoƒ‹‚ÅéŒ¾
+// Variable: GuiIF
+// ã‚¯ãƒ©ã‚¹GUI_Interfaceã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ã‚°ãƒ­ãƒ¼ãƒãƒ«ã§å®£è¨€
+GUI_Interface GuiIF;		
 
-//ƒRƒ“ƒ\[ƒ‹—pGUI‚ÌƒIƒuƒWƒFƒNƒg‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ðƒZƒbƒg
+// Fnction: SetConsoleObject
+// ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ç”¨GUIã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ã‚»ãƒƒãƒˆ
+//
+// Parameters:
+// *textEdit - Consoleã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å–å¾—ã™ã‚‹
 void GUI_Interface::SetConsoleObject(QTextEdit* textEdit)
 {
     consoleText = textEdit;
 }
 
-//BODYƒŠƒXƒg—pGUI‚ÌƒIƒuƒWƒFƒNƒg‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ðƒZƒbƒg
+// Function: setBodyListObject
+// BODYãƒªã‚¹ãƒˆç”¨GUIã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ã‚»ãƒƒãƒˆ
+// 
+// Parameters: 
+// *list - bodyListã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å–å¾—ã™ã‚‹
 void GUI_Interface::SetBodyListObject(QListWidget* list)
 {
     bodyList = list;
 }
 
-// ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“—pGUI‚ÌƒIƒuƒWƒFƒNƒg‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ðƒZƒbƒg
+// Function: SetOpenFileActionObject
+// ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³ç”¨GUIã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ã‚»ãƒƒãƒˆ
+// 
+// Parameters: 
+// *action - actionOpenBodyã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å–å¾—ã™ã‚‹
 void GUI_Interface::SetOpenFileActionObject(QAction *action)
 {
     openFileAction = action;
 }
 
-// BODYíœ—pGUI‚ÌƒIƒuƒWƒFƒNƒg‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ðƒZƒbƒg
+// Function: SetDelBodyActionObject
+// BODYå‰Šé™¤ç”¨GUIã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ã‚»ãƒƒãƒˆ
+//
+// Parameters:
+// *action - actionDeleteBodyã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å–å¾—ã™ã‚‹
 void GUI_Interface::SetDelBodyActionObject(QAction *action)
 {
     delBodyAction = action;
 }
 
-//OpenGL•`‰æ—pGUI‚ÌƒIƒuƒWƒFƒNƒg‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ðƒZƒbƒg
+// Function: SetDescribeWidget
+// OpenGLæç”»ç”¨GUIã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ã‚»ãƒƒãƒˆ
+//
+// Parameters:
+// *widget - descriveã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å–å¾—ã™ã‚‹
 void GUI_Interface::SetDescribeWidget(QGLWidget *widget)
 {
     glWidget = widget;
 }
 
-//ƒXƒe[ƒ^ƒXƒo[ƒ‰ƒxƒ‹—pGUI‚ÌƒIƒuƒWƒFƒNƒg‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ðƒZƒbƒg
+// Function: SetStatusBarObject
+// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãƒãƒ¼ãƒ©ãƒ™ãƒ«ç”¨GUIã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ã‚»ãƒƒãƒˆ
+// 
+// Parameters:
+// *bar - statusBarã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å–å¾—ã™ã‚‹
 void GUI_Interface::SetStatusBarObject(QStatusBar *bar)
 {
     statusBar = bar;
 }
-// UserFunc1—pGUI‚ÌƒIƒuƒWƒFƒNƒg‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ðƒZƒbƒg
+
+// Function: SetUserFunc1Action
+// UserFunc1ç”¨GUIã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ã‚»ãƒƒãƒˆ
+//
+// Parameters:
+// *action - actionUserFunc1ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å–å¾—ã™ã‚‹
 void GUI_Interface::SetUserFunc1Action(QAction* action)
 {
     userFunc1 = action;
 }
 
-// UserFunc2—pGUI‚ÌƒIƒuƒWƒFƒNƒg‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ðƒZƒbƒg
+// Function: SetUserFunc2Action
+// UserFunc2ç”¨GUIã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ã‚»ãƒƒãƒˆ
+//
+// Parameters: 
+// *action - actionUserFunc2ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å–å¾—ã™ã‚‹
 void GUI_Interface::SetUserFunc2Action(QAction* action)
 {
     userFunc2 = action;    
 }
 
-// UserFunc3—pGUI‚ÌƒIƒuƒWƒFƒNƒg‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ðƒZƒbƒg
+// Function: SetUserFunc3Action
+// UserFunc3ç”¨GUIã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ã‚»ãƒƒãƒˆ
+//
+// Parameters:
+// *action - actionUserFunc3ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å–å¾—ã™ã‚‹
 void GUI_Interface::SetUserFunc3Action(QAction* action)
 {
     userFunc3 = action;    
 }
 
-// UserFunc4—pGUI‚ÌƒIƒuƒWƒFƒNƒg‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ðƒZƒbƒg
+// Function: SetUserFunc4Action
+// UserFunc4ç”¨GUIã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ã‚»ãƒƒãƒˆ
+//
+// Parameters: 
+// *action - actionUserFunc4ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å–å¾—ã™ã‚‹
 void GUI_Interface::SetUserFunc4Action(QAction* action)
 {
     userFunc4 = action;    
 }
 
-// UserFunc5—pGUI‚ÌƒIƒuƒWƒFƒNƒg‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ðƒZƒbƒg
+// Function: SetUserFunc5Action
+// UserFunc5ç”¨GUIã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ã‚»ãƒƒãƒˆ
+//
+// Parameters:
+// *action - actionUserFunc5ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å–å¾—ã™ã‚‹
 void GUI_Interface::SetUserFunc5Action(QAction* action)
 {
     userFunc5 = action;    
 }
 
-// UserFunc6—pGUI‚ÌƒIƒuƒWƒFƒNƒg‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ðƒZƒbƒg
+// Function: SetUserFunc6Action
+// UserFunc6ç”¨GUIã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ã‚»ãƒƒãƒˆ
+//
+// Parameters:
+// *action - actionUserFunc6ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å–å¾—ã™ã‚‹
 void GUI_Interface::SetUserFunc6Action(QAction* action)
 {
     userFunc6 = action;
 }
 
-// UserFunc7—pGUI‚ÌƒIƒuƒWƒFƒNƒg‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ðƒZƒbƒg
+// Function: SetUserFunc7Action
+// UserFunc7ç”¨GUIã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ã‚»ãƒƒãƒˆ
+//
+// Parameteers:
+// *action - actionUserFunc7ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å–å¾—ã™ã‚‹
 void GUI_Interface::SetUserFunc7Action(QAction* action)
 {
     userFunc7 = action;
 }
 
-// UserFunc8—pGUI‚ÌƒIƒuƒWƒFƒNƒg‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ðƒZƒbƒg
+// Function: SetUserFunc8Action
+// UserFunc8ç”¨GUIã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ã‚»ãƒƒãƒˆ
+// 
+// Parameters:
+// *action - actionUserFunc8ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å–å¾—ã™ã‚‹
 void GUI_Interface::SetUserFunc8Action(QAction* action)
 {
     userFunc8 = action;
 }
 
-// ƒRƒ“ƒ\[ƒ‹‚ÉƒƒbƒZ[ƒW‚ðo—Í
+// Function: SetMessage
+// ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ã«ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å‡ºåŠ›
+//
+// Parameters:
+// *mes - ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ã«å‡ºåŠ›ã—ãŸã„ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
 int GUI_Interface::SetMessage(const char *mes)
 {
     QString text = consoleText->toPlainText() + QString(mes);
@@ -95,7 +158,7 @@ int GUI_Interface::SetMessage(const char *mes)
     consoleText->setText(text);
     consoleText->append(">");
     
-    /* ƒJ[ƒ\ƒ‹‚ð––”ö‚ÉˆÚ“® */
+    /* ã‚«ãƒ¼ã‚½ãƒ«ã‚’æœ«å°¾ã«ç§»å‹• */
     QTextCursor cursor = consoleText->textCursor();
     cursor.movePosition(QTextCursor::End);
     consoleText->setTextCursor(cursor);
@@ -106,14 +169,18 @@ int GUI_Interface::SetMessage(const char *mes)
     return len;
 }
 
-// ƒRƒ“ƒ\[ƒ‹‚ÉƒRƒ}ƒ“ƒh‚ðo—Í
+// Function: SetCommand
+// ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ã«ã‚³ãƒžãƒ³ãƒ‰ã‚’å‡ºåŠ›
+//
+// Parameters: 
+// *cmd - ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ã«å‡ºåŠ›ã—ãŸã„ã‚³ãƒžãƒ³ãƒ‰
 int GUI_Interface::SetCommand(const char *cmd)
 {
     QString text = consoleText->toPlainText() + QString(cmd);
     consoleText->setText(text);
     consoleText->append(">");
 
-    /* ƒJ[ƒ\ƒ‹‚ð––”ö‚ÉˆÚ“® */
+    /* ã‚«ãƒ¼ã‚½ãƒ«ã‚’æœ«å°¾ã«ç§»å‹• */
     QTextCursor cursor = consoleText->textCursor();
     cursor.movePosition(QTextCursor::End);
     consoleText->setTextCursor(cursor);
@@ -122,87 +189,126 @@ int GUI_Interface::SetCommand(const char *cmd)
     return len;
 }
 
-// V‚½‚É“o˜^‚µ‚½BODY‚Ì–¼‘O‚ðƒEƒBƒ“ƒhƒEƒŠƒXƒg‚É•\Ž¦‚·‚é
+// Function: AddBodyNameToWin
+// æ–°ãŸã«ç™»éŒ²ã—ãŸBODYã®åå‰ã‚’ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒªã‚¹ãƒˆã«è¡¨ç¤ºã™ã‚‹
+//
+// Paranmeters:
+// *name - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒªã‚¹ãƒˆã«è¡¨ç¤ºã™ã‚‹BODYã®åå‰
 void GUI_Interface::AddBodyNameToWin(const char *name)
 {
     bodyList->addItem(name);
 }
 
-// Žw’è‚³‚ê‚½”Ô†‚ÌBODY‚ðƒŠƒXƒg‚©‚çíœ‚·‚é
+// Function: DelBodyFromWin
+// æŒ‡å®šã•ã‚ŒãŸç•ªå·ã®BODYã‚’ãƒªã‚¹ãƒˆã‹ã‚‰å‰Šé™¤ã™ã‚‹
+//
+// Parameters:
+// pos - bodyã®ç•ªå·
 void GUI_Interface::DelBodyFromWin(int pos)
 {
     QListWidgetItem* item = bodyList->takeItem(pos);
     delete item;
 }
 
-// ƒtƒ@ƒCƒ‹OPEN—pƒIƒuƒWƒFƒNƒg‚Ìó‘ÔÝ’è
+// Function: SetEnableOpenFile
+// ãƒ•ã‚¡ã‚¤ãƒ«OPENç”¨ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®çŠ¶æ…‹è¨­å®š
+//
+// Parameters:
+// enable - æ­£è² ã®åˆ¤å®š
 void GUI_Interface::SetEnableOpenFile(bool enable)
 {
     openFileAction->setEnabled(enable);
 }
 
-// BODYíœ—pƒIƒuƒWƒFƒNƒg‚Ìó‘ÔÝ’è
+// Function: SetEnableDelBody
+// BODYå‰Šé™¤ç”¨ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®çŠ¶æ…‹è¨­å®š
+//
+// Parameters:
+// enable - æ­£è² ã®åˆ¤å®š
 void GUI_Interface::SetEnableDelBody(bool enable)
 {
     delBodyAction->setEnabled(enable);
 }
 
-//•`‰æ—pGUI‚ÌÄ•`‰æŽw—ß
+// Function: UpdateDescribeWidget
+//æç”»ç”¨GUIã®å†æç”»æŒ‡ä»¤
 void GUI_Interface::UpdateDescribeWidget()
 {
     glWidget->update();
 }
 
-// ƒRƒ“ƒ\[ƒ‹‚©‚ç•¶Žš—ñ‚ðŽæ“¾
+// Function: GetConsoleText
+// ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ã‹ã‚‰æ–‡å­—åˆ—ã‚’å–å¾—
+//
+// Return:
+// å–å¾—ã—ãŸæ–‡å­—åˆ—
 std::string GUI_Interface::GetConsoleText()
 {
-    std::string text(consoleText->toPlainText().toUtf8());
+    std::string text(consoleText->toPlainText().toUtf8().constData());
+
     return text;
 }
 
-// BODYƒŠƒXƒg‚Ì‘I‘ð‚³‚ê‚Ä‚¢‚é”Ô†‚ðŽæ“¾‚·‚é
+// Function: GetBodyListSelectedPos
+// BODYãƒªã‚¹ãƒˆã®é¸æŠžã•ã‚Œã¦ã„ã‚‹ç•ªå·ã‚’å–å¾—ã™ã‚‹
+//
+// Return: 
+// bodyListä¸­ã®é¸æŠžã•ã‚Œã¦ã„ã‚‹è¡Œç•ªå·
 int GUI_Interface::GetBodyListSelectedPos()
 {
     return bodyList->currentRow();
 }
 
-// ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“ƒ_ƒCƒAƒƒO‚Ì•\Ž¦iBODYj
-//return ƒtƒ@ƒCƒ‹‚Ìƒtƒ‹ƒpƒX
+// Function: OpenBodyFileDlg
+// ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã®è¡¨ç¤ºï¼ˆBODYï¼‰
+//
+// Return:  
+// ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ•ãƒ«ãƒ‘ã‚¹
 std::string GUI_Interface::OpenBodyFileDlg()
 {
-    // ƒtƒ@ƒCƒ‹‚ÌƒtƒBƒ‹ƒ^ƒŠƒXƒg
-    QString fileFilter = QObject::tr("IGS (*.igs);; STL (*.stl);; VRML (*.wrl);; DXF (*.dxf)");
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ•ã‚£ãƒ«ã‚¿ãƒªã‚¹ãƒˆ
+    QString fileFilter = QObject::tr("IGS (*.igs);; STL (*.stl)");
 
     QString fileName = QFileDialog::getOpenFileName(
-        0,                          //@ewidget
-        QObject::tr("Open File"),   // ƒ_ƒCƒAƒƒOƒ^ƒCƒgƒ‹
-        QDir::currentPath(),        // ‹N“®Žž‚ÌƒfƒBƒŒƒNƒgƒŠ
-        fileFilter                  // ƒtƒ@ƒCƒ‹ƒtƒBƒ‹ƒ^[
+        0,                          //ã€€è¦ªwidget
+        QObject::tr("Open File"),   // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚¿ã‚¤ãƒˆãƒ«
+        QDir::currentPath(),        // èµ·å‹•æ™‚ã®ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª
+        fileFilter                  // ãƒ•ã‚¡ã‚¤ãƒ«ãƒ•ã‚£ãƒ«ã‚¿ãƒ¼
     );
 
-    std::string stdStr(fileName.toUtf8());
+    std::string stdStr(fileName.toLocal8Bit());
     return stdStr;
 }
 
-// ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“ƒ_ƒCƒAƒƒO‚Ì•\Ž¦iINPj
-//return ƒtƒ@ƒCƒ‹‚Ìƒtƒ‹ƒpƒX
+// Function: OpenInpFileDlg
+// ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã®è¡¨ç¤ºï¼ˆINPï¼‰
+//
+// Return: 
+// ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ•ãƒ«ãƒ‘ã‚¹
 std::string GUI_Interface::OpenInpFileDlg()
 {
-    // ƒtƒ@ƒCƒ‹‚ÌƒtƒBƒ‹ƒ^ƒŠƒXƒg
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ•ã‚£ãƒ«ã‚¿ãƒªã‚¹ãƒˆ
     QString fileFilter = QObject::tr("INP (*.inp)");
 
     QString fileName = QFileDialog::getOpenFileName(
-        0,                          //@ewidget
-        QObject::tr("Open File"),   // ƒ_ƒCƒAƒƒOƒ^ƒCƒgƒ‹
-        QDir::currentPath(),        // ‹N“®Žž‚ÌƒfƒBƒŒƒNƒgƒŠ
-        fileFilter                  // ƒtƒ@ƒCƒ‹ƒtƒBƒ‹ƒ^[
+        0,                          //ã€€è¦ªwidget
+        QObject::tr("Open File"),   // ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚¿ã‚¤ãƒˆãƒ«
+        QDir::currentPath(),        // èµ·å‹•æ™‚ã®ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª
+        fileFilter                  // ãƒ•ã‚¡ã‚¤ãƒ«ãƒ•ã‚£ãƒ«ã‚¿ãƒ¼
     );
 
     std::string stdStr(fileName.toUtf8());
     return stdStr;
 }
 
-// ƒtƒ‹ƒpƒX‚©‚çƒtƒ@ƒCƒ‹–¼’Šo
+// Function: GetFileName
+// ãƒ•ãƒ«ãƒ‘ã‚¹ã‹ã‚‰ãƒ•ã‚¡ã‚¤ãƒ«åæŠ½å‡º
+// 
+// Parameters:
+// fullPath - ãƒ•ãƒ«ãƒ‘ã‚¹
+// 
+// Return: 
+// ãƒ•ã‚¡ã‚¤ãƒ«å
 std::string GUI_Interface::GetFileName(const std::string fullPath)
 {
     QString fileName = QFileInfo(QString::fromStdString(fullPath)).baseName();
@@ -211,7 +317,14 @@ std::string GUI_Interface::GetFileName(const std::string fullPath)
     return stdStr;
 }
 
-// ƒtƒ‹ƒpƒX‚©‚çƒtƒ@ƒCƒ‹‚ÌŠg’£Žq’Šo
+// Function: GetFileExt
+// ãƒ•ãƒ«ãƒ‘ã‚¹ã‹ã‚‰ãƒ•ã‚¡ã‚¤ãƒ«ã®æ‹¡å¼µå­æŠ½å‡º
+//
+// Parameters:
+// fullPath - ãƒ•ãƒ«ãƒ‘ã‚¹
+// 
+// Return: 
+// æ‹¡å¼µå­
 std::string GUI_Interface::GetFileExt(const std::string fullPath)
 {
     QString ext  = QFileInfo(QString::fromStdString(fullPath)).suffix();
@@ -220,7 +333,8 @@ std::string GUI_Interface::GetFileExt(const std::string fullPath)
     return stdStr;
 }
 
-// Nurbs‹Èüƒ_ƒCƒAƒƒO•\Ž¦
+// Function: ShowNurbsCurveDlg
+// Nurbsæ›²ç·šãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
 void GUI_Interface::ShowNurbsCurveDlg()
 {
     QtNurbsCurveDialog *dlg = new QtNurbsCurveDialog();
@@ -228,7 +342,8 @@ void GUI_Interface::ShowNurbsCurveDlg()
     glWidget->update();
 }
 
-// Nurbs‹È–Êƒ_ƒCƒAƒƒO•\Ž¦
+// Function: ShowNurbsSurfDlg
+// Nurbsæ›²é¢ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
 void GUI_Interface::ShowNurbsSurfDlg()
 {
     QtNurbsSurfDialog *dlg = new QtNurbsSurfDialog();
@@ -236,7 +351,8 @@ void GUI_Interface::ShowNurbsSurfDlg()
     glWidget->update();    
 }
 
-// ‰ñ“]ƒT[ƒtƒFƒXƒ_ƒCƒAƒƒO•\Ž¦
+// Function: ShowRotSurfDlg
+// å›žè»¢ã‚µãƒ¼ãƒ•ã‚§ã‚¹ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
 void GUI_Interface::ShowRotSurfDlg()
 {
     QtRotSurfDialog *dlg = new QtRotSurfDialog();
@@ -244,7 +360,8 @@ void GUI_Interface::ShowRotSurfDlg()
     glWidget->update();
 }
 
-// ƒXƒC[ƒvƒT[ƒtƒFƒXƒ_ƒCƒAƒƒO•\Ž¦
+// Function: ShowSweepSurfDlg
+// ã‚¹ã‚¤ãƒ¼ãƒ—ã‚µãƒ¼ãƒ•ã‚§ã‚¹ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
 void GUI_Interface::ShowSweepSurfDlg()
 {
     QtSweepSurfDialog *dlg = new QtSweepSurfDialog();
@@ -252,47 +369,81 @@ void GUI_Interface::ShowSweepSurfDlg()
     glWidget->update();    
 }
 
-// UserFunc1‚Ìƒ‰ƒxƒ‹‚ðƒZƒbƒg
+// Function: SetUserFunc1Label
+// UserFunc1ã®ãƒ©ãƒ™ãƒ«ã‚’ã‚»ãƒƒãƒˆ
+//
+// Parameters:
+// *label - Userãƒ¡ãƒ‹ãƒ¥ãƒ¼å(0)
 void GUI_Interface::SetUserFunc1Label(const char *label)
 {
     userFunc1->setText(QString(label));
 }
 
-// UserFunc2‚Ìƒ‰ƒxƒ‹‚ðƒZƒbƒg
+// Function: SetUserFunc2Label
+// UserFunc2ã®ãƒ©ãƒ™ãƒ«ã‚’ã‚»ãƒƒãƒˆ
+//
+// Parameters:
+// *label - Userãƒ¡ãƒ‹ãƒ¥ãƒ¼å(1)
 void GUI_Interface::SetUserFunc2Label(const char *label)
 {
     userFunc2->setText(QString(label));    
 }
 
-// UserFunc3‚Ìƒ‰ƒxƒ‹‚ðƒZƒbƒg
+// Function: SetUserFunc3Label
+// UserFunc3ã®ãƒ©ãƒ™ãƒ«ã‚’ã‚»ãƒƒãƒˆ
+//
+// Parameters:
+// *label - Userãƒ¡ãƒ‹ãƒ¥ãƒ¼å(2)
 void GUI_Interface::SetUserFunc3Label(const char *label)
 {
     userFunc3->setText(QString(label));
 }
 
-// UserFunc4‚Ìƒ‰ƒxƒ‹‚ðƒZƒbƒg
+// Function: SetUserFunc4Label
+// UserFunc4ã®ãƒ©ãƒ™ãƒ«ã‚’ã‚»ãƒƒãƒˆ
+//
+// Parameters:
+// *label - Userãƒ¡ãƒ‹ãƒ¥ãƒ¼å(3)
 void GUI_Interface::SetUserFunc4Label(const char *label)
 {    
     userFunc4->setText(QString(label));
 }
 
-// UserFunc5‚Ìƒ‰ƒxƒ‹‚ðƒZƒbƒg
+// Function: SetUserFunc5Label
+// UserFunc5ã®ãƒ©ãƒ™ãƒ«ã‚’ã‚»ãƒƒãƒˆ
+//
+// Parameters:
+// *label - Userãƒ¡ãƒ‹ãƒ¥ãƒ¼å(4)
 void GUI_Interface::SetUserFunc5Label(const char *label)
 {    
     userFunc5->setText(QString(label));
 }
 
-// UserFunc6‚Ìƒ‰ƒxƒ‹‚ðƒZƒbƒg
+// Function: SetUserFunc6Label
+// UserFunc6ã®ãƒ©ãƒ™ãƒ«ã‚’ã‚»ãƒƒãƒˆ
+//
+// Parameters:
+// *label - Userãƒ¡ãƒ‹ãƒ¥ãƒ¼å(5)
 void GUI_Interface::SetUserFunc6Label(const char *label)
 {
     userFunc6->setText(QString(label));
 }
-// UserFunc7‚Ìƒ‰ƒxƒ‹‚ðƒZƒbƒg
+
+// Function: SetUserFunc7Label
+// UserFunc7ã®ãƒ©ãƒ™ãƒ«ã‚’ã‚»ãƒƒãƒˆ
+//
+// Parameters:
+// *label - Userãƒ¡ãƒ‹ãƒ¥ãƒ¼å(6)
 void GUI_Interface::SetUserFunc7Label(const char *label)
 {
     userFunc7->setText(QString(label));
 }
-// UserFunc8‚Ìƒ‰ƒxƒ‹‚ðƒZƒbƒg
+
+// Function: SetUserFunc8Label
+// UserFunc8ã®ãƒ©ãƒ™ãƒ«ã‚’ã‚»ãƒƒãƒˆ
+//
+// Parameters:
+// *label - Userãƒ¡ãƒ‹ãƒ¥ãƒ¼å(7)
 void GUI_Interface::SetUserFunc8Label(const char *label)
 {
     userFunc8->setText(QString(label));

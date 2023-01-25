@@ -1,4 +1,4 @@
-#ifndef _USER_FUNC_H_
+ï»¿#ifndef _USER_FUNC_H_
 #define _USER_FUNC_H_
 
 #include "StdAfx.h"
@@ -6,19 +6,37 @@
 #include "BODY.h"
 #include "SampleFunc.h"
 
-#define LABELNAMEMAX 256	// ƒƒjƒ…[‚É“o˜^‚·‚éƒƒjƒ…[–¼ƒoƒbƒtƒ@
-#define USERFUNCNUMMAX	8	// UserFunc‚ÌÅ‘å“o˜^”
-#define USERPROPNUM	15		// —˜—p‚Å‚«‚éUserƒvƒƒpƒeƒB”
+// Constants: General Defines
+// LABELNAMEMAX -		ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã«ç™»éŒ²ã™ã‚‹ãƒ¡ãƒ‹ãƒ¥ãƒ¼åãƒãƒƒãƒ•ã‚¡(256)
+// USERFUNCNUMMAX -		UserFuncã®æœ€å¤§ç™»éŒ²æ•°(8)
+// USERPROPNUM -		åˆ©ç”¨ã§ãã‚‹Userãƒ—ãƒ­ãƒ‘ãƒ†ã‚£æ•°(15)
+#define LABELNAMEMAX	256
+#define USERFUNCNUMMAX	8
+#define USERPROPNUM		15
 
 
-// ƒRƒ}ƒ“ƒh“o˜^”Ô†(“o˜^ƒRƒ}ƒ“ƒh‚ÌƒVƒ“ƒ{ƒ‹‚ğ100`199‚Ì”’l‚Åw’è‚·‚é)
+// ã‚³ãƒãƒ³ãƒ‰ç™»éŒ²ç•ªå·(ç™»éŒ²ã‚³ãƒãƒ³ãƒ‰ã®ã‚·ãƒ³ãƒœãƒ«ã‚’100ï½199ã®æ•°å€¤ã§æŒ‡å®šã™ã‚‹)
 
-// UserƒXƒe[ƒ^ƒX’lŠi”[—p\‘¢‘Ì
+// Structure: UserStat_
+// Userã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹å€¤æ ¼ç´ç”¨æ§‹é€ ä½“
+// 
+// Variables:
+// Mode -				ãƒ¢ãƒ¼ãƒ‰ç•ªå·
+// Prop[USERPROPNUM] -	ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£å€¤
 typedef struct{
 	int Mode;
 	double Prop[USERPROPNUM];
 }UserStat_;
 
+// Enum: Enum Symbol of Menu Label
+// M_Label1 - 0
+// M_Label2 - 1
+// M_Label3 - 2
+// M_Label4 - 3
+// M_Label5 - 4
+// M_Label6 - 5
+// M_Label7 - 6
+// M_Label8 - 7
 enum Sub_Menu_Label{
 	M_Label1,
 	M_Label2,
@@ -30,43 +48,119 @@ enum Sub_Menu_Label{
     M_Label8
 };
 
-// UserƒNƒ‰ƒXF•`‰æƒZƒNƒVƒ‡ƒ“‚Å‚Ìƒƒjƒ…[‘I‘ğ‚É‚æ‚è”­¶‚·‚éƒCƒxƒ“ƒg“à—e‚ğ‹Lq
+// Class: USER
+// æç”»ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã§ã®ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠã«ã‚ˆã‚Šç™ºç”Ÿã™ã‚‹ã‚¤ãƒ™ãƒ³ãƒˆå†…å®¹ã‚’è¨˜è¿°
 class USER
 {
-// KODATUNOƒVƒXƒeƒ€‚Æ‚ÌƒuƒŠƒbƒWŠÖ”(ŠJ”­ÒˆÈŠO‚Í•ÏX‚µ‚È‚¢‚±‚Æ) ///////////////////////////////////////
-public:
-	USER();														// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
-	int (USER::*UserFunc[USERFUNCNUMMAX])(BODYList *,OBJECTList *,int);	// UserFuncŠÖ”‚Ö‚Ìƒ|ƒCƒ“ƒ^
-	char *GetMenuLabelName(int);								// ƒƒjƒ…[–¼‚ğ“n‚·	
-	void SetMenuLabelName();									// ƒƒjƒ…[‚É“o˜^‚·‚éƒƒjƒ…[–¼‚ğƒZƒbƒg
-	void RegistUserCommand(CommandMap *);						// UserƒRƒ}ƒ“ƒh‚Ì“o˜^
-	void Command(BODYList *,OBJECTList *,int,int,int,char *[]);	// UserƒRƒ}ƒ“ƒh‚ÌÀs
-	int MasterUserFunc(BODYList *,OBJECTList *,int);			// –¢g—pUserFuncŠÖ”‚Ö‚Ìƒ|ƒCƒ“ƒ^‚Í•K‚¸‚±‚ê‚É‚·‚é
-	void SetUserStatus(int,double []);							// UserƒXƒe[ƒ^ƒX‚ğUserStat\‘¢‘Ì‚ÉŠi”[
-    UserStat_ *GetUserStatus();                                  // UserStatƒXƒe[ƒ^ƒX‚ğæ“¾
-	void ExecdClear();											// Canncelƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚é‚Æ‚±‚ÌŠÖ”‚ªÀs‚³‚ê‚é‚Ì‚ÅA‚±‚±‚É‰Šú‰»ƒR[ƒh‚ğ‘}“ü‚µ‚Ä‚¨‚­
-	int ExecWidgetFunc(int);									// ŠeUserƒ{ƒ^ƒ“‚É‘Î‚µ‚ÄWSŠÖ”‚ğg—p‚µ‚½‚¢ê‡‚Í‚±‚ÌŠÖ”“à‚ÅŠ„‚è“–‚Ä‚é‚±‚Æ
+
+///////////æ–°ãŸã«Useré–¢æ•°ç­‰ã‚’ç™»éŒ²ã™ã‚‹å ´åˆã¯ä»¥ä¸‹ã«private:ã§è¨˜è¿°////////////////////////////////////////
 
 private:
-	char MenuLabel1[LABELNAMEMAX];				// UserŠÖ”1‚Ìƒƒjƒ…[–¼
-	char MenuLabel2[LABELNAMEMAX];				// UserŠÖ”2‚Ìƒƒjƒ…[–¼
-	char MenuLabel3[LABELNAMEMAX];				// UserŠÖ”3‚Ìƒƒjƒ…[–¼
-	char MenuLabel4[LABELNAMEMAX];				// UserŠÖ”4‚Ìƒƒjƒ…[–¼
-	char MenuLabel5[LABELNAMEMAX];				// UserŠÖ”5‚Ìƒƒjƒ…[–¼
-    char MenuLabel6[LABELNAMEMAX];				// UserŠÖ”6‚Ìƒƒjƒ…[–¼
-    char MenuLabel7[LABELNAMEMAX];				// UserŠÖ”7‚Ìƒƒjƒ…[–¼
-    char MenuLabel8[LABELNAMEMAX];				// UserŠÖ”8‚Ìƒƒjƒ…[–¼
-	UserStat_	UserStat;						// UserƒXƒe[ƒ^ƒX
+	// Function:ExecSampleFunc0
+	// ã‚µãƒ³ãƒ—ãƒ«é–¢æ•°1
+	int ExecSampleFunc0(BODYList *,OBJECTList *,int);	
+	
+	// Function:ExecSampleFunc1
+	// ã‚µãƒ³ãƒ—ãƒ«é–¢æ•°2
+	int ExecSampleFunc1(BODYList *,OBJECTList *,int);
+	
+	// Function:ExecSampleFunc2
+	// ã‚µãƒ³ãƒ—ãƒ«é–¢æ•°3
+	int ExecSampleFunc2(BODYList *,OBJECTList *,int);
+    
+	// Function:ExecSampleFunc3
+	// ã‚µãƒ³ãƒ—ãƒ«é–¢æ•°4
+	int ExecSampleFunc3(BODYList *,OBJECTList *,int);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-///////////V‚½‚ÉUserŠÖ”“™‚ğ“o˜^‚·‚éê‡‚ÍˆÈ‰º‚Éprivate:‚Å‹Lq////////////////////////////////////////
+
+
+
+// KODATUNOã‚·ã‚¹ãƒ†ãƒ ã¨ã®ãƒ–ãƒªãƒƒã‚¸é–¢æ•°(é–‹ç™ºè€…ä»¥å¤–ã¯å¤‰æ›´ã—ãªã„ã“ã¨) ///////////////////////////////////////
+public:
+
+	// Function: USER
+	// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	USER();
+
+	// Function: USER::*UserFunc[USERFUNCNUMMAX]
+	// UserFuncé–¢æ•°ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+	int (USER::*UserFunc[USERFUNCNUMMAX])(BODYList *,OBJECTList *,int);
+
+	// Function: GetMenuLabelName
+	// ãƒ¡ãƒ‹ãƒ¥ãƒ¼åã‚’æ¸¡ã™	
+	char *GetMenuLabelName(int);
+	
+	// Function: SetMenuLabelName
+	// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã«ç™»éŒ²ã™ã‚‹ãƒ¡ãƒ‹ãƒ¥ãƒ¼åã‚’ã‚»ãƒƒãƒˆ
+	void SetMenuLabelName();
+	
+	// Function: RegistUserCommand
+	// Userã‚³ãƒãƒ³ãƒ‰ã®ç™»éŒ²
+	void RegistUserCommand(CommandMap *);
+	
+	// Function: Command
+	// Userã‚³ãƒãƒ³ãƒ‰ã®å®Ÿè¡Œ
+	void Command(BODYList *,OBJECTList *,int,int,int,char *[]);
+	
+	// Function: MasterUserFunc
+	// æœªä½¿ç”¨UserFuncé–¢æ•°ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã¯å¿…ãšã“ã‚Œã«ã™ã‚‹
+	int MasterUserFunc(BODYList *,OBJECTList *,int);
+	
+	// Function: SetUserStatus
+	// Userã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’UserStatæ§‹é€ ä½“ã«æ ¼ç´
+	void SetUserStatus(int,double []);
+    
+	// Function: GetUserStatus
+	// UserStatã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’å–å¾—
+	UserStat_ *GetUserStatus();
+	
+	// Function: ExecdClear
+	// Canncelãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚Œã‚‹ã¨ã“ã®é–¢æ•°ãŒå®Ÿè¡Œã•ã‚Œã‚‹ã®ã§ã€ã“ã“ã«åˆæœŸåŒ–ã‚³ãƒ¼ãƒ‰ã‚’æŒ¿å…¥ã—ã¦ãŠã
+	void ExecdClear();
+	
+	// Function: ExecWidgetFunc
+	// å„Userãƒœã‚¿ãƒ³ã«å¯¾ã—ã¦WSé–¢æ•°ã‚’ä½¿ç”¨ã—ãŸã„å ´åˆã¯ã“ã®é–¢æ•°å†…ã§å‰²ã‚Šå½“ã¦ã‚‹ã“ã¨
+	int ExecWidgetFunc(int);
+
 private:
-	int ExecSampleFunc0(BODYList *,OBJECTList *,int);	// ƒTƒ“ƒvƒ‹
-	int ExecSampleFunc1(BODYList *,OBJECTList *,int);	// ƒTƒ“ƒvƒ‹
-	int ExecSampleFunc2(BODYList *,OBJECTList *,int);	// ƒTƒ“ƒvƒ‹
-    int ExecSampleFunc3(BODYList *,OBJECTList *,int);	// ƒTƒ“ƒvƒ‹
+	// Variable: MenuLabel1
+	// Useré–¢æ•°1ã®ãƒ¡ãƒ‹ãƒ¥ãƒ¼å
+	char MenuLabel1[LABELNAMEMAX];				
+	
+	// Variable: MenuLabel2
+	// Useré–¢æ•°2ã®ãƒ¡ãƒ‹ãƒ¥ãƒ¼å
+	char MenuLabel2[LABELNAMEMAX];				
+	
+	// Variable: MenuLabel3
+	// Useré–¢æ•°3ã®ãƒ¡ãƒ‹ãƒ¥ãƒ¼å
+	char MenuLabel3[LABELNAMEMAX];				
+	
+	// Variable: MenuLabel4
+	// Useré–¢æ•°4ã®ãƒ¡ãƒ‹ãƒ¥ãƒ¼å
+	char MenuLabel4[LABELNAMEMAX];				
+	
+	// Variable: MenuLabel5
+	// Useré–¢æ•°5ã®ãƒ¡ãƒ‹ãƒ¥ãƒ¼å
+	char MenuLabel5[LABELNAMEMAX];				
+    
+	// Variable: MenuLabel6
+	// Useré–¢æ•°6ã®ãƒ¡ãƒ‹ãƒ¥ãƒ¼å
+	char MenuLabel6[LABELNAMEMAX];				
+    
+	// Variable: MenuLabel7
+	// Useré–¢æ•°7ã®ãƒ¡ãƒ‹ãƒ¥ãƒ¼å
+	char MenuLabel7[LABELNAMEMAX];				
+    
+	// Variable: MenuLabel8
+	// Useré–¢æ•°8ã®ãƒ¡ãƒ‹ãƒ¥ãƒ¼å
+	char MenuLabel8[LABELNAMEMAX];				
+	
+	// Variable: UserStat
+	// Userã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹
+	UserStat_	UserStat;						
 
 };
 

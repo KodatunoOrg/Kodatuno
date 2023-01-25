@@ -8,16 +8,16 @@
 #include <iostream>
 #include <ctype.h>
 
-// GUIƒCƒ“ƒ^[ƒtƒF[ƒX‚ÉˆË‘¶‚µ‚½ƒ‰ƒbƒvŠÖ”W
-// Wide Studioƒo[ƒWƒ‡ƒ“
+// GUIã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹ã«ä¾å­˜ã—ãŸãƒ©ãƒƒãƒ—é–¢æ•°é›†
+// Wide Studioãƒãƒ¼ã‚¸ãƒ§ãƒ³
 class GUI_Interface
 {
 public:
-	int SetMessage(char *);					// ƒRƒ“ƒ\[ƒ‹‚ÉƒƒbƒZ[ƒW‚ğo—Í
-	int SetCommand(char *);					// ƒRƒ“ƒ\[ƒ‹‚ÉƒRƒ}ƒ“ƒh‚ğo—Í
-	void AddBodyNameToWin(const char *);		// V‚½‚É“o˜^‚µ‚½BODY‚Ì–¼‘O‚ğƒEƒBƒ“ƒhƒEƒŠƒXƒg‚É•\¦‚·‚é
+	int SetMessage(char *);					// ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ã«ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å‡ºåŠ›
+	int SetCommand(char *);					// ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ã«ã‚³ãƒãƒ³ãƒ‰ã‚’å‡ºåŠ›
+	void AddBodyNameToWin(const char *);		// æ–°ãŸã«ç™»éŒ²ã—ãŸBODYã®åå‰ã‚’ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒªã‚¹ãƒˆã«è¡¨ç¤ºã™ã‚‹
 };
 
-extern GUI_Interface GuiIF;		// ƒNƒ‰ƒXGUI_Interface‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğƒOƒ[ƒoƒ‹‚ÅéŒ¾
+extern GUI_Interface GuiIF;		// ã‚¯ãƒ©ã‚¹GUI_Interfaceã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ã‚°ãƒ­ãƒ¼ãƒãƒ«ã§å®£è¨€
 
 #endif

@@ -1,23 +1,29 @@
-#include "QtMainWindow.h"
+Ôªø#include "QtMainWindow.h"
 #include "ui_QtMainWindow.h"
 
-KODatUNO Kodatuno;	// KODatUNOÉNÉâÉXÇÃÉCÉìÉXÉ^ÉìÉXÇÉOÉçÅ[ÉoÉãêÈåæ
+// Variable: Kodatuno
+// KODatUNO„ÇØ„É©„Çπ„ÅÆ„Ç§„É≥„Çπ„Çø„É≥„Çπ„Çí„Ç∞„É≠„Éº„Éê„É´ÂÆ£Ë®Ä
+KODatUNO Kodatuno;	
 
-// ÉÅÉCÉìÉEÉBÉìÉhÉEê∂ê¨
+// Function: QtMainWindow
+// „É°„Ç§„É≥„Ç¶„Ç£„É≥„Éâ„Ç¶„ÇíÁîüÊàê„Åô„Çã
+//
+// Parameters: 
+// *parent - Âëº„Å≥Âá∫„ÅóÂÖÉ„ÅÆË¶™„Ç¶„Ç£„Ç∏„Çß„ÉÉ„Éà„ÇíÊåáÂÆö
 QtMainWindow::QtMainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::QtMainWindow)
 {
     ui->setupUi(this);
     
-    // INIÉtÉ@ÉCÉãÉCÉìÉ^Å[ÉtÉFÅ[ÉXÇÃÉCÉìÉXÉ^ÉìÉX
+    // INI„Éï„Ç°„Ç§„É´„Ç§„É≥„Çø„Éº„Éï„Çß„Éº„Çπ„ÅÆ„Ç§„É≥„Çπ„Çø„É≥„Çπ
     setting = new QSettings("kodatuno.ini", QSettings::IniFormat);
 
-    // GUIÇÃèâä˙âª
+    // GUI„ÅÆÂàùÊúüÂåñ
     initGUI();
 
-    // KodatunoÇÃèâä˙âª
+    // Kodatuno„ÅÆÂàùÊúüÂåñ
     Kodatuno.InitializeWin(ui->describeWidget->width(), ui->describeWidget->height());
 
-    // INIÉtÉ@ÉCÉãÇ©ÇÁÉRÉ}ÉìÉhóöóÇéÊìæ
+    // INI„Éï„Ç°„Ç§„É´„Åã„Çâ„Ç≥„Éû„É≥„ÉâÂ±•Ê≠¥„ÇíÂèñÂæó
     QStringList cmdList = setting->value("cmd_history").toStringList();
     if(cmdList.length() != 0){
         for(int i = 0; i < cmdList.length(); i++){
@@ -25,7 +31,7 @@ QtMainWindow::QtMainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::QtM
         }
     }
 
-    // INIÉtÉ@ÉCÉãÇ©ÇÁUserStatusèÓïÒÇéÊìæ
+    // INI„Éï„Ç°„Ç§„É´„Åã„ÇâUserStatusÊÉÖÂ†±„ÇíÂèñÂæó
     int mode = setting->value("user_stat_mode").toInt();
     double prop[USERPROPNUM];
     QStringList propList = setting->value("user_stat_prop").toStringList();
@@ -37,40 +43,47 @@ QtMainWindow::QtMainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::QtM
     Kodatuno.AcceptUserStat(mode,prop);
 }
 
-// Initializing GUI
+// Function: initGUI
+// GUI„ÅÆÂàùÊúüÂåñ
 void QtMainWindow::initGUI()
 {
-    // INIÉtÉ@ÉCÉãÇì«Ç›çûÇÒÇ≈ÅCÉEÉBÉWÉFÉbÉgÇ…îΩâf
+    // INI„Éï„Ç°„Ç§„É´„ÇíË™≠„ÅøËæº„Çì„ÅßÔºå„Ç¶„Ç£„Ç∏„Çß„ÉÉ„Éà„Å´ÂèçÊò†
     restoreGeometry(setting->value("geometry").toByteArray());
     restoreState(setting->value("dock").toByteArray());
     
-    // GUIÇÃÉCÉXÉ^ÉìÉXÇÉCÉìÉ^Å[ÉtÉFÅ[ÉXÇ…ÉZÉbÉg
-    GuiIF.SetConsoleObject(ui->consoleText);            // ÉRÉìÉ\Å[ÉãópGUIÇÃÉIÉuÉWÉFÉNÉgÇÃÉCÉìÉXÉ^ÉìÉXÇÉZÉbÉg
-    GuiIF.SetBodyListObject(ui->bodyList);              // BODYÉäÉXÉgópGUIÇÃÉIÉuÉWÉFÉNÉgÇÃÉCÉìÉXÉ^ÉìÉXÇÉZÉbÉg
-    GuiIF.SetOpenFileActionObject(ui->actionOpenBody);	// ÉtÉ@ÉCÉãÉIÅ[ÉvÉìópGUIÇÃÉIÉuÉWÉFÉNÉgÇÃÉCÉìÉXÉ^ÉìÉXÇÉZÉbÉg
-    GuiIF.SetDelBodyActionObject(ui->actionDeleteBody);	// BODYçÌèúópGUIÇÃÉIÉuÉWÉFÉNÉgÇÃÉCÉìÉXÉ^ÉìÉXÇÉZÉbÉg
-    GuiIF.SetDescribeWidget(ui->describeWidget);        // OpenGLï`âÊópGUIÇÃÉIÉuÉWÉFÉNÉgÇÃÉCÉìÉXÉ^ÉìÉXÇÉZÉbÉg
-    GuiIF.SetStatusBarObject(ui->statusBar);            // ÉXÉeÅ[É^ÉXÉoÅ[ópGUIÇÃÉIÉuÉWÉFÉNÉgÇÃÉCÉìÉXÉ^ÉìÉXÇÉZÉbÉg
-    GuiIF.SetUserFunc1Action(ui->actionUserFunc1);      // UserFunc1ÇÃÉâÉxÉãÇÉZÉbÉg
-    GuiIF.SetUserFunc2Action(ui->actionUserFunc2);      // UserFunc2ÇÃÉâÉxÉãÇÉZÉbÉg
-    GuiIF.SetUserFunc3Action(ui->actionUserFunc3);      // UserFunc3ÇÃÉâÉxÉãÇÉZÉbÉg
-    GuiIF.SetUserFunc4Action(ui->actionUserFunc4);      // UserFunc4ÇÃÉâÉxÉãÇÉZÉbÉg
-    GuiIF.SetUserFunc5Action(ui->actionUserFunc5);      // UserFunc5ÇÃÉâÉxÉãÇÉZÉbÉg
-    GuiIF.SetUserFunc6Action(ui->actionUserFunc6);      // UserFunc6ÇÃÉâÉxÉãÇÉZÉbÉg
-    GuiIF.SetUserFunc7Action(ui->actionUserFunc7);      // UserFunc7ÇÃÉâÉxÉãÇÉZÉbÉg
-    GuiIF.SetUserFunc8Action(ui->actionUserFunc8);      // UserFunc8ÇÃÉâÉxÉãÇÉZÉbÉg
+    // GUI„ÅÆ„Ç§„Çπ„Çø„É≥„Çπ„Çí„Ç§„É≥„Çø„Éº„Éï„Çß„Éº„Çπ„Å´„Çª„ÉÉ„Éà
+    GuiIF.SetConsoleObject(ui->consoleText);            // „Ç≥„É≥„ÇΩ„Éº„É´Áî®GUI„ÅÆ„Ç™„Éñ„Ç∏„Çß„ÇØ„Éà„ÅÆ„Ç§„É≥„Çπ„Çø„É≥„Çπ„Çí„Çª„ÉÉ„Éà
+    GuiIF.SetBodyListObject(ui->bodyList);              // BODY„É™„Çπ„ÉàÁî®GUI„ÅÆ„Ç™„Éñ„Ç∏„Çß„ÇØ„Éà„ÅÆ„Ç§„É≥„Çπ„Çø„É≥„Çπ„Çí„Çª„ÉÉ„Éà
+    GuiIF.SetOpenFileActionObject(ui->actionOpenBody);	// „Éï„Ç°„Ç§„É´„Ç™„Éº„Éó„É≥Áî®GUI„ÅÆ„Ç™„Éñ„Ç∏„Çß„ÇØ„Éà„ÅÆ„Ç§„É≥„Çπ„Çø„É≥„Çπ„Çí„Çª„ÉÉ„Éà
+    GuiIF.SetDelBodyActionObject(ui->actionDeleteBody);	// BODYÂâäÈô§Áî®GUI„ÅÆ„Ç™„Éñ„Ç∏„Çß„ÇØ„Éà„ÅÆ„Ç§„É≥„Çπ„Çø„É≥„Çπ„Çí„Çª„ÉÉ„Éà
+    GuiIF.SetDescribeWidget(ui->describeWidget);        // OpenGLÊèèÁîªÁî®GUI„ÅÆ„Ç™„Éñ„Ç∏„Çß„ÇØ„Éà„ÅÆ„Ç§„É≥„Çπ„Çø„É≥„Çπ„Çí„Çª„ÉÉ„Éà
+    GuiIF.SetStatusBarObject(ui->statusBar);            // „Çπ„ÉÜ„Éº„Çø„Çπ„Éê„ÉºÁî®GUI„ÅÆ„Ç™„Éñ„Ç∏„Çß„ÇØ„Éà„ÅÆ„Ç§„É≥„Çπ„Çø„É≥„Çπ„Çí„Çª„ÉÉ„Éà
+    GuiIF.SetUserFunc1Action(ui->actionUserFunc1);      // UserFunc1„ÅÆ„É©„Éô„É´„Çí„Çª„ÉÉ„Éà
+    GuiIF.SetUserFunc2Action(ui->actionUserFunc2);      // UserFunc2„ÅÆ„É©„Éô„É´„Çí„Çª„ÉÉ„Éà
+    GuiIF.SetUserFunc3Action(ui->actionUserFunc3);      // UserFunc3„ÅÆ„É©„Éô„É´„Çí„Çª„ÉÉ„Éà
+    GuiIF.SetUserFunc4Action(ui->actionUserFunc4);      // UserFunc4„ÅÆ„É©„Éô„É´„Çí„Çª„ÉÉ„Éà
+    GuiIF.SetUserFunc5Action(ui->actionUserFunc5);      // UserFunc5„ÅÆ„É©„Éô„É´„Çí„Çª„ÉÉ„Éà
+    GuiIF.SetUserFunc6Action(ui->actionUserFunc6);      // UserFunc6„ÅÆ„É©„Éô„É´„Çí„Çª„ÉÉ„Éà
+    GuiIF.SetUserFunc7Action(ui->actionUserFunc7);      // UserFunc7„ÅÆ„É©„Éô„É´„Çí„Çª„ÉÉ„Éà
+    GuiIF.SetUserFunc8Action(ui->actionUserFunc8);      // UserFunc8„ÅÆ„É©„Éô„É´„Çí„Çª„ÉÉ„Éà
 }
 
+// Function: ~QtMainWindow
+// GUI„ÅÆÁµÇ‰∫Ü
 QtMainWindow::~QtMainWindow()
 {
     Kodatuno.DeleteWin();
     delete ui;
 }
 
-// KodatunoGUIÉNÉçÅ[ÉYéûÇÃÉCÉxÉìÉg
+// Function: closeEvent
+// KodatunoGUI„ÇØ„É≠„Éº„Ç∫ÊôÇ„ÅÆ„Ç§„Éô„É≥„Éà
+//
+// Parameters:
+// *event - ÂÆüË°åor„Ç≠„É£„É≥„Çª„É´
 void QtMainWindow::closeEvent(QCloseEvent *event)
 {
-    /* ÉRÉ}ÉìÉhóöóÇéÊìæ */
+    /* „Ç≥„Éû„É≥„ÉâÂ±•Ê≠¥„ÇíÂèñÂæó */
     int cmdNum = Kodatuno.GetConsoleHistoryNum();
     std::string cmdTemp;
     QStringList cmdList;
@@ -81,7 +94,7 @@ void QtMainWindow::closeEvent(QCloseEvent *event)
         }
     }
 
-    // UserStatusÇéÊìæ
+    // UserStatus„ÇíÂèñÂæó
     int mode;
     double prop[USERPROPNUM];
     Kodatuno.GetUserStat(&mode,prop);
@@ -90,7 +103,7 @@ void QtMainWindow::closeEvent(QCloseEvent *event)
         uslist.append(QString::number(prop[i]));
 
 
-    // INIÉtÉ@ÉCÉãÇ÷ÉRÉ}ÉìÉhóöóÇ∆UserStatusèÓïÒÇèëÇ´çûÇ›
+    // INI„Éï„Ç°„Ç§„É´„Å∏„Ç≥„Éû„É≥„ÉâÂ±•Ê≠¥„Å®UserStatusÊÉÖÂ†±„ÇíÊõ∏„ÅçËæº„Åø
     setting->setValue("geometry",saveGeometry());
     setting->setValue("dock",saveState());
     setting->setValue("cmd_history",cmdList);
@@ -98,11 +111,12 @@ void QtMainWindow::closeEvent(QCloseEvent *event)
     setting->setValue("user_stat_prop",uslist);
     setting->sync();
 
-    // ÉNÉçÅ[ÉYÉCÉxÉìÉg
+    // „ÇØ„É≠„Éº„Ç∫„Ç§„Éô„É≥„Éà
     QMainWindow::closeEvent(event);
 }
 
-// ÉÅÉjÉÖÅ[ÅFCreate->NURBS Rotation
+// Function: on_actionRotationSurface_triggered
+// „É°„Éã„É•„ÉºÔºöCreate->NURBS Rotation
 void QtMainWindow::on_actionRotationSurface_triggered()
 {
     QtRotSurfDialog* dlg = new QtRotSurfDialog(this);
@@ -110,7 +124,8 @@ void QtMainWindow::on_actionRotationSurface_triggered()
     ui->describeWidget->repaint();
 }
 
-// ÉÅÉjÉÖÅ[ÅFCreate->Sweep
+// Function: on_actionSweepSurface_triggered
+// „É°„Éã„É•„ÉºÔºöCreate->Sweep
 void QtMainWindow::on_actionSweepSurface_triggered()
 {
     QtSweepSurfDialog* dlg = new QtSweepSurfDialog (this);
@@ -118,7 +133,8 @@ void QtMainWindow::on_actionSweepSurface_triggered()
     ui->describeWidget->repaint();
 }
 
-// ÉÅÉjÉÖÅ[ÅFCreate->NURBS Curve
+// Function: on_actionNURBSCurve_triggered
+// „É°„Éã„É•„ÉºÔºöCreate->NURBS Curve
 void QtMainWindow::on_actionNURBSCurve_triggered()
 {
     QtNurbsCurveDialog* dlg = new QtNurbsCurveDialog(this);
@@ -126,208 +142,240 @@ void QtMainWindow::on_actionNURBSCurve_triggered()
     ui->describeWidget->repaint();
 }
 
-// ÉÅÉjÉÖÅ[ÅFCreate->NURBS Surface
-void QtMainWindow::on_actionNURBSSarface_triggered()
+// Function: on_actionNURBSSurface_triggered
+// „É°„Éã„É•„ÉºÔºöCreate->NURBS Surface
+void QtMainWindow::on_actionNURBSSurface_triggered()
 {
     QtNurbsSurfDialog* dlg = new QtNurbsSurfDialog (this);
     dlg->exec();
     ui->describeWidget->repaint();
 }
 
-// ÉÅÉjÉÖÅ[ÅFFile->Open File
+// Function: on_actionOpenBody_triggered
+// „É°„Éã„É•„ÉºÔºöFile->Open File
 void QtMainWindow::on_actionOpenBody_triggered()
 {
-    Kodatuno.OpenFile();		// ÉtÉ@ÉCÉãÉIÅ[ÉvÉì
-    Kodatuno.OpenDelBtn();      // OpenÅCDeleteÉ{É^ÉìÇÃï\é¶ëÆê´ÇÃïœçX
+    Kodatuno.OpenFile();		
+    Kodatuno.OpenDelBtn();      
     ui->describeWidget->repaint();
 }
 
-// ÉÅÉjÉÖÅ[ÅFEdit->Delete BODY
+// Function: on_actionDeleteBody_triggered
+// „É°„Éã„É•„ÉºÔºöEdit->Delete BODY
 void QtMainWindow::on_actionDeleteBody_triggered()
 {
-    Kodatuno.DeleteBody();  	// ëIëÇ≥ÇÍÇƒÇ¢ÇÈBODYÇè¡ãé
-    Kodatuno.OpenDelBtn();      // OpenÅCDeleteÉ{É^ÉìÇÃï\é¶ëÆê´ÇÃïœçX
+    Kodatuno.DeleteBody();  	
+    Kodatuno.OpenDelBtn();      
     ui->describeWidget->repaint();
 }
 
-// ÉcÅ[ÉãÉoÅ[ÅFX-View
+// Function: on_actionViewOnX_triggered
+// „ÉÑ„Éº„É´„Éê„ÉºÔºöX-View
 void QtMainWindow::on_actionViewOnX_triggered()
 {
     Kodatuno.ChangeViewX();
     ui->describeWidget->repaint();
 }
 
-// ÉcÅ[ÉãÉoÅ[ÅFY-View
+// Function: on_actionViewOnY_triggered
+// „ÉÑ„Éº„É´„Éê„ÉºÔºöY-View
 void QtMainWindow::on_actionViewOnY_triggered()
 {
     Kodatuno.ChangeViewY();
     ui->describeWidget->repaint();
 }
 
-// ÉcÅ[ÉãÉoÅ[ÅFZ-View
+// Function: on_actionViewOnZ_triggered
+// „ÉÑ„Éº„É´„Éê„ÉºÔºöZ-View
 void QtMainWindow::on_actionViewOnZ_triggered()
 {
     Kodatuno.ChangeViewZ();
     ui->describeWidget->repaint();
 }
 
-// ÉcÅ[ÉãÉoÅ[ÅFÉAÉCÉ\ÉÅView
+// Function: on_actionViewOnXYZ_triggered
+// „ÉÑ„Éº„É´„Éê„ÉºÔºö„Ç¢„Ç§„ÇΩ„É°View
 void QtMainWindow::on_actionViewOnXYZ_triggered()
 {
     Kodatuno.ChangeViewXYZ();
     ui->describeWidget->repaint();
 }
 
-// ÉcÅ[ÉãÉoÅ[ÅFâÊñ Ç…ÉtÉBÉbÉg
+// Function: on_actionViewFit_triggered
+// „ÉÑ„Éº„É´„Éê„ÉºÔºöÁîªÈù¢„Å´„Éï„Ç£„ÉÉ„Éà
 void QtMainWindow::on_actionViewFit_triggered()
 {
     Kodatuno.FitView();
     ui->describeWidget->repaint();
 }
 
-// ÉcÅ[ÉãÉoÅ[ÅFÉ\ÉäÉbÉhï\é¶
+// Function: on_actionViewSolid_triggered
+// „ÉÑ„Éº„É´„Éê„ÉºÔºö„ÇΩ„É™„ÉÉ„ÉâË°®Á§∫
 void QtMainWindow::on_actionViewSolid_triggered()
 {
     Kodatuno.SolidView();
     ui->describeWidget->repaint();
 }
 
-// ÉcÅ[ÉãÉoÅ[ÅFÉ\ÉäÉbÉhÅiäOå`ê¸Ç»ÇµÅjï\é¶
+// Function: on_actionViewNoEdge_triggered
+// „ÉÑ„Éº„É´„Éê„ÉºÔºö„ÇΩ„É™„ÉÉ„ÉâÔºàÂ§ñÂΩ¢Á∑ö„Å™„ÅóÔºâË°®Á§∫
 void QtMainWindow::on_actionViewNoEdge_triggered()
 {
     Kodatuno.NoEdgeView();
     ui->describeWidget->repaint();
 }
 
-// ÉcÅ[ÉãÉoÅ[ÅFÉèÉCÉÑÅ[ÉtÉåÅ[ÉÄï\é¶
+// Function: on_actionViewWireFlame_triggered
+// „ÉÑ„Éº„É´„Éê„ÉºÔºö„ÉØ„Ç§„É§„Éº„Éï„É¨„Éº„É†Ë°®Á§∫
 void QtMainWindow::on_actionViewWireFlame_triggered()
 {
     Kodatuno.WireFlameView();
     ui->describeWidget->repaint();
 }
 
-// ÉcÅ[ÉãÉoÅ[ÅFîÒï\é¶
+// Function: on_actionViewvoid_triggered
+// „ÉÑ„Éº„É´„Éê„ÉºÔºöÈùûË°®Á§∫
 void QtMainWindow::on_actionViewVoid_triggered()
 {
     Kodatuno.VoidView();
     ui->describeWidget->repaint();
 }
 
-// ÉcÅ[ÉãÉoÅ[ÅFëSÇƒëIë
+// Function: on_actionSelectAll_triggered
+// „ÉÑ„Éº„É´„Éê„ÉºÔºöÂÖ®„Å¶ÈÅ∏Êäû
 void QtMainWindow::on_actionSelectAll_triggered()
 {
     Kodatuno.SelectAll();
     ui->describeWidget->repaint();
 }
 
-// ÉcÅ[ÉãÉoÅ[ÅFëSÇƒÇÃëIëÇÉLÉÉÉìÉZÉã
+// Function: on_actionSelect_Cancel_triggered
+// „ÉÑ„Éº„É´„Éê„ÉºÔºöÂÖ®„Å¶„ÅÆÈÅ∏Êäû„Çí„Ç≠„É£„É≥„Çª„É´
 void QtMainWindow::on_actionSelect_Cancel_triggered()
 {
     Kodatuno.SelectionCancel();
     ui->describeWidget->repaint();
 }
 
-// ÉcÅ[ÉãÉoÅ[ÅFÉÜÅ[ÉUÅ[Ç…ÇÊÇÈï`âÊéwóﬂÇÉLÉÉÉìÉZÉã
+// Function: on_actionViewErase_triggered
+// „ÉÑ„Éº„É´„Éê„ÉºÔºö„É¶„Éº„Ç∂„Éº„Å´„Çà„ÇãÊèèÁîªÊåá‰ª§„Çí„Ç≠„É£„É≥„Çª„É´
 void QtMainWindow::on_actionViewErase_triggered()
 {
     Kodatuno.UserViewCanncel();
     ui->describeWidget->repaint();
 }
 
-// ÉcÅ[ÉãÉoÅ[ÅFîºìßñæï\é¶
+// Function: on_actionViewBlend_triggered
+// BODY„ÇíÂçäÈÄèÊòé
 void QtMainWindow::on_actionViewBlend_triggered()
 {
     Kodatuno.ViewBlending();
     ui->describeWidget->repaint();
 }
 
-// ÉÅÉjÉÖÅ[ÅFView->Show Console
+// Function: on_actionShowConsole_triggered
+// Console„ÅÆDOCKË°®Á§∫
 void QtMainWindow::on_actionShowConsole_triggered()
 {
     ui->consoleDock->setVisible(true);
 }
 
-// ÉÅÉjÉÖÅ[ÅFView->Show Body List
+// Function: on_actionShowBodyList_triggered
+// BODY List„ÅÆDOCKË°®Á§∫
 void QtMainWindow::on_actionShowBodyList_triggered()
 {
     ui->bodyListDock->setVisible(true);
 }
 
-// BODY ListíÜÇÃÉAÉCÉeÉÄÇëIë
+// Function: on_bodyList_itemClicked
+// BODY List‰∏≠„ÅÆ„Ç¢„Ç§„ÉÜ„É†„ÇíÈÅ∏Êäû
+//
+// Paramerters:
+// *item - „Ç¢„Ç§„ÉÜ„É†„ÅÆÊÉÖÂ†±
 void QtMainWindow::on_bodyList_itemClicked(QListWidgetItem *item)
 {
     Kodatuno.BodyListSelect();
 }
 
-// ÉÅÉjÉÖÅ[ÅFUser->User Status
+// Function: on_actionUserStatus_triggered
+// „É¶„Éº„Ç∂„Éº„Çπ„ÉÜ„Éº„Çø„Çπ„ÉÄ„Ç§„Ç¢„É≠„Ç∞„ÅÆË°®Á§∫
 void QtMainWindow::on_actionUserStatus_triggered()
 {
-    // UserStatusÉ_ÉCÉAÉçÉOÇï\é¶
+    // UserStatus„ÉÄ„Ç§„Ç¢„É≠„Ç∞„ÇíË°®Á§∫
     QtUserStatDialog* dlg = new QtUserStatDialog(this);
     dlg->show();
 }
 
-// ÉÅÉjÉÖÅ[ÅFUser->User Status->User Func1
+// Function: on_actionUserFunc1_triggered
+// „É¶„Éº„Ç∂„ÉºÈñ¢Êï∞1„ÅÆÂÆüË°å
 void QtMainWindow::on_actionUserFunc1_triggered()
 {
     Kodatuno.ExecuteUserFuncMain(0);
-    Kodatuno.ReDrawUserFunc();			// UserFuncÇ…ÇÊÇÈï`âÊéwóﬂÇé¿çs
+    Kodatuno.ReDrawUserFunc();			// UserFunc„Å´„Çà„ÇãÊèèÁîªÊåá‰ª§„ÇíÂÆüË°å
 }
 
-// ÉÅÉjÉÖÅ[ÅFUser->User Status->User Func2
+// Function: on_actionUserFunc2_triggered
+// „É¶„Éº„Ç∂„ÉºÈñ¢Êï∞2„ÅÆÂÆüË°å
 void QtMainWindow::on_actionUserFunc2_triggered()
 {
     Kodatuno.ExecuteUserFuncMain(1);
-    Kodatuno.ReDrawUserFunc();			// UserFuncÇ…ÇÊÇÈï`âÊéwóﬂÇé¿çs
+    Kodatuno.ReDrawUserFunc();			// UserFunc„Å´„Çà„ÇãÊèèÁîªÊåá‰ª§„ÇíÂÆüË°å
 }
 
-// ÉÅÉjÉÖÅ[ÅFUser->User Status->User Func3
+// Function: on_actionUserFunc3_triggered
+// „É¶„Éº„Ç∂„ÉºÈñ¢Êï∞3„ÅÆÂÆüË°å
 void QtMainWindow::on_actionUserFunc3_triggered()
 {
     Kodatuno.ExecuteUserFuncMain(2);
-    Kodatuno.ReDrawUserFunc();			// UserFuncÇ…ÇÊÇÈï`âÊéwóﬂÇé¿çs
+    Kodatuno.ReDrawUserFunc();			// UserFunc„Å´„Çà„ÇãÊèèÁîªÊåá‰ª§„ÇíÂÆüË°å
 }
 
-// ÉÅÉjÉÖÅ[ÅFUser->User Status->User Func4
+// Function: on_actionUserFunc4_triggered
+// „É¶„Éº„Ç∂„ÉºÈñ¢Êï∞4„ÅÆÂÆüË°å
 void QtMainWindow::on_actionUserFunc4_triggered()
 {
     Kodatuno.ExecuteUserFuncMain(3);
-    Kodatuno.ReDrawUserFunc();			// UserFuncÇ…ÇÊÇÈï`âÊéwóﬂÇé¿çs
+    Kodatuno.ReDrawUserFunc();			// UserFunc„Å´„Çà„ÇãÊèèÁîªÊåá‰ª§„ÇíÂÆüË°å
 }
 
-// ÉÅÉjÉÖÅ[ÅFUser->User Status->User Func5
+// Function: on_actionUserFunc5_triggered
+// „É¶„Éº„Ç∂„ÉºÈñ¢Êï∞5„ÅÆÂÆüË°å
 void QtMainWindow::on_actionUserFunc5_triggered()
 {
     Kodatuno.ExecuteUserFuncMain(4);
-    Kodatuno.ReDrawUserFunc();			// UserFuncÇ…ÇÊÇÈï`âÊéwóﬂÇé¿çs
+    Kodatuno.ReDrawUserFunc();			// UserFunc„Å´„Çà„ÇãÊèèÁîªÊåá‰ª§„ÇíÂÆüË°å
 }
 
-// ÉÅÉjÉÖÅ[ÅFUser->User Status->User Func6
+// Function: on_actionUserFunc6_triggered
+// „É¶„Éº„Ç∂„ÉºÈñ¢Êï∞6„ÅÆÂÆüË°å
 void QtMainWindow::on_actionUserFunc6_triggered()
 {
     Kodatuno.ExecuteUserFuncMain(5);
-    Kodatuno.ReDrawUserFunc();			// UserFuncÇ…ÇÊÇÈï`âÊéwóﬂÇé¿çs
+    Kodatuno.ReDrawUserFunc();			// UserFunc„Å´„Çà„ÇãÊèèÁîªÊåá‰ª§„ÇíÂÆüË°å
 }
 
-// ÉÅÉjÉÖÅ[ÅFUser->User Status->User Func7
+// Function: on_actionUserFunc7_triggered
+// „É¶„Éº„Ç∂„ÉºÈñ¢Êï∞7„ÅÆÂÆüË°å
 void QtMainWindow::on_actionUserFunc7_triggered()
 {
     Kodatuno.ExecuteUserFuncMain(6);
-    Kodatuno.ReDrawUserFunc();			// UserFuncÇ…ÇÊÇÈï`âÊéwóﬂÇé¿çs
+    Kodatuno.ReDrawUserFunc();			// UserFunc„Å´„Çà„ÇãÊèèÁîªÊåá‰ª§„ÇíÂÆüË°å
 }
 
-// ÉÅÉjÉÖÅ[ÅFUser->User Status->User Func8
+// Function: on_actionUserFunc8_triggered
+// „É¶„Éº„Ç∂„ÉºÈñ¢Êï∞8„ÅÆÂÆüË°å
 void QtMainWindow::on_actionUserFunc8_triggered()
 {
     Kodatuno.ExecuteUserFuncMain(7);
-    Kodatuno.ReDrawUserFunc();			// UserFuncÇ…ÇÊÇÈï`âÊéwóﬂÇé¿çs
+    Kodatuno.ReDrawUserFunc();			// UserFunc„Å´„Çà„ÇãÊèèÁîªÊåá‰ª§„ÇíÂÆüË°å
 }
 
-// ÉÅÉjÉÖÅ[ÅFHelp->About Kodatuno
+// Function: on_actionAboutKodatuno_triggered
+// AboutBOX„ÅÆË°®Á§∫
 void QtMainWindow::on_actionAboutKodatuno_triggered()
 {
     QMessageBox::information(   this,
                                 tr("About Kodatuno"),
-                                tr("Kodatuno R%1.%2").arg(KODATUNO_MAJOR_VER).arg(KODATUNO_MINOR_VER)
+                                tr("Kodatuno R%1.%2 alpha").arg(KODATUNO_MAJOR_VER).arg(KODATUNO_MINOR_VER)
                                 );
 }

@@ -2,62 +2,62 @@
 
 #include "Describe.h"
 
-// DESCRIBEƒNƒ‰ƒX‚Å—p‚¢‚éƒXƒ^ƒeƒBƒbƒN•Ï”
-BODY *DESCRIBE::glbody;					// IGESƒf[ƒ^ƒŠƒXƒg‚Ìæ“ªƒAƒhƒŒƒX
-BODY *DESCRIBE::Curr_body;				// IGESƒf[ƒ^ƒŠƒXƒg‚Ì’–Ú’†‚ÌƒAƒhƒŒƒX‚ğŠi”[
-IGES_PARSER DESCRIBE::Parser;			// IGESƒp[ƒT[—pƒIƒuƒWƒFƒNƒg‚ğ¶¬
-QUATERNION DESCRIBE::QFunc;				// ƒNƒH[ƒ^ƒjƒIƒ“‰‰Zƒ‰ƒCƒuƒ‰ƒŠƒNƒ‰ƒX
-NURBS_Func DESCRIBE::NFunc;				// NURBS_FuncƒNƒ‰ƒX‚ÌƒIƒuƒWƒFƒNƒg‚ğ¶¬
-USER DESCRIBE::User;					// UserƒNƒ‰ƒX‚ÌƒIƒuƒWƒFƒNƒg‚ğ¶¬
-BODYList	DESCRIBE::BodyList;			// BODYƒŠƒXƒg‚Ì‘€ì—pƒCƒ“ƒXƒ^ƒ“ƒX
-OBJECTList DESCRIBE::SeldEntList;		// ƒZƒŒƒNƒVƒ‡ƒ“‚³‚ê‚½ƒGƒ“ƒeƒBƒeƒB‚ğ’€ŸŠi”[‚µ‚Ä‚¢‚­ƒŠƒXƒg
+// DESCRIBEã‚¯ãƒ©ã‚¹ã§ç”¨ã„ã‚‹ã‚¹ã‚¿ãƒ†ã‚£ãƒƒã‚¯å¤‰æ•°
+BODY *DESCRIBE::glbody;					// IGESãƒ‡ãƒ¼ã‚¿ãƒªã‚¹ãƒˆã®å…ˆé ­ã‚¢ãƒ‰ãƒ¬ã‚¹
+BODY *DESCRIBE::Curr_body;				// IGESãƒ‡ãƒ¼ã‚¿ãƒªã‚¹ãƒˆã®æ³¨ç›®ä¸­ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’æ ¼ç´
+IGES_PARSER DESCRIBE::Parser;			// IGESãƒ‘ãƒ¼ã‚µãƒ¼ç”¨ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ç”Ÿæˆ
+QUATERNION DESCRIBE::QFunc;				// ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³æ¼”ç®—ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã‚¯ãƒ©ã‚¹
+NURBS_Func DESCRIBE::NFunc;				// NURBS_Funcã‚¯ãƒ©ã‚¹ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ç”Ÿæˆ
+USER DESCRIBE::User;					// Userã‚¯ãƒ©ã‚¹ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ç”Ÿæˆ
+BODYList	DESCRIBE::BodyList;			// BODYãƒªã‚¹ãƒˆã®æ“ä½œç”¨ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
+OBJECTList DESCRIBE::SeldEntList;		// ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚ŒãŸã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚’é€æ¬¡æ ¼ç´ã—ã¦ã„ããƒªã‚¹ãƒˆ
 
 
-int  DESCRIBE::ScreenHeight;			// •`‰æƒEƒBƒ“ƒhƒE‚Ì‚‚³
-int  DESCRIBE::ScreenWidth;				// •`‰æƒEƒBƒ“ƒhƒE‚Ì•
-int  DESCRIBE::StartX;					// ƒhƒ‰ƒbƒOŠJnˆÊ’uX
-int  DESCRIBE::StartY;					// ƒhƒ‰ƒbƒOŠJnˆÊ’uY
-int  DESCRIBE::OldPosX;					// ƒEƒBƒ“ƒhƒEÄ•`‰æ’¼‘O‚ÌXÀ•W
-int  DESCRIBE::OldPosY;					// ƒEƒBƒ“ƒhƒEÄ•`‰æ’¼‘O‚ÌYÀ•W
-int  DESCRIBE::CurrentX;				// ƒhƒ‰ƒbƒO’†‚ÌˆÊ’uX
-int  DESCRIBE::CurrentY;				// ƒhƒ‰ƒbƒO’†‚ÌˆÊ’uY
-int  DESCRIBE::SweepSelectFlag;			// ƒXƒC[ƒvƒZƒŒƒNƒVƒ‡ƒ“‚ğŠJn‚µ‚½‚±‚Æ‚ğ¦‚·ƒtƒ‰ƒO
-int  DESCRIBE::Vp[4];					// ƒrƒ…[ƒ|ƒCƒ“ƒg
-GLuint  DESCRIBE::SelectBuf[MAXSELECT]; // ƒZƒŒƒNƒgƒoƒbƒtƒ@
-int  DESCRIBE::LBtnFlag;				// ¶ƒNƒŠƒbƒN‚µ‚½‚±‚Æ‚ğ¦‚·ƒtƒ‰ƒO
-int  DESCRIBE::RBtnFlag;				// ‰EƒNƒŠƒbƒN‚µ‚½‚±‚Æ‚ğ¦‚·ƒtƒ‰ƒO
-int  DESCRIBE::MBtnFlag;				// ’†ƒNƒŠƒbƒN‚µ‚½‚±‚Æ‚ğ¦‚·ƒtƒ‰ƒO
-int  DESCRIBE::ShiftKeyFlag;			// ShiftƒL[‚ğ‰Ÿ‚µ‚½‚±‚Æ‚ğ¦‚·ƒtƒ‰ƒO
-int  DESCRIBE::CtrlKeyFlag;				// CtrlƒL[‚ğ‰Ÿ‚µ‚½‚±‚Æ‚ğ¦‚·ƒtƒ‰ƒO
-int  DESCRIBE::AltKeyFlag;				// AltƒL[‚ğ‰Ÿ‚µ‚½‚±‚Æ‚ğ¦‚·ƒtƒ‰ƒO
-Quat DESCRIBE::StartQ;					// ‰EƒNƒŠƒbƒN‚µ‚½uŠÔ‚Ì‰ñ“]Šp‚ğŠi”[‚·‚éƒNƒH[ƒ^ƒjƒIƒ“
-Quat DESCRIBE::TargetQ;					// ‚®‚è‚®‚è‚â‚Á‚Ä‚¢‚é“r’†‚ÌƒNƒH[ƒ^ƒjƒIƒ“
-double DESCRIBE::RotMx[TMATELEMNUM];	// ƒNƒH[ƒ^ƒjƒIƒ“¨“¯•ÏŠ·ƒ}ƒgƒŠƒbƒNƒX
-double DESCRIBE::Trl[3];				// •½sˆÚ“®—Ê
-double DESCRIBE::AxisScale;				// ²‚ÌƒXƒP[ƒ‹
-double DESCRIBE::ModelScale;			// ƒ‚ƒfƒ‹‚ÌƒXƒP[ƒ‹
-double DESCRIBE::ModelScale1st;			// ƒ‚ƒfƒ‹ƒXƒP[ƒ‹‚Ì‰Šú’l
-double DESCRIBE::IdentX;				// ƒ}ƒEƒX‚Ìâ‘ÎˆÊ’uX¨ƒEƒBƒ“ƒhƒE“à‚Å‚Ì‘Š‘ÎˆÊ’u‚ÌŠ·ZŒW”X
-double DESCRIBE::IdentY;				// ƒ}ƒEƒX‚Ìâ‘ÎˆÊ’uY¨ƒEƒBƒ“ƒhƒE“à‚Å‚Ì‘Š‘ÎˆÊ’u‚ÌŠ·ZŒW”Y
-int DESCRIBE::DrawSurfFlagCount;		// Surface•`‰æƒtƒ‰ƒOƒƒjƒ…[‚ª‰½‰ñ‘I‘ğ‚³‚ê‚½‚©‚ğ”‚¦‚éƒJƒEƒ“ƒ^
-int DESCRIBE::DrawBODYFlagCount;		// BODY•`‰æƒtƒ‰ƒOƒƒjƒ…[‚ª‰½‰ñ‘I‘ğ‚³‚ê‚½‚©‚ğ”‚¦‚éƒJƒEƒ“ƒ^
-int DESCRIBE::DrawUserFuncFlag;			// PDT•`‰æƒtƒ‰ƒO
-OBJECT DESCRIBE::SelectedEntList[MAXSELECT];// ƒZƒŒƒNƒVƒ‡ƒ“‚³‚ê‚½ƒGƒ“ƒeƒBƒeƒB‚ğ’€ŸŠi”[‚µ‚Ä‚¢‚­
-int DESCRIBE::PickCount;				// ƒsƒbƒN‰ñ”‚ğƒJƒEƒ“ƒg
-int DESCRIBE::SPickCount;				// NURBS‹È–Ê‚ªƒsƒbƒN‚³‚ê‚½”‚ğƒJƒEƒ“ƒg
-int DESCRIBE::CPickCount;				// NURBS‹Èü‚ªƒsƒbƒN‚³‚ê‚½”‚ğƒJƒEƒ“ƒg
-int DESCRIBE::BodyCount;				// body‚Ì”‚ğƒJƒEƒ“ƒg
-int DESCRIBE::DrawBODYFlag;				// BODY•`‰æƒtƒ‰ƒO
-int DESCRIBE::DrawSurfFlag;				// Surface•`‰æƒtƒ‰ƒO
+int  DESCRIBE::ScreenHeight;			// æç”»ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®é«˜ã•
+int  DESCRIBE::ScreenWidth;				// æç”»ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®å¹…
+int  DESCRIBE::StartX;					// ãƒ‰ãƒ©ãƒƒã‚°é–‹å§‹ä½ç½®X
+int  DESCRIBE::StartY;					// ãƒ‰ãƒ©ãƒƒã‚°é–‹å§‹ä½ç½®Y
+int  DESCRIBE::OldPosX;					// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦å†æç”»ç›´å‰ã®Xåº§æ¨™
+int  DESCRIBE::OldPosY;					// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦å†æç”»ç›´å‰ã®Yåº§æ¨™
+int  DESCRIBE::CurrentX;				// ãƒ‰ãƒ©ãƒƒã‚°ä¸­ã®ä½ç½®X
+int  DESCRIBE::CurrentY;				// ãƒ‰ãƒ©ãƒƒã‚°ä¸­ã®ä½ç½®Y
+int  DESCRIBE::SweepSelectFlag;			// ã‚¹ã‚¤ãƒ¼ãƒ—ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã‚’é–‹å§‹ã—ãŸã“ã¨ã‚’ç¤ºã™ãƒ•ãƒ©ã‚°
+int  DESCRIBE::Vp[4];					// ãƒ“ãƒ¥ãƒ¼ãƒã‚¤ãƒ³ãƒˆ
+GLuint  DESCRIBE::SelectBuf[MAXSELECT]; // ã‚»ãƒ¬ã‚¯ãƒˆãƒãƒƒãƒ•ã‚¡
+int  DESCRIBE::LBtnFlag;				// å·¦ã‚¯ãƒªãƒƒã‚¯ã—ãŸã“ã¨ã‚’ç¤ºã™ãƒ•ãƒ©ã‚°
+int  DESCRIBE::RBtnFlag;				// å³ã‚¯ãƒªãƒƒã‚¯ã—ãŸã“ã¨ã‚’ç¤ºã™ãƒ•ãƒ©ã‚°
+int  DESCRIBE::MBtnFlag;				// ä¸­ã‚¯ãƒªãƒƒã‚¯ã—ãŸã“ã¨ã‚’ç¤ºã™ãƒ•ãƒ©ã‚°
+int  DESCRIBE::ShiftKeyFlag;			// Shiftã‚­ãƒ¼ã‚’æŠ¼ã—ãŸã“ã¨ã‚’ç¤ºã™ãƒ•ãƒ©ã‚°
+int  DESCRIBE::CtrlKeyFlag;				// Ctrlã‚­ãƒ¼ã‚’æŠ¼ã—ãŸã“ã¨ã‚’ç¤ºã™ãƒ•ãƒ©ã‚°
+int  DESCRIBE::AltKeyFlag;				// Altã‚­ãƒ¼ã‚’æŠ¼ã—ãŸã“ã¨ã‚’ç¤ºã™ãƒ•ãƒ©ã‚°
+Quat DESCRIBE::StartQ;					// å³ã‚¯ãƒªãƒƒã‚¯ã—ãŸç¬é–“ã®å›è»¢è§’ã‚’æ ¼ç´ã™ã‚‹ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³
+Quat DESCRIBE::TargetQ;					// ãã‚Šãã‚Šã‚„ã£ã¦ã„ã‚‹é€”ä¸­ã®ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³
+double DESCRIBE::RotMx[TMATELEMNUM];	// ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³â†’åŒæ™‚å¤‰æ›ãƒãƒˆãƒªãƒƒã‚¯ã‚¹
+double DESCRIBE::Trl[3];				// å¹³è¡Œç§»å‹•é‡
+double DESCRIBE::AxisScale;				// è»¸ã®ã‚¹ã‚±ãƒ¼ãƒ«
+double DESCRIBE::ModelScale;			// ãƒ¢ãƒ‡ãƒ«ã®ã‚¹ã‚±ãƒ¼ãƒ«
+double DESCRIBE::ModelScale1st;			// ãƒ¢ãƒ‡ãƒ«ã‚¹ã‚±ãƒ¼ãƒ«ã®åˆæœŸå€¤
+double DESCRIBE::IdentX;				// ãƒã‚¦ã‚¹ã®çµ¶å¯¾ä½ç½®Xâ†’ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦å†…ã§ã®ç›¸å¯¾ä½ç½®ã®æ›ç®—ä¿‚æ•°X
+double DESCRIBE::IdentY;				// ãƒã‚¦ã‚¹ã®çµ¶å¯¾ä½ç½®Yâ†’ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦å†…ã§ã®ç›¸å¯¾ä½ç½®ã®æ›ç®—ä¿‚æ•°Y
+int DESCRIBE::DrawSurfFlagCount;		// Surfaceæç”»ãƒ•ãƒ©ã‚°ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãŒä½•å›é¸æŠã•ã‚ŒãŸã‹ã‚’æ•°ãˆã‚‹ã‚«ã‚¦ãƒ³ã‚¿
+int DESCRIBE::DrawBODYFlagCount;		// BODYæç”»ãƒ•ãƒ©ã‚°ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãŒä½•å›é¸æŠã•ã‚ŒãŸã‹ã‚’æ•°ãˆã‚‹ã‚«ã‚¦ãƒ³ã‚¿
+int DESCRIBE::DrawUserFuncFlag;			// PDTæç”»ãƒ•ãƒ©ã‚°
+OBJECT DESCRIBE::SelectedEntList[MAXSELECT];// ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚ŒãŸã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚’é€æ¬¡æ ¼ç´ã—ã¦ã„ã
+int DESCRIBE::PickCount;				// ãƒ”ãƒƒã‚¯å›æ•°ã‚’ã‚«ã‚¦ãƒ³ãƒˆ
+int DESCRIBE::SPickCount;				// NURBSæ›²é¢ãŒãƒ”ãƒƒã‚¯ã•ã‚ŒãŸæ•°ã‚’ã‚«ã‚¦ãƒ³ãƒˆ
+int DESCRIBE::CPickCount;				// NURBSæ›²ç·šãŒãƒ”ãƒƒã‚¯ã•ã‚ŒãŸæ•°ã‚’ã‚«ã‚¦ãƒ³ãƒˆ
+int DESCRIBE::BodyCount;				// bodyã®æ•°ã‚’ã‚«ã‚¦ãƒ³ãƒˆ
+int DESCRIBE::DrawBODYFlag;				// BODYæç”»ãƒ•ãƒ©ã‚°
+int DESCRIBE::DrawSurfFlag;				// Surfaceæç”»ãƒ•ãƒ©ã‚°
 int DESCRIBE::DrawBODY1st;
-int DESCRIBE::ExecUserFuncFlag[USERFUNCNUMMAX];	// UserFunc•`‰æƒtƒ‰ƒO
-int	 DESCRIBE::ReDrawBODYFlag;			// BODY•`‰æ1”­–Ú‚ğ¦‚·ƒtƒ‰ƒO
-double DESCRIBE::Tolerance;				// NURBS•`‰æ‘e‚³
+int DESCRIBE::ExecUserFuncFlag[USERFUNCNUMMAX];	// UserFuncæç”»ãƒ•ãƒ©ã‚°
+int	 DESCRIBE::ReDrawBODYFlag;			// BODYæç”»1ç™ºç›®ã‚’ç¤ºã™ãƒ•ãƒ©ã‚°
+double DESCRIBE::Tolerance;				// NURBSæç”»ç²—ã•
 
-// DESCRIBEƒNƒ‰ƒX‚ÌƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// DESCRIBEã‚¯ãƒ©ã‚¹ã®ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 DESCRIBE::DESCRIBE()
 {
-	// ‰Šú‰»
+	// åˆæœŸåŒ–
 	LBtnFlag = GL_FALSE;
 	RBtnFlag = GL_FALSE;
 	MBtnFlag = GL_FALSE;
@@ -97,81 +97,81 @@ DESCRIBE::DESCRIBE()
 	User.SetMenuLabelName();
 }
 
-// DESCRIBEƒNƒ‰ƒX‚ÌƒfƒXƒgƒ‰ƒNƒ^iglutƒCƒxƒ“ƒgƒ‹[ƒv‚ğ”²‚¯‚é‚Æ•K‚¸ŒÄ‚Î‚ê‚éj
+// DESCRIBEã‚¯ãƒ©ã‚¹ã®ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ˆglutã‚¤ãƒ™ãƒ³ãƒˆãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹ã¨å¿…ãšå‘¼ã°ã‚Œã‚‹ï¼‰
 DESCRIBE::~DESCRIBE()
 {
-	int bodynum = BodyList.getNum();				// “Ç‚İ‚ñ‚¾BODY‚Ì”‚ğ“¾‚é
+	int bodynum = BodyList.getNum();				// èª­ã¿è¾¼ã‚“ã BODYã®æ•°ã‚’å¾—ã‚‹
 
 	for(int i=0;i<bodynum;i++){
-		BODY *body = (BODY *)BodyList.getData(i);	// i”Ô–Ú‚ÌBODY‚ğ‘I‘ğ
-		body->DelBodyElem();						// BODY“à‚ÅŠm•Û‚µ‚Ä‚¢‚éƒƒ‚ƒŠ[‚Ì‰ğ•ú
-		delete (BODY *)body;						// BODY©g‚Ìƒƒ‚ƒŠ[‰ğ•ú
+		BODY *body = (BODY *)BodyList.getData(i);	// iç•ªç›®ã®BODYã‚’é¸æŠ
+		body->DelBodyElem();						// BODYå†…ã§ç¢ºä¿ã—ã¦ã„ã‚‹ãƒ¡ãƒ¢ãƒªãƒ¼ã®è§£æ”¾
+		delete (BODY *)body;						// BODYè‡ªèº«ã®ãƒ¡ãƒ¢ãƒªãƒ¼è§£æ”¾
 	}
-	BodyList.clear();		// BODYƒŠƒXƒg©g‚àÁ‹
+	BodyList.clear();		// BODYãƒªã‚¹ãƒˆè‡ªèº«ã‚‚æ¶ˆå»
 }
 
-// OpenGL•`‰æ
+// OpenGLæç”»
 int DESCRIBE::BODY_Describe_Main(int argc,char *argv[])
 {
 	int sub_menu_ID1,sub_menu_ID2;
 
-	// IGESƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚Ş
+	// IGESãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿è¾¼ã‚€
 	OpenFile();
 
-	glutInit(&argc, argv);									// OpenGL‰Šú‰»
-	Init("Kodatuno");										// ƒOƒ‰ƒtƒBƒbƒN‰Šúİ’è(ƒEƒBƒ“ƒhƒE–¼‚ğ“n‚·)
-	glutKeyboardFunc(Keyboard);								// ƒL[ƒCƒxƒ“ƒg‚Ìİ’è
-	glutSpecialFunc(Special);								// “ÁêƒL[ƒCƒxƒ“ƒg‚Ìİ’è
-	glutMouseFunc(Mouse);									// ƒ}ƒEƒXƒCƒxƒ“ƒg‚Ìİ’è
-	glutMotionFunc(Motion);									// ƒ}ƒEƒXƒ‚[ƒVƒ‡ƒ“ƒCƒxƒ“ƒg‚Ìİ’è
-	glutReshapeFunc(Reshape);								// Ä•`‰æƒCƒxƒ“ƒg‚Ìİ’è
-	glutDisplayFunc(Display);								// •`‰æƒRƒA(‚±‚±‚ÅBODY‚ª•`‰æ‚³‚ê‚é)
+	glutInit(&argc, argv);									// OpenGLåˆæœŸåŒ–
+	Init("Kodatuno");										// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯åˆæœŸè¨­å®š(ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦åã‚’æ¸¡ã™)
+	glutKeyboardFunc(Keyboard);								// ã‚­ãƒ¼ã‚¤ãƒ™ãƒ³ãƒˆã®è¨­å®š
+	glutSpecialFunc(Special);								// ç‰¹æ®Šã‚­ãƒ¼ã‚¤ãƒ™ãƒ³ãƒˆã®è¨­å®š
+	glutMouseFunc(Mouse);									// ãƒã‚¦ã‚¹ã‚¤ãƒ™ãƒ³ãƒˆã®è¨­å®š
+	glutMotionFunc(Motion);									// ãƒã‚¦ã‚¹ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ã‚¤ãƒ™ãƒ³ãƒˆã®è¨­å®š
+	glutReshapeFunc(Reshape);								// å†æç”»ã‚¤ãƒ™ãƒ³ãƒˆã®è¨­å®š
+	glutDisplayFunc(Display);								// æç”»ã‚³ã‚¢(ã“ã“ã§BODYãŒæç”»ã•ã‚Œã‚‹)
 
-	sub_menu_ID1 = glutCreateMenu(Sub_Menu_View);			// ‹“_ØŠ·—pƒƒjƒ…[‚ğ“o˜^
-	glutAddMenuEntry("View on x-axis",S_M_XView);			// ‹“_ØŠ·—pƒƒjƒ…[ƒTƒuƒƒjƒ…[
-	glutAddMenuEntry("View on y-axis",S_M_YView);			// ‹“_ØŠ·—pƒƒjƒ…[ƒTƒuƒƒjƒ…[
-	glutAddMenuEntry("View on z-axis",S_M_ZView);			// ‹“_ØŠ·—pƒƒjƒ…[ƒTƒuƒƒjƒ…[
-	sub_menu_ID2 = glutCreateMenu(Sub_Menu_User);			// User©ìŠÖ”‚ğ“o˜^(ƒƒCƒ“1ŒÂ+ƒTƒu5ŒÂ)
-	glutAddMenuEntry(User.GetMenuLabelName(0),M_Label1);	// UserƒTƒuŠÖ”1
-	glutAddMenuEntry(User.GetMenuLabelName(1),M_Label2);	// UserƒTƒuŠÖ”2
-	glutAddMenuEntry(User.GetMenuLabelName(2),M_Label3);	// UserƒTƒuŠÖ”3
-	glutAddMenuEntry(User.GetMenuLabelName(3),M_Label4);	// UserƒTƒuŠÖ”4
-	glutAddMenuEntry(User.GetMenuLabelName(4),M_Label5);	// UserƒTƒuŠÖ”5
-	glutAddMenuEntry(User.GetMenuLabelName(5),M_Label6);	// UserƒTƒuŠÖ”6
-	glutAddMenuEntry(User.GetMenuLabelName(6),M_Label7);	// UserƒTƒuŠÖ”7
-	glutAddMenuEntry(User.GetMenuLabelName(7),M_Label8);	// UserƒTƒuŠÖ”8
-	glutCreateMenu(Menu);									// ƒƒCƒ“ƒƒjƒ…[ƒCƒxƒ“ƒg‚Ìİ’è
-	glutAddSubMenu("Execute User Function",sub_menu_ID2);	// ƒƒjƒ…[“o˜^(UserŠÖ”)
-	glutAddMenuEntry("Selection Cancel",M_UnSelect);		// ƒƒjƒ…[“o˜^(PDT•`‰æ‚ğ‰Šú‰»)
-	glutAddMenuEntry("Draw BODY ON/OFF",M_Draw_Body);		// ƒƒjƒ…[“o˜^(BODY•`‰æ ON/OFFØŠ·)
-	glutAddMenuEntry("Draw Suraface ON/OFF",M_Draw_Surf);	// ƒƒjƒ…[“o˜^(Surface•`‰æ ON/OFFØŠ·)
-	glutAddMenuEntry("Canncel User Func",M_UserFunc_Canncel);	// ƒƒjƒ…[“o˜^(UserŠÖ”‚É‚æ‚Á‚Ä•`‰æ‚³‚ê‚½‰æ‘œ‚ğÁ‚·)
-	glutAddSubMenu("View Angle",sub_menu_ID1);				// ƒƒjƒ…[“o˜^(‹“_ØŠ·)
-	glutAddMenuEntry("Version info",M_Version);				// ƒƒjƒ…[“o˜^(ƒo[ƒWƒ‡ƒ“î•ñ)
-	glutAttachMenu(GLUT_RIGHT_BUTTON);						// ‰Eƒ{ƒ^ƒ“‚Éƒƒjƒ…[‚ğ”z’u
+	sub_menu_ID1 = glutCreateMenu(Sub_Menu_View);			// è¦–ç‚¹åˆ‡æ›ç”¨ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’ç™»éŒ²
+	glutAddMenuEntry("View on x-axis",S_M_XView);			// è¦–ç‚¹åˆ‡æ›ç”¨ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚µãƒ–ãƒ¡ãƒ‹ãƒ¥ãƒ¼
+	glutAddMenuEntry("View on y-axis",S_M_YView);			// è¦–ç‚¹åˆ‡æ›ç”¨ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚µãƒ–ãƒ¡ãƒ‹ãƒ¥ãƒ¼
+	glutAddMenuEntry("View on z-axis",S_M_ZView);			// è¦–ç‚¹åˆ‡æ›ç”¨ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚µãƒ–ãƒ¡ãƒ‹ãƒ¥ãƒ¼
+	sub_menu_ID2 = glutCreateMenu(Sub_Menu_User);			// Userè‡ªä½œé–¢æ•°ã‚’ç™»éŒ²(ãƒ¡ã‚¤ãƒ³1å€‹+ã‚µãƒ–5å€‹)
+	glutAddMenuEntry(User.GetMenuLabelName(0),M_Label1);	// Userã‚µãƒ–é–¢æ•°1
+	glutAddMenuEntry(User.GetMenuLabelName(1),M_Label2);	// Userã‚µãƒ–é–¢æ•°2
+	glutAddMenuEntry(User.GetMenuLabelName(2),M_Label3);	// Userã‚µãƒ–é–¢æ•°3
+	glutAddMenuEntry(User.GetMenuLabelName(3),M_Label4);	// Userã‚µãƒ–é–¢æ•°4
+	glutAddMenuEntry(User.GetMenuLabelName(4),M_Label5);	// Userã‚µãƒ–é–¢æ•°5
+	glutAddMenuEntry(User.GetMenuLabelName(5),M_Label6);	// Userã‚µãƒ–é–¢æ•°6
+	glutAddMenuEntry(User.GetMenuLabelName(6),M_Label7);	// Userã‚µãƒ–é–¢æ•°7
+	glutAddMenuEntry(User.GetMenuLabelName(7),M_Label8);	// Userã‚µãƒ–é–¢æ•°8
+	glutCreateMenu(Menu);									// ãƒ¡ã‚¤ãƒ³ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¤ãƒ™ãƒ³ãƒˆã®è¨­å®š
+	glutAddSubMenu("Execute User Function",sub_menu_ID2);	// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ç™»éŒ²(Useré–¢æ•°)
+	glutAddMenuEntry("Selection Cancel",M_UnSelect);		// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ç™»éŒ²(PDTæç”»ã‚’åˆæœŸåŒ–)
+	glutAddMenuEntry("Draw BODY ON/OFF",M_Draw_Body);		// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ç™»éŒ²(BODYæç”» ON/OFFåˆ‡æ›)
+	glutAddMenuEntry("Draw Suraface ON/OFF",M_Draw_Surf);	// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ç™»éŒ²(Surfaceæç”» ON/OFFåˆ‡æ›)
+	glutAddMenuEntry("Canncel User Func",M_UserFunc_Canncel);	// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ç™»éŒ²(Useré–¢æ•°ã«ã‚ˆã£ã¦æç”»ã•ã‚ŒãŸç”»åƒã‚’æ¶ˆã™)
+	glutAddSubMenu("View Angle",sub_menu_ID1);				// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ç™»éŒ²(è¦–ç‚¹åˆ‡æ›)
+	glutAddMenuEntry("Version info",M_Version);				// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ç™»éŒ²(ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±)
+	glutAttachMenu(GLUT_RIGHT_BUTTON);						// å³ãƒœã‚¿ãƒ³ã«ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’é…ç½®
 
-	glutMainLoop();											// ƒCƒxƒ“ƒg‘Ò‚¿ƒ‹[ƒv
+	glutMainLoop();											// ã‚¤ãƒ™ãƒ³ãƒˆå¾…ã¡ãƒ«ãƒ¼ãƒ—
 
-	// ƒCƒxƒ“ƒgƒ‹[ƒv‚ğ”²‚¯‚é‚ÆAKODatuno::~KODatUNO‚ªŒÄ‚Î‚ê‚é
+	// ã‚¤ãƒ™ãƒ³ãƒˆãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹ã¨ã€KODatuno::~KODatUNOãŒå‘¼ã°ã‚Œã‚‹
 
 	return KOD_TRUE;
 }
 
-// ƒƒCƒ“ƒƒjƒ…[‚ÌƒCƒxƒ“ƒg‚ğ“o˜^
+// ãƒ¡ã‚¤ãƒ³ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®ã‚¤ãƒ™ãƒ³ãƒˆã‚’ç™»éŒ²
 void DESCRIBE::Menu(int val)
 {
 	switch(val){
-		// ƒo[ƒWƒ‡ƒ“î•ñ
+		// ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±
 		case M_Version:
 			VersionInfo();
 			break;
 
-		// ƒZƒŒƒNƒVƒ‡ƒ“‰ğœ
+		// ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³è§£é™¤
 		case M_UnSelect:
 			SelectionCanncel();
 			break;
 
-		// Surface•`‰æ‚ÌON/OFF
+		// Surfaceæç”»ã®ON/OFF
 		case M_Draw_Surf:
 			DrawSurfFlagCount = 1 - DrawSurfFlagCount;
 			if(DrawSurfFlagCount)
@@ -181,7 +181,7 @@ void DESCRIBE::Menu(int val)
 			UpDateDisplayList(KOD_FALSE);
 			break;
 
-		// BODY•`‰æ‚ÌON/OFF	
+		// BODYæç”»ã®ON/OFF	
 		case M_Draw_Body:
 			DrawBODYFlagCount = 1 - DrawBODYFlagCount;
 			if(DrawBODYFlagCount)
@@ -190,7 +190,7 @@ void DESCRIBE::Menu(int val)
 				DrawBODYFlag =KOD_TRUE;
 			break;
 
-		// UserŠÖ”‚É‚æ‚Á‚Ä•`‰æ‚³‚ê‚½ŠG‚ğÁ‚·
+		// Useré–¢æ•°ã«ã‚ˆã£ã¦æç”»ã•ã‚ŒãŸçµµã‚’æ¶ˆã™
 		case M_UserFunc_Canncel:
 			UserViewCanncel();
 			break;
@@ -200,59 +200,59 @@ void DESCRIBE::Menu(int val)
 }
 
 
-// UserŠÖ”‚ğmenu‚É“o˜^
+// Useré–¢æ•°ã‚’menuã«ç™»éŒ²
 void DESCRIBE::Sub_Menu_User(int val)
 {
 	for(int i=0;i<USERFUNCNUMMAX;i++){
 		if(i == val){
-			AddEntSymbolToObj();				// OBJECT\‘¢‘Ì‚É‰½”Ô–Ú‚Ì‹Èüor‹È–Ê‚©‚Ìî•ñ‚ğ•t‰Á‚·‚é
-			ExecUserFuncFlag[i] = KOD_TRUE;		// UserŠÖ”Àsƒtƒ‰ƒOON
+			AddEntSymbolToObj();				// OBJECTæ§‹é€ ä½“ã«ä½•ç•ªç›®ã®æ›²ç·šoræ›²é¢ã‹ã®æƒ…å ±ã‚’ä»˜åŠ ã™ã‚‹
+			ExecUserFuncFlag[i] = KOD_TRUE;		// Useré–¢æ•°å®Ÿè¡Œãƒ•ãƒ©ã‚°ON
 			return;
 		}
 	}
 }
 
-// UserFuncÀs‚ÌÄ•`‰æŒÄ‚Ño‚µ(OpenGL•`‰æƒ‹[ƒv“à)
+// UserFuncå®Ÿè¡Œæ™‚ã®å†æç”»å‘¼ã³å‡ºã—(OpenGLæç”»ãƒ«ãƒ¼ãƒ—å†…)
 void DESCRIBE::ReDrawUserFunc()
 {
 	for(int i=0;i<USERFUNCNUMMAX;i++){
 		if(ExecUserFuncFlag[i] == KOD_TRUE){
 			ExecUserFuncFlag[i]  = KOD_DONE;
-			glNewList(COMMAND_DRAW_USER+i,GL_COMPILE_AND_EXECUTE);		// UserŠÖ”i‚ğƒƒ‚ƒŠ[ƒŠƒXƒg‚É“o˜^
+			glNewList(COMMAND_DRAW_USER+i,GL_COMPILE_AND_EXECUTE);		// Useré–¢æ•°iã‚’ãƒ¡ãƒ¢ãƒªãƒ¼ãƒªã‚¹ãƒˆã«ç™»éŒ²
 			int (USER::*userfn)(BODYList *,OBJECTList *,int);	
 			userfn = User.UserFunc[i];
-			ExecUserFuncFlag[i] = (User.*userfn)(&BodyList,&SeldEntList,SeldEntList.getNum());		// UserŠÖ”i‚ğÀs()
+			ExecUserFuncFlag[i] = (User.*userfn)(&BodyList,&SeldEntList,SeldEntList.getNum());		// Useré–¢æ•°iã‚’å®Ÿè¡Œ()
 			if(ExecUserFuncFlag[i]  != KOD_FALSE && ExecUserFuncFlag[i]  != KOD_ERR){
 				ExecUserFuncFlag[i]  = KOD_DONE;
 			}
-			glEndList();												// ƒƒ‚ƒŠ[ƒŠƒXƒg“o˜^I—¹
-			ReDrawBODYFlag = KOD_FALSE;		// BODY•`‰æƒƒ‚ƒŠƒŠƒXƒgÄİ’èƒtƒ‰ƒOON
+			glEndList();												// ãƒ¡ãƒ¢ãƒªãƒ¼ãƒªã‚¹ãƒˆç™»éŒ²çµ‚äº†
+			ReDrawBODYFlag = KOD_FALSE;		// BODYæç”»ãƒ¡ãƒ¢ãƒªãƒªã‚¹ãƒˆå†è¨­å®šãƒ•ãƒ©ã‚°ON
 		}
 	}
 
-	// ì¬‚µ‚½UserŠÖ”‚Ìƒƒ‚ƒŠ[ƒŠƒXƒg‚ğŒÄ‚Ño‚·
+	// ä½œæˆã—ãŸUseré–¢æ•°ã®ãƒ¡ãƒ¢ãƒªãƒ¼ãƒªã‚¹ãƒˆã‚’å‘¼ã³å‡ºã™
 	for(int i=0;i<USERFUNCNUMMAX;i++){
-		if(ExecUserFuncFlag[i] == KOD_DONE){			// UserŠÖ”iÀsÏ‚İƒtƒ‰ƒO‚ªON‚È‚ç
-			glCallList(COMMAND_DRAW_USER+i);			// UserŠÖ”i‚Ìƒƒ‚ƒŠ[ƒŠƒXƒg‚ğŒÄ‚Ño‚·(UserŠÖ”i“à‚ÅŒÄ‚Ño‚³‚ê‚½OpenGL•`‰æ‚ğÀs)
+		if(ExecUserFuncFlag[i] == KOD_DONE){			// Useré–¢æ•°iå®Ÿè¡Œæ¸ˆã¿ãƒ•ãƒ©ã‚°ãŒONãªã‚‰
+			glCallList(COMMAND_DRAW_USER+i);			// Useré–¢æ•°iã®ãƒ¡ãƒ¢ãƒªãƒ¼ãƒªã‚¹ãƒˆã‚’å‘¼ã³å‡ºã™(Useré–¢æ•°iå†…ã§å‘¼ã³å‡ºã•ã‚ŒãŸOpenGLæç”»ã‚’å®Ÿè¡Œ)
 		}
 	}
 
 	glutPostRedisplay();
 }
 
-// ‹“_ØŠ·
+// è¦–ç‚¹åˆ‡æ›
 void DESCRIBE::Sub_Menu_View(int val)
 {
 	switch(val){
 		// X-View
 		case S_M_XView:
-			StartQ = QFunc.QInit(1,0,0,0);		// ¡‚Ì‰ñ“]Špî•ñ‚ğ‰Šú‰»
-			QFunc.QtoR(RotMx,StartQ);			// ¡‚Ì‰ñ“]Špî•ñ‚ğ‰Šú‰»
-			TargetQ = QFunc.QMult(QFunc.QGenRot(PI/2,0,0,1), StartQ);	// ƒNƒH[ƒ^ƒjƒIƒ“ã‚Å‰ŠúˆÊ’u‚É‘Î‚µ‚ÄZ²‰ñ‚è‚É90‹‰ñ“]
-			QFunc.QtoR(RotMx,TargetQ);			// ‰ñ“]s—ñ‚É‘ã“ü
+			StartQ = QFunc.QInit(1,0,0,0);		// ä»Šã®å›è»¢è§’æƒ…å ±ã‚’åˆæœŸåŒ–
+			QFunc.QtoR(RotMx,StartQ);			// ä»Šã®å›è»¢è§’æƒ…å ±ã‚’åˆæœŸåŒ–
+			TargetQ = QFunc.QMult(QFunc.QGenRot(PI/2,0,0,1), StartQ);	// ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ä¸Šã§åˆæœŸä½ç½®ã«å¯¾ã—ã¦Zè»¸å›ã‚Šã«90Â°å›è»¢
+			QFunc.QtoR(RotMx,TargetQ);			// å›è»¢è¡Œåˆ—ã«ä»£å…¥
 			StartQ = QFunc.QCopy(TargetQ);
-			ModelScale = ModelScale1st;			// ƒXƒP[ƒ‹‰Šú‰»
-			Trl[0] = Trl[1] = Trl[2] = 0;		// •½sˆÚ“®—Ê‰Šú‰»
+			ModelScale = ModelScale1st;			// ã‚¹ã‚±ãƒ¼ãƒ«åˆæœŸåŒ–
+			Trl[0] = Trl[1] = Trl[2] = 0;		// å¹³è¡Œç§»å‹•é‡åˆæœŸåŒ–
 			break;
 		// Y-View
 		case S_M_YView:
@@ -265,7 +265,7 @@ void DESCRIBE::Sub_Menu_View(int val)
 		case S_M_ZView:
 			StartQ = QFunc.QInit(1,0,0,0);
 			QFunc.QtoR(RotMx,StartQ);
-			TargetQ = QFunc.QMult(QFunc.QGenRot(PI/2,1,0,0), StartQ);	// ƒNƒH[ƒ^ƒjƒIƒ“ã‚Å‰ŠúˆÊ’u‚É‘Î‚µ‚ÄX²‰ñ‚è‚É90‹‰ñ“]
+			TargetQ = QFunc.QMult(QFunc.QGenRot(PI/2,1,0,0), StartQ);	// ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ä¸Šã§åˆæœŸä½ç½®ã«å¯¾ã—ã¦Xè»¸å›ã‚Šã«90Â°å›è»¢
 			QFunc.QtoR(RotMx,TargetQ);	
 			StartQ = QFunc.QCopy(TargetQ);
 			ModelScale = ModelScale1st;
@@ -275,83 +275,83 @@ void DESCRIBE::Sub_Menu_View(int val)
 	glutPostRedisplay();
 }
 
-// •`‰æƒRƒA
+// æç”»ã‚³ã‚¢
 void DESCRIBE::Display()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glMatrixMode(GL_MODELVIEW);						// ƒ‚ƒfƒ‹ƒrƒ…[s—ñ
+	glMatrixMode(GL_MODELVIEW);						// ãƒ¢ãƒ‡ãƒ«ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—
 
-	glLoadIdentity();								// ƒ‚ƒfƒ‹ƒrƒ…[s—ñ‚Ìæ“ª‚É’PˆÊs—ñ‚ğ‘}“ü
+	glLoadIdentity();								// ãƒ¢ãƒ‡ãƒ«ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—ã®å…ˆé ­ã«å˜ä½è¡Œåˆ—ã‚’æŒ¿å…¥
 
-	gluLookAt(0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0);		// ‹“_‚ğİ’è
+	gluLookAt(0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0);		// è¦–ç‚¹ã‚’è¨­å®š
 
-	glScaled(ModelScale,ModelScale,ModelScale);		// ƒ‚ƒfƒ‹ƒXƒP[ƒ‹‚ğİ’è
+	glScaled(ModelScale,ModelScale,ModelScale);		// ãƒ¢ãƒ‡ãƒ«ã‚¹ã‚±ãƒ¼ãƒ«ã‚’è¨­å®š
 
-	glTranslatef(Trl[0],Trl[1],Trl[2]);				// À•WŒn‚ğ•½sˆÚ“®‚·‚é
+	glTranslatef(Trl[0],Trl[1],Trl[2]);				// åº§æ¨™ç³»ã‚’å¹³è¡Œç§»å‹•ã™ã‚‹
 	
-	glMultMatrixd(RotMx);							// ƒ‚ƒfƒ‹ƒrƒ…[s—ñ‚É•ÏX‚³‚ê‚½‰ñ“]s—ñ‚ğ‚©‚¯‚Ä‚¢‚­
+	glMultMatrixd(RotMx);							// ãƒ¢ãƒ‡ãƒ«ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—ã«å¤‰æ›´ã•ã‚ŒãŸå›è»¢è¡Œåˆ—ã‚’ã‹ã‘ã¦ã„ã
 
-	glDrawAxis(AxisScale,ModelScale);				// À•W²‚ğ•`‰æ
+	glDrawAxis(AxisScale,ModelScale);				// åº§æ¨™è»¸ã‚’æç”»
 
-	// BODY•`‰æƒtƒ‰ƒO‚ªON‚È‚ç•`‰æ
+	// BODYæç”»ãƒ•ãƒ©ã‚°ãŒONãªã‚‰æç”»
 	if(DrawBODYFlag ==KOD_TRUE){
-		if(ReDrawBODYFlag == KOD_FALSE){									// ˆê”Ô‰‰ñ‚Ì‚İƒfƒBƒXƒvƒŒƒCƒŠƒXƒg‚ÉBODY‚ğ“o˜^
+		if(ReDrawBODYFlag == KOD_FALSE){									// ä¸€ç•ªåˆå›ã®ã¿ãƒ‡ã‚£ã‚¹ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã«BODYã‚’ç™»éŒ²
 			SetNurbsSTolerance(Tolerance);
-			glNewList(COMMAND_DRAW_BODY,GL_COMPILE_AND_EXECUTE);	// glDrawBODY()‚ğƒRƒ}ƒ“ƒh‚Æ‚µ‚Äƒƒ‚ƒŠ[‚É•Û‘¶(ƒZƒŒƒNƒVƒ‡ƒ“ˆ—‚Ì‚‘¬‰»)
-			glDrawBODY();											// IGESƒf[ƒ^‚ğ•`‰æ
+			glNewList(COMMAND_DRAW_BODY,GL_COMPILE_AND_EXECUTE);	// glDrawBODY()ã‚’ã‚³ãƒãƒ³ãƒ‰ã¨ã—ã¦ãƒ¡ãƒ¢ãƒªãƒ¼ã«ä¿å­˜(ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³å‡¦ç†ã®é«˜é€ŸåŒ–)
+			glDrawBODY();											// IGESãƒ‡ãƒ¼ã‚¿ã‚’æç”»
 			glEndList();
 			ReDrawBODYFlag =KOD_TRUE;
 		}
 		else{
-			glCallList(COMMAND_DRAW_BODY);			// 2‰ñ–ÚˆÈ~‚Ì•`‰æŒÄ‚Ño‚µ‚ÍƒfƒBƒXƒvƒŒƒCƒŠƒXƒg‚ğŒÄ‚Ño‚·
+			glCallList(COMMAND_DRAW_BODY);			// 2å›ç›®ä»¥é™ã®æç”»å‘¼ã³å‡ºã—ã¯ãƒ‡ã‚£ã‚¹ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã‚’å‘¼ã³å‡ºã™
 		}
 	}
 
-	// UserFunc‚É‚æ‚Á‚Ä¶¬‚³‚ê‚½•`‰æw—ß‚ğÀs
+	// UserFuncã«ã‚ˆã£ã¦ç”Ÿæˆã•ã‚ŒãŸæç”»æŒ‡ä»¤ã‚’å®Ÿè¡Œ
 	if(DrawUserFuncFlag ==KOD_TRUE)
 		glCallList(COMMAND_DRAW_USER);
 
-	// ƒXƒC[ƒvƒZƒŒƒNƒVƒ‡ƒ“ƒtƒ‰ƒO‚ªON‚È‚ç•`‰æ
+	// ã‚¹ã‚¤ãƒ¼ãƒ—ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ãƒ•ãƒ©ã‚°ãŒONãªã‚‰æç”»
 	if(SweepSelectFlag == GL_TRUE){
-		glMatrixMode(GL_PROJECTION);				// “Š‰e•ÏŠ·s—ñƒXƒ^ƒbƒN‚ğ‘I‘ğ
-		glPushMatrix();								// Œ»İ‚ÌÀ•WŒn‚ğ•Û‘¶
-		glLoadIdentity();							// “Š‰e•ÏŠ·s—ñƒXƒ^ƒbƒN‚Ìæ“ª‚É’PˆÊs—ñ‚ğ‘}“ü
-		gluOrtho2D(0,ScreenWidth,ScreenHeight,0); 	// ‹“_‚ğİ’è(ƒ‰ƒo[ƒoƒ“ƒh‚ğ³‚µ‚¢ˆÊ’u‚É•\¦‚³‚¹‚é‚½‚ß)
+		glMatrixMode(GL_PROJECTION);				// æŠ•å½±å¤‰æ›è¡Œåˆ—ã‚¹ã‚¿ãƒƒã‚¯ã‚’é¸æŠ
+		glPushMatrix();								// ç¾åœ¨ã®åº§æ¨™ç³»ã‚’ä¿å­˜
+		glLoadIdentity();							// æŠ•å½±å¤‰æ›è¡Œåˆ—ã‚¹ã‚¿ãƒƒã‚¯ã®å…ˆé ­ã«å˜ä½è¡Œåˆ—ã‚’æŒ¿å…¥
+		gluOrtho2D(0,ScreenWidth,ScreenHeight,0); 	// è¦–ç‚¹ã‚’è¨­å®š(ãƒ©ãƒãƒ¼ãƒãƒ³ãƒ‰ã‚’æ­£ã—ã„ä½ç½®ã«è¡¨ç¤ºã•ã›ã‚‹ãŸã‚)
 
-		glMatrixMode(GL_MODELVIEW);					// ƒ‚ƒfƒ‹ƒrƒ…[s—ñ
-		glPushMatrix();								// Œ»İ‚ÌÀ•WŒn‚ğ•Û‘¶
-		glLoadIdentity();							// ƒ‚ƒfƒ‹ƒrƒ…[s—ñ‚Ìæ“ª‚É’PˆÊs—ñ‚ğ‘}“ü
+		glMatrixMode(GL_MODELVIEW);					// ãƒ¢ãƒ‡ãƒ«ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—
+		glPushMatrix();								// ç¾åœ¨ã®åº§æ¨™ç³»ã‚’ä¿å­˜
+		glLoadIdentity();							// ãƒ¢ãƒ‡ãƒ«ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—ã®å…ˆé ­ã«å˜ä½è¡Œåˆ—ã‚’æŒ¿å…¥
 		
-		glDrawRubberband(StartX,StartY,CurrentX,CurrentY);		// ƒ‰ƒo[ƒoƒ“ƒh‚ğ•`‰æ
+		glDrawRubberband(StartX,StartY,CurrentX,CurrentY);		// ãƒ©ãƒãƒ¼ãƒãƒ³ãƒ‰ã‚’æç”»
 
-		// À•WŒn‚ğŒ³‚É–ß‚·
+		// åº§æ¨™ç³»ã‚’å…ƒã«æˆ»ã™
 		glMatrixMode(GL_MODELVIEW);
 		glPopMatrix();
 		glMatrixMode(GL_PROJECTION);
 		glPopMatrix();
 	}
 
-	ReDrawUserFunc();				// UserŠÖ”‚É‚æ‚é•`‰æw—ß‚ğÀs
+	ReDrawUserFunc();				// Useré–¢æ•°ã«ã‚ˆã‚‹æç”»æŒ‡ä»¤ã‚’å®Ÿè¡Œ
 
 	glutSwapBuffers();
 }
 
-// ƒEƒCƒ“ƒhƒE‚ÌÄì¬
+// ã‚¦ã‚¤ãƒ³ãƒ‰ã‚¦ã®å†ä½œæˆ
 void DESCRIBE::Reshape(int width, int height)
 {
 	double ratio;
 	double a=2;
 
-	ScreenWidth = width;			// •ÏX‚³‚ê‚½ƒXƒNƒŠ[ƒ“‚Ì•‚ğ“¾‚é
-	ScreenHeight = height;			// •ÏX‚³‚ê‚½ƒXƒNƒŠ[ƒ“‚Ì‚‚³‚ğ“¾‚é
+	ScreenWidth = width;			// å¤‰æ›´ã•ã‚ŒãŸã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã®å¹…ã‚’å¾—ã‚‹
+	ScreenHeight = height;			// å¤‰æ›´ã•ã‚ŒãŸã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã®é«˜ã•ã‚’å¾—ã‚‹
 
 	glViewport(0,0,width,height);
 
-	glMatrixMode(GL_PROJECTION);	// “Š‰e•ÏŠ·s—ñƒXƒ^ƒbƒN‚ğ‘I‘ğ
-	glLoadIdentity();				// “Š‰e•ÏŠ·s—ñƒXƒ^ƒbƒN‚Ìæ“ª‚É’PˆÊs—ñ‚ğ‘}“ü
+	glMatrixMode(GL_PROJECTION);	// æŠ•å½±å¤‰æ›è¡Œåˆ—ã‚¹ã‚¿ãƒƒã‚¯ã‚’é¸æŠ
+	glLoadIdentity();				// æŠ•å½±å¤‰æ›è¡Œåˆ—ã‚¹ã‚¿ãƒƒã‚¯ã®å…ˆé ­ã«å˜ä½è¡Œåˆ—ã‚’æŒ¿å…¥
 
-	// •½s“Š‰e‚ğİ’è(ƒAƒXƒyƒNƒg”ä‚É‚æ‚Á‚Äƒ‚ƒfƒ‹‚Ìc‰¡”ä‚ª•Ï‚í‚ç‚È‚¢‚æ‚¤‚Éˆ—‚ğ•ª‚¯‚é)
+	// å¹³è¡ŒæŠ•å½±ã‚’è¨­å®š(ã‚¢ã‚¹ãƒšã‚¯ãƒˆæ¯”ã«ã‚ˆã£ã¦ãƒ¢ãƒ‡ãƒ«ã®ç¸¦æ¨ªæ¯”ãŒå¤‰ã‚ã‚‰ãªã„ã‚ˆã†ã«å‡¦ç†ã‚’åˆ†ã‘ã‚‹)
 	if(width <= height){
 		ratio = (double)height/(double)width;
 		glOrtho(-a*ratio,a*ratio,-a,a,-100000,100000);
@@ -361,13 +361,13 @@ void DESCRIBE::Reshape(int width, int height)
 		glOrtho(-a*ratio,a*ratio,-a,a,-100000,100000);
 	}
 
-	glMatrixMode(GL_MODELVIEW);		// ƒ‚ƒfƒ‹ƒrƒ…[s—ñƒXƒ^ƒbƒN‚ğ‘I‘ğ
+	glMatrixMode(GL_MODELVIEW);		// ãƒ¢ãƒ‡ãƒ«ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—ã‚¹ã‚¿ãƒƒã‚¯ã‚’é¸æŠ
 
 	ReDrawBODYFlag = KOD_FALSE;
 
 }
 
-// ƒOƒ‰ƒtƒBƒbƒN‚Ì‰Šúİ’è
+// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã®åˆæœŸè¨­å®š
 void DESCRIBE::Init(char *progname)
 {
 	GLfloat diffuse[] = { 0.9, 0.9, 0.9, 1.0 };
@@ -379,17 +379,17 @@ void DESCRIBE::Init(char *progname)
 	GLfloat mat_ambient[] = { 0.2, 0.2, 0.2, 1.0 };
 
 	glutInitDisplayMode( GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH );
-	glutInitWindowSize(ScreenWidth, ScreenHeight);		// ƒEƒBƒ“ƒhƒEƒTƒCƒY
-	glutInitWindowPosition(200, 200);					// ƒEƒBƒ“ƒhƒEˆÊ’u
-	glutCreateWindow(progname);							// ƒEƒBƒ“ƒhƒE¶¬
-	glClearColor( 0.0, 0.0, 0.0, 1.0 );					// ”wŒiF
+	glutInitWindowSize(ScreenWidth, ScreenHeight);		// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚º
+	glutInitWindowPosition(200, 200);					// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ä½ç½®
+	glutCreateWindow(progname);							// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ç”Ÿæˆ
+	glClearColor( 0.0, 0.0, 0.0, 1.0 );					// èƒŒæ™¯è‰²
 
-	// Œõ‚Ìİ’è
+	// å…‰ã®è¨­å®š
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
 	glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
 
-	// ƒ}ƒeƒŠƒAƒ‹‚Ìİ’è
+	// ãƒãƒ†ãƒªã‚¢ãƒ«ã®è¨­å®š
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
 	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
 	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
@@ -406,18 +406,18 @@ void DESCRIBE::Init(char *progname)
 	glEnable(GL_LINE_SMOOTH);
 	glEnable(GL_POLYGON_SMOOTH);
 
-	QFunc.QtoR(RotMx,StartQ);		// ‰ñ“]s—ñ‚Ì‰Šú‰»
+	QFunc.QtoR(RotMx,StartQ);		// å›è»¢è¡Œåˆ—ã®åˆæœŸåŒ–
 }
 
-// ƒL[ƒCƒxƒ“ƒg‚Ìİ’è
+// ã‚­ãƒ¼ã‚¤ãƒ™ãƒ³ãƒˆã®è¨­å®š
 void DESCRIBE::Keyboard(unsigned char key, int x, int y)
 {
-	if(key == 27){		// ESCƒL[‚ÅI—¹
+	if(key == 27){		// ESCã‚­ãƒ¼ã§çµ‚äº†
 		exit(0);
 	}
 }
 
-// ƒZƒŒƒNƒVƒ‡ƒ“(ƒ}ƒEƒXƒsƒbƒLƒ“ƒO)‚Ìİ’è
+// ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³(ãƒã‚¦ã‚¹ãƒ”ãƒƒã‚­ãƒ³ã‚°)ã®è¨­å®š
 void DESCRIBE::DoSelect(int x,int y)
 {
 	int hits;
@@ -425,21 +425,21 @@ void DESCRIBE::DoSelect(int x,int y)
 	double a=2;
 
 	glGetIntegerv(GL_VIEWPORT,Vp);
-	glSelectBuffer(MAXSELECT, SelectBuf);	// ƒZƒŒƒNƒVƒ‡ƒ“‚³‚ê‚½ƒIƒuƒWƒFƒNƒg‚Ìî•ñ‚ğ“ü‚ê‚Ä‚¨‚­ƒoƒbƒtƒ@‚ğ—pˆÓ
-	glRenderMode(GL_SELECT);				// ƒZƒŒƒNƒVƒ‡ƒ“ƒ‚[ƒh‚ÉˆÚs
-	glInitNames();							// ƒIƒuƒWƒFƒNƒg‚É‚Â‚¯‚é–¼‘O(®”’l)‚ğ“o˜^‚µ‚Ä‚¨‚­ƒl[ƒ€ƒXƒ^ƒbƒN‚ğ‰Šú‰»
+	glSelectBuffer(MAXSELECT, SelectBuf);	// ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚ŒãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®æƒ…å ±ã‚’å…¥ã‚Œã¦ãŠããƒãƒƒãƒ•ã‚¡ã‚’ç”¨æ„
+	glRenderMode(GL_SELECT);				// ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ãƒ¢ãƒ¼ãƒ‰ã«ç§»è¡Œ
+	glInitNames();							// ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«ã¤ã‘ã‚‹åå‰(æ•´æ•°å€¤)ã‚’ç™»éŒ²ã—ã¦ãŠããƒãƒ¼ãƒ ã‚¹ã‚¿ãƒƒã‚¯ã‚’åˆæœŸåŒ–
 
-	glMatrixMode(GL_PROJECTION);			// Ë‰e•ÏŠ·ƒ‚[ƒh
-	glPushMatrix();							// ‚±‚ê‚Ü‚Å‚Ì•ÏŠ·ƒ}ƒgƒŠƒbƒNƒX‚ğ•Û‘¶
-	glLoadIdentity();						// Ë‰e•ÏŠ·ƒ}ƒgƒŠƒbƒNƒX‚ğ‰Šú‰»
+	glMatrixMode(GL_PROJECTION);			// å°„å½±å¤‰æ›ãƒ¢ãƒ¼ãƒ‰
+	glPushMatrix();							// ã“ã‚Œã¾ã§ã®å¤‰æ›ãƒãƒˆãƒªãƒƒã‚¯ã‚¹ã‚’ä¿å­˜
+	glLoadIdentity();						// å°„å½±å¤‰æ›ãƒãƒˆãƒªãƒƒã‚¯ã‚¹ã‚’åˆæœŸåŒ–
 
-	// ’Êí‚ÌƒZƒŒƒNƒVƒ‡ƒ“‚Ìê‡
+	// é€šå¸¸ã®ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã®å ´åˆ
 	if(StartX == x && StartY == y){
-		gluPickMatrix((GLdouble)x,(GLdouble)(Vp[3] - y),5.0,5.0,Vp);	// •\¦—Ìˆæ‚ªƒ}ƒEƒXƒ|ƒCƒ“ƒ^‚ÌüˆÍ‚¾‚¯‚É‚È‚é‚æ‚¤‚ÉË‰e•ÏŠ·s—ñ‚ğİ’è
+		gluPickMatrix((GLdouble)x,(GLdouble)(Vp[3] - y),5.0,5.0,Vp);	// è¡¨ç¤ºé ˜åŸŸãŒãƒã‚¦ã‚¹ãƒã‚¤ãƒ³ã‚¿ã®å‘¨å›²ã ã‘ã«ãªã‚‹ã‚ˆã†ã«å°„å½±å¤‰æ›è¡Œåˆ—ã‚’è¨­å®š
 	}
-	// ƒXƒC[ƒvƒZƒŒƒNƒVƒ‡ƒ“‚Ìê‡
+	// ã‚¹ã‚¤ãƒ¼ãƒ—ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã®å ´åˆ
 	else{
-		gluPickMatrix((GLdouble)((StartX+x)/2),(GLdouble)((Vp[3]*2-y-StartY)/2),fabs((double)(x-StartX)),fabs((double)(StartY-y)),Vp);	// •\¦—Ìˆæ‚ªƒ‰ƒo[ƒoƒ“ƒh“à‚É‚È‚é‚æ‚¤‚ÉË‰e•ÏŠ·s—ñ‚ğİ’è
+		gluPickMatrix((GLdouble)((StartX+x)/2),(GLdouble)((Vp[3]*2-y-StartY)/2),fabs((double)(x-StartX)),fabs((double)(StartY-y)),Vp);	// è¡¨ç¤ºé ˜åŸŸãŒãƒ©ãƒãƒ¼ãƒãƒ³ãƒ‰å†…ã«ãªã‚‹ã‚ˆã†ã«å°„å½±å¤‰æ›è¡Œåˆ—ã‚’è¨­å®š
 	}
 
 	if(Vp[2] <= Vp[3]){
@@ -451,35 +451,35 @@ void DESCRIBE::DoSelect(int x,int y)
 		glOrtho(-a*ratio,a*ratio,-a,a,-100000,100000);
 	}
 
-	glMatrixMode(GL_MODELVIEW);					// ƒ‚ƒfƒ‹•ÏŠ·ƒ‚[ƒh‚ÉˆÚs
-	glLoadIdentity();							// ƒ‚ƒfƒ‹ƒrƒ…[s—ñ‚Ìæ“ª‚É’PˆÊs—ñ‚ğ‘}“ü
-	gluLookAt(0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0);	// ‹“_‚ğİ’è
-	glScaled(ModelScale,ModelScale,ModelScale);	// ƒ‚ƒfƒ‹ƒXƒP[ƒ‹‚ğİ’è
-	glTranslatef(Trl[0],Trl[1],Trl[2]);			// À•WŒn‚ğ•½sˆÚ“®‚·‚é
-	glMultMatrixd(RotMx);						// ƒ‚ƒfƒ‹ƒrƒ…[s—ñ‚É•ÏX‚³‚ê‚½‰ñ“]s—ñ‚ğ‚©‚¯‚Ä‚¢‚­
-	if(DrawBODYFlag ==KOD_TRUE)					// BODY•`‰æƒtƒ‰ƒO‚ªON‚È‚ç
-		glCallList(COMMAND_DRAW_BODY);			// ŠeƒGƒ“ƒeƒBƒeƒB‚ÅŠK‘w‰»‚³‚ê‚½ƒZƒŒƒNƒVƒ‡ƒ“—p”Ô†‚ğ“¾‚é(‚ ‚ç‚©‚¶‚ß“o˜^‚µ‚Ä‚¨‚¢‚½ƒRƒ}ƒ“ƒh‚ğÀs)
-	glMatrixMode(GL_PROJECTION);				// Ë‰e•ÏŠ·ƒ‚[ƒh‚É–ß‚é
-	glPopMatrix();								// Ë‰e•ÏŠ·ƒ}ƒgƒŠƒNƒX‚ğŒ³‚É–ß‚·
-	hits = glRenderMode(GL_RENDER);				// ƒZƒŒƒNƒVƒ‡ƒ“ƒ‚[ƒhI—¹AƒŒƒ“ƒ_ƒŠƒ“ƒOƒ‚[ƒh‚É–ß‚é
+	glMatrixMode(GL_MODELVIEW);					// ãƒ¢ãƒ‡ãƒ«å¤‰æ›ãƒ¢ãƒ¼ãƒ‰ã«ç§»è¡Œ
+	glLoadIdentity();							// ãƒ¢ãƒ‡ãƒ«ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—ã®å…ˆé ­ã«å˜ä½è¡Œåˆ—ã‚’æŒ¿å…¥
+	gluLookAt(0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0);	// è¦–ç‚¹ã‚’è¨­å®š
+	glScaled(ModelScale,ModelScale,ModelScale);	// ãƒ¢ãƒ‡ãƒ«ã‚¹ã‚±ãƒ¼ãƒ«ã‚’è¨­å®š
+	glTranslatef(Trl[0],Trl[1],Trl[2]);			// åº§æ¨™ç³»ã‚’å¹³è¡Œç§»å‹•ã™ã‚‹
+	glMultMatrixd(RotMx);						// ãƒ¢ãƒ‡ãƒ«ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—ã«å¤‰æ›´ã•ã‚ŒãŸå›è»¢è¡Œåˆ—ã‚’ã‹ã‘ã¦ã„ã
+	if(DrawBODYFlag ==KOD_TRUE)					// BODYæç”»ãƒ•ãƒ©ã‚°ãŒONãªã‚‰
+		glCallList(COMMAND_DRAW_BODY);			// å„ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã§éšå±¤åŒ–ã•ã‚ŒãŸã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ç”¨ç•ªå·ã‚’å¾—ã‚‹(ã‚ã‚‰ã‹ã˜ã‚ç™»éŒ²ã—ã¦ãŠã„ãŸã‚³ãƒãƒ³ãƒ‰ã‚’å®Ÿè¡Œ)
+	glMatrixMode(GL_PROJECTION);				// å°„å½±å¤‰æ›ãƒ¢ãƒ¼ãƒ‰ã«æˆ»ã‚‹
+	glPopMatrix();								// å°„å½±å¤‰æ›ãƒãƒˆãƒªã‚¯ã‚¹ã‚’å…ƒã«æˆ»ã™
+	hits = glRenderMode(GL_RENDER);				// ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ãƒ¢ãƒ¼ãƒ‰çµ‚äº†ã€ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ãƒ¢ãƒ¼ãƒ‰ã«æˆ»ã‚‹
 
-	if(StartX == x && StartY == y)				// ƒNƒŠƒbƒN‚Å‘I‘ğ‚µ‚½ê‡
+	if(StartX == x && StartY == y)				// ã‚¯ãƒªãƒƒã‚¯ã§é¸æŠã—ãŸå ´åˆ
 		ClickPicking(SelectBuf,hits);
 	else
-		DragPicking(SelectBuf,hits);			// ƒhƒ‰ƒbƒO‚Å‘I‘ğ‚µ‚½ê‡
+		DragPicking(SelectBuf,hits);			// ãƒ‰ãƒ©ãƒƒã‚°ã§é¸æŠã—ãŸå ´åˆ
 
 	glutPostRedisplay();
 }
 
-// ƒNƒŠƒbƒN‚É‚æ‚éƒ}ƒEƒXƒsƒbƒLƒ“ƒO
+// ã‚¯ãƒªãƒƒã‚¯ã«ã‚ˆã‚‹ãƒã‚¦ã‚¹ãƒ”ãƒƒã‚­ãƒ³ã‚°
 void DESCRIBE::ClickPicking(GLuint SelectBuf[],int hits)
 {
 	int objnum=0;
 
-	objnum = ObjSelect(SelectBuf,hits);			// ƒqƒbƒg‚µ‚½ƒIƒuƒWƒFƒNƒg‚Ì’†‚ÅƒfƒvƒX’l‚Ìˆê”Ô¬‚³‚¢ƒIƒuƒWƒFƒNƒg‚ğ‘I‘ğ‚·‚é
+	objnum = ObjSelect(SelectBuf,hits);			// ãƒ’ãƒƒãƒˆã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ä¸­ã§ãƒ‡ãƒ—ã‚¹å€¤ã®ä¸€ç•ªå°ã•ã„ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’é¸æŠã™ã‚‹
 
 
-	// ˆÈ‘O‚ÉƒZƒŒƒNƒg‚³‚ê‚½‚à‚Ì‚ğÄƒZƒŒƒNƒg‚µ‚½ê‡‚ÍƒJƒEƒ“ƒg‚µ‚È‚¢
+	// ä»¥å‰ã«ã‚»ãƒ¬ã‚¯ãƒˆã•ã‚ŒãŸã‚‚ã®ã‚’å†ã‚»ãƒ¬ã‚¯ãƒˆã—ãŸå ´åˆã¯ã‚«ã‚¦ãƒ³ãƒˆã—ãªã„
 	for(int i=0;i<SeldEntList.getNum();i++){
 		OBJECT *obj;
 		obj = (OBJECT *)SeldEntList.getData(i);
@@ -490,17 +490,17 @@ void DESCRIBE::ClickPicking(GLuint SelectBuf[],int hits)
 		}
 	}
 	
-	// V‚µ‚¢ƒIƒuƒWƒFƒNƒg‚Éƒqƒbƒg‚µ‚½ê‡
+	// æ–°ã—ã„ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«ãƒ’ãƒƒãƒˆã—ãŸå ´åˆ
 	if(hits >= 1)
 		SetNewObject(SelectBuf[objnum*(3+SelectBuf[0])+3],SelectBuf[objnum*(3+SelectBuf[0])+4],SelectBuf[objnum*(3+SelectBuf[0])+5]);
 }
 
-// ƒhƒ‰ƒbƒO‚É‚æ‚éƒ}ƒEƒXƒsƒbƒLƒ“ƒO
+// ãƒ‰ãƒ©ãƒƒã‚°ã«ã‚ˆã‚‹ãƒã‚¦ã‚¹ãƒ”ãƒƒã‚­ãƒ³ã‚°
 void DESCRIBE::DragPicking(GLuint SelectBuf[],int hits)
 {
-	int temp=0;	// ÄƒZƒŒƒNƒg”»•Ê—pƒJƒEƒ“ƒ^
+	int temp=0;	// å†ã‚»ãƒ¬ã‚¯ãƒˆåˆ¤åˆ¥ç”¨ã‚«ã‚¦ãƒ³ã‚¿
 
-	// ”ÍˆÍ‘I‘ğ‚É‚æ‚Á‚ÄƒIƒuƒWƒFƒNƒg‚Éƒqƒbƒg‚µ‚½ê‡
+	// ç¯„å›²é¸æŠã«ã‚ˆã£ã¦ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«ãƒ’ãƒƒãƒˆã—ãŸå ´åˆ
 	for(int i=0;i<hits;i++){
 		for(int j=0;j<SeldEntList.getNum();j++){
 			OBJECT *obj = (OBJECT *)SeldEntList.getData(j);
@@ -510,7 +510,7 @@ void DESCRIBE::DragPicking(GLuint SelectBuf[],int hits)
 					temp++;
 			}
 		}
-		// ƒIƒuƒWƒFƒNƒg‚ªV‚µ‚­ƒqƒbƒg‚µ‚½ê‡
+		// ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒæ–°ã—ããƒ’ãƒƒãƒˆã—ãŸå ´åˆ
 		if(temp == 0)
 			SetNewObject(SelectBuf[i*(3+SelectBuf[0])+3],SelectBuf[i*(3+SelectBuf[0])+4],SelectBuf[i*(3+SelectBuf[0])+5]);
 
@@ -518,21 +518,21 @@ void DESCRIBE::DragPicking(GLuint SelectBuf[],int hits)
 	}
 }
 
-// ƒsƒbƒN‚³‚ê‚½ƒIƒuƒWƒFƒNƒg‚ğOBJECTƒŠƒXƒg‚É“o˜^
+// ãƒ”ãƒƒã‚¯ã•ã‚ŒãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’OBJECTãƒªã‚¹ãƒˆã«ç™»éŒ²
 void DESCRIBE::SetNewObject(int BodyNum,int TypeNum,int NumNum)
 {
 	OBJECT *obj = new OBJECT;
 	obj->Body = BodyNum;
 	obj->Type = TypeNum;
 	obj->Num = NumNum;
-	SeldEntList.add((void *)obj);							// ƒZƒŒƒNƒg‚³‚ê‚½ƒGƒ“ƒeƒBƒeƒBî•ñ‚ğƒŠƒXƒg‚É“o˜^
+	SeldEntList.add((void *)obj);							// ã‚»ãƒ¬ã‚¯ãƒˆã•ã‚ŒãŸã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£æƒ…å ±ã‚’ãƒªã‚¹ãƒˆã«ç™»éŒ²
 	BODY *body;
 	body = (BODY *)BodyList.getData(obj->Body);
 	if(obj->Type == _NURBSC){
-		body->ChangeStatColor(body->NurbsC[obj->Num].Dstat.Color,1,0.2,1,0.5);	// ‘I‘ğÏ‚İ‚ğ¦‚·‚½‚ßF‚ğ•ÏX
+		body->ChangeStatColor(body->NurbsC[obj->Num].Dstat.Color,1,0.2,1,0.5);	// é¸æŠæ¸ˆã¿ã‚’ç¤ºã™ãŸã‚è‰²ã‚’å¤‰æ›´
 	}
 	else if(obj->Type == _TRIMMED_SURFACE || obj->Type == _NURBSS){
-		body->ChangeStatColor(body->NurbsS[obj->Num].Dstat.Color,0.3,0.1,0.2,0.5);	// ‘I‘ğÏ‚İ‚ğ¦‚·‚½‚ßF‚ğ•ÏX
+		body->ChangeStatColor(body->NurbsS[obj->Num].Dstat.Color,0.3,0.1,0.2,0.5);	// é¸æŠæ¸ˆã¿ã‚’ç¤ºã™ãŸã‚è‰²ã‚’å¤‰æ›´
 	}
 	else if(obj->Type == _MESH){
 		HEface *f = body->Mesh->getIndexedFace(NumNum);
@@ -540,7 +540,7 @@ void DESCRIBE::SetNewObject(int BodyNum,int TypeNum,int NumNum)
 	}
 }
 
-// ƒIƒuƒWƒFƒNƒg‚Ì‘I‘ğ”»•Ê
+// ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®é¸æŠåˆ¤åˆ¥
 int DESCRIBE::ObjSelect(GLuint SelectBuf[],int hits)
 {
 	int i;
@@ -549,19 +549,19 @@ int DESCRIBE::ObjSelect(GLuint SelectBuf[],int hits)
 	double depthbuf[MAXSELECT];
 	double temp=0;
 
-	// ƒqƒbƒg‚µ‚½‘S‚Ä‚ÌƒIƒuƒWƒFƒNƒg‚ÌƒfƒvƒX’l‚ğ“¾‚é
+	// ãƒ’ãƒƒãƒˆã—ãŸå…¨ã¦ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ãƒ‡ãƒ—ã‚¹å€¤ã‚’å¾—ã‚‹
 	for(i=0;i<hits;i++){
-		Zdepth[i] = ((((double)SelectBuf[i*(3+SelectBuf[0])+1]/0xFFFFFFFF)+((double)SelectBuf[i*(3+SelectBuf[0])+2]/0xFFFFFFFF))/2.0);	// ƒfƒvƒXƒoƒbƒtƒ@‚ÌÅ‘å’l‚ÆÅ¬’l‚Ì’†ŠÔ‚Ì’l
-		depthbuf[i] = Zdepth[i];				// ƒfƒvƒX’l‚Ìƒ\[ƒgˆ——p‚Ìƒoƒbƒtƒ@‚ğ—pˆÓ
+		Zdepth[i] = ((((double)SelectBuf[i*(3+SelectBuf[0])+1]/0xFFFFFFFF)+((double)SelectBuf[i*(3+SelectBuf[0])+2]/0xFFFFFFFF))/2.0);	// ãƒ‡ãƒ—ã‚¹ãƒãƒƒãƒ•ã‚¡ã®æœ€å¤§å€¤ã¨æœ€å°å€¤ã®ä¸­é–“ã®å€¤
+		depthbuf[i] = Zdepth[i];				// ãƒ‡ãƒ—ã‚¹å€¤ã®ã‚½ãƒ¼ãƒˆå‡¦ç†ç”¨ã®ãƒãƒƒãƒ•ã‚¡ã‚’ç”¨æ„
 	}
 	
-	// ƒqƒbƒg‚µ‚½ƒIƒuƒWƒFƒNƒg‚Ì’†‚ÅƒfƒvƒX’l‚ªÅ¬‚Ì‚à‚Ì‚ğ‹‚ß‚é
+	// ãƒ’ãƒƒãƒˆã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ä¸­ã§ãƒ‡ãƒ—ã‚¹å€¤ãŒæœ€å°ã®ã‚‚ã®ã‚’æ±‚ã‚ã‚‹
 	if(hits == 1)
 		ZdepthMin = 0;
 	else if(hits > 1)
-		BubbleSort(depthbuf,hits);		// ƒoƒuƒ‹ƒ\[ƒg‚É‚æ‚èƒfƒvƒX’l‚ªÅ¬‚Ì‚à‚Ì‚ğ“¾‚é
+		BubbleSort(depthbuf,hits);		// ãƒãƒ–ãƒ«ã‚½ãƒ¼ãƒˆã«ã‚ˆã‚Šãƒ‡ãƒ—ã‚¹å€¤ãŒæœ€å°ã®ã‚‚ã®ã‚’å¾—ã‚‹
 	
-	// ƒfƒvƒX’l‚ªÅ¬‚Ì‚à‚Ì‚ª•¡”‚ ‚Á‚½ê‡A–Ê‚æ‚èü‚ğ—Dæ“I‚É‘I‘ğ‚·‚é
+	// ãƒ‡ãƒ—ã‚¹å€¤ãŒæœ€å°ã®ã‚‚ã®ãŒè¤‡æ•°ã‚ã£ãŸå ´åˆã€é¢ã‚ˆã‚Šç·šã‚’å„ªå…ˆçš„ã«é¸æŠã™ã‚‹
 	for(i=0;i<hits;i++){
 		if(Zdepth[i] == depthbuf[0] && SelectBuf[i*(3+SelectBuf[0])+4] == _NURBSC){
 			ZdepthMin = i;
@@ -570,7 +570,7 @@ int DESCRIBE::ObjSelect(GLuint SelectBuf[],int hits)
 		}
 	}
 	
-	// ƒqƒbƒg‚µ‚½’†‚Éü‚ª‚È‚¢ê‡
+	// ãƒ’ãƒƒãƒˆã—ãŸä¸­ã«ç·šãŒãªã„å ´åˆ
 	if(temp == 0){
 		for(i=0;i<hits;i++){
 			if(Zdepth[i] == depthbuf[0])
@@ -581,15 +581,15 @@ int DESCRIBE::ObjSelect(GLuint SelectBuf[],int hits)
 	return ZdepthMin;
 }
 
-// “ÁêƒL[ƒCƒxƒ“ƒg‚Ìİ’è
+// ç‰¹æ®Šã‚­ãƒ¼ã‚¤ãƒ™ãƒ³ãƒˆã®è¨­å®š
 void DESCRIBE::Special(int key,int x,int y)
 {
 	switch(key){
 		case GLUT_KEY_UP:
-			ModelScale += 0.2*ModelScale;	// Šg‘å
+			ModelScale += 0.2*ModelScale;	// æ‹¡å¤§
 			break;
 		case GLUT_KEY_DOWN:
-			ModelScale -= 0.2*ModelScale;	// k¬
+			ModelScale -= 0.2*ModelScale;	// ç¸®å°
 			break;
 		default:
 			break;
@@ -599,12 +599,12 @@ void DESCRIBE::Special(int key,int x,int y)
 	glutPostRedisplay();
 }
 
-// ƒ}ƒEƒXƒNƒŠƒbƒNƒCƒxƒ“ƒg‚Ìİ’è
+// ãƒã‚¦ã‚¹ã‚¯ãƒªãƒƒã‚¯ã‚¤ãƒ™ãƒ³ãƒˆã®è¨­å®š
 void DESCRIBE::Mouse(int button,int state,int x,int y)
 {
-	int GetModif = glutGetModifiers();		// Shift,Ctrl,AltƒL[‚Ìæ“¾
+	int GetModif = glutGetModifiers();		// Shift,Ctrl,Altã‚­ãƒ¼ã®å–å¾—
 
-	// ’†ƒNƒŠƒbƒN
+	// ä¸­ã‚¯ãƒªãƒƒã‚¯
 	if(button == GLUT_MIDDLE_BUTTON && state == GLUT_DOWN){
 		StartX = x;
 		StartY = y;
@@ -620,19 +620,19 @@ void DESCRIBE::Mouse(int button,int state,int x,int y)
 			CtrlKeyFlag = GL_TRUE;
 		}
 	}
-	// ¶ƒNƒŠƒbƒN
+	// å·¦ã‚¯ãƒªãƒƒã‚¯
 	else if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN){
 		StartX = x;
 		StartY = y;
 		LBtnFlag = GL_TRUE;
 	}
-	// ƒ{ƒ^ƒ“‚ğ—£‚µ‚½
+	// ãƒœã‚¿ãƒ³ã‚’é›¢ã—ãŸ
 	else{
 		if(MBtnFlag == GL_TRUE){
 			StartQ = QFunc.QCopy(TargetQ);
 		}
 		if(LBtnFlag == GL_TRUE){
-			DoSelect(x,y);		// ƒIƒuƒWƒFƒNƒg‘I‘ğ”»•Ê
+			DoSelect(x,y);		// ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆé¸æŠåˆ¤åˆ¥
 			ReDrawBODYFlag = KOD_FALSE;
 		}
 		SweepSelectFlag = GL_FALSE;
@@ -645,59 +645,59 @@ void DESCRIBE::Mouse(int button,int state,int x,int y)
 	glutPostRedisplay();
 }
 
-// ƒ}ƒEƒX‚ªˆÚ“®‚µ‚½‚Æ‚«‚ÉŒÄ‚Ño‚³‚ê‚éƒR[ƒ‹ƒoƒbƒN‚Ìİ’è
+// ãƒã‚¦ã‚¹ãŒç§»å‹•ã—ãŸã¨ãã«å‘¼ã³å‡ºã•ã‚Œã‚‹ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã®è¨­å®š
 void DESCRIBE::Motion(int x,int y)
 {
-	double dx,dy;				// ’PˆÊ‰»‚³‚ê‚½ƒ}ƒEƒXˆÚ“®—Ê
-	double dox,doy;				// ’PˆÊ‰»‚³‚ê‚½ƒEƒBƒ“ƒhƒEÄ•`‰æ’¼‘O‚©‚ç‚Ìƒ}ƒEƒXˆÚ“®—Ê
-	double a;					// ƒ}ƒEƒXˆÚ“®‹——£
-	double ar;					// ‰ñ“]Šp
-	Quat dq;					// ‰ñ“]ƒNƒH[ƒ^ƒjƒIƒ“
-	Coord axis;					// ‰ñ“]²
+	double dx,dy;				// å˜ä½åŒ–ã•ã‚ŒãŸãƒã‚¦ã‚¹ç§»å‹•é‡
+	double dox,doy;				// å˜ä½åŒ–ã•ã‚ŒãŸã‚¦ã‚£ãƒ³ãƒ‰ã‚¦å†æç”»ç›´å‰ã‹ã‚‰ã®ãƒã‚¦ã‚¹ç§»å‹•é‡
+	double a;					// ãƒã‚¦ã‚¹ç§»å‹•è·é›¢
+	double ar;					// å›è»¢è§’
+	Quat dq;					// å›è»¢ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³
+	Coord axis;					// å›è»¢è»¸
 
-	// ¶ƒhƒ‰ƒbƒO’†
+	// å·¦ãƒ‰ãƒ©ãƒƒã‚°ä¸­
 	if(LBtnFlag == GL_TRUE){
-		SweepSelectFlag = GL_TRUE;		// ƒXƒB[ƒvƒZƒŒƒNƒVƒ‡ƒ“ON
+		SweepSelectFlag = GL_TRUE;		// ã‚¹ã‚£ãƒ¼ãƒ—ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ON
 		CurrentX = x;
 		CurrentY = y;
 	}
 
-	// ‰Eƒhƒ‰ƒbƒO’†
+	// å³ãƒ‰ãƒ©ãƒƒã‚°ä¸­
 	if(MBtnFlag == GL_TRUE){
-		// ƒ}ƒEƒXƒ|ƒCƒ“ƒ^‚ÌˆÊ’u‚Ìƒhƒ‰ƒbƒOŠJnˆÊ’u‚©‚ç‚Ì•ÏˆÊ
+		// ãƒã‚¦ã‚¹ãƒã‚¤ãƒ³ã‚¿ã®ä½ç½®ã®ãƒ‰ãƒ©ãƒƒã‚°é–‹å§‹ä½ç½®ã‹ã‚‰ã®å¤‰ä½
 		dx = (double)(x-StartX)/(double)ScreenWidth;
 		dy = (double)(y-StartY)/(double)ScreenHeight;
-		// ƒ}ƒEƒXƒ|ƒCƒ“ƒ^‚ÌˆÊ’u‚ÌƒEƒBƒ“ƒhƒEÄ•`‰æ’¼‘O‚©‚ç‚Ì•ÏˆÊ
+		// ãƒã‚¦ã‚¹ãƒã‚¤ãƒ³ã‚¿ã®ä½ç½®ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦å†æç”»ç›´å‰ã‹ã‚‰ã®å¤‰ä½
 		dox = (double)(x-OldPosX)/(double)ScreenWidth;
 		doy = (double)(y-OldPosY)/(double)ScreenHeight;
 
-		// Shift,CtrlƒL[‚ğ‰Ÿ‚µ‚Ä‚¢‚È‚¢-->ƒ‚ƒfƒ‹‰ñ“]
+		// Shift,Ctrlã‚­ãƒ¼ã‚’æŠ¼ã—ã¦ã„ãªã„-->ãƒ¢ãƒ‡ãƒ«å›è»¢
 		if(ShiftKeyFlag == GL_FALSE && CtrlKeyFlag == GL_FALSE){
-			a = sqrt(dx*dx + dy*dy);	// ƒ}ƒEƒXƒ|ƒCƒ“ƒ^‚ÌˆÊ’u‚Ìƒhƒ‰ƒbƒOŠJnˆÊ’u‚©‚ç‚Ì‹——£
+			a = sqrt(dx*dx + dy*dy);	// ãƒã‚¦ã‚¹ãƒã‚¤ãƒ³ã‚¿ã®ä½ç½®ã®ãƒ‰ãƒ©ãƒƒã‚°é–‹å§‹ä½ç½®ã‹ã‚‰ã®è·é›¢
 			if(a != 0.0){
-				ar = 2*PI*a;			// ‰ñ“]Šp‚ğZo
-				// ‰ñ“]²axis‚ğ‹‚ß‚é
+				ar = 2*PI*a;			// å›è»¢è§’ã‚’ç®—å‡º
+				// å›è»¢è»¸axisã‚’æ±‚ã‚ã‚‹
 				axis.x = dx/a;
 				axis.y = 0.0;
 				axis.z = -dy/a;
-				dq = QFunc.QGenRot(ar,axis.z,axis.y,axis.x);	// ‰ñ“]ƒNƒH[ƒ^ƒjƒIƒ“¶¬
-				TargetQ = QFunc.QMult(dq, StartQ);				// ‰ñ“]‚Ì‰Šú’lStartQ‚Édq‚ğŠ|‚¯‚Ä‰ñ“]‚ğ‡¬
-				QFunc.QtoR(RotMx, TargetQ);						// ƒNƒH[ƒ^ƒjƒIƒ“‚©‚ç‰ñ“]‚Ì•ÏŠ·s—ñ‚ğ‹‚ß‚é
+				dq = QFunc.QGenRot(ar,axis.z,axis.y,axis.x);	// å›è»¢ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ç”Ÿæˆ
+				TargetQ = QFunc.QMult(dq, StartQ);				// å›è»¢ã®åˆæœŸå€¤StartQã«dqã‚’æ›ã‘ã¦å›è»¢ã‚’åˆæˆ
+				QFunc.QtoR(RotMx, TargetQ);						// ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ã‹ã‚‰å›è»¢ã®å¤‰æ›è¡Œåˆ—ã‚’æ±‚ã‚ã‚‹
 			}
 		}
 
-		// ShiftƒL[‚ğ‰Ÿ‚µ‚Ä‚¢‚é-->•½sˆÚ“®
+		// Shiftã‚­ãƒ¼ã‚’æŠ¼ã—ã¦ã„ã‚‹-->å¹³è¡Œç§»å‹•
 		else if(ShiftKeyFlag == GL_TRUE){
-			Trl[0] -= 4*dox/ModelScale;							// ƒ}ƒEƒX‚ğ¶‰E‚Ö“®‚©‚µ‚½‚ç¶‰E‚Ö•½sˆÚ“®
-			Trl[2] -= 4*doy/ModelScale;							// ƒ}ƒEƒX‚ğã‰º‚Ö“®‚©‚µ‚½‚çã‰º‚Ö•½sˆÚ“®
+			Trl[0] -= 4*dox/ModelScale;							// ãƒã‚¦ã‚¹ã‚’å·¦å³ã¸å‹•ã‹ã—ãŸã‚‰å·¦å³ã¸å¹³è¡Œç§»å‹•
+			Trl[2] -= 4*doy/ModelScale;							// ãƒã‚¦ã‚¹ã‚’ä¸Šä¸‹ã¸å‹•ã‹ã—ãŸã‚‰ä¸Šä¸‹ã¸å¹³è¡Œç§»å‹•
 		}
 
-		// CtrlƒL[‚ğ‰Ÿ‚µ‚Ä‚¢‚é-->Šg‘åk¬
+		// Ctrlã‚­ãƒ¼ã‚’æŠ¼ã—ã¦ã„ã‚‹-->æ‹¡å¤§ç¸®å°
 		else if(CtrlKeyFlag == GL_TRUE){
 			a = sqrt(dox*dox + doy*doy);
-			if(x-OldPosX > 0)	ModelScale += a*ModelScale;		// ƒ}ƒEƒX‚ğ‰E‚Ö“®‚©‚µ‚½‚çŠg‘å
-			else				ModelScale -= a*ModelScale;		// ƒ}ƒEƒX‚ğ¶‚Ö“®‚©‚µ‚½‚çk¬
-			if(ModelScale < 0.0001) ModelScale = 0.0001;		// k¬ƒXƒP[ƒ‹‚ÌÅ¬’l
+			if(x-OldPosX > 0)	ModelScale += a*ModelScale;		// ãƒã‚¦ã‚¹ã‚’å³ã¸å‹•ã‹ã—ãŸã‚‰æ‹¡å¤§
+			else				ModelScale -= a*ModelScale;		// ãƒã‚¦ã‚¹ã‚’å·¦ã¸å‹•ã‹ã—ãŸã‚‰ç¸®å°
+			if(ModelScale < 0.0001) ModelScale = 0.0001;		// ç¸®å°ã‚¹ã‚±ãƒ¼ãƒ«ã®æœ€å°å€¤
 		}			
 
 		OldPosX = x;
@@ -708,7 +708,7 @@ void DESCRIBE::Motion(int x,int y)
 	glutPostRedisplay();
 }
 
-// OBJECT\‘¢‘Ì‚É‰½”Ô–Ú‚Ì‹Èüor‹È–Ê‚©‚Ìî•ñ‚ğ•t‰Á‚·‚é
+// OBJECTæ§‹é€ ä½“ã«ä½•ç•ªç›®ã®æ›²ç·šoræ›²é¢ã‹ã®æƒ…å ±ã‚’ä»˜åŠ ã™ã‚‹
 int DESCRIBE::AddEntSymbolToObj()
 {
 	OBJECT *obj;
@@ -740,22 +740,22 @@ int DESCRIBE::AddEntSymbolToObj()
 
 }
 
-// ƒAƒCƒhƒŠƒ“ƒO’†‚Ìˆ—
+// ã‚¢ã‚¤ãƒ‰ãƒªãƒ³ã‚°ä¸­ã®å‡¦ç†
 void DESCRIBE::Idle()
 {
 	glutPostRedisplay();
 }
 
-// ƒfƒBƒXƒvƒŒƒCƒŠƒXƒg‚ÌXV
+// ãƒ‡ã‚£ã‚¹ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã®æ›´æ–°
 void DESCRIBE::UpDateDisplayList(int Val)
 {
-	glNewList(COMMAND_DRAW_BODY,GL_COMPILE);	// glDrawBODY()‚ğƒRƒ}ƒ“ƒh‚Æ‚µ‚Äƒƒ‚ƒŠ[‚É•Û‘¶(ƒZƒŒƒNƒVƒ‡ƒ“ˆ—‚Ì‚‘¬‰»)
-	glDrawBODY();								// IGESƒf[ƒ^‚ğ•`‰æ
+	glNewList(COMMAND_DRAW_BODY,GL_COMPILE);	// glDrawBODY()ã‚’ã‚³ãƒãƒ³ãƒ‰ã¨ã—ã¦ãƒ¡ãƒ¢ãƒªãƒ¼ã«ä¿å­˜(ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³å‡¦ç†ã®é«˜é€ŸåŒ–)
+	glDrawBODY();								// IGESãƒ‡ãƒ¼ã‚¿ã‚’æç”»
 	glEndList();
 
 }
 
-// ²•`‰æ
+// è»¸æç”»
 void DESCRIBE::glDrawAxis(double Ascale,double Mscale)
 {
 	double AxisPos = Ascale/Mscale;
@@ -765,17 +765,17 @@ void DESCRIBE::glDrawAxis(double Ascale,double Mscale)
 
 	glLineWidth(1);
 	glBegin(GL_LINES);
-	//draw Xaxis@Ô
+	//draw Xaxisã€€èµ¤
 	glColor3f(1.0, 0.0, 0.0);
 	glVertex3d(0.0, 0.0, 0.0);
 	glVertex3d(AxisPos, 0.0, 0.0);
 
-	//draw Yaxis@—Î
+	//draw Yaxisã€€ç·‘
 	glColor3f(0.0, 1.0, 0.0 );
 	glVertex3d(0.0, 0.0, 0.0);
 	glVertex3d(0.0, AxisPos, 0.0);
 
-	//draw Zaxis@Â
+	//draw Zaxisã€€é’
 	glColor3f(0.0, 0.0, 1.0);
 	glVertex3d(0.0, 0.0, 0.0);
 	glVertex3d(0.0, 0.0, AxisPos);
@@ -804,17 +804,17 @@ void DESCRIBE::glDrawAxis(double Ascale,double Mscale)
 	glutSolidCone(AxisPos*0.1,AxisPos*0.5,4.0,1.0);
 	glPopMatrix();
 
-	// ²–¼ X
+	// è»¸å X
 	glColor3d(1.0,0.0,0.0);
 	glRasterPos3d(CharPos,0.0,0.0);
 	glutBitmapCharacter(GLUT_BITMAP_HELVETICA_10,'X');
 
-	// ²–¼ Y
+	// è»¸å Y
 	glColor3d(0.0,1.0,0.0);
 	glRasterPos3d(0.0,CharPos,0.0);
 	glutBitmapCharacter(GLUT_BITMAP_HELVETICA_10,'Y');
 
-	// ²–¼ Z
+	// è»¸å Z
 	glColor3d(0.0,0.0,1.0);
 	glRasterPos3d(0.0,0.0,CharPos);
 	glutBitmapCharacter(GLUT_BITMAP_HELVETICA_10,'Z');
@@ -822,7 +822,7 @@ void DESCRIBE::glDrawAxis(double Ascale,double Mscale)
 	glEnable(GL_LIGHTING);
 }
 
-// ƒ‰ƒo[ƒoƒ“ƒh•`‰æ
+// ãƒ©ãƒãƒ¼ãƒãƒ³ãƒ‰æç”»
 void DESCRIBE::glDrawRubberband(double sx,double sy,double ex,double ey)
 {
 	glDisable(GL_LIGHTING);
@@ -842,35 +842,35 @@ void DESCRIBE::glDrawRubberband(double sx,double sy,double ex,double ey)
 }
 
 
-// 3Dƒf[ƒ^ƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ
+// 3Dãƒ‡ãƒ¼ã‚¿ãƒ•ã‚¡ã‚¤ãƒ«ã®èª­ã¿è¾¼ã¿
 int DESCRIBE::OpenFile()
 {
 	char YorN = 'y';
 	char buf[100],fname[100];
 	int ext_flag;
 
-	// ˜A‘±‚µ‚Äƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚Ş
+	// é€£ç¶šã—ã¦ãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿è¾¼ã‚€
 	while(YorN=='y' || YorN=='Y'){
-		// ƒtƒ@ƒCƒ‹–¼“ü—Í
+		// ãƒ•ã‚¡ã‚¤ãƒ«åå…¥åŠ›
 		GuiIF.SetMessage("Fine Name:");
 		fgets(buf,sizeof(buf),stdin);
 		if(buf[0] == '\n') continue;
 		sscanf(buf,"%s",fname);
-		if((ext_flag = CheckExtention(fname)) == KOD_ERR){		// Šg’£q”»•Ê
+		if((ext_flag = CheckExtention(fname)) == KOD_ERR){		// æ‹¡å¼µå­åˆ¤åˆ¥
 			GuiIF.SetMessage("ERROR: fail to read 3D-data file");
 			return KOD_ERR;
 		}
 		
-		BODY *body = new BODY;					// BODY‚ğ1‚Âƒƒ‚ƒŠ[Šm•Û
+		BODY *body = new BODY;					// BODYã‚’1ã¤ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿
 		int flag;
-		if(ext_flag == EXT_IGES){				// Šg’£q‚ª"igs"
+		if(ext_flag == EXT_IGES){				// æ‹¡å¼µå­ãŒ"igs"
 			IGES_PARSER Iges;
-			flag = Iges.IGES_Parser_Main(body,fname);				// IGESƒf[ƒ^‚ğ“Ç‚İ‚ñ‚ÅAbody‚ÉŠi”[
-			if(flag == KOD_TRUE)	Iges.ExpandKnotRange(body);		// ƒmƒbƒgƒxƒNƒgƒ‹‚Ì³‹K‰»
-			if(flag == KOD_TRUE)	Iges.CheckDegenracy(body);		// k‘Ş(2Dƒpƒ‰ƒƒgƒŠƒbƒN‹Èü‚Ìn“_‚ÆI“_‚ªˆê’v‚µ‚Ä‚¢‚é‚©)‚Ìƒ`ƒFƒbƒN
-			if(flag == KOD_TRUE)	Iges.ModifyParamConect(body);	// ƒpƒ‰ƒƒgƒŠƒbƒN•½–Ê“à‚ÌƒgƒŠƒ€‹Èü“¯m‚Ì‚Â‚È‚ª‚è‚ğƒ`ƒFƒbƒNAC³‚·‚é
+			flag = Iges.IGES_Parser_Main(body,fname);				// IGESãƒ‡ãƒ¼ã‚¿ã‚’èª­ã¿è¾¼ã‚“ã§ã€bodyã«æ ¼ç´
+			if(flag == KOD_TRUE)	Iges.ExpandKnotRange(body);		// ãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«ã®æ­£è¦åŒ–
+			if(flag == KOD_TRUE)	Iges.CheckDegenracy(body);		// ç¸®é€€(2Dãƒ‘ãƒ©ãƒ¡ãƒˆãƒªãƒƒã‚¯æ›²ç·šã®å§‹ç‚¹ã¨çµ‚ç‚¹ãŒä¸€è‡´ã—ã¦ã„ã‚‹ã‹)ã®ãƒã‚§ãƒƒã‚¯
+			if(flag == KOD_TRUE)	Iges.ModifyParamConect(body);	// ãƒ‘ãƒ©ãƒ¡ãƒˆãƒªãƒƒã‚¯å¹³é¢å†…ã®ãƒˆãƒªãƒ æ›²ç·šåŒå£«ã®ã¤ãªãŒã‚Šã‚’ãƒã‚§ãƒƒã‚¯ã€ä¿®æ­£ã™ã‚‹
 		}
-		else if(ext_flag == EXT_STL){			// Šg’£q‚ª"stl"
+		else if(ext_flag == EXT_STL){			// æ‹¡å¼µå­ãŒ"stl"
 			STL_PARSER Stl;
 			flag = Stl.STL_Parser_Main(body,fname);
 		}
@@ -880,12 +880,12 @@ int DESCRIBE::OpenFile()
 		}
 
 		if(flag == KOD_ERR){
-			delete body;					// ƒGƒ‰[‚Ìê‡‚ÍBODY‚Ìƒƒ‚ƒŠ[‰ğ•ú
+			delete body;					// ã‚¨ãƒ©ãƒ¼ã®å ´åˆã¯BODYã®ãƒ¡ãƒ¢ãƒªãƒ¼è§£æ”¾
 			GuiIF.SetMessage("This file was not read normaly.");
 			return KOD_ERR;
 		}
-		strcpy(body->Name,fname);				// ƒtƒ@ƒCƒ‹–¼‚ğbody–¼‚Æ‚µ‚Ä“o˜^
-		BodyList.add((void *)body);				// ƒŠƒXƒg‚É“Ç‚İ‚ñ‚¾body‚ğ“o˜^
+		strcpy(body->Name,fname);				// ãƒ•ã‚¡ã‚¤ãƒ«åã‚’bodyåã¨ã—ã¦ç™»éŒ²
+		BodyList.add((void *)body);				// ãƒªã‚¹ãƒˆã«èª­ã¿è¾¼ã‚“ã bodyã‚’ç™»éŒ²
 		GuiIF.SetMessage("Finished");
 		GuiIF.SetMessage("More read? (Y or N):");
 		fgets(buf,sizeof(buf),stdin);
@@ -894,15 +894,15 @@ int DESCRIBE::OpenFile()
 		}
 	}
 
-	DrawBODYFlag = KOD_TRUE;				// BODY•`‰æ‚µ‚Ä‚àOKƒtƒ‰ƒOON
-	ReDrawBODYFlag = KOD_FALSE;				// BODY‚Ìƒƒ‚ƒŠƒŠƒXƒg‚ğÄæ“¾
+	DrawBODYFlag = KOD_TRUE;				// BODYæç”»ã—ã¦ã‚‚OKãƒ•ãƒ©ã‚°ON
+	ReDrawBODYFlag = KOD_FALSE;				// BODYã®ãƒ¡ãƒ¢ãƒªãƒªã‚¹ãƒˆã‚’å†å–å¾—
 
-	SetModelScale();						// ƒ‚ƒfƒ‹ƒXƒP[ƒ‹‚ğÅ“K‰»
+	SetModelScale();						// ãƒ¢ãƒ‡ãƒ«ã‚¹ã‚±ãƒ¼ãƒ«ã‚’æœ€é©åŒ–
 
 	return KOD_TRUE;
 }
 
-// Šg’£q”»•Ê
+// æ‹¡å¼µå­åˆ¤åˆ¥
 int DESCRIBE::CheckExtention(char *fname)
 {
 	const char *ext_igs = ".igs";
@@ -915,17 +915,17 @@ int DESCRIBE::CheckExtention(char *fname)
 	char *p = strrchr(fname,'.');
 	if(p == NULL) return KOD_ERR;
 
-	if(!strcmp(p,ext_igs))	return EXT_IGES;	// Šg’£q‚ªigs
-	if(!strcmp(p,ext_IGS))	return EXT_IGES;	// Šg’£q‚ªIGS
-	if(!strcmp(p,ext_stl))	return EXT_STL;		// Šg’£q‚ªstl
-	if(!strcmp(p,ext_STL))	return EXT_STL;		// Šg’£q‚ªSTL
-	if(!strcmp(p,ext_VRML))	return EXT_VRML;	// Šg’£q‚ªVRML
-	if(!strcmp(p,ext_vrml))	return EXT_VRML;	// Šg’£q‚ªVRML
+	if(!strcmp(p,ext_igs))	return EXT_IGES;	// æ‹¡å¼µå­ãŒigs
+	if(!strcmp(p,ext_IGS))	return EXT_IGES;	// æ‹¡å¼µå­ãŒIGS
+	if(!strcmp(p,ext_stl))	return EXT_STL;		// æ‹¡å¼µå­ãŒstl
+	if(!strcmp(p,ext_STL))	return EXT_STL;		// æ‹¡å¼µå­ãŒSTL
+	if(!strcmp(p,ext_VRML))	return EXT_VRML;	// æ‹¡å¼µå­ãŒVRML
+	if(!strcmp(p,ext_vrml))	return EXT_VRML;	// æ‹¡å¼µå­ãŒVRML
 
-	return KOD_ERR;	// Šg’£q‚ª‚»‚êˆÈŠO
+	return KOD_ERR;	// æ‹¡å¼µå­ãŒãã‚Œä»¥å¤–
 }
 
-// Å“Kƒ‚ƒfƒ‹ƒXƒP[ƒ‹‚ğæ“¾
+// æœ€é©ãƒ¢ãƒ‡ãƒ«ã‚¹ã‚±ãƒ¼ãƒ«ã‚’å–å¾—
 void DESCRIBE::SetModelScale()
 {
 	BODY *body;
@@ -938,11 +938,11 @@ void DESCRIBE::SetModelScale()
 		if(max < body->MaxCoord)
 			max = body->MaxCoord;
 	}
-	ModelScale = 1/max;						// ‰Šú‰æ–Ê‚ÉƒIƒuƒWƒFƒNƒg‘S‘Ì‚ªÊ‚é‚æ‚¤‚É•`‰æƒXƒP[ƒ‹‚ğ’²ß
-	ModelScale1st = ModelScale;				// ƒ‚ƒfƒ‹ƒXƒP[ƒ‹‚Ì‰Šú’l‚ğŠo‚¦‚Ä‚¨‚­
+	ModelScale = 1/max;						// åˆæœŸç”»é¢ã«ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆå…¨ä½“ãŒå†™ã‚‹ã‚ˆã†ã«æç”»ã‚¹ã‚±ãƒ¼ãƒ«ã‚’èª¿ç¯€
+	ModelScale1st = ModelScale;				// ãƒ¢ãƒ‡ãƒ«ã‚¹ã‚±ãƒ¼ãƒ«ã®åˆæœŸå€¤ã‚’è¦šãˆã¦ãŠã
 }
 
-// ƒZƒŒƒNƒVƒ‡ƒ“ƒŠƒXƒg‹y‚ÑOBJECT‚Ì‰Šú‰»
+// ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ãƒªã‚¹ãƒˆåŠã³OBJECTã®åˆæœŸåŒ–
 void DESCRIBE::ClearSeldEntList()
 {
 	OBJECT *obj;
@@ -955,47 +955,47 @@ void DESCRIBE::ClearSeldEntList()
 	SeldEntList.clear();
 }
 
-// UserFunc‚É‚æ‚Á‚Ä•`‰æ‚³‚ê‚½‰æ‘œ‚ğÁ‚·
+// UserFuncã«ã‚ˆã£ã¦æç”»ã•ã‚ŒãŸç”»åƒã‚’æ¶ˆã™
 void DESCRIBE::UserViewCanncel()
 {
 	for(int i=0;i<USERFUNCNUMMAX;i++)
 		ExecUserFuncFlag[i] = KOD_FALSE;
 
-	User.ExecdClear();	// UserƒNƒ‰ƒX‚ÌExecdClear()‚ğŒÄ‚Ño‚·
+	User.ExecdClear();	// Userã‚¯ãƒ©ã‚¹ã®ExecdClear()ã‚’å‘¼ã³å‡ºã™
 }
 
-// ƒZƒŒƒNƒVƒ‡ƒ“ƒLƒƒƒ“ƒZƒ‹
+// ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã‚­ãƒ£ãƒ³ã‚»ãƒ«
 void DESCRIBE::SelectionCanncel()
 {
 	BODY *body;
 	OBJECT *obj;
 	for(int i=0;i<SeldEntList.getNum();i++){
 		obj = (OBJECT *)SeldEntList.getData(i);
-		body = SearchBodyList(&BodyList,obj->Body);			// ƒZƒŒƒNƒVƒ‡ƒ“‚³‚ê‚Ä‚¢‚éƒGƒ“ƒeƒBƒeƒB‚ª‘®‚·‚éBODY”Ô†‚ğ’²‚×‚é
-		if (body == NULL) continue;							// DeleteBody‚ÅÁ‹‚³‚ê‚Ä‚¢‚½ê‡
+		body = SearchBodyList(&BodyList,obj->Body);			// ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚Œã¦ã„ã‚‹ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ãŒå±ã™ã‚‹BODYç•ªå·ã‚’èª¿ã¹ã‚‹
+		if (body == NULL) continue;							// DeleteBodyã§æ¶ˆå»ã•ã‚Œã¦ã„ãŸå ´åˆ
 		if(obj->Type == _NURBSC){
-			body->InitCurveColor(body->NurbsC[obj->Num].Dstat.Color);		// ‘I‘ğ‰ğœ‚ğ¦‚·‚½‚ßF‚ğŒ³‚É–ß‚·
+			body->InitCurveColor(body->NurbsC[obj->Num].Dstat.Color);		// é¸æŠè§£é™¤ã‚’ç¤ºã™ãŸã‚è‰²ã‚’å…ƒã«æˆ»ã™
 		}
 		else if(obj->Type == _TRIMMED_SURFACE || obj->Type == _NURBSS){
-			body->InitSurfaceColor(body->NurbsS[obj->Num].Dstat.Color);	// ‘I‘ğ‰ğœ‚ğ¦‚·‚½‚ßF‚ğŒ³‚É–ß‚·
+			body->InitSurfaceColor(body->NurbsS[obj->Num].Dstat.Color);	// é¸æŠè§£é™¤ã‚’ç¤ºã™ãŸã‚è‰²ã‚’å…ƒã«æˆ»ã™
 		}
 		else if(obj->Type == _MESH){
 			HEface *f = body->Mesh->getIndexedFace(obj->Num);
 			if(f == NULL) continue;
-			body->InitSurfaceColor(f->Dstat.Color);	// ‘I‘ğ‰ğœ‚ğ¦‚·‚½‚ßF‚ğŒ³‚É–ß‚·
+			body->InitSurfaceColor(f->Dstat.Color);	// é¸æŠè§£é™¤ã‚’ç¤ºã™ãŸã‚è‰²ã‚’å…ƒã«æˆ»ã™
 		}
 	}
-	ClearSeldEntList();						// ƒZƒŒƒNƒVƒ‡ƒ“ƒŠƒXƒg‚ğƒNƒŠƒA
-	ReDrawBODYFlag = KOD_FALSE;				// •`‰æƒƒ‚ƒŠƒŠƒXƒg‚ğÄİ’è
+	ClearSeldEntList();						// ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ãƒªã‚¹ãƒˆã‚’ã‚¯ãƒªã‚¢
+	ReDrawBODYFlag = KOD_FALSE;				// æç”»ãƒ¡ãƒ¢ãƒªãƒªã‚¹ãƒˆã‚’å†è¨­å®š
 }
 
-// ƒo[ƒWƒ‡ƒ“î•ñ‚ğo—Í
+// ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ã‚’å‡ºåŠ›
 void DESCRIBE::VersionInfo()
 {
 	fprintf(stderr,"KODATUNO R2.1\n");
 }
 
-// ƒZƒŒƒNƒVƒ‡ƒ“‚³‚ê‚Ä‚¢‚éBODY”Ô†‚ğ“¾‚é
+// ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚Œã¦ã„ã‚‹BODYç•ªå·ã‚’å¾—ã‚‹
 BODY *DESCRIBE::SearchBodyList(BODYList *BodyList,int key)
 {
 	return (BODY *)BodyList->getData(key);

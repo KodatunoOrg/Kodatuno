@@ -88,3 +88,5 @@ RESOURCES += \
 
 QMAKE_CXXFLAGS += -fopenmp
 LIBS += -fopenmp
+
+

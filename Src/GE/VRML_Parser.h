@@ -1,68 +1,131 @@
-// VRML V1.0 ƒp[ƒT[
+ï»¿// VRML V1.0 ãƒ‘ãƒ¼ã‚µãƒ¼
 
 #ifndef _VRML_PARSER_MAIN_H_
 #define _VRML_PARSER_MAIN_H_
 
 #include "BODY.h"
 
-#define BUFSIZEMAX 256		// •¶š—ñˆêŠi”[—pƒoƒbƒtƒ@‚ÌƒTƒCƒY
-#define ALLTAGNUM  37		// VRMLƒ^ƒO‚Ì‘”
+// Constants: General Defines
+// BUFSIZEMAX -		æ–‡å­—åˆ—ä¸€æ™‚æ ¼ç´ç”¨ãƒãƒƒãƒ•ã‚¡ã®ã‚µã‚¤ã‚º(256)
+// ALLTAGNUM -		VRMLã‚¿ã‚°ã®ç·æ•°(37)
+#define BUFSIZEMAX 256
+#define ALLTAGNUM  37
 
-// VRMLƒtƒ@ƒCƒ‹‚É—p‚¢‚ç‚ê‚éƒ^ƒO‚ÌƒVƒ“ƒ{ƒ‹’è‹`
+// Enum: Enum Symbol of VRML Tag
+// AsciiText -			1:æ–‡å­—
+// Cone -				2:å††éŒ
+// Coordinate3 -		3:ä¸‰æ¬¡å…ƒåº§æ¨™
+// Cube -				4:ç«‹æ–¹ä½“
+// Cylinder -			5:å††æŸ±
+// DirectionalLight -	6:æŒ‡å‘æ€§å…‰æº
+// FontStyle -			7:æ›¸ä½“
+// Group -				8:ã‚°ãƒ«ãƒ¼ãƒ— 
+// IndexedFaceSet -		9:é¢ã‚’é ‚ç‚¹ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã§æŒ‡å®š
+// IndexedLineSet -		10:ç·šã‚’é ‚ç‚¹ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã§æŒ‡å®š
+// Info -				11:ã‚¤ãƒ³ãƒ•ã‚©ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³
+// LOD -				12:è©³ç´°æŒ‡å®š
+// Material -			13:æè³ª
+// MaterialBinding -	14:æè³ªï¼ˆçµåˆï¼‰
+// MatrixTransform -	15:ä¸‰æ¬¡å…ƒåº§æ¨™å¤‰æ›
+// Normal -				16:æ³•ç·š
+// NormalBinding -		17:æ³•ç·šï¼ˆçµåˆï¼‰
+// OrthographicCamera - 18:å¹³è¡ŒæŠ•å½±ã‚«ãƒ¡ãƒ©
+// PerspectiveCamera -	19:é€è¦–ã‚«ãƒ¡ãƒ©
+// PointLight -			20:ç‚¹å…‰æº
+// PointSet -			21:ç‚¹
+// Rotation -			22:å›è»¢
+// Scale -				23:ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ã‚¹ã‚±ãƒ¼ãƒ«
+// Separator -			24:ç©ºé–“åˆ†é›¢
+// ShapeHints -			25:å½¢çŠ¶æƒ…å ±
+// Sphere -				26:çƒ
+// SpotLight -			27:ã‚¹ãƒãƒƒãƒˆãƒ©ã‚¤ãƒˆï¼ˆæŒ‡å‘æ€§ï¼‰
+// Switch -				28:é¸æŠ
+// Texture2 -			29:ãƒ†ã‚¯ã‚¹ãƒãƒ£ç”»åƒ
+// Texture2Transform -	30:ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
+// TextureCoordinate2 - 31:åº§æ¨™
+// TextureCoordinateBinding - 32
+// Transform -			33:ç·åˆç§»å‹•
+// TransformSeparator - 34:åº§æ¨™åˆ†é›¢
+// Translation -		35:å¹³è¡Œç§»å‹•
+// WWWAnchor -			36:WWWã‚¢ãƒ³ã‚«ãƒ¼ 
+// WWWInline -			37:ãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
 enum VRMLTags{
-	AsciiText=1,		// 1:•¶š
-	Cone,				// 2:‰~
-	Coordinate3,		// 3:OŸŒ³À•W
-	Cube,				// 4:—§•û‘Ì
-	Cylinder,			// 5:‰~’Œ
-	DirectionalLight,	// 6:wŒü«ŒõŒ¹
-	FontStyle,			// 7:‘‘Ì
-	Group,				// 8:ƒOƒ‹[ƒv 
-	IndexedFaceSet,		// 9:–Ê‚ğ’¸“_‚ÌƒCƒ“ƒfƒbƒNƒX‚Åw’è
-	IndexedLineSet,		// 10:ü‚ğ’¸“_‚ÌƒCƒ“ƒfƒbƒNƒX‚Åw’è
-	Info,				// 11:ƒCƒ“ƒtƒHƒ[ƒVƒ‡ƒ“
-	LOD,				// 12:Ú×w’è
-	Material,			// 13:Ş¿
-	MaterialBinding,	// 14:Ş¿iŒ‹‡j
-	MatrixTransform,	// 15:OŸŒ³À•W•ÏŠ·
-	Normal,				// 16:–@ü
-	NormalBinding,		// 17:–@üiŒ‹‡j
-	OrthographicCamera,	// 18:•½s“Š‰eƒJƒƒ‰
-	PerspectiveCamera,	// 19:“§‹ƒJƒƒ‰
-	PointLight,			// 20:“_ŒõŒ¹
-	PointSet,			// 21:“_
-	Rotation,			// 22:‰ñ“]
-	Scale,				// 23:ƒIƒuƒWƒFƒNƒg‚ÌƒXƒP[ƒ‹
-	Separator,			// 24:‹óŠÔ•ª—£
-	ShapeHints,			// 25:Œ`óî•ñ
-	Sphere,				// 26:‹…
-	SpotLight,			// 27:ƒXƒ|ƒbƒgƒ‰ƒCƒgiwŒü«j
-	Switch,				// 28:‘I‘ğ
-	Texture2,			// 29:ƒeƒNƒXƒ`ƒƒ‰æ‘œ
-	Texture2Transform,	// 30:ƒeƒNƒXƒ`ƒƒÀ•W
-	TextureCoordinate2,	// 31:À•W
-	TextureCoordinateBinding,	// 32
-	Transform,			// 33:‘‡ˆÚ“®
-	TransformSeparator,	// 34:À•W•ª—£
-	Translation,		// 35:•½sˆÚ“®
-	WWWAnchor,			// 36:WWWƒAƒ“ƒJ[ 
-	WWWInline,			// 37:ƒtƒ@ƒCƒ‹“Ç‚İ‚İ
+	AsciiText=1,
+	Cone,
+	Coordinate3,
+	Cube,
+	Cylinder,
+	DirectionalLight,
+	FontStyle,
+	Group,
+	IndexedFaceSet,
+	IndexedLineSet,
+	Info,
+	LOD,
+	Material,
+	MaterialBinding,
+	MatrixTransform,
+	Normal,
+	NormalBinding,
+	OrthographicCamera,
+	PerspectiveCamera,
+	PointLight,
+	PointSet,
+	Rotation,
+	Scale,
+	Separator,
+	ShapeHints,
+	Sphere,
+	SpotLight,
+	Switch,
+	Texture2,
+	Texture2Transform,
+	TextureCoordinate2,
+	TextureCoordinateBinding,
+	Transform,
+	TransformSeparator,
+	Translation,
+	WWWAnchor,
+	WWWInline,
 };
 
-// VRML V1.0 ƒp[ƒT[—pƒNƒ‰ƒX‚ğ’è‹`
+// Class: VRML_PARSER
+// VRML V1.0 ãƒ‘ãƒ¼ã‚µãƒ¼ç”¨ã‚¯ãƒ©ã‚¹ã‚’å®šç¾©
 class VRML_PARSER
 {
 public:
-    int Vrml_Parser_Main(BODY *, const char *);	// VRMLƒtƒ@ƒCƒ‹‚Ìƒp[ƒTmain
+	// Function: Vrml_Parser_Main
+	// VRMLãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ãƒ¼ã‚µmain
+    int Vrml_Parser_Main(BODY *, const char *);	
 
 private:
-	int CheckTags(char []);					// ƒ^ƒO‰ğÍ
-	int GetCoords(FILE *,MESH *);			// OŸŒ³À•W’l‚ğMESH‚ÉŠi”[‚·‚é
-	int GetFacets(FILE *,MESH *);			// ƒtƒ@ƒZƒbƒg‚ğMESH‚ÉŠi”[‚·‚é
-	int GetLine(FILE *,char []);			// ƒtƒ@ƒCƒ‹‚©‚ç1sæ“¾‚µA‰üs•¶š‚ğI’[•¶š‚É•ÏX‚·‚é
-	void SetMesh(MESH *,int [],int);		// ’¸“_‚ÌƒCƒ“ƒfƒbƒNƒXƒZƒbƒg‚©‚çAƒƒbƒVƒ…ƒf[ƒ^‚ğ¶¬‚·‚é
-	int GetHalfEdgePair(MESH *);			// ‘Î‚Æ‚È‚é‹t•ûŒüƒn[ƒtƒGƒbƒW‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğ“¾‚é
-	void SetFaceParam(MESH *);				// Še–Ê‚É–ÊÏ‚Æ’PˆÊ–@üƒxƒNƒgƒ‹‚Ìî•ñ‚ğ•t‰Á‚·‚é
+	// Function: CheckTags
+	// (private)ã‚¿ã‚°è§£æ
+	int CheckTags(char []);					
+	
+	// Function: CheckTags
+	// (private)ä¸‰æ¬¡å…ƒåº§æ¨™å€¤ã‚’MESHã«æ ¼ç´ã™ã‚‹
+	int GetCoords(FILE *,MESH *);			
+	
+	// Function: CheckTags
+	// (private)ãƒ•ã‚¡ã‚»ãƒƒãƒˆã‚’MESHã«æ ¼ç´ã™ã‚‹
+	int GetFacets(FILE *,MESH *);			
+	
+	// Function: CheckTags
+	// (private)ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰1è¡Œå–å¾—ã—ã€æ”¹è¡Œæ–‡å­—ã‚’çµ‚ç«¯æ–‡å­—ã«å¤‰æ›´ã™ã‚‹
+	int GetLine(FILE *,char []);			
+	
+	// Function: CheckTags
+	// (private)é ‚ç‚¹ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚»ãƒƒãƒˆã‹ã‚‰ã€ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ã‚’ç”Ÿæˆã™ã‚‹
+	void SetMesh(MESH *,int [],int);		
+	
+	// Function: CheckTags
+	// (private)å¯¾ã¨ãªã‚‹é€†æ–¹å‘ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’å¾—ã‚‹
+	int GetHalfEdgePair(MESH *);			
+	
+	// Function: CheckTags
+	// (private)å„é¢ã«é¢ç©ã¨å˜ä½æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã®æƒ…å ±ã‚’ä»˜åŠ ã™ã‚‹
+	void SetFaceParam(MESH *);				
 };
 
 #endif

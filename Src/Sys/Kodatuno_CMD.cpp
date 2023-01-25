@@ -1,16 +1,21 @@
-#include"Kodatuno.h"
+ï»¿#include"Kodatuno.h"
 
 
 //////////////////////////////////////////////////////
-// KodatunoƒRƒ}ƒ“ƒhÀsŠÖ”‚ÍˆÈ~‚É‹Lq‚µ‚Ä‚­‚¾‚³‚¢ //
+// Kodatunoã‚³ãƒãƒ³ãƒ‰å®Ÿè¡Œé–¢æ•°ã¯ä»¥é™ã«è¨˜è¿°ã—ã¦ãã ã•ã„ //
 //////////////////////////////////////////////////////
 
-// KodatunoƒRƒ}ƒ“ƒh(ƒo[ƒWƒ‡ƒ“î•ño—Í)
+// Function: CmdVerInf
+// ã‚³ãƒãƒ³ãƒ‰(ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±å‡ºåŠ›)
+//
+// Prameters:
+// argc - ã‚³ãƒãƒ³ãƒ‰å¼•æ•°ã®æ•°
+// *argv[] - ã‚³ãƒãƒ³ãƒ‰å¼•æ•°æ–‡å­—åˆ—
 void CmdVerInf(int argc,char *argv[])
 {
 	char *p;
 
-	// ƒIƒvƒVƒ‡ƒ“‚È‚µ
+	// ã‚ªãƒ—ã‚·ãƒ§ãƒ³ãªã—
 	if(!argc){
         char mes[256];
         sprintf(mes,"Kodatuno R%d.%d",KODATUNO_MAJOR_VER,KODATUNO_MINOR_VER);
@@ -18,15 +23,15 @@ void CmdVerInf(int argc,char *argv[])
         return;
 	}
 
-	// ƒIƒvƒVƒ‡ƒ“‚ ‚è
+	// ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚ã‚Š
 	argv++;
 	while(argc > 0 && (p=argv[0])[0] == '-' && *++p != '\0'){
 		do{
 			switch(*p){
-			case 'f':		// "-f"ƒIƒvƒVƒ‡ƒ“‚Åƒtƒ‹ƒl[ƒ€o—Í
+			case 'f':		// "-f"ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã§ãƒ•ãƒ«ãƒãƒ¼ãƒ å‡ºåŠ›
                 GuiIF.SetMessage("Kodatuno is Open Developed Alternative Trajectory Utility Nucleus Object");
 				break;
-			case 'F':		// "-F (”’l)"‚Å‚»‚Ì”’l•ª•¶š—ñ‚ğo—Í(ˆÓ–¡‚È‚µ)
+			case 'F':		// "-F (æ•°å€¤)"ã§ãã®æ•°å€¤åˆ†æ–‡å­—åˆ—ã‚’å‡ºåŠ›(æ„å‘³ãªã—)
 				if(argc==1) return;
 				argc--; argv++;
 				for(int i=0;i<atoi(argv[0]);i++){
@@ -42,23 +47,28 @@ void CmdVerInf(int argc,char *argv[])
 
 }
 
-// KodatunoƒRƒ}ƒ“ƒh(ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“)
+// Function: CmdFileOpen
+// ã‚³ãƒãƒ³ãƒ‰(ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³)
+// 
+// Prameters:
+// argc - ã‚³ãƒãƒ³ãƒ‰å¼•æ•°ã®æ•°
+// *argv[] - ã‚³ãƒãƒ³ãƒ‰å¼•æ•°æ–‡å­—åˆ—
 void CmdFileOpen(int argc,char *argv[])
 {
 	char *p;
 
-	// ƒIƒvƒVƒ‡ƒ“‚È‚µ
+	// ã‚ªãƒ—ã‚·ãƒ§ãƒ³ãªã—
 	if(!argc){
 		Kodatuno.OpenFile();
 	}
 
-	// ƒIƒvƒVƒ‡ƒ“‚ ‚è
+	// ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚ã‚Š
 	else{
 		argv++;
 		while(argc > 0 && (p=argv[0])[0] == '-' && *++p != '\0'){
 			do{
 				switch(*p){
-			case 'N':		// "-N (ƒtƒ@ƒCƒ‹–¼)"‚Å‚»‚Ìƒtƒ@ƒCƒ‹‚ğƒI[ƒvƒ“
+			case 'N':		// "-N (ãƒ•ã‚¡ã‚¤ãƒ«å)"ã§ãã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚ªãƒ¼ãƒ—ãƒ³
 				if(argc==1) return;
 				argc--; argv++;
 				Kodatuno.OpenFile(argv[0]);
@@ -72,18 +82,28 @@ void CmdFileOpen(int argc,char *argv[])
     GuiIF.UpdateDescribeWidget();
 }
 
-// UVƒpƒ‰ƒ[ƒ^‚Å•ªŠ„‚³‚ê‚½ƒƒCƒ„[ƒtƒŒ[ƒ€‚ğ•\¦
+// Function: CmdUVWire
+// ã‚³ãƒãƒ³ãƒ‰(UVãƒ¯ã‚¤ãƒ¤ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ è¡¨ç¤º)
+// 
+// Prameters:
+// argc - ã‚³ãƒãƒ³ãƒ‰å¼•æ•°ã®æ•°
+// *argv[] - ã‚³ãƒãƒ³ãƒ‰å¼•æ•°æ–‡å­—åˆ—
 void CmdUVWire(int argc,char *argv[])
 {
 	Kodatuno.UVWireFlameViewFlag = KOD_TRUE;
 }
 
-// ƒXƒP[ƒ‹•ÏX
+// Function: CmdChScale
+// ã‚³ãƒãƒ³ãƒ‰(ã‚¹ã‚±ãƒ¼ãƒ«å¤‰æ›´)
+// 
+// Prameters:
+// argc - ã‚³ãƒãƒ³ãƒ‰å¼•æ•°ã®æ•°
+// *argv[] - ã‚³ãƒãƒ³ãƒ‰å¼•æ•°æ–‡å­—åˆ—
 void CmdChScale(int argc,char *argv[])
 {
 	char *p;
 
-	// ƒIƒvƒVƒ‡ƒ“‚È‚µ
+	// ã‚ªãƒ—ã‚·ãƒ§ãƒ³ãªã—
 	if(!argc)
 		Kodatuno.GetModelScale();
 
@@ -91,7 +111,7 @@ void CmdChScale(int argc,char *argv[])
 	while(argc > 0 && (p=argv[0])[0] == '-' && *++p != '\0'){
 		do{
 			switch(*p){
-			case 'R':		// "-r (”’l)"‚ÅAƒ‚ƒfƒ‹ƒXƒP[ƒ‹‚ğƒZƒbƒg
+			case 'R':		// "-r (æ•°å€¤)"ã§ã€ãƒ¢ãƒ‡ãƒ«ã‚¹ã‚±ãƒ¼ãƒ«ã‚’ã‚»ãƒƒãƒˆ
 			case 'r':
 				if(argc==1) return;
 				argc--; argv++;
@@ -103,7 +123,12 @@ void CmdChScale(int argc,char *argv[])
 	}
 }
 
-// ƒgƒŒƒ‰ƒ“ƒX•ÏX
+// Function: CmdChTolerance
+// ã‚³ãƒãƒ³ãƒ‰(ãƒˆãƒ¬ãƒ©ãƒ³ã‚¹å¤‰æ›´)
+// 
+// Prameters:
+// argc - ã‚³ãƒãƒ³ãƒ‰å¼•æ•°ã®æ•°
+// *argv[] - ã‚³ãƒãƒ³ãƒ‰å¼•æ•°æ–‡å­—åˆ—
 void CmdChTolerance(int argc, char *argv[])
 {
 	char *p;
@@ -115,7 +140,7 @@ void CmdChTolerance(int argc, char *argv[])
 	while(argc > 0 && (p=argv[0])[0] == '-' && *++p != '\0'){
 		do{
 			switch(*p){
-			case 'R':		// "-r (”’l)"‚ÅAƒgƒŒƒ‰ƒ“ƒX‚ğƒZƒbƒg
+			case 'R':		// "-r (æ•°å€¤)"ã§ã€ãƒˆãƒ¬ãƒ©ãƒ³ã‚¹ã‚’ã‚»ãƒƒãƒˆ
 			case 'r':
 				if(argc==1) return;
 				argc--; argv++;
@@ -127,24 +152,29 @@ void CmdChTolerance(int argc, char *argv[])
 	}
 }
 
-// Body‚Ì•½sˆÚ“®
+// Function: CmdMoveBody
+// ã‚³ãƒãƒ³ãƒ‰(BODYã®å¹³è¡Œç§»å‹•)
+// 
+// Prameters:
+// argc - ã‚³ãƒãƒ³ãƒ‰å¼•æ•°ã®æ•°
+// *argv[] - ã‚³ãƒãƒ³ãƒ‰å¼•æ•°æ–‡å­—åˆ—
 void CmdMoveBody(int argc,char *argv[])
 {
 	char *p;
 
-	// ƒIƒvƒVƒ‡ƒ“‚È‚µ
+	// ã‚ªãƒ—ã‚·ãƒ§ãƒ³ãªã—
 	if(!argc){
         GuiIF.SetMessage("Command Error: Set -r dx dy dz options");
 		return;
 	}
 
-	double d[3] = {0,0,0};	// ˆÚ“®—ÊŠi”[—p
+	double d[3] = {0,0,0};	// ç§»å‹•é‡æ ¼ç´ç”¨
 
 	argv++;
 	while(argc > 0 && (p=argv[0])[0] == '-' && *++p != '\0'){
 		do{
 			switch(*p){
-			case 'R':		// "-r (”’l)"‚ÅAˆÚ“®—Ê‚ğƒZƒbƒg
+			case 'R':		// "-r (æ•°å€¤)"ã§ã€ç§»å‹•é‡ã‚’ã‚»ãƒƒãƒˆ
 			case 'r':
 				if(argc==1) return;
 				for(int i=0;i<3;i++){
@@ -159,24 +189,29 @@ void CmdMoveBody(int argc,char *argv[])
 	}
 }
 
-// Body‚Ì‰ñ“]
+// Function: CmdRotateBody
+// ã‚³ãƒãƒ³ãƒ‰(BODYã®å›è»¢)
+//
+// Prameters:
+// argc - ã‚³ãƒãƒ³ãƒ‰å¼•æ•°ã®æ•°
+// *argv[] - ã‚³ãƒãƒ³ãƒ‰å¼•æ•°æ–‡å­—åˆ—
 void CmdRotateBody(int argc,char *argv[])
 {
 	char *p;
 
-	// ƒIƒvƒVƒ‡ƒ“‚È‚µ
+	// ã‚ªãƒ—ã‚·ãƒ§ãƒ³ãªã—
 	if(!argc){
         GuiIF.SetMessage("Command Error: Set -r x y z deg options");
 		return;
 	}
 
-	double axd[4] = {0,0,0,0};	// ‰ñ“]²,‰ñ“]Šp
+	double axd[4] = {0,0,0,0};	// å›è»¢è»¸,å›è»¢è§’
 
 	argv++;
 	while(argc > 0 && (p=argv[0])[0] == '-' && *++p != '\0'){
 		do{
 			switch(*p){
-			case 'R':		// "-r (”’l)"‚ÅAˆÚ“®—Ê‚ğƒZƒbƒg
+			case 'R':		// "-r (æ•°å€¤)"ã§ã€ç§»å‹•é‡ã‚’ã‚»ãƒƒãƒˆ
 			case 'r':
 				if(argc==1) return;
 				for(int i=0;i<4;i++){
@@ -191,60 +226,97 @@ void CmdRotateBody(int argc,char *argv[])
 	}
 }
 
-// ƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒg‚ğ•`‰æ
+// Function: CmdCPView
+// ã‚³ãƒãƒ³ãƒ‰(ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆæç”»)
+//
+// Prameters:
+// argc - ã‚³ãƒãƒ³ãƒ‰å¼•æ•°ã®æ•°
+// *argv[] - ã‚³ãƒãƒ³ãƒ‰å¼•æ•°æ–‡å­—åˆ—
 void CmdCPView(int argc,char *argv[])
 {
 	Kodatuno.CPViewFlag = KOD_TRUE;
 }
 
-// ‹È–Êî•ñ‚ğo—Í
+// Function: CmdSurfInfo
+// ã‚³ãƒãƒ³ãƒ‰(æ›²é¢æƒ…å ±ã‚’å‡ºåŠ›)
+// 
+// Prameters:
+// argc - ã‚³ãƒãƒ³ãƒ‰å¼•æ•°ã®æ•°
+// *argv[] - ã‚³ãƒãƒ³ãƒ‰å¼•æ•°æ–‡å­—åˆ—
 void CmdSurfInfo(int argc,char *argv[])
 {
 	Kodatuno.GetSurfInfo();
 }
 
-// ‰ñ“]ƒT[ƒtƒFƒX¶¬ƒRƒ}ƒ“ƒh
+
+// Function: CmdGenRotSurf
+// ã‚³ãƒãƒ³ãƒ‰(å›è»¢ã‚µãƒ¼ãƒ•ã‚§ã‚¹ç”Ÿæˆ)
+//
+// Prameters:
+// argc - ã‚³ãƒãƒ³ãƒ‰å¼•æ•°ã®æ•°
+// *argv[] - ã‚³ãƒãƒ³ãƒ‰å¼•æ•°æ–‡å­—åˆ—
 void CmdGenRotSurf(int argc,char *argv[])
 {
 	GuiIF.ShowRotSurfDlg();
 }
 
-// ƒXƒC[ƒvƒT[ƒtƒFƒX¶¬ƒRƒ}ƒ“ƒh
+
+// Function: CmdGenSweepSurf
+// ã‚³ãƒãƒ³ãƒ‰(ã‚¹ã‚¤ãƒ¼ãƒ—ã‚µãƒ¼ãƒ•ã‚§ã‚¹ç”Ÿæˆ)
+// 
+// Prameters:
+// argc - ã‚³ãƒãƒ³ãƒ‰å¼•æ•°ã®æ•°
+// *argv[] - ã‚³ãƒãƒ³ãƒ‰å¼•æ•°æ–‡å­—åˆ—
 void CmdGenSweepSurf(int argc,char *argv[])
 {
 	GuiIF.ShowSweepSurfDlg();
 }
 
-// Nurbs‹Èü¶¬ƒRƒ}ƒ“ƒh
+// Function: CmdGenNurbsCurve
+// ã‚³ãƒãƒ³ãƒ‰(Nurbsæ›²ç·šç”Ÿæˆ)
+//
+// Prameters:
+// argc - ã‚³ãƒãƒ³ãƒ‰å¼•æ•°ã®æ•°
+// *argv[] - ã‚³ãƒãƒ³ãƒ‰å¼•æ•°æ–‡å­—åˆ—
 void CmdGenNurbsCurve(int argc,char *argv[])
 {
 	GuiIF.ShowNurbsCurveDlg();
 }
 
-// Nurbs‹È–Ê¶¬ƒRƒ}ƒ“ƒh
+// Function: CmdGenNurbsSurface
+// ã‚³ãƒãƒ³ãƒ‰(Nurbsæ›²é¢ç”Ÿæˆ)
+//
+// Prameters:
+// argc - ã‚³ãƒãƒ³ãƒ‰å¼•æ•°ã®æ•°
+// *argv[] - ã‚³ãƒãƒ³ãƒ‰å¼•æ•°æ–‡å­—åˆ—
 void CmdGenNurbsSurface(int argc,char *argv[])
 {
 	GuiIF.ShowNurbsSurfDlg();
 }
 
-// Body‚ÌŠg‘å
+// Function: CmdExpand
+// ã‚³ãƒãƒ³ãƒ‰(BODYã®æ‹¡å¤§)
+//
+// Prameters:
+// argc - ã‚³ãƒãƒ³ãƒ‰å¼•æ•°ã®æ•°
+// *argv[] - ã‚³ãƒãƒ³ãƒ‰å¼•æ•°æ–‡å­—åˆ—
 void CmdExpand(int argc,char *argv[])
 {
 	char *p;
 
-	// ƒIƒvƒVƒ‡ƒ“‚È‚µ
+	// ã‚ªãƒ—ã‚·ãƒ§ãƒ³ãªã—
 	if(!argc){
         GuiIF.SetMessage("Command Error: Set -r x y z deg options");
 		return;
 	}
 
-	double axd[3] = {0,0,0};	// Še²•ûŒüŠg‘å—¦
+	double axd[3] = {0,0,0};	// å„è»¸æ–¹å‘æ‹¡å¤§ç‡
 
 	argv++;
 	while(argc > 0 && (p=argv[0])[0] == '-' && *++p != '\0'){
 		do{
 			switch(*p){
-			case 'R':		// "-r (”’l)"‚ÅAˆÚ“®—Ê‚ğƒZƒbƒg
+			case 'R':		// "-r (æ•°å€¤)"ã§ã€ç§»å‹•é‡ã‚’ã‚»ãƒƒãƒˆ
 			case 'r':
 				if(argc==1) return;
 				for(int i=0;i<3;i++){
@@ -259,12 +331,17 @@ void CmdExpand(int argc,char *argv[])
 	}
 }
 
-// NURBS Rnak‚Ì•ÏX
+// Function: CmdChRank
+// ã‚³ãƒãƒ³ãƒ‰(Nurbs Rankã®å¤‰æ›´)
+//
+// Prameters:
+// argc - ã‚³ãƒãƒ³ãƒ‰å¼•æ•°ã®æ•°
+// *argv[] - ã‚³ãƒãƒ³ãƒ‰å¼•æ•°æ–‡å­—åˆ—
 void CmdChRank(int argc, char *argv[])
 {
 	char *p;
 
-	// ƒIƒvƒVƒ‡ƒ“‚È‚µ
+	// ã‚ªãƒ—ã‚·ãƒ§ãƒ³ãªã—
 	if(!argc){
         GuiIF.SetMessage("Command Error: Set -r (u-val) (v-val)");
 		return;
@@ -276,7 +353,7 @@ void CmdChRank(int argc, char *argv[])
 	while(argc > 0 && (p=argv[0])[0] == '-' && *++p != '\0'){
 		do{
 			switch(*p){
-			case 'R':		// "-r (”’l)"‚ÅAƒgƒŒƒ‰ƒ“ƒX‚ğƒZƒbƒg
+			case 'R':		// "-r (æ•°å€¤)"ã§ã€ãƒˆãƒ¬ãƒ©ãƒ³ã‚¹ã‚’ã‚»ãƒƒãƒˆ
 			case 'r':
 				if(argc==1) return;
 				for(int i=0;i<2;i++){
@@ -291,12 +368,17 @@ void CmdChRank(int argc, char *argv[])
 	}
 }
 
-// ”wŒi‚ÌF‚ğ•ÏX‚·‚é
+// Function: CmdChBkCol
+// ã‚³ãƒãƒ³ãƒ‰(èƒŒæ™¯è‰²å¤‰æ›´)
+//
+// Prameters:
+// argc - ã‚³ãƒãƒ³ãƒ‰å¼•æ•°ã®æ•°
+// *argv[] - ã‚³ãƒãƒ³ãƒ‰å¼•æ•°æ–‡å­—åˆ—
 void CmdChBkCol(int argc, char *argv[])
 {
 	char *p;
 
-	// ƒIƒvƒVƒ‡ƒ“‚È‚µ
+	// ã‚ªãƒ—ã‚·ãƒ§ãƒ³ãªã—
 	if(!argc){
         GuiIF.SetMessage("Command Error: Set -r (r-val) (g-val) (b-val)");
 		return;
@@ -308,7 +390,7 @@ void CmdChBkCol(int argc, char *argv[])
 	while(argc > 0 && (p=argv[0])[0] == '-' && *++p != '\0'){
 		do{
 			switch(*p){
-			case 'R':		// "-r (”’l)"‚ÅAƒgƒŒƒ‰ƒ“ƒX‚ğƒZƒbƒg
+			case 'R':		// "-r (æ•°å€¤)"ã§ã€ãƒˆãƒ¬ãƒ©ãƒ³ã‚¹ã‚’ã‚»ãƒƒãƒˆ
 			case 'r':
 				if(argc==1) return;
 				for(int i=0;i<3;i++){
@@ -323,13 +405,23 @@ void CmdChBkCol(int argc, char *argv[])
 	}
 }
 
-// Meshî•ñ‚ğo—Í
+// Function: CmdMeshInf
+// ã‚³ãƒãƒ³ãƒ‰(Meshæƒ…å ±å‡ºåŠ›)
+//
+// Prameters:
+// argc - ã‚³ãƒãƒ³ãƒ‰å¼•æ•°ã®æ•°
+// *argv[] - ã‚³ãƒãƒ³ãƒ‰å¼•æ•°æ–‡å­—åˆ—
 void CmdMeshInf(int argc, char *argv[])
 {
 	Kodatuno.GetMeshInfo();
 }
 
-// U,V‚Ì•ûŒü‚ğ•\¦‚·‚é
+// Function: CmdUVdir
+// ã‚³ãƒãƒ³ãƒ‰(U,Vã®æ–¹å‘ã‚’æç”»)
+//
+// Prameters:
+// argc - ã‚³ãƒãƒ³ãƒ‰å¼•æ•°ã®æ•°
+// *argv[] - ã‚³ãƒãƒ³ãƒ‰å¼•æ•°æ–‡å­—åˆ—
 void CmdUVdir(int argc,char *argv[])
 {
 	Kodatuno.UVDirFlag = KOD_TRUE;

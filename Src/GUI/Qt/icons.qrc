@@ -1,4 +1,4 @@
-<RCC>
+﻿<RCC>
     <qresource prefix="/new/prefix1">
         <file>icons/bi4.ico</file>
         <file>icons/bi8.ico</file>

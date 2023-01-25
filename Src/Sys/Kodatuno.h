@@ -1,4 +1,4 @@
-// Kodatuno‚ÌƒCƒ“ƒ^[ƒtƒF[ƒXŠÖŒW‚ğ’è‹`
+ï»¿// Kodatunoã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹é–¢ä¿‚ã‚’å®šç¾©
 
 #ifndef _KODATUNO_H_
 #define _KODATUNO_H_
@@ -14,208 +14,681 @@
 #include "UserFunc.h"
 #include "Command.h"
 
-#define KODATUNO_MAJOR_VER  3  				// kodatuno‚ÌƒƒWƒƒ[ƒo[ƒWƒ‡ƒ“
-#define KODATUNO_MINOR_VER  0  				// kodatuno‚Ìƒ}ƒCƒi[ƒo[ƒWƒ‡ƒ“
+// Constants : General Defines
+// KODATUNO_MAJOR_VER - 			kodatunoã®ãƒ¡ã‚¸ãƒ£ãƒ¼ãƒãƒ¼ã‚¸ãƒ§ãƒ³(3)
+// KODATUNO_MINOR_VER - 			kodatunoã®ãƒã‚¤ãƒŠãƒ¼ãƒãƒ¼ã‚¸ãƒ§ãƒ³(0)
+// EXT_IGES -						æ‹¡å¼µå­åˆ¤åˆ¥ç”¨(IGES)(1)
+// EXT_STL -						æ‹¡å¼µå­åˆ¤åˆ¥ç”¨(STL)(2)
+// CONSOLE_CHAR_NUMMAX -			ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ã«å‡ºåŠ›å¯èƒ½ãªæ–‡å­—æ•°(2048)
+// MAXSELECT -						ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³æ™‚ã®æœ€å¤§ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚º(20000)
+// BODYLISTMAX -					èª­ã¿è¾¼ã‚ã‚‹BODYã®æœ€å¤§æ•°(8)
+// TOLERANCE -						NURBSæ›²é¢ã®ç²—ã•ã®ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤(20)
+// HISTORYNUMMAX -					ã‚³ãƒãƒ³ãƒ‰å±¥æ­´ã®æœ€å¤§æ•°(10)
+// KDT_MOUSE_PRESS -				ãƒã‚¦ã‚¹ãƒœã‚¿ãƒ³ãƒ—ãƒ¬ã‚¹(1000)
+// KDT_MOUSE_RELEASE -				ãƒã‚¦ã‚¹ãƒœã‚¿ãƒ³ãƒªãƒªãƒ¼ã‚¹(1001)
+// KDT_MOUSE_LEFT -					ãƒã‚¦ã‚¹å·¦ãƒœã‚¿ãƒ³(1002)
+// KDT_MOUSE_MIDDLE -				ãƒã‚¦ã‚¹ä¸­ãƒœã‚¿ãƒ³(1003)
+// KDT_MOUSE_RIGHT -				ãƒã‚¦ã‚¹å³ãƒœã‚¿ãƒ³(1004)
+// KDT_MOUSE_NONE -					ã©ã®ãƒœã‚¿ãƒ³ã§ã‚‚ãªã„(1005)
+// KDT_MOD_CTRL -					Ctrlä¿®é£¾(2001)
+// KDT_MOD_SHIFT -					Shiftä¿®é£¾(2001)
+// KDT_MOD_ALT -					Altä¿®é£¾(2002)
+// KDT_MOD_NONE -					ã©ã®ä¿®é£¾ã‚‚ãªã„(2003)
+#define KODATUNO_MAJOR_VER  3  				
+#define KODATUNO_MINOR_VER  0  				
 
-#define EXT_IGES	1						// Šg’£q”»•Ê—p(IGES)
-#define EXT_STL		2						// Šg’£q”»•Ê—p(STL)
-#define CONSOLE_CHAR_NUMMAX	2048			// ƒRƒ“ƒ\[ƒ‹‚É“ü—Í‚Å‚«‚é•¶š”‚ÌÅ‘å’l
-#define MAXSELECT	20000					// ƒZƒŒƒNƒVƒ‡ƒ“‚ÌÅ‘åƒoƒbƒtƒ@ƒTƒCƒY
-#define BODYLISTMAX	8						// “Ç‚İ‚ß‚éBODY‚ÌÅ‘å”
-#define TOLERANCE 20						// NURBS‹È–Ê‚Ì‘e‚³‚ÌƒfƒtƒHƒ‹ƒg’l
-#define HISTORYNUMMAX 10					// ƒRƒ}ƒ“ƒh—š—ğ”
+#define EXT_IGES	1						
+#define EXT_STL		2						
+#define CONSOLE_CHAR_NUMMAX	2048			
+#define MAXSELECT	20000					
+#define BODYLISTMAX	8						
+#define TOLERANCE 20						
+#define HISTORYNUMMAX 10					
 
-#define KDT_MOUSE_PRESS		1000	//ƒ}ƒEƒXƒ{ƒ^ƒ“ƒvƒŒƒX
-#define KDT_MOUSE_RELEASE   1001	//ƒ}ƒEƒXƒ{ƒ^ƒ“ƒŠƒŠ[ƒX
-#define KDT_MOUSE_LEFT      1002	//ƒ}ƒEƒX¶ƒ{ƒ^ƒ“
-#define KDT_MOUSE_MIDDLE    1003	//ƒ}ƒEƒX’†ƒ{ƒ^ƒ“
-#define KDT_MOUSE_RIGHT		1004	//ƒ}ƒEƒX‰Eƒ{ƒ^ƒ“
-#define KDT_MOUSE_NONE		1005	//‚Ç‚Ìƒ{ƒ^ƒ“‚Å‚à‚È‚¢
+#define KDT_MOUSE_PRESS		1000	
+#define KDT_MOUSE_RELEASE   1001	
+#define KDT_MOUSE_LEFT      1002	
+#define KDT_MOUSE_MIDDLE    1003	
+#define KDT_MOUSE_RIGHT		1004	
+#define KDT_MOUSE_NONE		1005	
 
-#define KDT_MOD_CTRL	2001	//CtrlCü
-#define KDT_MOD_SHIFT	2001	//ShiftCü
-#define KDT_MOD_ALT		2002	//AltCü
-#define KDT_MOD_NONE	2003	//‚Ç‚ÌCü‚à‚È‚¢
+#define KDT_MOD_CTRL	2001	
+#define KDT_MOD_SHIFT	2001	
+#define KDT_MOD_ALT		2002	
+#define KDT_MOD_NONE	2003	
 
-// NURBS‹È–Ê‚Ì¶¬•û–@‚ğ•\‚·ƒVƒ“ƒ{ƒ‹
-#define ROTSURF	0							// ‰ñ“]ƒT[ƒtƒFƒX		
-#define SWEEPSURF 1							// ƒXƒC[ƒvƒT[ƒtƒFƒX
+// Constants: General Defines
+// ROTSURF							å›è»¢ã‚µãƒ¼ãƒ•ã‚§ã‚¹(0)
+// SWEEPSURF						ã‚¹ã‚¤ãƒ¼ãƒ—ã‚µãƒ¼ãƒ•ã‚§ã‚¹(1)
+#define ROTSURF	0							
+#define SWEEPSURF 1							
 
 
-// KODatUNOƒNƒ‰ƒX‚ğ’è‹`
-class KODatUNO : public Describe_BODY		// BODYŠÖ˜AŠÖ”‚ğW‚ß‚½ƒNƒ‰ƒX‚ğŒp³
+// Class: KODatUNO
+// BODYé–¢é€£é–¢æ•°ã‚’é›†ã‚ãŸã‚¯ãƒ©ã‚¹ã‚’ç¶™æ‰¿
+class KODatUNO : public Describe_BODY		
 {
-// publicŠÖ”‚Ì’è‹`
 public:
-    void InitializeWin(int, int);			// Kodatuno‚Ì‰Šú‰»
-	void DeleteWin();						// Kodatuno‚ÌI—¹ˆ—
-	int OpenFile();							// ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“
-	int OpenFile(char *);					// ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“(ƒI[ƒo[ƒ[ƒh)
-    std::string OpenInpFile();              // ƒCƒ“ƒvƒbƒgƒtƒ@ƒCƒ‹ƒI[ƒvƒ“
-	int BodyListSelect();					// ƒ{ƒfƒBƒŠƒXƒg‘I‘ğ
-	void ReDraw(int,int);					// Ä•`‰æ
-	void ReDrawUserFunc();					// UserFuncÀs‚ÌÄ•`‰æŒÄ‚Ño‚µ
-	void ReDrawUserCommand();				// UserCommandÀs‚ÌÄ•`‰æŒÄ‚Ño‚µ
-	int GetConsoleCharNum();				// ƒRƒ“ƒ\[ƒ‹•¶š”‚ğo—Í
-	void SetConsoleCharNum(int);			// ƒRƒ“ƒ\[ƒ‹•¶š”‚ğ•Û‘¶
-	void ExecCommand(char *);				// ƒRƒ}ƒ“ƒhÀs
-    int GetUpperConsoleHistory(std::string *);	// ƒRƒ}ƒ“ƒh—š—ğ‚ğæ“¾
-    int GetLowerConsoleHistory(std::string *);	// ƒRƒ}ƒ“ƒh—š—ğ‚ğæ“¾
-    void SetConsoleHistory(std::string);		// ƒRƒ}ƒ“ƒh—š—ğ‚ğ“o˜^
-    int GetConsoleHistoryNum();             	// ƒRƒ}ƒ“ƒh—š—ğ”‚ğæ“¾ <<< ’Ç‰Á
-    void GetResizeWindow(int, int);					// ƒEƒBƒ“ƒhƒE‚ªƒŠƒTƒCƒY‚³‚ê‚½‚Æ‚«‚ÉA‚»‚ÌƒEƒCƒ“ƒhƒEƒTƒCƒY‚ğ“Ç‚İ‚Ş
-	void MouseEvent(long,long,short,short);	// ƒ}ƒEƒXƒCƒxƒ“ƒg‚Ìˆ—
-    void MouseMotionEvent(long,long,short,short);// ƒ}ƒEƒXˆÚ“®’†‚ÌƒCƒxƒ“ƒgˆ—
-    void MouseWheelEvent(long);				// ƒ}ƒEƒXƒzƒC[ƒ‹‚Ìˆ—
-    void ChangeViewX();						// X²ã‚Ì‹“_‚ÉØ‚è‘Ö‚¦‚é
-	void ChangeViewY();						// Y²ã‚Ì‹“_‚ÉØ‚è‘Ö‚¦‚é
-	void ChangeViewZ();						// Z²ã‚Ì‹“_‚ÉØ‚è‘Ö‚¦‚é
-	void ChangeViewXYZ();					// ’¹áÕ‹“_‚ÉØ‚è‘Ö‚¦‚é
-    bool ChangeViewUp();					// ã–îˆóƒL[‚ª‰Ÿ‚³‚ê‚½ê‡‚ÌBODY‰ñ“]
-    bool ChangeViewDown();				// ‰º–îˆóƒL[‚ª‰Ÿ‚³‚ê‚½ê‡‚ÌBODY‰ñ“]
-    bool ChangeViewLeft();				// ¶–îˆóƒL[‚ª‰Ÿ‚³‚ê‚½ê‡‚ÌBODY‰ñ“]
-    bool ChangeViewRight();				// ‰E–îˆóƒL[‚ª‰Ÿ‚³‚ê‚½ê‡‚ÌBODY‰ñ“]
-	void FitView();							// ”{—¦‚ğƒfƒtƒHƒ‹ƒg‚É–ß‚·
-	void SolidView();						// Solid•\¦
-	void NoEdgeView();						// Edge‚ğ”ñ•\¦‚É‚·‚é
-	void WireFlameView();					// WireFlame•\¦
-	void VoidView();						// •\¦‚µ‚È‚¢
-	void SelectAll();						// ‘S‚ÄƒZƒŒƒNƒgó‘Ô‚É‚·‚é
-	void SelectionCancel();					// ƒZƒŒƒNƒVƒ‡ƒ“ƒLƒƒƒ“ƒZƒ‹
-	void ViewBlending();					// BODY‚ğ”¼“§–¾•\¦
-	void DeleteBody();						// BODYÁ‹
-	void OpenDelBtn();						// OpenCDeleteƒ{ƒ^ƒ“‚Ì•\¦‘®«‚Ì•ÏX
-	void ExecuteUserFuncMain(int);			// UserFunc‚ÌÀs
-	void AcceptUserStat(int,double []);		// UserStatus‚Ìİ’è
-    void GetUserStat(int *,double []);      // UserStatus‚ğæ“¾
-	void UserViewCanncel();					// UserFunc‚É‚æ‚Á‚Ä•`‰æ‚³‚ê‚½‰æ‘œ‚ğÁ‚·
-	void SetModelScale(double);				// ƒ‚ƒfƒ‹ƒXƒP[ƒ‹‚ğƒZƒbƒg
-	void GetModelScale();					// ƒ‚ƒfƒ‹ƒXƒP[ƒ‹’l‚ğæ“¾
-	void SetTolerance(double);				// ƒgƒŒƒ‰ƒ“ƒX’l‚ğƒZƒbƒg
-	void GetTolerance();					// ƒgƒŒƒ‰ƒ“ƒX’l‚ğæ“¾
-	void GetShiftBody(Coord);				// BODY‚ğ•½sˆÚ“®
-	void GetRotateBody(Coord,double);		// BODY‚ğ‰ñ“]
-	void ExpandBody(Coord);					// BODY‚ğŠg‘å
-	int GenSurface(Coord,double,int);		// ŠeíƒT[ƒtƒFƒX‚ğ¶¬
-	int GenNurbsCurve(int,char *,int);		// w’è‚µ‚½ƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚İ,NURBS‹Èü‚ğ¶¬
-	int GenNurbsSurface(int,char *,int);	// w’è‚µ‚½ƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚İ,NURBS‹È–Ê‚ğ¶¬
-	void GetSurfInfo();						// ‘I‘ğ‚³‚ê‚Ä‚¢‚é‹È–Ê‚Ìî•ñ‚ğƒRƒ“ƒ\[ƒ‹o—Í‚·‚é
-	void ChangeRank(int []);				// ‘I‘ğ‚³‚ê‚Ä‚¢‚é‹È–Ê‚ÌRank‚ğ•ÏX‚·‚é
-	void ChangeBackColor(double []);		// ”wŒi‚ÌF‚ğ•ÏX‚·‚é
-	BODY *SearchBodyList(BODYList *,int);	// ƒZƒŒƒNƒVƒ‡ƒ“‚³‚ê‚Ä‚¢‚éBODY”Ô†‚ğ“¾‚é
-	void GetMeshInfo();						// Meshî•ñ‚ğo—Í
+// Function: InitializeWin
+// ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒç‹¬è‡ªã«ä½œæˆã—ãŸé–¢æ•°ã¨Userãƒœã‚¿ãƒ³ã¨ã®é–¢é€£ä»˜ã‘åŠã³ã€Userã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã®åˆæœŸåŒ–ã‚’è¡Œã†
+    void InitializeWin(int, int);			
 
-	// Brand New!
-	void DispUVdirection();					// ‘I‘ğ‚³‚ê‚Ä‚¢‚é‹È–Ê‚ÌU,V•ûŒü‚ğ•\¦‚·‚é
+// Function: DeleteWin
+// Kodatunoã®çµ‚äº†å‡¦ç†
+	void DeleteWin();						
 
-// privateŠÖ”‚Ì’è‹`
+// Function: OpenFile
+// æ‹¡å¼µå­IGSã¾ãŸã¯igsã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿è¾¼ã‚€ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ãƒœãƒƒã‚¯ã‚¹ã‚’è¡¨ç¤ºã—ã€IGSãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿è¾¼ã‚€ï¼
+// èª­ã¿è¾¼ã¾ã‚ŒãŸç«‹ä½“æƒ…å ±ã¯BODYã«ç™»éŒ²ã•ã‚Œã€BODYæç”»ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹ï¼
+// ã¾ãŸã€èª­ã¿è¾¼ã‚“ã NURBSãƒ‡ãƒ¼ã‚¿ã«ç¸®é€€ãŒã‚ã‚‹å ´åˆã¯ã€ãã®è£œé–“ã‚‚ã“ã“ã§è¡Œã‚ã‚Œã‚‹
+	int OpenFile();							
+
+// Function: OpenFile
+// ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³(ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰)
+	int OpenFile(char *);					
+
+// Function: OpenInpFile
+// æ‹¡å¼µå­INPã¾ãŸã¯inpã‚’æŒã¤ã‚¤ãƒ³ãƒ—ãƒƒãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ•ãƒ«ãƒ‘ã‚¹åã‚’å–å¾—ã™ã‚‹
+    std::string OpenInpFile();              
+
+// Function: BodyListSelect
+// BODYãƒªã‚¹ãƒˆãƒœãƒƒã‚¯ã‚¹ã«ã‚ã‚‹BODYåãŒé¸æŠã•ã‚ŒãŸå ´åˆã«ã€ãã®BODYã®ç•ªå·ã‚’å¾—ã‚‹
+	int BodyListSelect();					
+
+// Fuction: ReDraw
+// OpenGLã«ã‚ˆã‚‹BODYæç”»ã‚’è¡Œã†ï¼å†æç”»ã‚¤ãƒ™ãƒ³ãƒˆãŒç™ºç”Ÿã—ãŸæ™‚ã«å‘¼ã°ã‚Œã‚‹ï¼
+// (æ³¨æ„)OpenGLãŒç”¨æ„ã™ã‚‹APIã¯ã“ã®é–¢æ•°ã«ã¶ã‚‰ä¸‹ãŒã£ã¦ã„ãªã‘ã‚Œã°ãªã‚‰ãªã„
+	void ReDraw(int,int);					
+
+// Function: ReDrawUserFunc
+// Useré–¢æ•°ã«ã‚ˆã£ã¦å®Ÿè¡Œã•ã‚ŒãŸOpenGLã«ã‚ˆã‚‹æç”»ã¯ã“ã®é–¢æ•°ã§è¡Œã†ï¼
+// (æ³¨æ„)OpenGLãŒç”¨æ„ã™ã‚‹APIã¯ã“ã®é–¢æ•°ã«ã¶ã‚‰ä¸‹ãŒã£ã¦ã„ãªã‘ã‚Œã°ãªã‚‰ãªã„
+	void ReDrawUserFunc();					
+
+// Function: ReDrawUserCommand
+// UserCommandå®Ÿè¡Œæ™‚ã®å†æç”»å‘¼ã³å‡ºã—
+	void ReDrawUserCommand();				
+
+// Function: GetConsoleCharNum
+// ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ã®ç¾åœ¨ã®æ–‡å­—æ•°ã‚’å¾—ã‚‹
+	int GetConsoleCharNum();				
+	
+// Function: SetConsoleCharNum
+// ã‚³ãƒ³ã‚½ãƒ¼ãƒ«æ–‡å­—æ•°ã‚’ä¿å­˜ã™ã‚‹
+	void SetConsoleCharNum(int);			
+
+// Function: ExecCommand
+// ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ã‹ã‚‰å…¥åŠ›ã•ã‚ŒãŸã‚³ãƒãƒ³ãƒ‰ã‚’è§£æã—å®Ÿè¡Œã™ã‚‹
+	void ExecCommand(char *);				
+	
+// GetUpperConsoleHistory
+// ã‚³ãƒ³ã‚½ãƒ¼ãƒ«å†…ã§ä¸ŠçŸ¢å°ã‚­ãƒ¼ãŒæŠ¼ã•ã‚ŒãŸå ´åˆã€ã‚³ãƒãƒ³ãƒ‰å±¥æ­´ã‚’çŸ¢å°ã«æ²¿ã£ã¦å–å¾—ã—ã¦ã„ã
+    int GetUpperConsoleHistory(std::string *);	
+	
+// GetLowerConsoleHistory
+// ã‚³ãƒ³ã‚½ãƒ¼ãƒ«å†…ã§ä¸‹çŸ¢å°ã‚­ãƒ¼ãŒæŠ¼ã•ã‚ŒãŸå ´åˆã€ã‚³ãƒãƒ³ãƒ‰å±¥æ­´ã‚’çŸ¢å°ã«æ²¿ã£ã¦å–å¾—ã—ã¦ã„ã
+    int GetLowerConsoleHistory(std::string *);	
+	
+// Function: SetConsoleHistory
+// ã‚³ãƒãƒ³ãƒ‰å±¥æ­´ã‚’æ ¼ç´ã—ã¦ã„ã‚‹é…åˆ—ã«æ–°ãŸãªã‚³ãƒãƒ³ãƒ‰ã‚’å±¥æ­´ã¨ã—ã¦ç™»éŒ²ã™ã‚‹
+    void SetConsoleHistory(std::string);		
+
+// Function: GetonsoleHistoryNum
+// ã‚³ãƒãƒ³ãƒ‰å±¥æ­´æ•°ã‚’å–å¾— 
+    int GetConsoleHistoryNum();             	
+
+// Function: GetResizeWindow
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒãƒªã‚µã‚¤ã‚ºã•ã‚ŒãŸã¨ãã«ã€ãã®ã‚¦ã‚¤ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºã‚’èª­ã¿è¾¼ã‚€
+    void GetResizeWindow(int, int);					
+	
+// Function: MouseEvent
+// ãƒã‚¦ã‚¹ã‚¤ãƒ™ãƒ³ãƒˆãŒç™ºç”Ÿã—ãŸå ´åˆã«ã€æŠ¼ã•ã‚ŒãŸãƒœã‚¿ãƒ³ã«å¿œã˜ã¦å‡¦ç†ã‚’è¡Œã†
+	void MouseEvent(long,long,short,short);	
+	
+// Function: MouseMotionEvent
+// ãƒã‚¦ã‚¹ç§»å‹•ä¸­ã®ã‚¤ãƒ™ãƒ³ãƒˆå‡¦ç†
+    void MouseMotionEvent(long,long,short,short);
+	
+// Function: MouseWheelEvent
+// ãƒã‚¦ã‚¹ãƒ›ã‚¤ãƒ¼ãƒ«ã®å‡¦ç†
+    void MouseWheelEvent(long);				
+	
+// Function: ChangeViewX
+// Xè»¸ä¸Šã®è¦–ç‚¹ã«åˆ‡ã‚Šæ›¿ãˆã‚‹
+    void ChangeViewX();						
+
+// Function: ChangeViewY
+// Yè»¸ä¸Šã®è¦–ç‚¹ã«åˆ‡ã‚Šæ›¿ãˆã‚‹
+	void ChangeViewY();						
+	
+// Function: ChangeViewZ
+// Zè»¸ä¸Šã®è¦–ç‚¹ã«åˆ‡ã‚Šæ›¿ãˆã‚‹
+	void ChangeViewZ();						
+	
+// Function: ChangeViewXYZ
+// é³¥ç°è¦–ç‚¹ã«åˆ‡ã‚Šæ›¿ãˆã‚‹
+	void ChangeViewXYZ();					
+	
+// Function: ChangeViewUp
+// Ctrl+ä¸ŠçŸ¢å°ã‚­ãƒ¼ã§15degã¥ã¤BODYã‚’å›è»¢ã•ã›ã‚‹
+    bool ChangeViewUp();					
+
+// Function: ChangeViewDown
+// Ctrl+ä¸‹çŸ¢å°ã‚­ãƒ¼ã§15degã¥ã¤BODYã‚’å›è»¢ã•ã›ã‚‹
+    bool ChangeViewDown();				
+	
+// Function: ChangeViewLeft
+// Ctrl+å·¦çŸ¢å°ã‚­ãƒ¼ã§15degã¥ã¤BODYã‚’å›è»¢ã•ã›ã‚‹
+    bool ChangeViewLeft();				
+	
+// Function: ChangeViewRight
+// Ctrl+å³çŸ¢å°ã‚­ãƒ¼ã§15degã¥ã¤BODYã‚’å›è»¢ã•ã›ã‚‹
+    bool ChangeViewRight();				
+	
+// Function: FitView
+// å€ç‡ã‚’ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã«æˆ»ã™
+	void FitView();							
+
+// Function: SolidView
+// Solidè¡¨ç¤º
+	void SolidView();						
+	
+// Function: NoEdgeView
+// BODYã‚’ã‚½ãƒªãƒƒãƒ‰è¡¨ç¤ºã«åˆ‡ã‚Šæ›¿ãˆã‚‹
+	void NoEdgeView();						
+	
+// Function: WireFlameView
+// BODYã‚’WireFlameè¡¨ç¤ºã«åˆ‡ã‚Šæ›¿ãˆã‚‹
+	void WireFlameView();					
+	
+// Function: VoidView
+// BODYã‚’éè¡¨ç¤ºã«åˆ‡ã‚Šæ›¿ãˆã‚‹
+	void VoidView();						
+	
+// Function: SelectAll
+// å…¨ã¦ã‚»ãƒ¬ã‚¯ãƒˆçŠ¶æ…‹ã«ã™ã‚‹
+	void SelectAll();						
+	
+// Function: SelectionCancel
+// ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ãŒã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³çŠ¶æ…‹ã«ã‚ã‚‹å ´åˆã¯ã€ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã‚’å…¨ã¦è§£é™¤ã™ã‚‹
+	void SelectionCancel();					
+	
+// Function: ViewBlending
+// BODYã‚’åŠé€æ˜ã«ã™ã‚‹
+	void ViewBlending();					
+	
+// Function: DeleteBody
+// é¸æŠã•ã‚Œã¦ã„ã‚‹BODYã‚’æ¶ˆå»
+	void DeleteBody();						
+	
+// Function: OpenDelBtn
+// Openï¼ŒDeleteãƒœã‚¿ãƒ³ã®è¡¨ç¤ºå±æ€§ã®å¤‰æ›´
+	void OpenDelBtn();						
+	
+// Function: ExecuteUserFuncMain
+// Useré–¢æ•°ã‚’å®Ÿè¡Œã™ã‚‹
+	void ExecuteUserFuncMain(int);			
+	
+// Functon: AcceptUserStat
+// Userã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã®è¨­å®šå€¤ã‚’èªè­˜ã™ã‚‹
+	void AcceptUserStat(int,double []);		
+	
+// Function: GetUserStat
+// UserStatusã‚’å–å¾—
+    void GetUserStat(int *,double []);      
+	
+// Function: UserViewCanccel
+// Useré–¢æ•°ã®å®Ÿè¡Œã«ã‚ˆã£ã¦æç”»ã•ã‚ŒãŸç”»åƒã‚’æ¶ˆå»ã™ã‚‹
+	void UserViewCanncel();					
+	
+// Function: SetModelScale
+// æœ€é©ãƒ¢ãƒ‡ãƒ«ã‚¹ã‚±ãƒ¼ãƒ«ã‚’å–å¾—ã™ã‚‹
+	void SetModelScale(double);				
+	
+// Function: GetModelScale
+// ãƒ¢ãƒ‡ãƒ«ã‚¹ã‚±ãƒ¼ãƒ«ã‚’å–å¾—ã™ã‚‹
+	void GetModelScale();					
+
+// Function: SetTolerance
+// ãƒˆãƒ¬ãƒ©ãƒ³ã‚¹å€¤ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
+	void SetTolerance(double);				
+	
+// Function: GetTolerance
+// ãƒˆãƒ¬ãƒ©ãƒ³ã‚¹å€¤ã‚’å–å¾—ã™ã‚‹
+	void GetTolerance();					
+	
+// Function: GetShiftBody
+// BODYã‚’å¹³è¡Œç§»å‹•
+	void GetShiftBody(Coord);				
+	
+// Function: GetRotateBody
+// BODYã‚’å›è»¢
+	void GetRotateBody(Coord,double);		
+	
+// Function: ExpandBody
+// BODYã‚’æ‹¡å¤§
+	void ExpandBody(Coord);					
+	
+// Function: GenSurface
+// ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚Œã¦ã„ã‚‹NUBSæ›²ç·šã«å¯¾ã—ã¦ã€ä»»æ„è»¸å‘¨ã‚Šã«ä»»æ„è§’åº¦ã ã‘å›è»¢/ä»»æ„è»¸æ–¹å‘ã«ä»»æ„é•·ã•ã ã‘ã‚¹ã‚¤ãƒ¼ãƒ—ã•ã›ãŸNURBSæ›²é¢ã‚’ç”Ÿæˆã™ã‚‹ï¼
+	int GenSurface(Coord,double,int);		
+	
+// Function: GenNurbsCurve
+// Inputãƒ•ã‚¡ã‚¤ãƒ«(ç‚¹åˆ—)ã‚’èª­ã¿è¾¼ã¿ã€æŒ‡å®šã—ãŸç”Ÿæˆæ–¹æ³•ã‚’ç”¨ã„ã¦NURBSæ›²ç·šã‚’ç”Ÿæˆã™ã‚‹
+	int GenNurbsCurve(int,char *,int);		
+	
+// Function: GenNurbsSurface
+// Inputãƒ•ã‚¡ã‚¤ãƒ«(ç‚¹åˆ—)ã‚’èª­ã¿è¾¼ã¿ã€æŒ‡å®šã—ãŸç”Ÿæˆæ–¹æ³•ã‚’ç”¨ã„ã¦NURBSæ›²é¢ã‚’ç”Ÿæˆã™ã‚‹
+	int GenNurbsSurface(int,char *,int);	
+	
+// Function: GetSurfInfo
+// é¸æŠã•ã‚Œã¦ã„ã‚‹æ›²é¢ã®æƒ…å ±ã‚’ã‚³ãƒ³ã‚½ãƒ¼ãƒ«å‡ºåŠ›ã™ã‚‹
+	void GetSurfInfo();						
+	
+// Function: changeRank
+// é¸æŠã•ã‚Œã¦ã„ã‚‹æ›²é¢ã®Rankã‚’å¤‰æ›´ã™ã‚‹
+	void ChangeRank(int []);				
+
+// Function: ChangeBackColor
+// èƒŒæ™¯ã®è‰²ã‚’å¤‰æ›´ã™ã‚‹
+	void ChangeBackColor(double []);		
+	
+// Function: *SearchBodyList
+// ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚Œã¦ã„ã‚‹BODYã®å®Ÿä½“ã‚’å¾—ã‚‹
+	BODY *SearchBodyList(BODYList *,int);	
+	
+// Function: GetMeshInfo
+// Meshæƒ…å ±ã‚’å‡ºåŠ›
+	void GetMeshInfo();						
+
+// Function: DrawCharX
+// æ–‡å­—'X'ã‚’æç”»
+	void DrawCharX(double,double);			
+	
+// Function: rawCharY
+// æ–‡å­—'Y'ã‚’æç”»
+	void DrawCharY(double,double);			
+	
+// Function: DrawCharZ
+// æ–‡å­—'Z'ã‚’æç”»
+	void DrawCharZ(double,double);			
+
+// Function: DispUVdirection
+// é¸æŠã•ã‚Œã¦ã„ã‚‹æ›²é¢ã®Uï¼ŒVæ–¹å‘ã‚’è¡¨ç¤ºã™ã‚‹
+	void DispUVdirection();					
+
+
 private:
-	void Describe_Main();				// BODY•`‰æ
-	void DrawBODY();					// BODY•`‰æ‚ÌƒƒCƒ“•”
-	void DrawAxis(double,double);		// ²‚Ì•`‰æ
-	void DrawRubberband(double,double,double,double);	// ƒ‰ƒo[ƒoƒ“ƒh‚Ì•`‰æ
-	void Draw_NurbsCurve(BODY *);		// NURBS‹Èü‚ğ•`‰æ
-	void Draw_NurbsSurface(BODY *);		// NURBS‹Èü‚ğ•`‰æ
-	void Draw_TrimSurfe(BODY *);		// ƒgƒŠƒ€–Ê‚ğ•`‰æ
-	void Draw_Mesh(BODY *);				// ƒƒbƒVƒ…‚ğ•`‰æ
-	void UVWireView();					// UVƒpƒ‰ƒ[ƒ^‚Å•ªŠ„‚³‚ê‚½ƒƒCƒ„[ƒtƒŒ[ƒ€‚ğ•\¦
-	void SetOpenGLStat();				// OpenGL‚Ì‰Šú‰»
-	void SetModelScale();				// •`‰æ‚ÌƒXƒP[ƒ‹‚ğŒˆ’è
-	void SetMaxCoord();					// Body‚ÌÅ‘å’·‚ğİ’è‚·‚é
-	void DoSelect(int,int);				// ƒZƒŒƒNƒVƒ‡ƒ“(ƒ}ƒEƒXƒsƒbƒLƒ“ƒO)ˆ—
-	void ClearSeldEntList();			// ƒZƒŒƒNƒVƒ‡ƒ“ƒŠƒXƒg‹y‚ÑOBJECT‚Ì‰Šú‰»
-	void DeleteBodySub(BODY *,int);		// BODYÁ‹SUB
-	void ClickPicking(GLuint SelectBuf[],int hits);	// ƒIƒuƒWƒFƒNƒg‚Ìƒ}ƒEƒXƒsƒbƒLƒ“ƒO(ƒNƒŠƒbƒN)
-	void DragPicking(GLuint SelectBuf[],int hits);	// ƒIƒuƒWƒFƒNƒg‚Ìƒ}ƒEƒXƒsƒbƒLƒ“ƒO(ƒhƒ‰ƒbƒO)
-	int  ObjSelect(GLuint [],int);					// ƒIƒuƒWƒFƒNƒg‘I‘ğ”»•Ê
-	int AddEntSymbolToObj();			// OBJECT\‘¢‘Ì‚É‰½”Ô–Ú‚Ì‹Èüor‹È–Ê‚©‚Ìî•ñ‚ğ•t‰Á‚·‚é
-	void InitCmdFlags();				// Cmd—pƒtƒ‰ƒO‚ğ‘S‚ÄKOD_FALSE‚É‰Šú‰»
-	void SetNewObject(int,int,int);		// ƒsƒbƒN‚³‚ê‚½ƒIƒuƒWƒFƒNƒg‚ğOBJECTƒŠƒXƒg‚É“o˜^
-	void DescribeCP();						// ƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒg‚ğ•`‰æ
+// Function: Describe_Main
+// (Private)BODYæç”»ãƒ¡ã‚¤ãƒ³
+	void Describe_Main();				
+	
+// Function: DrawBODY
+// (Private)BODYã®æç”»ã‚’ã™ã‚‹
+	void DrawBODY();					
+	
+// Function: DrawAxis
+// (Private)è»¸ã‚’æç”»ã™ã‚‹
+	void DrawAxis(double,double);		
+	
+// Function: DrawRubberband
+// (Private)ãƒ©ãƒãƒ¼ãƒãƒ³ãƒ‰ã‚’æç”»ã™ã‚‹
+	void DrawRubberband(double,double,double,double);	
+	
+// Function: Draw_NurbsCurve
+// (Private)NURBSæ›²ç·šã‚’æç”»ã™ã‚‹
+	void Draw_NurbsCurve(BODY *);		
+	
+// Function: Draw_NurbsSurface
+// (Private)NURBSæ›²é¢ã‚’æç”»ã™ã‚‹
+	void Draw_NurbsSurface(BODY *);		
+	
+// Function: Draw_TrimSurface
+// (Private)ãƒˆãƒªãƒ é¢ã‚’æç”»ã™ã‚‹
+	void Draw_TrimSurfe(BODY *);		
+	
+// Function: Draw_Mesh
+// (Private)ãƒ¡ãƒƒã‚·ãƒ¥ã‚’æç”»
+	void Draw_Mesh(BODY *);				
+	
+// Function: UVWireView
+// (Private)UVãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã§åˆ†å‰²ã•ã‚ŒãŸãƒ¯ã‚¤ãƒ¤ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ ã‚’è¡¨ç¤ºã™ã‚‹
+	void UVWireView();					
+	
+// Function: SetOpenGLStat
+// (Private)OpenGLã‚’åˆæœŸåŒ–ã™ã‚‹
+	void SetOpenGLStat();				
+	
+// Function: SetModelScale
+// (Private)æœ€é©ãƒ¢ãƒ‡ãƒ«ã‚¹ã‚±ãƒ¼ãƒ«ã‚’å–å¾—ã™ã‚‹
+	void SetModelScale();				
+	
+// Function: SetMaxCoord
+// (Private)BODYã®æœ€å¤§é•·ã‚’è¨­å®šã™ã‚‹
+	void SetMaxCoord();					
+	
+// Function: DoSelect
+// (Private)ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³(ãƒã‚¦ã‚¹ãƒ”ãƒƒã‚­ãƒ³ã‚°)ã‚’è¨­å®šã™ã‚‹
+	void DoSelect(int,int);				
+
+// Function: ClearSeldEntList
+// (Private)ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ãƒªã‚¹ãƒˆåŠã³OBJECTã‚’åˆæœŸåŒ–ã™ã‚‹
+	void ClearSeldEntList();			
+	
+// Function: DeleteBodySub
+// (Private)é¸æŠã•ã‚Œã¦ã„ã‚‹BODYã‚’æ¶ˆå»ã™ã‚‹(Sub)
+	void DeleteBodySub(BODY *,int);		
+	
+// Function: ClickPicking
+// (Private)ã‚¯ãƒªãƒƒã‚¯ã«ã‚ˆã‚‹ãƒã‚¦ã‚¹ãƒ”ãƒƒã‚­ãƒ³ã‚°ã‚’ã™ã‚‹
+	void ClickPicking(GLuint SelectBuf[],int hits);	
+	
+// Function: DragPicking
+// (Private)ãƒ‰ãƒ©ãƒƒã‚°ã«ã‚ˆã‚‹ãƒã‚¦ã‚¹ãƒ”ãƒƒã‚­ãƒ³ã‚°ã‚’ã™ã‚‹
+	void DragPicking(GLuint SelectBuf[],int hits);	
+	
+// Function: ObjSelect
+// (Private)ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®é¸æŠåˆ¤åˆ¥ã™ã‚‹
+	int  ObjSelect(GLuint [],int);					
+	
+// Function: AddEntSymbolToObj
+// (Private)OBJECTæ§‹é€ ä½“ã«ä½•ç•ªç›®ã®æ›²ç·šoræ›²é¢ã‹ã®æƒ…å ±ã‚’ä»˜åŠ ã™ã‚‹
+	int AddEntSymbolToObj();			
+	
+// Function: InitCmdFlags
+// (Private)Cmdç”¨ãƒ•ãƒ©ã‚°ã‚’å…¨ã¦KOD_FALSEã«åˆæœŸåŒ–ã™ã‚‹
+	void InitCmdFlags();				
+
+// Function: SetNewObject
+// (Private)ãƒ”ãƒƒã‚¯ã•ã‚ŒãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’OBJECTãƒªã‚¹ãƒˆã«ç™»éŒ²ã™ã‚‹
+	void SetNewObject(int,int,int);		
+	
+// Function: DescribeCP
+// (Private)ã‚³ãƒ³ãƒˆãƒã‚¤ãƒ³ãƒˆã‚’æç”»
+	void DescribeCP();						
 
 
-// pbulic•Ï”‚Ì’è‹`
+
 public:
-	int  UVWireFlameViewFlag;	// UVƒƒCƒ„[ƒtƒŒ[ƒ€•\¦ƒtƒ‰ƒO
-	int  CPViewFlag;			// ƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒg•`‰æƒtƒ‰ƒO
-	int  UVDirFlag;				// UV•ûŒü•\¦ƒtƒ‰ƒO
+// Function: UVWireFlameviewFlag
+// UVãƒ¯ã‚¤ãƒ¤ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ è¡¨ç¤ºãƒ•ãƒ©ã‚°
+	int  UVWireFlameViewFlag;	
+	
+// Function: CPViewFlag
+// ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆæç”»ãƒ•ãƒ©ã‚°
+	int  CPViewFlag;			
+	
+// Function: UVDirFlag
+// UVæ–¹å‘è¡¨ç¤ºãƒ•ãƒ©ã‚°
+	int  UVDirFlag;				
 
-// private•Ï”‚Ì’è‹`
+
 private:
-	USER User;					// ƒ†[ƒU[ƒNƒ‰ƒX
-	BODYList	BodyList;		// BODYƒŠƒXƒg‚Ì‘€ì—pƒCƒ“ƒXƒ^ƒ“ƒX
-	OBJECTList SeldEntList;		// ƒZƒŒƒNƒVƒ‡ƒ“‚³‚ê‚½ƒGƒ“ƒeƒBƒeƒB‚ğ’€ŸŠi”[‚µ‚Ä‚¢‚­ƒŠƒXƒg
-	CommandMap CmdMap[COMMANDNUMMAX];		// ƒRƒ}ƒ“ƒhƒ}ƒbƒv
-	int	ConsoleCharNum;			// ƒRƒ“ƒ\[ƒ‹‚É“ü—Í‚³‚ê‚Ä‚¢‚é‘S‚Ä‚Ì•¶š”‚ğ•Û
-	int Focus_Body;				// ‘I‘ğ’†‚ÌBody‚ğ•\‚·’l
-	QUATERNION QFunc;			// ƒNƒH[ƒ^ƒjƒIƒ“‚ÌƒCƒ“ƒXƒ^ƒ“ƒX
-	double RotMx[TMATELEMNUM];	// ƒNƒH[ƒ^ƒjƒIƒ“¨“¯•ÏŠ·ƒ}ƒgƒŠƒbƒNƒX
-	Quat StartQ;				// ‰EƒNƒŠƒbƒN‚µ‚½uŠÔ‚Ì‰ñ“]Šp‚ğŠi”[‚·‚éƒNƒH[ƒ^ƒjƒIƒ“
-	Quat TargetQ;				// ‚®‚è‚®‚è‚â‚Á‚Ä‚¢‚é“r’†‚ÌƒNƒH[ƒ^ƒjƒIƒ“
-	double ModelScale;			// Œ»İ‚Ìƒ‚ƒfƒ‹ƒXƒP[ƒ‹
-	double ModelScale1st;		// ƒ‚ƒfƒ‹ƒXƒP[ƒ‹‚Ì‰Šú’l
-	double Tolerance;			// NURBS‚ğ•\Œ»‚·‚é‚Ì–Ê‚Ì‘e‚³
-	double Trl[3];				// •½sˆÚ“®—Ê
-	int  Vp[4];					// ƒrƒ…[ƒ|ƒCƒ“ƒg
-	double AxisScale;			// ²•`‰æ‚ÌƒXƒP[ƒ‹
-	int  OpenGLInitFlag;		// OpenGL‰Šúİ’èÏ‚İƒtƒ‰ƒO
-	int  ExecUserFuncFlag[USERFUNCNUMMAX];	// UserFunc•`‰æƒtƒ‰ƒO
-	int  ExecUserCommandFlag[USERCOMMANDNUM];	// UserCommand•`‰æƒtƒ‰ƒO
-	int  DoSelectFlag;			// ƒZƒŒƒNƒVƒ‡ƒ“Àsƒtƒ‰ƒO
-	int  SweepSelectFlag;		// ƒXƒC[ƒvƒZƒŒƒNƒVƒ‡ƒ“‚ğŠJn‚µ‚½‚±‚Æ‚ğ¦‚·ƒtƒ‰ƒO
-	int  ScreenHeight;			// ƒfƒtƒHƒ‹ƒgƒXƒNƒŠ[ƒ“‚Ì‚‚³
-	int  ScreenWidth;			// ƒfƒtƒHƒ‹ƒgƒXƒNƒŠ[ƒ“‚Ì•
-	int  StartX;				// ƒhƒ‰ƒbƒOŠJnˆÊ’uX
-	int  StartY;				// ƒhƒ‰ƒbƒOŠJnˆÊ’uY
-	int  OldPosX;				// ƒEƒBƒ“ƒhƒEÄ•`‰æ’¼‘O‚ÌXÀ•W
-	int  OldPosY;				// ƒEƒBƒ“ƒhƒEÄ•`‰æ’¼‘O‚ÌYÀ•W
-	int  CurrentX;				// ƒhƒ‰ƒbƒO’†‚ÌˆÊ’uX
-	int  CurrentY;				// ƒhƒ‰ƒbƒO’†‚ÌˆÊ’uY
-	int  LBtnFlag;				// ¶ƒNƒŠƒbƒN‚µ‚½‚±‚Æ‚ğ¦‚·ƒtƒ‰ƒO
-	int  RBtnFlag;				// ‰EƒNƒŠƒbƒN‚µ‚½‚±‚Æ‚ğ¦‚·ƒtƒ‰ƒO
-	int  MBtnFlag;				// ’†ƒNƒŠƒbƒN‚µ‚½‚±‚Æ‚ğ¦‚·ƒtƒ‰ƒO
-	int  ShiftKeyFlag;			// ShiftƒL[‚ğ‰Ÿ‚µ‚½‚±‚Æ‚ğ¦‚·ƒtƒ‰ƒO
-	int  CtrlKeyFlag;			// CtrlƒL[‚ğ‰Ÿ‚µ‚½‚±‚Æ‚ğ¦‚·ƒtƒ‰ƒO
-	int  AltKeyFlag;			// AltƒL[‚ğ‰Ÿ‚µ‚½‚±‚Æ‚ğ¦‚·ƒtƒ‰ƒO
-	int  SolidViewFlag;			// ƒ\ƒŠƒbƒh•\¦ƒtƒ‰ƒO
-	int  EdgeViewFlag;			// ƒGƒbƒW•\¦ƒtƒ‰ƒO
-	int  WireFlameViewFlag;		// ƒƒCƒ„[ƒtƒŒ[ƒ€•\¦ƒtƒ‰ƒO
-	int  BlendViewFlag;			// ”¼“§–¾•\¦ƒtƒ‰ƒO
-	int  DrawBODYFlag;			// BODY•`‰æƒtƒ‰ƒO
-	int  DrawSurfFlag;			// Surface•`‰æƒtƒ‰ƒO
-	int	 ReDrawBODYFlag;		// BODY•`‰æ1”­–Ú‚ğ¦‚·ƒtƒ‰ƒO
-	GLuint SelectBuf[MAXSELECT];	// ƒZƒŒƒNƒgƒoƒbƒtƒ@
-	int argc;						// ƒRƒ}ƒ“ƒhˆø”
-	char *argv[MAXCOMMANDOPNUM];	// ƒRƒ}ƒ“ƒhˆø”
-	char CmdStack[HISTORYNUMMAX][256];	// ƒRƒ}ƒ“ƒh—š—ğ
-	int CmdStackNum;				// ƒRƒ}ƒ“ƒh—š—ğ”
+// Function: User
+// (Private)ãƒ¦ãƒ¼ã‚¶ãƒ¼ã‚¯ãƒ©ã‚¹
+	USER User;					
+	
+// Function: BodyList
+// (Private)BODYãƒªã‚¹ãƒˆã®æ“ä½œç”¨ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
+	BODYList	BodyList;		
+	
+// Function: SeldEntList
+// (Private)ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚ŒãŸã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚’é€æ¬¡æ ¼ç´ã—ã¦ã„ããƒªã‚¹ãƒˆ
+	OBJECTList SeldEntList;		
+
+// Function: CmdMap
+// (Private)ã‚³ãƒãƒ³ãƒ‰ãƒãƒƒãƒ—
+	CommandMap CmdMap[COMMANDNUMMAX];		
+	
+// Function: ConsoleCharNum
+// (Private)ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ã«å…¥åŠ›ã•ã‚Œã¦ã„ã‚‹å…¨ã¦ã®æ–‡å­—æ•°ã‚’ä¿æŒ
+	int	ConsoleCharNum;			
+	
+// Function: Focus_Body
+// (Private)é¸æŠä¸­ã®BODYã‚’è¡¨ã™å€¤
+	int Focus_Body;				
+	
+// Function: QFunc
+// (Private)ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
+	QUATERNION QFunc;			
+	
+// Function: RotMx
+// (Private)ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³â†’åŒæ™‚å¤‰æ›ãƒãƒˆãƒªãƒƒã‚¯ã‚¹
+	double RotMx[TMATELEMNUM];	
+	
+// Function: StartQ
+// (Private)å³ã‚¯ãƒªãƒƒã‚¯ã—ãŸç¬é–“ã®å›è»¢è§’ã‚’æ ¼ç´ã™ã‚‹ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³
+	Quat StartQ;				
+	
+// Function: TargetQ
+// (Private)ãã‚Šãã‚Šã‚„ã£ã¦ã„ã‚‹é€”ä¸­ã®ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³
+	Quat TargetQ;				
+	
+// Function: ModelScale
+// (Private)ç¾åœ¨ã®ãƒ¢ãƒ‡ãƒ«ã‚¹ã‚±ãƒ¼ãƒ«
+	double ModelScale;			
+	
+// Function: ModelScale1st
+// (Private)ãƒ¢ãƒ‡ãƒ«ã‚¹ã‚±ãƒ¼ãƒ«ã®åˆæœŸå€¤
+	double ModelScale1st;		
+	
+// Function: Tolerance
+// (Private)NURBSã‚’è¡¨ç¾ã™ã‚‹æ™‚ã®é¢ã®ç²—ã•
+	double Tolerance;			
+	
+// Function; Trl
+// (Private)å¹³è¡Œç§»å‹•é‡
+	double Trl[3];				
+	
+// Function: Vp
+// (Private)ãƒ“ãƒ¥ãƒ¼ãƒã‚¤ãƒ³ãƒˆ
+	int  Vp[4];					
+	
+// Function: AxisScale
+// (Private)è»¸æç”»ã®ã‚¹ã‚±ãƒ¼ãƒ«
+	double AxisScale;			
+	
+// Function: OpenGLInitFlag
+// (Private)OpenGLåˆæœŸè¨­å®šæ¸ˆã¿ãƒ•ãƒ©ã‚°
+	int  OpenGLInitFlag;		
+	
+// Function: ExecUserFuncFlag
+// (Private)UserFuncæç”»ãƒ•ãƒ©ã‚°
+	int  ExecUserFuncFlag[USERFUNCNUMMAX];	
+	
+// Function: ExecUserCommandFlag
+// (Private)UserComandæç”»ãƒ•ãƒ©ã‚°
+	int  ExecUserCommandFlag[USERCOMMANDNUM];	
+	
+// Function: DoSelectFlag
+// (Private)ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³å®Ÿè¡Œãƒ•ãƒ©ã‚°
+	int  DoSelectFlag;			
+	
+// Function: SweepSelectFlag
+// (Private)ã‚¹ã‚¤ãƒ¼ãƒ—ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã‚’é–‹å§‹ã—ãŸã“ã¨ã‚’ç¤ºã™ãƒ•ãƒ©ã‚°
+	int  SweepSelectFlag;		
+	
+// Function: ScreenHeight
+// (Private)ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã®é«˜ã•
+	int  ScreenHeight;			
+	
+// Function: ScreenEidth
+// (Private)ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã®å¹…
+	int  ScreenWidth;			
+	
+// Function: StartX
+// (Private)ãƒ‰ãƒ©ãƒƒã‚°é–‹å§‹ä½ç½®X
+	int  StartX;				
+
+// Function: StartY
+// (Private)ãƒ‰ãƒ©ãƒƒã‚°é–‹å§‹ä½ç½®Y
+	int  StartY;				
+	
+// Function: OldPosX
+// (Private)ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦å†æç”»ç›´å‰ã®Xåº§æ¨™
+	int  OldPosX;				
+	
+// Function: OldPosY
+// (Private)ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦å†æç”»ç›´å‰ã®Yåº§æ¨™
+	int  OldPosY;				
+
+// Function: CurrentX
+// (Private)ãƒ‰ãƒ©ãƒƒã‚°ä¸­ã®ä½ç½®X
+	int  CurrentX;				
+	
+// Function: CurrentY
+// (Private)ãƒ‰ãƒ©ãƒƒã‚°ä¸­ã®ä½ç½®Y
+	int  CurrentY;				
+	
+// Function: LBtnFlag
+// (Private)å³ã‚¯ãƒªãƒƒã‚¯ã—ãŸã“ã¨ã‚’ç¤ºã™ãƒ•ãƒ©ã‚°
+	int  LBtnFlag;				
+	
+// Function: RBtnFlag
+// (Private)å³ã‚¯ãƒªãƒƒã‚¯ã—ãŸã“ã¨ã‚’ç¤ºã™ãƒ•ãƒ©ã‚°
+	int  RBtnFlag;				
+	
+// Function: MBtnFlag
+// (Private)ä¸­ã‚¯ãƒªãƒƒã‚¯ã—ãŸã“ã¨ã‚’ç¤ºã™ãƒ•ãƒ©ã‚°
+	int  MBtnFlag;				
+	
+// Function: ShiftKeyFlag
+// (Private)Shiftã‚­ãƒ¼ã‚’æŠ¼ã—ãŸã“ã¨ã‚’ç¤ºã™ãƒ•ãƒ©ã‚°
+	int  ShiftKeyFlag;			
+	
+// Function: CtrlKeyFlag
+// (Private)Ctrlã‚­ãƒ¼ã‚’æŠ¼ã—ãŸã“ã¨ã‚’ç¤ºã™ãƒ•ãƒ©ã‚°
+	int  CtrlKeyFlag;			
+	
+// Function: AltKeyFlag
+// (Private)Altã‚­ãƒ¼ã‚’æŠ¼ã—ãŸã“ã¨ã‚’ç¤ºã™ãƒ•ãƒ©ã‚°
+	int  AltKeyFlag;			
+	
+// Function:SolidViewFlag 
+// (Private)ã‚½ãƒªãƒƒãƒ‰è¡¨ç¤ºãƒ•ãƒ©ã‚°
+	int  SolidViewFlag;			
+	
+// Function: EdgeViewFlag
+// (Private)ã‚¨ãƒƒã‚¸è¡¨ç¤ºãƒ•ãƒ©ã‚°
+	int  EdgeViewFlag;			
+	
+// Function: WireFlameViewFlag
+// (Private)ãƒ¯ã‚¤ãƒ¤ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ è¡¨ç¤ºãƒ•ãƒ©ã‚°
+	int  WireFlameViewFlag;		
+
+// Function: BlendViewFlag
+// (Private)åŠé€æ˜è¡¨ç¤ºãƒ•ãƒ©ã‚°
+	int  BlendViewFlag;			
+	
+// Function: DrawBODYFlag
+// (Private)BODYæç”»ãƒ•ãƒ©ã‚°
+	int  DrawBODYFlag;			
+
+// Function: DrawSurfFlag
+// (Private)Surfaceæç”»ãƒ•ãƒ©ã‚°
+	int  DrawSurfFlag;			
+	
+// Function: ReDrawBODYFlag
+// (Private)BODYæç”»1ç™ºç›®ã‚’ç¤ºã™ãƒ•ãƒ©ã‚°
+	int	 ReDrawBODYFlag;		
+	
+// Function: SelectBuf
+// (Private)ã‚»ãƒ¬ã‚¯ãƒˆãƒãƒƒãƒ•ã‚¡
+	GLuint SelectBuf[MAXSELECT];	
+	
+// Function: argc
+// (Private)ã‚³ãƒãƒ³ãƒ‰å¼•æ•°
+	int argc;						
+	
+// Function: argv
+// (Private)ã‚³ãƒãƒ³ãƒ‰å¼•æ•°
+	char *argv[MAXCOMMANDOPNUM];	
+	
+// Function: CmdStack
+// (Private)ã‚³ãƒãƒ³ãƒ‰å±¥æ­´
+	char CmdStack[HISTORYNUMMAX][256];	
+	
+// Function: CmdStackNum
+// (Private)ã‚³ãƒãƒ³ãƒ‰å±¥æ­´æ•°
+	int CmdStackNum;				
+
+// Function: CmdStackNow
+// (Private)èƒŒæ™¯è‰²
 	int CmdStackNow;
-	double BkCol[3];			// ”wŒiF
+	double BkCol[3];			
 };
 
-// KodatunoƒNƒ‰ƒX‚ÌƒOƒ[ƒoƒ‹éŒ¾
+// Variable: Kodatuno
+// Kodatunoã‚¯ãƒ©ã‚¹ã®ã‚°ãƒ­ãƒ¼ãƒãƒ«å®£è¨€
 extern KODatUNO	Kodatuno;
 
-// KodatunoƒVƒXƒeƒ€ƒRƒ}ƒ“ƒh‚ğ“o˜^
-void CmdVerInf(int,char *[]);			// ƒRƒ}ƒ“ƒh(ƒo[ƒWƒ‡ƒ“î•ño—Í)
-void CmdFileOpen(int,char *[]);			// ƒRƒ}ƒ“ƒh(ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“)
-void CmdUVWire(int,char *[]);			// ƒRƒ}ƒ“ƒh(UVƒƒCƒ„[ƒtƒŒ[ƒ€•\¦)
-void CmdChScale(int,char *[]);			// ƒRƒ}ƒ“ƒh(ƒXƒP[ƒ‹•ÏX)
-void CmdGenRotSurf(int,char *[]);		// ƒRƒ}ƒ“ƒh(‰ñ“]ƒT[ƒtƒFƒX¶¬)
-void CmdGenSweepSurf(int,char *[]);		// ƒRƒ}ƒ“ƒh(ƒXƒC[ƒvƒT[ƒtƒFƒX¶¬)
-void CmdGenNurbsCurve(int,char *[]);	// ƒRƒ}ƒ“ƒh(Nurbs‹Èü¶¬)
-void CmdGenNurbsSurface(int,char *[]);	// ƒRƒ}ƒ“ƒh(Nurbs‹È–Ê¶¬)
-void CmdChTolerance(int,char *[]);		// ƒRƒ}ƒ“ƒh(ƒgƒŒƒ‰ƒ“ƒX•ÏX)
-void CmdMoveBody(int,char *[]);			// ƒRƒ}ƒ“ƒh(BODY‚Ì•½sˆÚ“®)
-void CmdRotateBody(int ,char *[]);		// ƒRƒ}ƒ“ƒh(BODY‚Ì‰ñ“])
-void CmdCPView(int ,char *[]);			// ƒRƒ}ƒ“ƒh(ƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒg•`‰æ)
-void CmdSurfInfo(int,char *[]);			// ƒRƒ}ƒ“ƒh(‹È–Êî•ñ‚ğo—Í)
-void CmdExpand(int,char *[]);			// ƒRƒ}ƒ“ƒh(BODY‚ÌŠg‘å)
-void CmdChRank(int,char *[]);			// ƒRƒ}ƒ“ƒh(NURBS Rnak‚Ì•ÏX)
-void CmdChBkCol(int,char *[]);			// ƒRƒ}ƒ“ƒh(”wŒiF•ÏX)
-void CmdMeshInf(int,char *[]);			// ƒRƒ}ƒ“ƒh(Meshî•ño—Í)
+// Function: CmdVerInf
+// ã‚³ãƒãƒ³ãƒ‰(ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±å‡ºåŠ›)
+void CmdVerInf(int,char *[]);			
 
-// Brand New!
-void CmdUVdir(int,char *[]);			// ƒRƒ}ƒ“ƒh(U,V‚Ì•ûŒü‚ğ•`‰æ)
+// Function: CmdFileOpen
+// ã‚³ãƒãƒ³ãƒ‰(ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³)
+void CmdFileOpen(int,char *[]);			
+
+// Function: CmdUVWire
+// ã‚³ãƒãƒ³ãƒ‰(UVãƒ¯ã‚¤ãƒ¤ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ è¡¨ç¤º)
+void CmdUVWire(int,char *[]);			
+
+// Function: CmdChScale
+// ã‚³ãƒãƒ³ãƒ‰(ã‚¹ã‚±ãƒ¼ãƒ«å¤‰æ›´)
+void CmdChScale(int,char *[]);			
+
+// Function: CmdGenRotSurf
+// ã‚³ãƒãƒ³ãƒ‰(å›è»¢ã‚µãƒ¼ãƒ•ã‚§ã‚¹ç”Ÿæˆ)
+void CmdGenRotSurf(int,char *[]);		
+
+// Function: CmdGenSweepSurf
+// ã‚³ãƒãƒ³ãƒ‰(ã‚¹ã‚¤ãƒ¼ãƒ—ã‚µãƒ¼ãƒ•ã‚§ã‚¹ç”Ÿæˆ) 
+void CmdGenSweepSurf(int,char *[]);		
+
+// Function: CmdGenNurbsCurve
+// ã‚³ãƒãƒ³ãƒ‰(Nurbsæ›²ç·šç”Ÿæˆ)
+void CmdGenNurbsCurve(int,char *[]);	
+
+// Function: CmdGenNurbsSurface
+// ã‚³ãƒãƒ³ãƒ‰(ãƒˆãƒ¬ãƒ©ãƒ³ã‚¹å¤‰æ›´)
+void CmdGenNurbsSurface(int,char *[]);	
+void CmdChTolerance(int,char *[]);		
+
+// Function: CmdMoveBody
+// ã‚³ãƒãƒ³ãƒ‰(BODYã®å¤‰æ›´ç§»å‹•)
+void CmdMoveBody(int,char *[]);			
+
+// Function: CmdRotateBody
+// ã‚³ãƒãƒ³ãƒ‰(BODYã®å›è»¢)
+void CmdRotateBody(int ,char *[]);		
+
+// Function: CmdCPView
+// ã‚³ãƒãƒ³ãƒ‰(ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆæç”»)
+void CmdCPView(int ,char *[]);			
+
+// Function: CmdSurfInfo
+// ã‚³ãƒãƒ³ãƒ‰(æ›²é¢æƒ…å ±ã‚’å‡ºåŠ›)
+void CmdSurfInfo(int,char *[]);			
+
+// Function: CmdExpand
+// ã‚³ãƒãƒ³ãƒ‰(BODYã®æ‹¡å¤§)
+void CmdExpand(int,char *[]);			
+
+// Function: CmdChRank
+// ã‚³ãƒãƒ³ãƒ‰(NURBS Rankã®å¤‰æ›´)
+void CmdChRank(int,char *[]);			
+
+// Function: CmdChBkCol
+// ã‚³ãƒãƒ³ãƒ‰(èƒŒæ™¯è‰²å¤‰æ›´)
+void CmdChBkCol(int,char *[]);			
+
+// Function: CmdMeshInf
+// ã‚³ãƒãƒ³ãƒ‰(Meshæƒ…å ±å‡ºåŠ›)
+void CmdMeshInf(int,char *[]);			
+
+// Function: CmdUVdir
+// ã‚³ãƒãƒ³ãƒ‰(U,Vã®æ–¹å‘ã‚’æç”»)
+void CmdUVdir(int,char *[]);			
 
 #endif

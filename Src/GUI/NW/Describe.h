@@ -11,14 +11,14 @@
 #include "UserFunc.h"
 #include "StdAfx.h"
 
-#define EXT_IGES	1						// Šg’£q”»•Ê—p(IGES)
-#define EXT_STL		2						// Šg’£q”»•Ê—p(STL)
-#define EXT_VRML	3						// Šg’£q”»•Ê—p(VRML)
-#define CIRCLE_DIV_NUM 100					// ‰~•`‰æ‚Ì‰~•ªŠ„”
-#define MAXSELECT	20000					// ƒZƒŒƒNƒVƒ‡ƒ“‚ÌÅ‘åƒoƒbƒtƒ@ƒTƒCƒY
-#define TOLERANCE   20						// NURBS‹È–Ê‚Ì‘e‚³‚ÌƒfƒtƒHƒ‹ƒg’l
+#define EXT_IGES	1						// æ‹¡å¼µå­åˆ¤åˆ¥ç”¨(IGES)
+#define EXT_STL		2						// æ‹¡å¼µå­åˆ¤åˆ¥ç”¨(STL)
+#define EXT_VRML	3						// æ‹¡å¼µå­åˆ¤åˆ¥ç”¨(VRML)
+#define CIRCLE_DIV_NUM 100					// å††æç”»æ™‚ã®å††åˆ†å‰²æ•°
+#define MAXSELECT	20000					// ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³æ™‚ã®æœ€å¤§ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚º
+#define TOLERANCE   20						// NURBSæ›²é¢ã®ç²—ã•ã®ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤
 
-// ƒƒjƒ…[—penum
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ç”¨enum
 enum Menu{
 	M_Version,
 	M_Draw_Body,
@@ -34,111 +34,111 @@ enum Sub_Menu_View{
 	S_M_ZView
 };
 
-// IGES•`‰æƒNƒ‰ƒX‚ğ’è‹`
-class DESCRIBE : public Describe_BODY			// BODY•`‰æŠÖ”‚ğW‚ß‚½ƒNƒ‰ƒX‚ğŒp³
+// IGESæç”»ã‚¯ãƒ©ã‚¹ã‚’å®šç¾©
+class DESCRIBE : public Describe_BODY			// BODYæç”»é–¢æ•°ã‚’é›†ã‚ãŸã‚¯ãƒ©ã‚¹ã‚’ç¶™æ‰¿
 {
 public:
-	DESCRIBE();		// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
-	~DESCRIBE();	// ƒfƒXƒgƒ‰ƒNƒ^
-	int BODY_Describe_Main(int,char **);		// •`‰æmain
+	DESCRIBE();		// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	~DESCRIBE();	// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	int BODY_Describe_Main(int,char **);		// æç”»main
 	
-// ŠÖ”
+// é–¢æ•°
 private:
-	// OpenGL—p•`‰æŠÖ”‚ÌéŒ¾‚Ístatic‚ª•K—v
-	static void Keyboard(unsigned char key, int x, int y);	// ƒL[ƒ{[ƒhƒCƒxƒ“ƒg
-	static void Display(void);								// •`‰æƒCƒxƒ“ƒg
-	static void Motion(int,int);							// ƒ}ƒEƒX“®ìƒCƒxƒ“ƒg
-	static void Reshape(int,int);							// Ä•`‰æƒCƒxƒ“ƒg
-	static void Mouse(int,int,int,int);						// ƒ}ƒEƒXƒCƒxƒ“ƒg
-	static void Menu(int);									// ƒƒjƒ…[ˆ—ƒCƒxƒ“ƒg
-	static void Sub_Menu_View(int);							// ƒTƒuƒƒjƒ…[i‹“_ØŠ·jˆ—ƒCƒxƒ“ƒg
-	static void Sub_Menu_User(int);							// ƒTƒuƒƒjƒ…[iUser“o˜^ŠÖ”jˆ—ƒCƒxƒ“ƒg
-	static void DoSelect(int,int);							// ƒZƒŒƒNƒVƒ‡ƒ“‚Ìİ’è
-	static int  ObjSelect(GLuint [],int);					// ƒIƒuƒWƒFƒNƒg‘I‘ğ”»•Ê
-	static void Init(char *progname);						// •`‰æ‰Šú‰»
-	static void Idle();										// •`‰æƒAƒCƒhƒŠƒ“ƒOó‘Ô‚Å‚Ìˆ—ƒCƒxƒ“ƒg
-	static void Special(int,int,int);						// “ÁêƒL[ƒCƒxƒ“ƒg
-	static void glDrawBODY();								// IGESƒf[ƒ^‚Ì•`‰æ
-	static void glDrawAxis(double,double);					// ²‚Ì•`‰æ
-	static void glDrawRubberband(double,double,double,double);	// ƒ‰ƒo[ƒoƒ“ƒh‚Ì•`‰æ
-	static void glDraw_Line();								// ’¼ü‚ğ•`‰æ
-	static void Draw_NurbsSurface(BODY *);					// NURBS‹Èü‚ğ•`‰æ
-	static void Draw_NurbsCurve(BODY *);					// NURBS‹Èü‚ğ•`‰æ
-	static void glDraw_SurfLine();							// NURBS‹È–Ê‚Ìƒpƒ‰ƒ[ƒ^ƒ‰ƒCƒ“‚ğ•`‰æ
-	static void Draw_TrimSurfe(BODY *);						// ƒgƒŠƒ€–Ê‚Ì•`‰æ
-	static void Draw_Mesh(BODY *);							// ƒƒbƒVƒ…‚ğ•`‰æ
-	static int GenBodyList();								// body‚ğ“Ç‚İ‚İƒŠƒXƒg‚É“o˜^
-	static int NewPath();									// SPath,CPath‚Ìƒƒ‚ƒŠ[‚ğƒZƒŒƒNƒg‚³‚ê‚½ƒGƒ“ƒeƒBƒeƒB•ªŠm•Û‚·‚é
-	static int AddEntSymbolToObj();							// OBJECT\‘¢‘Ì‚É‰½”Ô–Ú‚Ì‹Èüor‹È–Ê‚©‚Ìî•ñ‚ğ•t‰Á‚·‚é
-	static int DelPath();									// SPath,CPath‚Ìƒƒ‚ƒŠ[‰ğ•ú
-	static void UpDateDisplayList(int);						// ƒfƒBƒXƒvƒŒƒCƒŠƒXƒg‚ÌXV
-	static void ClickPicking(GLuint SelectBuf[],int hits);	// ƒIƒuƒWƒFƒNƒg‚Ìƒ}ƒEƒXƒsƒbƒLƒ“ƒO(ƒNƒŠƒbƒN)
-	static void DragPicking(GLuint SelectBuf[],int hits);	// ƒIƒuƒWƒFƒNƒg‚Ìƒ}ƒEƒXƒsƒbƒLƒ“ƒO(ƒhƒ‰ƒbƒO)
-	static int OpenFile();									// CADƒf[ƒ^“Ç‚İ‚İ
-	static int CheckExtention(char *);						// “Ç‚İ‚Ü‚ê‚½ƒf[ƒ^‚ÌŠg’£q‚ğƒ`ƒFƒbƒN
-	static void ReDrawUserFunc();							// UserFuncÀs‚ÌÄ•`‰æŒÄ‚Ño‚µ
-	static void SetNewObject(int,int,int);					// ƒsƒbƒN‚³‚ê‚½ƒIƒuƒWƒFƒNƒg‚ğOBJECTƒŠƒXƒg‚É“o˜^
-	static void SetModelScale();							// ƒ‚ƒfƒ‹ƒXƒP[ƒ‹‚ğƒZƒbƒg
-	static void ClearSeldEntList();							// ƒZƒŒƒNƒVƒ‡ƒ“ƒŠƒXƒg‹y‚ÑOBJECT‚Ì‰Šú‰»
-	static void UserViewCanncel();							// UserFunc‚É‚æ‚Á‚Ä•`‰æ‚³‚ê‚½‰æ‘œ‚ğÁ‚·
-	static void SelectionCanncel();							// ƒZƒŒƒNƒVƒ‡ƒ“‚ğƒLƒƒƒ“ƒZƒ‹‚·‚é
-	static void VersionInfo();								// ƒo[ƒWƒ‡ƒ“î•ño—Í
-	static BODY *SearchBodyList(BODYList *,int);			// ƒZƒŒƒNƒVƒ‡ƒ“‚³‚ê‚Ä‚¢‚éBODY”Ô†‚ğ“¾‚é
+	// OpenGLç”¨æç”»é–¢æ•°ã®å®£è¨€ã¯staticãŒå¿…è¦
+	static void Keyboard(unsigned char key, int x, int y);	// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã‚¤ãƒ™ãƒ³ãƒˆ
+	static void Display(void);								// æç”»ã‚¤ãƒ™ãƒ³ãƒˆ
+	static void Motion(int,int);							// ãƒã‚¦ã‚¹å‹•ä½œã‚¤ãƒ™ãƒ³ãƒˆ
+	static void Reshape(int,int);							// å†æç”»ã‚¤ãƒ™ãƒ³ãƒˆ
+	static void Mouse(int,int,int,int);						// ãƒã‚¦ã‚¹ã‚¤ãƒ™ãƒ³ãƒˆ
+	static void Menu(int);									// ãƒ¡ãƒ‹ãƒ¥ãƒ¼å‡¦ç†ã‚¤ãƒ™ãƒ³ãƒˆ
+	static void Sub_Menu_View(int);							// ã‚µãƒ–ãƒ¡ãƒ‹ãƒ¥ãƒ¼ï¼ˆè¦–ç‚¹åˆ‡æ›ï¼‰å‡¦ç†ã‚¤ãƒ™ãƒ³ãƒˆ
+	static void Sub_Menu_User(int);							// ã‚µãƒ–ãƒ¡ãƒ‹ãƒ¥ãƒ¼ï¼ˆUserç™»éŒ²é–¢æ•°ï¼‰å‡¦ç†ã‚¤ãƒ™ãƒ³ãƒˆ
+	static void DoSelect(int,int);							// ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã®è¨­å®š
+	static int  ObjSelect(GLuint [],int);					// ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆé¸æŠåˆ¤åˆ¥
+	static void Init(char *progname);						// æç”»åˆæœŸåŒ–
+	static void Idle();										// æç”»ã‚¢ã‚¤ãƒ‰ãƒªãƒ³ã‚°çŠ¶æ…‹ã§ã®å‡¦ç†ã‚¤ãƒ™ãƒ³ãƒˆ
+	static void Special(int,int,int);						// ç‰¹æ®Šã‚­ãƒ¼ã‚¤ãƒ™ãƒ³ãƒˆ
+	static void glDrawBODY();								// IGESãƒ‡ãƒ¼ã‚¿ã®æç”»
+	static void glDrawAxis(double,double);					// è»¸ã®æç”»
+	static void glDrawRubberband(double,double,double,double);	// ãƒ©ãƒãƒ¼ãƒãƒ³ãƒ‰ã®æç”»
+	static void glDraw_Line();								// ç›´ç·šã‚’æç”»
+	static void Draw_NurbsSurface(BODY *);					// NURBSæ›²ç·šã‚’æç”»
+	static void Draw_NurbsCurve(BODY *);					// NURBSæ›²ç·šã‚’æç”»
+	static void glDraw_SurfLine();							// NURBSæ›²é¢ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ©ã‚¤ãƒ³ã‚’æç”»
+	static void Draw_TrimSurfe(BODY *);						// ãƒˆãƒªãƒ é¢ã®æç”»
+	static void Draw_Mesh(BODY *);							// ãƒ¡ãƒƒã‚·ãƒ¥ã‚’æç”»
+	static int GenBodyList();								// bodyã‚’èª­ã¿è¾¼ã¿ãƒªã‚¹ãƒˆã«ç™»éŒ²
+	static int NewPath();									// SPath,CPathã®ãƒ¡ãƒ¢ãƒªãƒ¼ã‚’ã‚»ãƒ¬ã‚¯ãƒˆã•ã‚ŒãŸã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£åˆ†ç¢ºä¿ã™ã‚‹
+	static int AddEntSymbolToObj();							// OBJECTæ§‹é€ ä½“ã«ä½•ç•ªç›®ã®æ›²ç·šoræ›²é¢ã‹ã®æƒ…å ±ã‚’ä»˜åŠ ã™ã‚‹
+	static int DelPath();									// SPath,CPathã®ãƒ¡ãƒ¢ãƒªãƒ¼è§£æ”¾
+	static void UpDateDisplayList(int);						// ãƒ‡ã‚£ã‚¹ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã®æ›´æ–°
+	static void ClickPicking(GLuint SelectBuf[],int hits);	// ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ãƒã‚¦ã‚¹ãƒ”ãƒƒã‚­ãƒ³ã‚°(ã‚¯ãƒªãƒƒã‚¯)
+	static void DragPicking(GLuint SelectBuf[],int hits);	// ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ãƒã‚¦ã‚¹ãƒ”ãƒƒã‚­ãƒ³ã‚°(ãƒ‰ãƒ©ãƒƒã‚°)
+	static int OpenFile();									// CADãƒ‡ãƒ¼ã‚¿èª­ã¿è¾¼ã¿
+	static int CheckExtention(char *);						// èª­ã¿è¾¼ã¾ã‚ŒãŸãƒ‡ãƒ¼ã‚¿ã®æ‹¡å¼µå­ã‚’ãƒã‚§ãƒƒã‚¯
+	static void ReDrawUserFunc();							// UserFuncå®Ÿè¡Œæ™‚ã®å†æç”»å‘¼ã³å‡ºã—
+	static void SetNewObject(int,int,int);					// ãƒ”ãƒƒã‚¯ã•ã‚ŒãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’OBJECTãƒªã‚¹ãƒˆã«ç™»éŒ²
+	static void SetModelScale();							// ãƒ¢ãƒ‡ãƒ«ã‚¹ã‚±ãƒ¼ãƒ«ã‚’ã‚»ãƒƒãƒˆ
+	static void ClearSeldEntList();							// ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ãƒªã‚¹ãƒˆåŠã³OBJECTã®åˆæœŸåŒ–
+	static void UserViewCanncel();							// UserFuncã«ã‚ˆã£ã¦æç”»ã•ã‚ŒãŸç”»åƒã‚’æ¶ˆã™
+	static void SelectionCanncel();							// ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã‚’ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã™ã‚‹
+	static void VersionInfo();								// ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±å‡ºåŠ›
+	static BODY *SearchBodyList(BODYList *,int);			// ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚Œã¦ã„ã‚‹BODYç•ªå·ã‚’å¾—ã‚‹
 
-// •Ï”
+// å¤‰æ•°
 private:
-	static BODY *glbody;			// “Ç‚İ‚ñ‚¾BODYƒŠƒXƒg‚Ìæ“ªƒ|ƒCƒ“ƒ^
-	static BODY *Curr_body;			// BODYƒŠƒXƒg‚É‚¨‚¯‚é’–Ú’†‚ÌBODYƒIƒuƒWƒFƒNƒg‚ğw‚·
-	static int  ScreenHeight;		// ƒfƒtƒHƒ‹ƒgƒXƒNƒŠ[ƒ“‚Ì‚‚³
-	static int  ScreenWidth;		// ƒfƒtƒHƒ‹ƒgƒXƒNƒŠ[ƒ“‚Ì•
-	static int  StartX;				// ƒhƒ‰ƒbƒOŠJnˆÊ’uX
-	static int  StartY;				// ƒhƒ‰ƒbƒOŠJnˆÊ’uY
-	static int  OldPosX;			// ƒEƒBƒ“ƒhƒEÄ•`‰æ’¼‘O‚ÌXÀ•W
-	static int  OldPosY;			// ƒEƒBƒ“ƒhƒEÄ•`‰æ’¼‘O‚ÌYÀ•W
-	static int  CurrentX;			// ƒhƒ‰ƒbƒO’†‚ÌˆÊ’uX
-	static int  CurrentY;			// ƒhƒ‰ƒbƒO’†‚ÌˆÊ’uY
-	static int  SweepSelectFlag;	// ƒXƒC[ƒvƒZƒŒƒNƒVƒ‡ƒ“‚ğŠJn‚µ‚½‚±‚Æ‚ğ¦‚·ƒtƒ‰ƒO
-	static int  Vp[4];				// ƒrƒ…[ƒ|ƒCƒ“ƒg
-	static GLuint  SelectBuf[MAXSELECT];	// ƒZƒŒƒNƒgƒoƒbƒtƒ@
-	static int  LBtnFlag;			// ¶ƒNƒŠƒbƒN‚µ‚½‚±‚Æ‚ğ¦‚·ƒtƒ‰ƒO
-	static int  RBtnFlag;			// ‰EƒNƒŠƒbƒN‚µ‚½‚±‚Æ‚ğ¦‚·ƒtƒ‰ƒO
-	static int  MBtnFlag;			// ’†ƒNƒŠƒbƒN‚µ‚½‚±‚Æ‚ğ¦‚·ƒtƒ‰ƒO
-	static int  ShiftKeyFlag;		// ShiftƒL[‚ğ‰Ÿ‚µ‚½‚±‚Æ‚ğ¦‚·ƒtƒ‰ƒO
-	static int  CtrlKeyFlag;		// CtrlƒL[‚ğ‰Ÿ‚µ‚½‚±‚Æ‚ğ¦‚·ƒtƒ‰ƒO
-	static int  AltKeyFlag;			// AltƒL[‚ğ‰Ÿ‚µ‚½‚±‚Æ‚ğ¦‚·ƒtƒ‰ƒO
-	static double Trl[3];			// •½sˆÚ“®—Ê
-	static double AxisScale;		// ²•`‰æ‚ÌƒXƒP[ƒ‹
-	static double ModelScale;		// ƒ‚ƒfƒ‹‚ÌƒXƒP[ƒ‹
-	static double ModelScale1st;	// ƒ‚ƒfƒ‹ƒXƒP[ƒ‹‚Ì‰Šú’l
-	static double IdentX;			// ƒ}ƒEƒX‚Ìâ‘ÎˆÊ’uX¨ƒEƒBƒ“ƒhƒE“à‚Å‚Ì‘Š‘ÎˆÊ’u‚ÌŠ·ZŒW”X
-	static double IdentY;			// ƒ}ƒEƒX‚Ìâ‘ÎˆÊ’uY¨ƒEƒBƒ“ƒhƒE“à‚Å‚Ì‘Š‘ÎˆÊ’u‚ÌŠ·ZŒW”Y
-	static Quat StartQ;				// ‰EƒNƒŠƒbƒN‚µ‚½uŠÔ‚Ì‰ñ“]Šp‚ğŠi”[‚·‚éƒNƒH[ƒ^ƒjƒIƒ“
-	static Quat TargetQ;			// ‚®‚è‚®‚è‚â‚Á‚Ä‚¢‚é“r’†‚ÌƒNƒH[ƒ^ƒjƒIƒ“
-	static double RotMx[TMATELEMNUM];	// ƒNƒH[ƒ^ƒjƒIƒ“¨“¯•ÏŠ·ƒ}ƒgƒŠƒbƒNƒX
-	static int  DrawSurfFlagCount;	// Surface•`‰æƒtƒ‰ƒOƒƒjƒ…[‚ª‰½‰ñ‘I‘ğ‚³‚ê‚½‚©‚ğ”‚¦‚éƒJƒEƒ“ƒ^
-	static int  DrawBODYFlagCount;	// BODY•`‰æƒtƒ‰ƒOƒƒjƒ…[‚ª‰½‰ñ‘I‘ğ‚³‚ê‚½‚©‚ğ”‚¦‚éƒJƒEƒ“ƒ^
-	static int DrawUserFuncFlag;			// PDT•`‰æƒtƒ‰ƒO
-	static OBJECT SelectedEntList[MAXSELECT];	// ƒZƒŒƒNƒVƒ‡ƒ“‚³‚ê‚½ƒGƒ“ƒeƒBƒeƒB‚ğ’€ŸŠi”[‚µ‚Ä‚¢‚­
-	static int PickCount;			// ƒsƒbƒN‰ñ”‚ğƒJƒEƒ“ƒg
-	static int BodyCount;			// body‚Ì”‚ğƒJƒEƒ“ƒg
-	static int CPickCount;			// NURBS‹Èü‚ªƒsƒbƒN‚³‚ê‚½”‚ğƒJƒEƒ“ƒg
-	static int SPickCount;			// NURBS‹È–Ê‚ªƒsƒbƒN‚³‚ê‚½”‚ğƒJƒEƒ“ƒg
-	static int  DrawBODYFlag;			// BODY•`‰æƒtƒ‰ƒO
-	static int  DrawSurfFlag;			// Surface•`‰æƒtƒ‰ƒO
+	static BODY *glbody;			// èª­ã¿è¾¼ã‚“ã BODYãƒªã‚¹ãƒˆã®å…ˆé ­ãƒã‚¤ãƒ³ã‚¿
+	static BODY *Curr_body;			// BODYãƒªã‚¹ãƒˆã«ãŠã‘ã‚‹æ³¨ç›®ä¸­ã®BODYã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’æŒ‡ã™
+	static int  ScreenHeight;		// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã®é«˜ã•
+	static int  ScreenWidth;		// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã®å¹…
+	static int  StartX;				// ãƒ‰ãƒ©ãƒƒã‚°é–‹å§‹ä½ç½®X
+	static int  StartY;				// ãƒ‰ãƒ©ãƒƒã‚°é–‹å§‹ä½ç½®Y
+	static int  OldPosX;			// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦å†æç”»ç›´å‰ã®Xåº§æ¨™
+	static int  OldPosY;			// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦å†æç”»ç›´å‰ã®Yåº§æ¨™
+	static int  CurrentX;			// ãƒ‰ãƒ©ãƒƒã‚°ä¸­ã®ä½ç½®X
+	static int  CurrentY;			// ãƒ‰ãƒ©ãƒƒã‚°ä¸­ã®ä½ç½®Y
+	static int  SweepSelectFlag;	// ã‚¹ã‚¤ãƒ¼ãƒ—ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã‚’é–‹å§‹ã—ãŸã“ã¨ã‚’ç¤ºã™ãƒ•ãƒ©ã‚°
+	static int  Vp[4];				// ãƒ“ãƒ¥ãƒ¼ãƒã‚¤ãƒ³ãƒˆ
+	static GLuint  SelectBuf[MAXSELECT];	// ã‚»ãƒ¬ã‚¯ãƒˆãƒãƒƒãƒ•ã‚¡
+	static int  LBtnFlag;			// å·¦ã‚¯ãƒªãƒƒã‚¯ã—ãŸã“ã¨ã‚’ç¤ºã™ãƒ•ãƒ©ã‚°
+	static int  RBtnFlag;			// å³ã‚¯ãƒªãƒƒã‚¯ã—ãŸã“ã¨ã‚’ç¤ºã™ãƒ•ãƒ©ã‚°
+	static int  MBtnFlag;			// ä¸­ã‚¯ãƒªãƒƒã‚¯ã—ãŸã“ã¨ã‚’ç¤ºã™ãƒ•ãƒ©ã‚°
+	static int  ShiftKeyFlag;		// Shiftã‚­ãƒ¼ã‚’æŠ¼ã—ãŸã“ã¨ã‚’ç¤ºã™ãƒ•ãƒ©ã‚°
+	static int  CtrlKeyFlag;		// Ctrlã‚­ãƒ¼ã‚’æŠ¼ã—ãŸã“ã¨ã‚’ç¤ºã™ãƒ•ãƒ©ã‚°
+	static int  AltKeyFlag;			// Altã‚­ãƒ¼ã‚’æŠ¼ã—ãŸã“ã¨ã‚’ç¤ºã™ãƒ•ãƒ©ã‚°
+	static double Trl[3];			// å¹³è¡Œç§»å‹•é‡
+	static double AxisScale;		// è»¸æç”»ã®ã‚¹ã‚±ãƒ¼ãƒ«
+	static double ModelScale;		// ãƒ¢ãƒ‡ãƒ«ã®ã‚¹ã‚±ãƒ¼ãƒ«
+	static double ModelScale1st;	// ãƒ¢ãƒ‡ãƒ«ã‚¹ã‚±ãƒ¼ãƒ«ã®åˆæœŸå€¤
+	static double IdentX;			// ãƒã‚¦ã‚¹ã®çµ¶å¯¾ä½ç½®Xâ†’ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦å†…ã§ã®ç›¸å¯¾ä½ç½®ã®æ›ç®—ä¿‚æ•°X
+	static double IdentY;			// ãƒã‚¦ã‚¹ã®çµ¶å¯¾ä½ç½®Yâ†’ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦å†…ã§ã®ç›¸å¯¾ä½ç½®ã®æ›ç®—ä¿‚æ•°Y
+	static Quat StartQ;				// å³ã‚¯ãƒªãƒƒã‚¯ã—ãŸç¬é–“ã®å›è»¢è§’ã‚’æ ¼ç´ã™ã‚‹ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³
+	static Quat TargetQ;			// ãã‚Šãã‚Šã‚„ã£ã¦ã„ã‚‹é€”ä¸­ã®ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³
+	static double RotMx[TMATELEMNUM];	// ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³â†’åŒæ™‚å¤‰æ›ãƒãƒˆãƒªãƒƒã‚¯ã‚¹
+	static int  DrawSurfFlagCount;	// Surfaceæç”»ãƒ•ãƒ©ã‚°ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãŒä½•å›é¸æŠã•ã‚ŒãŸã‹ã‚’æ•°ãˆã‚‹ã‚«ã‚¦ãƒ³ã‚¿
+	static int  DrawBODYFlagCount;	// BODYæç”»ãƒ•ãƒ©ã‚°ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãŒä½•å›é¸æŠã•ã‚ŒãŸã‹ã‚’æ•°ãˆã‚‹ã‚«ã‚¦ãƒ³ã‚¿
+	static int DrawUserFuncFlag;			// PDTæç”»ãƒ•ãƒ©ã‚°
+	static OBJECT SelectedEntList[MAXSELECT];	// ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚ŒãŸã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚’é€æ¬¡æ ¼ç´ã—ã¦ã„ã
+	static int PickCount;			// ãƒ”ãƒƒã‚¯å›æ•°ã‚’ã‚«ã‚¦ãƒ³ãƒˆ
+	static int BodyCount;			// bodyã®æ•°ã‚’ã‚«ã‚¦ãƒ³ãƒˆ
+	static int CPickCount;			// NURBSæ›²ç·šãŒãƒ”ãƒƒã‚¯ã•ã‚ŒãŸæ•°ã‚’ã‚«ã‚¦ãƒ³ãƒˆ
+	static int SPickCount;			// NURBSæ›²é¢ãŒãƒ”ãƒƒã‚¯ã•ã‚ŒãŸæ•°ã‚’ã‚«ã‚¦ãƒ³ãƒˆ
+	static int  DrawBODYFlag;			// BODYæç”»ãƒ•ãƒ©ã‚°
+	static int  DrawSurfFlag;			// Surfaceæç”»ãƒ•ãƒ©ã‚°
 	static int  DrawBODY1st;
-	static int  ExecUserFuncFlag[USERFUNCNUMMAX];	// UserFunc•`‰æƒtƒ‰ƒO
-	static int	 ReDrawBODYFlag;		// BODY•`‰æ1”­–Ú‚ğ¦‚·ƒtƒ‰ƒO
-	static double Tolerance;			// NURBS‚ğ•\Œ»‚·‚é‚Ì–Ê‚Ì‘e‚³
+	static int  ExecUserFuncFlag[USERFUNCNUMMAX];	// UserFuncæç”»ãƒ•ãƒ©ã‚°
+	static int	 ReDrawBODYFlag;		// BODYæç”»1ç™ºç›®ã‚’ç¤ºã™ãƒ•ãƒ©ã‚°
+	static double Tolerance;			// NURBSã‚’è¡¨ç¾ã™ã‚‹æ™‚ã®é¢ã®ç²—ã•
 
 
 
 private:
-	static BODYList	BodyList;		// BODYƒŠƒXƒg‚Ì‘€ì—pƒCƒ“ƒXƒ^ƒ“ƒX
-	static OBJECTList SeldEntList;	// ƒZƒŒƒNƒVƒ‡ƒ“‚³‚ê‚½ƒGƒ“ƒeƒBƒeƒB‚ğ’€ŸŠi”[‚µ‚Ä‚¢‚­ƒŠƒXƒg
-	static IGES_PARSER Parser;		// IGESƒp[ƒT[—pƒIƒuƒWƒFƒNƒg‚ğ¶¬
-	static QUATERNION QFunc;		// ƒNƒH[ƒ^ƒjƒIƒ“ƒNƒ‰ƒX‚ÌƒIƒuƒWƒFƒNƒg‚ğ¶¬
-	static NURBS_Func NFunc;		// NURBS_FuncƒNƒ‰ƒX‚ÌƒIƒuƒWƒFƒNƒg‚ğ¶¬
-	static USER User;				// ƒ†[ƒU[ƒNƒ‰ƒX‚ÌƒIƒuƒWƒFƒNƒg‚ğ¶¬
+	static BODYList	BodyList;		// BODYãƒªã‚¹ãƒˆã®æ“ä½œç”¨ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
+	static OBJECTList SeldEntList;	// ã‚»ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã•ã‚ŒãŸã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚’é€æ¬¡æ ¼ç´ã—ã¦ã„ããƒªã‚¹ãƒˆ
+	static IGES_PARSER Parser;		// IGESãƒ‘ãƒ¼ã‚µãƒ¼ç”¨ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ç”Ÿæˆ
+	static QUATERNION QFunc;		// ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ã‚¯ãƒ©ã‚¹ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ç”Ÿæˆ
+	static NURBS_Func NFunc;		// NURBS_Funcã‚¯ãƒ©ã‚¹ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ç”Ÿæˆ
+	static USER User;				// ãƒ¦ãƒ¼ã‚¶ãƒ¼ã‚¯ãƒ©ã‚¹ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ç”Ÿæˆ
 };
 
 
