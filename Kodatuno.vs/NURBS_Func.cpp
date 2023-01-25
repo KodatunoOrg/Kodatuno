@@ -2374,7 +2374,8 @@ int NURBS_Func::CalcIntersecPtsPlaneSearch(NURBSS *nurb,Coord pt,Coord nvec,doub
 				if(search_flag == KOD_ERR){					// 特異点検出により処理を継続できない場合
 					//fprintf(stderr,"b,%d,%d,%lf,%lf\n",search_flag,inverse_flag,u,v);	// for debug
 					GuiIF.SetMessage("NURBS_FUNC CAUTION: Singler point was ditected.");
-					break;
+//					break;
+					return KOD_FALSE;	// 変な情報を返すよりもゼロ扱いで by K.Magara
 				}
 				//fprintf(stderr,"f,%d,%d,%lf,%lf\n",search_flag,inverse_flag,u,v);	// for debug
 			}
