@@ -6,7 +6,7 @@
 // Parameters: 
 // *parent - 呼び出し元の親ウィジェットを指定
 QtDescribeView::QtDescribeView(QWidget *parent) :
-    QGLWidget(parent)
+    QOpenGLWidget(parent)
 {
     setFocusPolicy(Qt::StrongFocus);
     setMouseTracking(true);             // マウスが描画領域に入るだけで，マウス位置を取得できるようにする
@@ -103,7 +103,7 @@ void QtDescribeView::mouseMoveEvent(QMouseEvent *event)
 // *event - ホイールからの情報
 void QtDescribeView::wheelEvent(QWheelEvent *event)
 {
-    Kodatuno.MouseWheelEvent(event->delta());
+    Kodatuno.MouseWheelEvent(event->angleDelta().x());
 }
 
 // Function: keyPressEvent

@@ -4,7 +4,9 @@
 #
 #-------------------------------------------------
 
-QT       += core gui opengl
+QT += core gui opengl
+QT += widgets
+QT += openglwidgets
 
 TARGET = KOD_TEST
 TEMPLATE = app

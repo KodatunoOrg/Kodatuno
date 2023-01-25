@@ -1,7 +1,7 @@
 ﻿#ifndef QTDESCRIBEVIEW_H
 #define QTDESCRIBEVIEW_H
 
-#include <QGLWidget>
+#include <QOpenGLWidget>
 #include <QMouseEvent>
 #include "Kodatuno.h"
 
@@ -10,7 +10,7 @@
 
 // Class: QtDescribeView
 // OpenGL描画領域のイベント処理クラス
-class QtDescribeView : public QGLWidget
+class QtDescribeView : public QOpenGLWidget
 {
 public:
 // Constructor: QtDescribeView

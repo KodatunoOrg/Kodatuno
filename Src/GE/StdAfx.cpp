@@ -1451,7 +1451,7 @@ Coord CalcRotVec2D(Coord a, double angle)
 }
 
 // Function: CalcRotVec
-// 任意のベクトルを原点を通る任意軸周りに回転させたベクトルを求める
+// 任意のベクトルを原点を通る任意軸周りに回転させたベクトルを求める(ロドリゲスの回転公式)
 //
 // Parameters:
 // a - 回転させたいベクトル  
