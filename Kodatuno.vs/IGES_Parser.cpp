@@ -1,106 +1,113 @@
-﻿/*************************
-* IGESファイルを読み込む *
+/*************************
+* IGES�t�@�C����ǂݍ��� *
 **************************/
 
+#include "stdafx.h"
 #include "IGES_Parser.h"
 
+#if defined(_DEBUG) && defined(_MSC_VER)
+#define new DEBUG_NEW
+#endif
+
 // Function: IGES_Parser_Main
-// IGESパーサーのメイン
+// IGES�p�[�T�[�̃��C��
 //
 // Parameters:
-// *body - 立体を構成するエンティティの集合オブジェクトへのポインタ
-// TypeNum[] - 各エンティティの数が格納される
+// *body - ���̂��\������G���e�B�e�B�̏W���I�u�W�F�N�g�ւ̃|�C���^
+// TypeNum[] - �e�G���e�B�e�B�̐����i�[�����
 //
 // Return:
-// KOD_TRUE:読み込み成功	KOD_ERR:失敗
+// KOD_TRUE:�ǂݍ��ݐ���	KOD_ERR:���s
 int IGES_PARSER::IGES_Parser_Main(BODY *body,const char *IGES_fname)
 {
 	FILE *fp;
-	GlobalParam gpara;				// グローバル部のパラメータを格納
-	DirectoryParam *dpara;			// ディレクトリ部のパラメータを格納
-	char mes[256];					// メッセージダンプ用string
-	int  line[SECTION_NUM];			// 各セクション毎のライン数を格納
+	GlobalParam gpara;				// �O���[�o�����̃p�����[�^���i�[
+	DirectoryParam *dpara;			// �f�B���N�g�����̃p�����[�^���i�[
+	char mes[256];					// ���b�Z�[�W�_���v�pstring
+	int  line[SECTION_NUM];			// �e�Z�N�V�������̃��C�������i�[
 	int  flag = 0;
 	int  i;
 
-	// IGESファイルオープン
+	// IGES�t�@�C���I�[�v��
 	if((fp = fopen(IGES_fname,"r")) == NULL){
 		sprintf(mes,"KOD_ERROR: Cannot open %s",IGES_fname);
 		GuiIF.SetMessage(mes);
 		return(KOD_ERR);
 	}
-	sprintf(mes,"Open %s",IGES_fname);
-	GuiIF.SetMessage(mes);
+//	sprintf(mes,"Open %s",IGES_fname);
+//	GuiIF.SetMessage(mes);
 
-	// 各セクションの行数をあらかじめ取得
+	// �e�Z�N�V�����̍s�������炩���ߎ擾
 	GetSectionLine(fp,line);
 
-	// DirectoryParamのメモリー確保
-	line[SECTION_DIRECTORY] /= 2;		// ディレクトリ部は、2行で1つのシーケンスを構成するので2で割ったものをディレクトリ部のライン数とする
-	dpara = (DirectoryParam *)malloc(sizeof(DirectoryParam)*line[SECTION_DIRECTORY]);
+	// DirectoryParam�̃������[�m��
+	line[SECTION_DIRECTORY] /= 2;		// �f�B���N�g�����́A2�s��1�̃V�[�P���X���\������̂�2�Ŋ��������̂��f�B���N�g�����̃��C�����Ƃ���
+//	dpara = (DirectoryParam *)malloc(sizeof(DirectoryParam)*line[SECTION_DIRECTORY]);
+	dpara = new DirectoryParam[line[SECTION_DIRECTORY]];
 	if(dpara == NULL){
 		GuiIF.SetMessage("KOD_ERROR: fail to allocate DirectoryParam");
 		return(KOD_ERR);
 	}
 
-	// IGESファイル読み込み(各セクション毎に処理)
+	// IGES�t�@�C���ǂݍ���(�e�Z�N�V�������ɏ���)
 	for(i=0;i<SECTION_NUM;i++){
-		if(i == SECTION_START){					// スタート部読み込み
+		if(i == SECTION_START){					// �X�^�[�g���ǂݍ���
 			flag = GetStartSection(fp,line[i]);
 		}
-		else if(i == SECTION_GLOBAL){			// グローバル部読み込み
+		else if(i == SECTION_GLOBAL){			// �O���[�o�����ǂݍ���
 			flag = GetGlobalSection(fp,&gpara,line[i]);
 		}
-		else if(i == SECTION_DIRECTORY){		// ディレクトリ部読み込み
+		else if(i == SECTION_DIRECTORY){		// �f�B���N�g�����ǂݍ���
 			flag = GetDirectorySection(fp,dpara,body->TypeNum,line[i]);
 		}
-		else if(i == SECTION_PARAMETER){		// パラメータ部読み込み
-			body->NewBodyElem();				// BODY構造体内の各エンティティのメモリー確保
+		else if(i == SECTION_PARAMETER){		// �p�����[�^���ǂݍ���
+			body->NewBodyElem();				// BODY�\���̓��̊e�G���e�B�e�B�̃������[�m��
 			flag = GetParameterSection(fp,dpara,*body,line[SECTION_DIRECTORY]);
 		}
-		else if(i == SECTION_TERMINATE){		// ターミネート部読み込み
+		else if(i == SECTION_TERMINATE){		// �^�[�~�l�[�g���ǂݍ���
 			flag = GetTerminateSection(fp);
 		}
 		if(flag == KOD_ERR){
-			body->DelBodyElem(TypeCount);		// 今まで確保した分のメモリーを解放
+			body->DelBodyElem(TypeCount);		// ���܂Ŋm�ۂ������̃������[�����
 			return(KOD_ERR);
 		}
 	}
 
-	ChangeEntityforNurbs(dpara,*body,line[SECTION_DIRECTORY]);	// 内部表現を全てNURBSに変更する
+	ChangeEntityforNurbs(dpara,*body,line[SECTION_DIRECTORY]);	// �����\����S��NURBS�ɕύX����
 
-	flag = SearchMaxCoord(body,body->TypeNum);		// 立体の最大座標値を探索(初期表示での表示倍率を決定するため)
+	flag = SearchMaxCoord(body,body->TypeNum);		// ���̂̍ő���W�l��T��(�����\���ł̕\���{�������肷�邽��)
 
 	fclose(fp);
 
-	free(dpara);
+//	free(dpara);
+	delete[]	dpara;
 
 	return flag;
 }
 
 // Function: Optimize4OpenGL
-// 読み込んだIGESファイルをOpenGL用に最適化する
+// �ǂݍ���IGES�t�@�C����OpenGL�p�ɍœK������
 //
 // Parameters:
-// *body - BODYへのポインタ
+// *body - BODY�ւ̃|�C���^
 //
 // Return:
 // KOD_TURE
 int IGES_PARSER::Optimize4OpenGL(BODY *body)
 {
-	ExpandKnotRange(body);		// ノットベクトルの範囲をOpenGLの仕様に沿って最適化
-	CheckCWforTrim(body);		// トリム曲線が時計回り、反時計回りをOpenGLの仕様に沿って変更
-	CheckDegenracy(body);		// 縮退(2Dパラメトリック曲線の始点と終点が一致しているか)のチェック
-	ModifyParamConect(body);	// パラメトリック平面内のトリム曲線同士のつながりをチェック、修正する
+	ExpandKnotRange(body);		// �m�b�g�x�N�g���͈̔͂�OpenGL�̎d�l�ɉ����čœK��
+	CheckCWforTrim(body);		// �g�����Ȑ������v���A�����v����OpenGL�̎d�l�ɉ����ĕύX
+	CheckDegenracy(body);		// �k��(2D�p�����g���b�N�Ȑ��̎n�_�ƏI�_����v���Ă��邩)�̃`�F�b�N
+	ModifyParamConect(body);	// �p�����g���b�N���ʓ��̃g�����Ȑ����m�̂Ȃ�����`�F�b�N�A�C������
 
 	return KOD_TRUE;
 }
 
 // Function: CheckDegenracy
-// 縮退チェック
+// �k�ރ`�F�b�N
 //
 // Parameters:
-// *body - BODYへのポインタ
+// *body - BODY�ւ̃|�C���^
 //
 // Return:
 // KOD_TRUE
@@ -109,7 +116,7 @@ int IGES_PARSER::CheckDegenracy(BODY *body)
 	int flag;
 	NURBS_Func NFunc;
 
-	// 縮退用Nurbs曲線を複合曲線の数だけ生成
+	// �k�ޗpNurbs�Ȑ��𕡍��Ȑ��̐���������
 	if(body->TypeNum[_COMPOSITE_CURVE]){
 		double T[4] = {0,0,NORM_KNOT_VAL,NORM_KNOT_VAL};
 		double W[2] = {1,1};
@@ -120,32 +127,35 @@ int IGES_PARSER::CheckDegenracy(BODY *body)
 		InitCoord(&cp[1]);
 
 		for(int i=0;i<body->TypeNum[_COMPOSITE_CURVE];i++){
-			 NFunc.GenNurbsC(&body->CompC[i].DegeNurbs,2,2,4,T,W,cp,V,prop,1);	// 縮退用Nurbs曲線を複合曲線のエンティティ数だけ生成する
+			 NFunc.GenNurbsC(&body->CompC[i].DegeNurbs,2,2,4,T,W,cp,V,prop,1);	// �k�ޗpNurbs�Ȑ��𕡍��Ȑ��̃G���e�B�e�B��������������
 
-			// 各複合曲線がNURBS曲線のみで構成されておりかつ2Dパラメトリック要素であるかのチェック
+			// �e�����Ȑ���NURBS�Ȑ��݂̂ō\������Ă��肩��2D�p�����g���b�N�v�f�ł��邩�̃`�F�b�N
 			flag = 0;
 			for(int j=0;j<body->CompC[i].N;j++){
-				if(body->CompC[i].DEType[j] == NURBS_CURVE && body->CompC[i].pDE[j]->NurbsC.EntUseFlag == PARAMETRICELEM){
+//				if(body->CompC[i].DEType[j] == NURBS_CURVE && body->CompC[i].pDE[j]->NurbsC.EntUseFlag == PARAMETRICELEM){
+				if(body->CompC[i].DEType[j] == NURBS_CURVE && body->CompC[i].pDE[j].NurbsC->EntUseFlag == PARAMETRICELEM){
 					flag++;				
 				}
 			}
 
-			// NURBS曲線で構成されている複合曲線に対して、始点と終点の座標値を比較
+			// NURBS�Ȑ��ō\������Ă��镡���Ȑ��ɑ΂��āA�n�_�ƏI�_�̍��W�l���r
 			if(flag == body->CompC[i].N){
 				Coord s,e;
-				s = NFunc.CalcNurbsCCoord(&body->CompC[i].pDE[0]->NurbsC,body->CompC[i].pDE[0]->NurbsC.V[0]);					// 始点
-				e = NFunc.CalcNurbsCCoord(&body->CompC[i].pDE[body->CompC[i].N-1]->NurbsC,body->CompC[i].pDE[body->CompC[i].N-1]->NurbsC.V[1]);	// 終点
-				if(DiffCoord(s,e,1.0E-5) == KOD_FALSE){				// 始点≠終点
+//				s = NFunc.CalcNurbsCCoord(&body->CompC[i].pDE[0]->NurbsC,body->CompC[i].pDE[0]->NurbsC.V[0]);					// �n�_
+//				e = NFunc.CalcNurbsCCoord(&body->CompC[i].pDE[body->CompC[i].N-1]->NurbsC,body->CompC[i].pDE[body->CompC[i].N-1]->NurbsC.V[1]);	// �I�_
+				s = body->CompC[i].pDE[0].NurbsC->CalcNurbsCCoord(body->CompC[i].pDE[0].NurbsC->V[0]);					// �n�_
+				e = body->CompC[i].pDE[body->CompC[i].N-1].NurbsC->CalcNurbsCCoord(body->CompC[i].pDE[body->CompC[i].N-1].NurbsC->V[1]);	// �I�_
+				if(DiffCoord(s,e,1.0E-5) == KOD_FALSE){				// �n�_���I�_
 					body->CompC[i].DegeNurbs.cp[0] = e;
 					body->CompC[i].DegeNurbs.cp[1] = s;
-					body->CompC[i].DegeFlag = KOD_FALSE;			// 縮退ありのフラグを立てる
+					body->CompC[i].DegeFlag = KOD_FALSE;			// �k�ނ���̃t���O�𗧂Ă�
 				}
 				else{
-					body->CompC[i].DegeFlag = KOD_TRUE;				// 縮退なしのフラグを立てる
+					body->CompC[i].DegeFlag = KOD_TRUE;				// �k�ނȂ��̃t���O�𗧂Ă�
 				}
 			}
 			else{
-				body->CompC[i].DegeFlag = KOD_TRUE;					// 複合曲線がNurbs曲線で構成されていない場合も縮退なしのフラグ
+				body->CompC[i].DegeFlag = KOD_TRUE;					// �����Ȑ���Nurbs�Ȑ��ō\������Ă��Ȃ��ꍇ���k�ނȂ��̃t���O
 			}
 		}
 	}
@@ -154,10 +164,10 @@ int IGES_PARSER::CheckDegenracy(BODY *body)
 }
 
 // Function: ModifyParamConect
-// パラメトリック平面内のトリム曲線同士のつながりをチェック、修正する
+// �p�����g���b�N���ʓ��̃g�����Ȑ����m�̂Ȃ�����`�F�b�N�A�C������
 //
 // Parameters:
-// *body - BODYへのポインタ
+// *body - BODY�ւ̃|�C���^
 //
 // Return:
 // KOD_TRUE
@@ -165,20 +175,26 @@ int IGES_PARSER::ModifyParamConect(BODY *body)
 {
 	NURBSC *bc,*nc;
 
-	// トリム曲面
+	// �g�����Ȗ�
 	for(int i=0;i<body->TypeNum[_TRIMMED_SURFACE];i++){
-		// 外側トリム
-		for(int j=1;j<body->TrmS[i].pTO->pB->CompC.N;j++){
-			bc = (NURBSC *)body->TrmS[i].pTO->pB->CompC.pDE[j-1];
-			nc = (NURBSC *)body->TrmS[i].pTO->pB->CompC.pDE[j];
+		// �O���g����
+//		for(int j=1;j<body->TrmS[i].pTO->pB->CompC.N;j++){
+//			bc = (NURBSC *)body->TrmS[i].pTO->pB->CompC.pDE[j-1];
+//			nc = (NURBSC *)body->TrmS[i].pTO->pB->CompC.pDE[j];
+		for(int j=1;j<body->TrmS[i].pTO->pB.CompC->N;j++){
+			bc = body->TrmS[i].pTO->pB.CompC->pDE[j-1].NurbsC;
+			nc = body->TrmS[i].pTO->pB.CompC->pDE[j].NurbsC;
 			if(DiffCoord2D(bc->cp[bc->K-1],nc->cp[0]) == KOD_FALSE)
 				nc->cp[0] = SetCoord(bc->cp[bc->K-1]);
 		}
-		// 内側トリム
+		// �����g����
 		for(int j=0;j<body->TrmS[i].n2;j++){
-			for(int k=1;k<body->TrmS[i].pTI[j]->pB->CompC.N;k++){
-				bc = (NURBSC *)body->TrmS[i].pTI[j]->pB->CompC.pDE[k-1];
-				nc = (NURBSC *)body->TrmS[i].pTI[j]->pB->CompC.pDE[k];
+//			for(int k=1;k<body->TrmS[i].pTI[j]->pB->CompC.N;k++){
+//				bc = (NURBSC *)body->TrmS[i].pTI[j]->pB->CompC.pDE[k-1];
+//				nc = (NURBSC *)body->TrmS[i].pTI[j]->pB->CompC.pDE[k];
+			for(int k=1;k<body->TrmS[i].pTI[j]->pB.CompC->N;k++){
+				bc = body->TrmS[i].pTI[j]->pB.CompC->pDE[k-1].NurbsC;
+				nc = body->TrmS[i].pTI[j]->pB.CompC->pDE[k].NurbsC;
 				if(DiffCoord2D(bc->cp[bc->K-1],nc->cp[0]) == KOD_FALSE)
 					nc->cp[0] = SetCoord(bc->cp[bc->K-1]);
 			}
@@ -189,15 +205,15 @@ int IGES_PARSER::ModifyParamConect(BODY *body)
 }
 
 // Function: ChangeKnotVecRange
-// ノットベクトルの範囲を0～valにする．
+// �m�b�g�x�N�g���͈̔͂�0�`val�ɂ���D
 //
 // Parameters:
-// Range[] - ノットベクトルの範囲
-// Knot[] - ノットベクトル
-// N - ノットベクトルの数
-// M - 階数
-// K - コントロールポイント数
-// val - ノットベクトルの範囲の上限値
+// Range[] - �m�b�g�x�N�g���͈̔�
+// Knot[] - �m�b�g�x�N�g��
+// N - �m�b�g�x�N�g���̐�
+// M - �K��
+// K - �R���g���[���|�C���g��
+// val - �m�b�g�x�N�g���͈̔͂̏���l
 //
 // Return:
 // KOD_TRUE
@@ -217,86 +233,93 @@ int IGES_PARSER::ChangeKnotVecRange(double Range[],double Knot[],int N,int M,int
 }
 
 // Function: ChangeKnot
-// ノットベクトルの範囲変更関数ChangeKnotVecRange()のサブ関数
+// �m�b�g�x�N�g���͈͕̔ύX�֐�ChangeKnotVecRange()�̃T�u�֐�
 //
 // Parameters:
-// Knot - 注目中のノット
-// M_ - Knot[階数-1]
+// Knot - ���ڒ��̃m�b�g
+// M_ - Knot[�K��-1]
 // K_ - Knot[K]
-// val - ノットベクトルの範囲の上限値
+// val - �m�b�g�x�N�g���͈̔͂̏���l
 //
 // Return:
-// 範囲変更後のノット値
+// �͈͕ύX��̃m�b�g�l
 double IGES_PARSER::ChangeKnot(double Knot,double M_,double K_,double val)
 {
 	return val*(Knot - M_)/(K_-M_);
 }
 
 // Fucntion: NormalizeKnotRange
-// >指定したBODYに属する全てのNURBS曲線/曲面のノットベクトルを0-valの範囲に変更すする
-// >0.0001以下くらいの微小変化をOpenGLが認識しないため、ノット間隔を広く取り、0.0001以上の間隔
-// >になるようにする。ただし現時点では全てのノット間隔を一律0～NORM_KNOT_VALしており、無駄である。
-// >今後ノット間隔が0.0001以下の場合のみノット間隔を広げるようにするべき。(2011/10)
-// >隣り合うノットベクトルの差がMIN_KNOT_RANGE以上になるよう範囲を変更する
+// >�w�肵��BODY�ɑ�����S�Ă�NURBS�Ȑ�/�Ȗʂ̃m�b�g�x�N�g����0-val�͈̔͂ɕύX������
+// >0.0001�ȉ����炢�̔����ω���OpenGL���F�����Ȃ����߁A�m�b�g�Ԋu���L�����A0.0001�ȏ�̊Ԋu
+// >�ɂȂ�悤�ɂ���B�����������_�ł͑S�Ẵm�b�g�Ԋu���ꗥ0�`NORM_KNOT_VAL���Ă���A���ʂł���B
+// >����m�b�g�Ԋu��0.0001�ȉ��̏ꍇ�̂݃m�b�g�Ԋu���L����悤�ɂ���ׂ��B(2011/10)
+// >�ׂ荇���m�b�g�x�N�g���̍���MIN_KNOT_RANGE�ȏ�ɂȂ�悤�͈͂�ύX����
 //
 // Parameters:
-// *body - BODYへのポインタ
-// val - ノットベクトルの範囲の上限値
+// *body - BODY�ւ̃|�C���^
+// val - �m�b�g�x�N�g���͈̔͂̏���l
 //
 // Return:
 // KOD_TRUE
 int IGES_PARSER::NormalizeKnotRange(BODY *body,double val)
 {
-	// トリム面
+	// �g������
 	for(int i=0;i<body->TypeNum[_TRIMMED_SURFACE];i++){
 		int M0 = body->TrmS[i].pts->M[0];
 		int M1 = body->TrmS[i].pts->M[1];
 		int K0 = body->TrmS[i].pts->K[0];
 		int K1 = body->TrmS[i].pts->K[1];
-		// トリム面のパラメトリック平面における外側トリム曲線の変更
-		for(int j=0;j<body->TrmS[i].pTO->pB->CompC.N;j++){
-			NURBSC *nc = (NURBSC *)body->TrmS[i].pTO->pB->CompC.pDE[j];
-			for(int k=0;k<nc->K;k++){	// パラメトリック平面上のNURBS曲線のコントロールポイントをノットの変更に合わせて変更
+		// �g�����ʂ̃p�����g���b�N���ʂɂ�����O���g�����Ȑ��̕ύX
+//		for(int j=0;j<body->TrmS[i].pTO->pB->CompC.N;j++){
+//			NURBSC *nc = (NURBSC *)body->TrmS[i].pTO->pB->CompC.pDE[j];
+		for(int j=0;j<body->TrmS[i].pTO->pB.CompC->N;j++){
+			NURBSC *nc = body->TrmS[i].pTO->pB.CompC->pDE[j].NurbsC;
+			for(int k=0;k<nc->K;k++){	// �p�����g���b�N���ʏ��NURBS�Ȑ��̃R���g���[���|�C���g���m�b�g�̕ύX�ɍ��킹�ĕύX
 				nc->cp[k].x = ChangeKnot(nc->cp[k].x,body->TrmS[i].pts->S[M0-1],body->TrmS[i].pts->S[K0],val);
 				nc->cp[k].y = ChangeKnot(nc->cp[k].y,body->TrmS[i].pts->T[M1-1],body->TrmS[i].pts->T[K1],val);
 			}
 			ChangeKnotVecRange(nc->V,nc->T,nc->N,nc->M,nc->K,val);
+//			ChangeKnotVecRange(nc->V,nc->T.get(),nc->N,nc->M,nc->K,val);
 		}
-		// トリム面のパラメトリック平面における内側トリム曲線の変更
+		// �g�����ʂ̃p�����g���b�N���ʂɂ���������g�����Ȑ��̕ύX
 		for(int j=0;j<body->TrmS[i].n2;j++){
-			for(int k=0;k<body->TrmS[i].pTI[j]->pB->CompC.N;k++){
-				NURBSC *nc = (NURBSC *)body->TrmS[i].pTI[j]->pB->CompC.pDE[k];
+//			for(int k=0;k<body->TrmS[i].pTI[j]->pB->CompC.N;k++){
+//				NURBSC *nc = (NURBSC *)body->TrmS[i].pTI[j]->pB->CompC.pDE[k];
+			for(int k=0;k<body->TrmS[i].pTI[j]->pB.CompC->N;k++){
+				NURBSC *nc = body->TrmS[i].pTI[j]->pB.CompC->pDE[k].NurbsC;
 				for(int l=0;l<nc->K;l++){
 					nc->cp[l].x = ChangeKnot(nc->cp[l].x,body->TrmS[i].pts->S[M0-1],body->TrmS[i].pts->S[K0],val);
 					nc->cp[l].y = ChangeKnot(nc->cp[l].y,body->TrmS[i].pts->T[M1-1],body->TrmS[i].pts->T[K1],val);
 				}
 				ChangeKnotVecRange(nc->V,nc->T,nc->N,nc->M,nc->K,val);
+//				ChangeKnotVecRange(nc->V,nc->T.get(),nc->N,nc->M,nc->K,val);
 			}
 		}
-		// ノットベクトルの範囲を変更する
+		// �m�b�g�x�N�g���͈̔͂�ύX����
 		ChangeKnotVecRange(body->TrmS[i].pts->U,body->TrmS[i].pts->S,body->TrmS[i].pts->N[0],M0,K0,val);
 		ChangeKnotVecRange(body->TrmS[i].pts->V,body->TrmS[i].pts->T,body->TrmS[i].pts->N[1],M1,K1,val);
 	}
 
-	// NURBS曲線
+	// NURBS�Ȑ�
 	for(int i=0;i<body->TypeNum[_NURBSC];i++){
-		if(body->NurbsC[i].EntUseFlag == 5) continue;	// 実空間上の曲線のみ変更
+		if(body->NurbsC[i].EntUseFlag == 5) continue;	// ����ԏ�̋Ȑ��̂ݕύX
 		ChangeKnotVecRange(body->NurbsC[i].V,body->NurbsC[i].T,body->NurbsC[i].N,body->NurbsC[i].M,body->NurbsC[i].K,val);
+//		ChangeKnotVecRange(body->NurbsC[i].V,body->NurbsC[i].T.get(),body->NurbsC[i].N,body->NurbsC[i].M,body->NurbsC[i].K,val);
 	}
 
 	return KOD_TRUE;
 }
 
 // Function: SearchMinVecRange
-// ノットベクトル列から隣り合うノットベクトルの最小値を探索し返す
+// �m�b�g�x�N�g���񂩂�ׂ荇���m�b�g�x�N�g���̍ŏ��l��T�����Ԃ�
 //
 // Parameters:
-// Knot[] - ノットベクトル
-// M - 階数
-// K - コントロールポイントの数 
+// Knot[] - �m�b�g�x�N�g��
+// M - �K��
+// K - �R���g���[���|�C���g�̐� 
 // 
 // Return:
-// 最小値
+// �ŏ��l
 double IGES_PARSER::SearchMinVecRange(double Knot[],int M,int K)
 {
 	double min = 1.0E+6;
@@ -311,20 +334,20 @@ double IGES_PARSER::SearchMinVecRange(double Knot[],int M,int K)
 }
 
 // Function: ExpandKnotRange
-// 隣り合うノットベクトルの差がMIN_KNOT_RANGE以上になるよう範囲を変更する
+// �ׂ荇���m�b�g�x�N�g���̍���MIN_KNOT_RANGE�ȏ�ɂȂ�悤�͈͂�ύX����
 //
 // Parameters:
-// *body - BODYへのポインタ
+// *body - BODY�ւ̃|�C���^
 // 
 // Return:
 // KOD_TRUE
 int IGES_PARSER::ExpandKnotRange(BODY *body)
 {
-	NormalizeKnotRange(body,NORM_KNOT_VAL);		// ノットを0-1に正規化
+	NormalizeKnotRange(body,NORM_KNOT_VAL);		// �m�b�g��0-1�ɐ��K��
 	
 	double min;
 
-	// トリム面
+	// �g������
 	for(int i=0;i<body->TypeNum[_TRIMMED_SURFACE];i++){
 		int M0 = body->TrmS[i].pts->M[0];
 		int M1 = body->TrmS[i].pts->M[1];
@@ -333,55 +356,62 @@ int IGES_PARSER::ExpandKnotRange(BODY *body)
 
 		double uval = NORM_KNOT_VAL;
 		double vval = NORM_KNOT_VAL;
-		min = SearchMinVecRange(body->TrmS[i].pts->S,M0,K0);	// u方向ノットベクトルの最小レンジを調べる
+		min = SearchMinVecRange(body->TrmS[i].pts->S,M0,K0);	// u�����m�b�g�x�N�g���̍ŏ������W�𒲂ׂ�
 		if(min < MIN_KNOT_RANGE) {
-			uval = MIN_KNOT_RANGE/min;			// 最小レンジがMIN_KNOT_RANGEになる倍率を得る
+			uval = MIN_KNOT_RANGE/min;			// �ŏ������W��MIN_KNOT_RANGE�ɂȂ�{���𓾂�
 		}
 
-		min = SearchMinVecRange(body->TrmS[i].pts->T,M1,K1);	// v方向ノットベクトルの最小レンジを調べる
+		min = SearchMinVecRange(body->TrmS[i].pts->T,M1,K1);	// v�����m�b�g�x�N�g���̍ŏ������W�𒲂ׂ�
 		if(min < MIN_KNOT_RANGE){
-			vval = MIN_KNOT_RANGE/min;			// 最小レンジがMIN_KNOT_RANGEになる倍率を得る
+			vval = MIN_KNOT_RANGE/min;			// �ŏ������W��MIN_KNOT_RANGE�ɂȂ�{���𓾂�
 		}
 
-		// トリム面のパラメトリック平面における外側トリム曲線の変更
-		for(int j=0;j<body->TrmS[i].pTO->pB->CompC.N;j++){
-			NURBSC *nc = (NURBSC *)body->TrmS[i].pTO->pB->CompC.pDE[j];
-			for(int k=0;k<nc->K;k++){	// パラメトリック平面上のNURBS曲線のコントロールポイントをノットの変更に合わせて変更
+		// �g�����ʂ̃p�����g���b�N���ʂɂ�����O���g�����Ȑ��̕ύX
+//		for(int j=0;j<body->TrmS[i].pTO->pB->CompC.N;j++){
+//			NURBSC *nc = (NURBSC *)body->TrmS[i].pTO->pB->CompC.pDE[j];
+		for(int j=0;j<body->TrmS[i].pTO->pB.CompC->N;j++){
+			NURBSC *nc = body->TrmS[i].pTO->pB.CompC->pDE[j].NurbsC;
+			for(int k=0;k<nc->K;k++){	// �p�����g���b�N���ʏ��NURBS�Ȑ��̃R���g���[���|�C���g���m�b�g�̕ύX�ɍ��킹�ĕύX
 				nc->cp[k].x = ChangeKnot(nc->cp[k].x,body->TrmS[i].pts->S[M0-1],body->TrmS[i].pts->S[K0],uval);
 				nc->cp[k].y = ChangeKnot(nc->cp[k].y,body->TrmS[i].pts->T[M1-1],body->TrmS[i].pts->T[K1],vval);
 			}
 			ChangeKnotVecRange(nc->V,nc->T,nc->N,nc->M,nc->K,NORM_KNOT_VAL);
+//			ChangeKnotVecRange(nc->V,nc->T.get(),nc->N,nc->M,nc->K,NORM_KNOT_VAL);
 		}
-		// トリム面のパラメトリック平面における内側トリム曲線の変更
+		// �g�����ʂ̃p�����g���b�N���ʂɂ���������g�����Ȑ��̕ύX
 		for(int j=0;j<body->TrmS[i].n2;j++){
-			for(int k=0;k<body->TrmS[i].pTI[j]->pB->CompC.N;k++){
-				NURBSC *nc = (NURBSC *)body->TrmS[i].pTI[j]->pB->CompC.pDE[k];
+//			for(int k=0;k<body->TrmS[i].pTI[j]->pB->CompC.N;k++){
+//				NURBSC *nc = (NURBSC *)body->TrmS[i].pTI[j]->pB->CompC.pDE[k];
+			for(int k=0;k<body->TrmS[i].pTI[j]->pB.CompC->N;k++){
+				NURBSC *nc = body->TrmS[i].pTI[j]->pB.CompC->pDE[k].NurbsC;
 				for(int l=0;l<nc->K;l++){
 					nc->cp[l].x = ChangeKnot(nc->cp[l].x,body->TrmS[i].pts->S[M0-1],body->TrmS[i].pts->S[K0],uval);
 					nc->cp[l].y = ChangeKnot(nc->cp[l].y,body->TrmS[i].pts->T[M1-1],body->TrmS[i].pts->T[K1],vval);
 				}
 				ChangeKnotVecRange(nc->V,nc->T,nc->N,nc->M,nc->K,NORM_KNOT_VAL);
+//				ChangeKnotVecRange(nc->V,nc->T.get(),nc->N,nc->M,nc->K,NORM_KNOT_VAL);
 			}
 		}
-		// ノットベクトルの範囲を変更する
+		// �m�b�g�x�N�g���͈̔͂�ύX����
 		ChangeKnotVecRange(body->TrmS[i].pts->U,body->TrmS[i].pts->S,body->TrmS[i].pts->N[0],M0,K0,uval);
 		ChangeKnotVecRange(body->TrmS[i].pts->V,body->TrmS[i].pts->T,body->TrmS[i].pts->N[1],M1,K1,vval);
 	}
 
-	// NURBS曲線
+	// NURBS�Ȑ�
 	for(int i=0;i<body->TypeNum[_NURBSC];i++){
-		if(body->NurbsC[i].EntUseFlag == 5) continue;	// 実空間上の曲線のみ変更
+		if(body->NurbsC[i].EntUseFlag == 5) continue;	// ����ԏ�̋Ȑ��̂ݕύX
 		ChangeKnotVecRange(body->NurbsC[i].V,body->NurbsC[i].T,body->NurbsC[i].N,body->NurbsC[i].M,body->NurbsC[i].K,NORM_KNOT_VAL);
+//		ChangeKnotVecRange(body->NurbsC[i].V,body->NurbsC[i].T.get(),body->NurbsC[i].N,body->NurbsC[i].M,body->NurbsC[i].K,NORM_KNOT_VAL);
 	}
 
 	return KOD_TRUE;
 }
 
 // Function: CheckCWforTrim
-// トリムに使われている複合曲線からなる多角形が時計回りか反時計回りかを調べ、外周トリムは反時計回り、内周トリムは時計周りになるように変更する
+// �g�����Ɏg���Ă��镡���Ȑ�����Ȃ鑽�p�`�����v��肩�����v��肩�𒲂ׁA�O���g�����͔����v���A�����g�����͎��v����ɂȂ�悤�ɕύX����
 //
 // Parameters:
-// *body - BODYへのポインタ
+// *body - BODY�ւ̃|�C���^
 // 
 // Return:
 // KOD_TRUE
@@ -390,69 +420,81 @@ int IGES_PARSER::CheckCWforTrim(BODY *body)
 	Coord *p;
 	int flag;
 
-	// トリム面
+	// �g������
 	for(int i=0;i<body->TypeNum[_TRIMMED_SURFACE];i++){
-		int otrmnum = body->TrmS[i].pTO->pB->CompC.N;
+//		int otrmnum = body->TrmS[i].pTO->pB->CompC.N;
+		int otrmnum = body->TrmS[i].pTO->pB.CompC->N;
 
 		if(otrmnum > 2){
-			// トリム面のパラメトリック平面における外側トリム曲線の変更
+			// �g�����ʂ̃p�����g���b�N���ʂɂ�����O���g�����Ȑ��̕ύX
 			p = NewCoord1(otrmnum);
 
-			// 外側トリムを構成する各NURBS曲線の始点を取り出す
+			// �O���g�������\������eNURBS�Ȑ��̎n�_�����o��
 			for(int j=0;j<otrmnum;j++){
-				NURBSC *nc = (NURBSC *)body->TrmS[i].pTO->pB->CompC.pDE[j];
+//				NURBSC *nc = (NURBSC *)body->TrmS[i].pTO->pB->CompC.pDE[j];
+				NURBSC *nc = body->TrmS[i].pTO->pB.CompC->pDE[j].NurbsC;
 				p[j] = SetCoord(nc->cp[0]);		
 			}
-			flag = DiscriminateCW2D(p,otrmnum);	// 時計・反時計周りを調べる
+			flag = DiscriminateCW2D(p,otrmnum);	// ���v�E�����v����𒲂ׂ�
 
-			// 外側トリムが時計回りだったら、反時計回りに変更する
+			// �O���g���������v��肾������A�����v���ɕύX����
 			if(flag == KOD_FALSE){
 				for(int j=0;j<otrmnum;j++){
-					NURBSC *nc = (NURBSC *)body->TrmS[i].pTO->pB->CompC.pDE[j];
-					Reverse(nc->cp,nc->K);		// コントロールポイント列の反転
-					// ノットベクトル列を反転
+//					NURBSC *nc = (NURBSC *)body->TrmS[i].pTO->pB->CompC.pDE[j];
+					NURBSC *nc = body->TrmS[i].pTO->pB.CompC->pDE[j].NurbsC;
+					Reverse(nc->cp,nc->K);		// �R���g���[���|�C���g��̔��]
+//					Reverse(nc->cp.get(),nc->K);		// �R���g���[���|�C���g��̔��]
+					// �m�b�g�x�N�g����𔽓]
 					for(int k=0;k<nc->N;k++){
 						nc->T[k] *= -1;
 						nc->T[k] += nc->V[0]+nc->V[1];
 					}
 					Reverse(nc->T,nc->N);
+//					Reverse(nc->T.get(),nc->N);
 				}
-				// COMPELEMを反転
-				ReverseCOMPELEM(&body->TrmS[i].pTO->pB->CompC);
+				// COMPELEM�𔽓]
+//				ReverseCOMPELEM(&body->TrmS[i].pTO->pB->CompC);
+				ReverseCOMPELEM(body->TrmS[i].pTO->pB.CompC);
 			}
 
 			FreeCoord1(p);
-			// 外側トリムここまで
+			// �O���g���������܂�
 		}
 
-		// トリム面のパラメトリック平面における内側トリム曲線の変更
+		// �g�����ʂ̃p�����g���b�N���ʂɂ���������g�����Ȑ��̕ύX
 		for(int j=0;j<body->TrmS[i].n2;j++){
-			otrmnum = body->TrmS[i].pTI[j]->pB->CompC.N;
+//			otrmnum = body->TrmS[i].pTI[j]->pB->CompC.N;
+			otrmnum = body->TrmS[i].pTI[j]->pB.CompC->N;
 
 			if(otrmnum > 2){
 				p = NewCoord1(otrmnum);
 
-				// 内側トリムを構成する各NURBS曲線の始点を取り出す
+				// �����g�������\������eNURBS�Ȑ��̎n�_�����o��
 				for(int k=0;k<otrmnum;k++){
-					NURBSC *nc = (NURBSC *)body->TrmS[i].pTI[j]->pB->CompC.pDE[k];
+//					NURBSC *nc = (NURBSC *)body->TrmS[i].pTI[j]->pB->CompC.pDE[k];
+					NURBSC *nc = body->TrmS[i].pTI[j]->pB.CompC->pDE[k].NurbsC;
 					p[k] = SetCoord(nc->cp[0]);
 				}
-				flag = DiscriminateCW2D(p,otrmnum);	// 時計・反時計周りを調べる
+				flag = DiscriminateCW2D(p,otrmnum);	// ���v�E�����v����𒲂ׂ�
 
-				// 内側トリムが反時計回りだったら、時計回りに変更する
+				// �����g�����������v��肾������A���v���ɕύX����
 				if(flag == KOD_TRUE){
 					for(int k=0;k<otrmnum;k++){
-						NURBSC *nc = (NURBSC *)body->TrmS[i].pTI[j]->pB->CompC.pDE[k];
-						Reverse(nc->cp,nc->K);		// コントロールポイント列の反転
-						// ノットベクトル列を反転
+//						NURBSC *nc = (NURBSC *)body->TrmS[i].pTI[j]->pB->CompC.pDE[k];
+						NURBSC *nc = body->TrmS[i].pTI[j]->pB.CompC->pDE[k].NurbsC;
+						Reverse(nc->cp,nc->K);		// �R���g���[���|�C���g��̔��]
+//						Reverse(nc->cp.get(),nc->K);		// �R���g���[���|�C���g��̔��]
+						// �m�b�g�x�N�g����𔽓]
 						for(int l=0;l<nc->N;l++){
 							nc->T[l] *= -1;
 							nc->T[l] += nc->V[0]+nc->V[1];
 						}
 						Reverse(nc->T,nc->N);
+//						Reverse(nc->T.get(),nc->N);
 					}
-					// COMPELEMを反転
-					ReverseCOMPELEM(&body->TrmS[i].pTI[j]->pB->CompC);
+					// COMPELEM�𔽓]
+//					ReverseCOMPELEM(&body->TrmS[i].pTI[j]->pB->CompC);
+					ReverseCOMPELEM(body->TrmS[i].pTI[j]->pB.CompC);
 				}
 
 				FreeCoord1(p);
@@ -464,14 +506,15 @@ int IGES_PARSER::CheckCWforTrim(BODY *body)
 }
 
 // Function: ReverseCOMPELEM
-// COMPELEM配列を反転
+// COMPELEM�z��𔽓]
 //
 // Parameters:
-// *CompC - COMPC配列
+// *CompC - COMPC�z��
 void IGES_PARSER::ReverseCOMPELEM(COMPC *CompC)
 {
 	int i,j;
-	COMPELEM *tmp;
+//	COMPELEM *tmp;
+	COMPELEM tmp;
 
 	for(i=0,j=CompC->N-1;i<j;i++,j--){
 		tmp = CompC->pDE[i];
@@ -481,45 +524,45 @@ void IGES_PARSER::ReverseCOMPELEM(COMPC *CompC)
 }
 
 // Function: ChangeEntityforNurbs
-// NURBS曲線以外のエンティティをNURBS曲線に変換し、変換行列があれば座標変換を施す
+// NURBS�Ȑ��ȊO�̃G���e�B�e�B��NURBS�Ȑ��ɕϊ����A�ϊ��s�񂪂���΍��W�ϊ����{��
 //
 // Parameters:
-// *dpara - ディレクトリ部のパラメータ構造体へのポインタ
-// body - BODY構造体  
-// dline - ディレクトリ部のライン数 
+// *dpara - �f�B���N�g�����̃p�����[�^�\���̂ւ̃|�C���^
+// body - BODY�\����  
+// dline - �f�B���N�g�����̃��C���� 
 //
 // Return:
-// KOD_TRUE:成功	KOD_ERR:失敗
+// KOD_TRUE:����	KOD_ERR:���s
 int IGES_PARSER::ChangeEntityforNurbs(DirectoryParam *dpara,BODY body,int dline)
 {
 	bool flag;
 
 	for(int i=0;i<dline;i++){
 		flag = KOD_FALSE;
-		// 円/円弧->NURBS曲線
+		// �~/�~��->NURBS�Ȑ�
 		if(dpara[i].entity_type == CIRCLE_ARC){
-			if(body.GetNurbsCFromCirA(TypeCount[_NURBSC],dpara[i].entity_count) == KOD_ERR) return KOD_ERR;		// 円/円弧パラメータからNURBS曲線パラメータを得る
-			InitDisplayStat(&body.NurbsC[TypeCount[_NURBSC]].Dstat);			// 表示属性の初期化
+			if(body.GetNurbsCFromCirA(TypeCount[_NURBSC],dpara[i].entity_count) == KOD_ERR) return KOD_ERR;		// �~/�~�ʃp�����[�^����NURBS�Ȑ��p�����[�^�𓾂�
+			InitDisplayStat(&body.NurbsC[TypeCount[_NURBSC]].Dstat);			// �\�������̏�����
 			flag = KOD_TRUE;
 		}
-		// 線分->NURBS曲線
+		// ����->NURBS�Ȑ�
 		else if(dpara[i].entity_type == LINE){
-			if(body.GetNurbsCFromLine(TypeCount[_NURBSC],dpara[i].entity_count) == KOD_ERR) return KOD_ERR;		// 線分パラメータからNURBS曲線パラメータを得る
-			InitDisplayStat(&body.NurbsC[TypeCount[_NURBSC]].Dstat);			// 表示属性の初期化
+			if(body.GetNurbsCFromLine(TypeCount[_NURBSC],dpara[i].entity_count) == KOD_ERR) return KOD_ERR;		// �����p�����[�^����NURBS�Ȑ��p�����[�^�𓾂�
+			InitDisplayStat(&body.NurbsC[TypeCount[_NURBSC]].Dstat);			// �\�������̏�����
 			flag = KOD_TRUE;
 		}
-		// 円/円弧、直線以外の曲線エンティティが存在する場合は、新規に処理を追加してください
+		// �~/�~�ʁA�����ȊO�̋Ȑ��G���e�B�e�B�����݂���ꍇ�́A�V�K�ɏ�����ǉ����Ă�������
 
-		// 変換行列演算
-		if(flag == KOD_TRUE){												// NURBS変換されたエンティティに対して
-			if(dpara[i].p_tm){												// 変換行列が存在する場合
-				for(int j=0;j<TypeCount[_TRANSFORMATION_MATRIX];j++){		// 全ての変換行列タイプを調べる
-					if(body.TMat[j].pD == dpara[i].p_tm){					// 対象となる変換行列タイプへのポインタ
-						if(TransformNurbsC(TypeCount[_NURBSC],j,body) == KOD_ERR) return KOD_ERR;	// NURBS曲線を座標変換する
+		// �ϊ��s�񉉎Z
+		if(flag == KOD_TRUE){												// NURBS�ϊ����ꂽ�G���e�B�e�B�ɑ΂���
+			if(dpara[i].p_tm){												// �ϊ��s�񂪑��݂���ꍇ
+				for(int j=0;j<TypeCount[_TRANSFORMATION_MATRIX];j++){		// �S�Ă̕ϊ��s��^�C�v�𒲂ׂ�
+					if(body.TMat[j].pD == dpara[i].p_tm){					// �ΏۂƂȂ�ϊ��s��^�C�v�ւ̃|�C���^
+						if(TransformNurbsC(TypeCount[_NURBSC],j,body) == KOD_ERR) return KOD_ERR;	// NURBS�Ȑ������W�ϊ�����
 					}
 				}
 			}
-			TypeCount[_NURBSC]++;											// NURBSCの数をインクリメント
+			TypeCount[_NURBSC]++;											// NURBSC�̐����C���N�������g
 		}
 	}
 
@@ -527,30 +570,30 @@ int IGES_PARSER::ChangeEntityforNurbs(DirectoryParam *dpara,BODY body,int dline)
 }
 
 // Function: GetParameterSection
-// パラメータ部の情報を読み込む
+// �p�����[�^���̏���ǂݍ���
 //
 // Parameters:
-// *fp - 読み込んだIGESファイルへのポインタ  
-// *dpara - ディレクトリ部のパラメータ構造体へのポインタ
-// body - BODY構造体 
-// dline - ディレクトリ部のライン数 
+// *fp - �ǂݍ���IGES�t�@�C���ւ̃|�C���^  
+// *dpara - �f�B���N�g�����̃p�����[�^�\���̂ւ̃|�C���^
+// body - BODY�\���� 
+// dline - �f�B���N�g�����̃��C���� 
 //
 // Return:
-// KOD_TRUE:成功	KOD_ERR:失敗
+// KOD_TRUE:����	KOD_ERR:���s
 int IGES_PARSER::GetParameterSection(FILE *fp,DirectoryParam *dpara,BODY body,int dline)
 {
 	int i,j;
-	char str[COLUMN_MAX*5000];	// 文字列バッファ(5000行分確保)
-	char *p;					// 文字列先頭判別用ポインタ
-	int  pD;					// ディレクトリ部への逆ポインタの値
+	char str[COLUMN_MAX*5000];	// ������o�b�t�@(5000�s���m��)
+	char *p;					// ������擪���ʗp�|�C���^
+	int  pD;					// �f�B���N�g�����ւ̋t�|�C���^�̒l
 
-	// TypeCountの初期化
+	// TypeCount�̏�����
 	for(i=0;i<ALL_ENTITY_TYPE_NUM;i++)
 		TypeCount[i] = 0;
 
-	// 全エンティティのパラメータをそれぞれのエンティティ構造体に格納していく
+	// �S�G���e�B�e�B�̃p�����[�^�����ꂼ��̃G���e�B�e�B�\���̂Ɋi�[���Ă���
 	for(i=0;i<dline;i++){
-		// ディレクトリ部14フィールドの情報を元に、strに各パラメータ部のライン数分を繋ぎ合わせる
+		// �f�B���N�g����14�t�B�[���h�̏������ɁAstr�Ɋe�p�����[�^���̃��C���������q�����킹��
 		strcpy(str,"");
 		for(j=0;j<dpara[i].param_line_count;j++){
 			fgets(buf,COLUMN_MAX_,fp);
@@ -558,75 +601,75 @@ int IGES_PARSER::GetParameterSection(FILE *fp,DirectoryParam *dpara,BODY body,in
 				p = strchr(buf,' ');
 			}
 			else{
-				buf[p-buf] = '\0';		// レコードデリミタ検出時は、レコードデリミタ部を終端文字にする
+				buf[p-buf] = '\0';		// ���R�[�h�f���~�^���o���́A���R�[�h�f���~�^�����I�[�����ɂ���
 			}
-			strncat(str,buf,p-buf+1);	// 文字列を各パラメータ部のライン数分繋ぎ合わせていく
+			strncat(str,buf,p-buf+1);	// ��������e�p�����[�^���̃��C�������q�����킹�Ă���
 		}
-		p = &buf[COL_P_DIRECTORY];		// ディレクトリ部への逆ポインタの値をあらかじめ調べておく（便宜上）
+		p = &buf[COL_P_DIRECTORY];		// �f�B���N�g�����ւ̋t�|�C���^�̒l�����炩���ߒ��ׂĂ����i�֋X��j
 		sscanf(p,"%d",&pD);
 
-		// strを分解し各エンティティ構造体に情報を埋めていく
-		// 他のエンティティを追加する場合は以下にコードを追加する
+		// str�𕪉����e�G���e�B�e�B�\���̂ɏ��𖄂߂Ă���
+		// ���̃G���e�B�e�B��ǉ�����ꍇ�͈ȉ��ɃR�[�h��ǉ�����
 
-		// 円・円弧(NURBS曲線としてのエンティティ情報も同時に得る)
+		// �~�E�~��(NURBS�Ȑ��Ƃ��ẴG���e�B�e�B���������ɓ���)
 		if(dpara[i].entity_type == CIRCLE_ARC){							
-			if(GetCirAPara(str,pD,dpara,body) == KOD_ERR)  return KOD_ERR;					// 円/円弧パラメータの取得
-			body.CirA[TypeCount[_CIRCLE_ARC]].EntUseFlag = dpara[i].useflag_stat;	// ディレクトリ部の情報"Entity Use Flag"を得る
-			dpara[i].entity_count = TypeCount[_CIRCLE_ARC];							// dparaとbodyを関連付ける
-			TypeCount[_CIRCLE_ARC]++;					// 円・円弧タイプの数をインクリメント
+			if(GetCirAPara(str,pD,dpara,body) == KOD_ERR)  return KOD_ERR;					// �~/�~�ʃp�����[�^�̎擾
+			body.CirA[TypeCount[_CIRCLE_ARC]].EntUseFlag = dpara[i].useflag_stat;	// �f�B���N�g�����̏��"Entity Use Flag"�𓾂�
+			dpara[i].entity_count = TypeCount[_CIRCLE_ARC];							// dpara��body���֘A�t����
+			TypeCount[_CIRCLE_ARC]++;					// �~�E�~�ʃ^�C�v�̐����C���N�������g
 		}
-		// 複合曲線
+		// �����Ȑ�
 		else if(dpara[i].entity_type == COMPOSITE_CURVE){					
 			if(GetCompCPara(str,pD,dpara,dline,body) == KOD_ERR)  return KOD_ERR;
-			dpara[i].entity_count = TypeCount[_COMPOSITE_CURVE];					// dparaとbodyを関連付ける
-			TypeCount[_COMPOSITE_CURVE]++;				// 複合曲線タイプの数をインクリメント
+			dpara[i].entity_count = TypeCount[_COMPOSITE_CURVE];					// dpara��body���֘A�t����
+			TypeCount[_COMPOSITE_CURVE]++;				// �����Ȑ��^�C�v�̐����C���N�������g
 		}
-		// 円錐曲線
+		// �~���Ȑ�
 		else if(dpara[i].entity_type == CONIC_ARC){											
 			if(GetConAPara(str,pD,dpara,body) == KOD_ERR)  return KOD_ERR;
-			TypeCount[_CONIC_ARC]++;					// 円錐曲線タイプの数をインクリメント
+			TypeCount[_CONIC_ARC]++;					// �~���Ȑ��^�C�v�̐����C���N�������g
 		}
-		// 線分(NURBS曲線としてのエンティティ情報も同時に得る)
+		// ����(NURBS�Ȑ��Ƃ��ẴG���e�B�e�B���������ɓ���)
 		else if(dpara[i].entity_type == LINE){									
-			if(GetLinePara(str,pD,dpara,body) == KOD_ERR)  return KOD_ERR;				// 線分パラメータの取得
-			body.Line[TypeCount[_LINE]].EntUseFlag = dpara[i].useflag_stat;		// ディレクトリ部の情報"Entity Use Flag"を得る(LINE)
-			dpara[i].entity_count = TypeCount[_LINE];							// dparaとbodyを関連付ける
-			TypeCount[_LINE]++;							// 線分タイプの数をインクリメント
+			if(GetLinePara(str,pD,dpara,body) == KOD_ERR)  return KOD_ERR;				// �����p�����[�^�̎擾
+			body.Line[TypeCount[_LINE]].EntUseFlag = dpara[i].useflag_stat;		// �f�B���N�g�����̏��"Entity Use Flag"�𓾂�(LINE)
+			dpara[i].entity_count = TypeCount[_LINE];							// dpara��body���֘A�t����
+			TypeCount[_LINE]++;							// �����^�C�v�̐����C���N�������g
 		}
-		// 変換行列
+		// �ϊ��s��
 		else if(dpara[i].entity_type == TRANSFORMATION_MATRIX){			
 			if(GetTMatPara(str,pD,dpara,body) == KOD_ERR)  return KOD_ERR;
-			dpara[i].entity_count = TypeCount[_TRANSFORMATION_MATRIX];			// dparaとbodyを関連付ける
-			TypeCount[_TRANSFORMATION_MATRIX]++;		// 変換行列タイプの数をインクリメント
+			dpara[i].entity_count = TypeCount[_TRANSFORMATION_MATRIX];			// dpara��body���֘A�t����
+			TypeCount[_TRANSFORMATION_MATRIX]++;		// �ϊ��s��^�C�v�̐����C���N�������g
 		}
-		// NURBS曲線
+		// NURBS�Ȑ�
 		else if(dpara[i].entity_type == NURBS_CURVE){		
 			if(GetNurbsCPara(str,pD,dpara,body) == KOD_ERR)  return KOD_ERR;
-			body.NurbsC[TypeCount[_NURBSC]].EntUseFlag = dpara[i].useflag_stat;	// ディレクトリ部の情報"Entity Use Flag"を得る
-			body.NurbsC[TypeCount[_NURBSC]].OriginEnt = NURBS_CURVE;			// 元からNURBS曲線要素であることを明示
-			body.NurbsC[TypeCount[_NURBSC]].pOriginEnt = NULL;					// 参照元はNULL
-			dpara[i].entity_count = TypeCount[_NURBSC];							// dparaとbodyを関連付ける
-			TypeCount[_NURBSC]++;		// NURBS曲線タイプの数をインクリメント
+			body.NurbsC[TypeCount[_NURBSC]].EntUseFlag = dpara[i].useflag_stat;	// �f�B���N�g�����̏��"Entity Use Flag"�𓾂�
+			body.NurbsC[TypeCount[_NURBSC]].OriginEnt = NURBS_CURVE;			// ������NURBS�Ȑ��v�f�ł��邱�Ƃ𖾎�
+			body.NurbsC[TypeCount[_NURBSC]].pOriginEnt = NULL;					// �Q�ƌ���NULL
+			dpara[i].entity_count = TypeCount[_NURBSC];							// dpara��body���֘A�t����
+			TypeCount[_NURBSC]++;		// NURBS�Ȑ��^�C�v�̐����C���N�������g
 		}
-		// NURBS曲面
+		// NURBS�Ȗ�
 		else if(dpara[i].entity_type == NURBS_SURFACE){		
 			if(GetNurbsSPara(str,pD,dpara,body) == KOD_ERR)  return KOD_ERR;
-			dpara[i].entity_count = TypeCount[_NURBSS];							// dparaとbodyを関連付ける
-			TypeCount[_NURBSS]++;		// NURBS曲面タイプの数をインクリメント
+			dpara[i].entity_count = TypeCount[_NURBSS];							// dpara��body���֘A�t����
+			TypeCount[_NURBSS]++;		// NURBS�Ȗʃ^�C�v�̐����C���N�������g
 		}
-		// 面上線
+		// �ʏ��
 		else if(dpara[i].entity_type == CURVE_ON_PARAMETRIC_SURFACE){	
 			if(GeConpSPara(str,pD,dpara,dline,body) == KOD_ERR)  return KOD_ERR;
-			dpara[i].entity_count = TypeCount[_CURVE_ON_PARAMETRIC_SURFACE];	// dparaとbodyを関連付ける
-			TypeCount[_CURVE_ON_PARAMETRIC_SURFACE]++;	// 面上線タイプの数をインクリメント
+			dpara[i].entity_count = TypeCount[_CURVE_ON_PARAMETRIC_SURFACE];	// dpara��body���֘A�t����
+			TypeCount[_CURVE_ON_PARAMETRIC_SURFACE]++;	// �ʏ���^�C�v�̐����C���N�������g
 		}
-		// トリム面	
+		// �g������	
 		else if(dpara[i].entity_type == TRIMMED_SURFACE){				
 			if(GetTrmSPara(str,pD,dpara,body) == KOD_ERR)  return KOD_ERR;
-			dpara[i].entity_count = TypeCount[_TRIMMED_SURFACE];				// dparaとbodyを関連付ける
-			TypeCount[_TRIMMED_SURFACE]++;				// トリム面タイプの数をインクリメント
+			dpara[i].entity_count = TypeCount[_TRIMMED_SURFACE];				// dpara��body���֘A�t����
+			TypeCount[_TRIMMED_SURFACE]++;				// �g�����ʃ^�C�v�̐����C���N�������g
 		}
-		// サポートしていないEntity Typeの場合
+		// �T�|�[�g���Ă��Ȃ�Entity Type�̏ꍇ
 		else{
 		//	char mes[256];
 			//sprintf(mes,"Entity Type #%d:Unsupported",dpara[i].entity_type);
@@ -639,13 +682,13 @@ int IGES_PARSER::GetParameterSection(FILE *fp,DirectoryParam *dpara,BODY body,in
 }
 
 // Function: GetCirAPara
-// Type100 円・円弧を読み込む
+// Type100 �~�E�~�ʂ�ǂݍ���
 //
 // Parameters:
-// str[] - 文字列バッファ
-// pD - ディレクトリ部への逆ポインタの値  
-// *dpara - ディレクトリ部のパラメータ構造体へのポインタ 
-// body - BODY構造体 
+// str[] - ������o�b�t�@
+// pD - �f�B���N�g�����ւ̋t�|�C���^�̒l  
+// *dpara - �f�B���N�g�����̃p�����[�^�\���̂ւ̃|�C���^ 
+// body - BODY�\���� 
 //
 // Return:
 // KOD_TRUE
@@ -657,37 +700,37 @@ int IGES_PARSER::GetCirAPara(char str[],int pD,DirectoryParam *dpara,BODY body)
 
 	p = str;
 
-	body.CirA[TypeCount[_CIRCLE_ARC]].zt = CatchStringD(&p);		// Z軸方向の深さ
-	x[0] = CatchStringD(&p);							// 中心座標X
+	body.CirA[TypeCount[_CIRCLE_ARC]].zt = CatchStringD(&p);		// Z�������̐[��
+	x[0] = CatchStringD(&p);							// ���S���WX
 	body.CirA[TypeCount[_CIRCLE_ARC]].cp[0].x = x[0];
-	y[0] = CatchStringD(&p);							// 中心座標Y
+	y[0] = CatchStringD(&p);							// ���S���WY
 	body.CirA[TypeCount[_CIRCLE_ARC]].cp[0].y = y[0];
-	x[1] = CatchStringD(&p);							// 始点X
+	x[1] = CatchStringD(&p);							// �n�_X
 	body.CirA[TypeCount[_CIRCLE_ARC]].cp[1].x = x[1];
-	y[1] = CatchStringD(&p);							// 始点Y
+	y[1] = CatchStringD(&p);							// �n�_Y
 	body.CirA[TypeCount[_CIRCLE_ARC]].cp[1].y = y[1];
-	x[2] = CatchStringD(&p);							// 終点X
+	x[2] = CatchStringD(&p);							// �I�_X
 	body.CirA[TypeCount[_CIRCLE_ARC]].cp[2].x = x[2];
-	y[2] = CatchStringD(&p);							// 終点Y
+	y[2] = CatchStringD(&p);							// �I�_Y
 	body.CirA[TypeCount[_CIRCLE_ARC]].cp[2].y = y[2];
 
-	body.CirA[TypeCount[_CIRCLE_ARC]].R = sqrt((x[1]-x[0])*(x[1]-x[0])+(y[1]-y[0])*(y[1]-y[0]));	// 半径算出
+	body.CirA[TypeCount[_CIRCLE_ARC]].R = sqrt((x[1]-x[0])*(x[1]-x[0])+(y[1]-y[0])*(y[1]-y[0]));	// ���a�Z�o
 
-	body.CirA[TypeCount[_CIRCLE_ARC]].pD = pD;		// ディレクトリ部への逆ポインタの値
+	body.CirA[TypeCount[_CIRCLE_ARC]].pD = pD;		// �f�B���N�g�����ւ̋t�|�C���^�̒l
 
-	InitDisplayStat(&body.CirA[TypeCount[_CIRCLE_ARC]].Dstat);	// 表示属性の初期化
+	InitDisplayStat(&body.CirA[TypeCount[_CIRCLE_ARC]].Dstat);	// �\�������̏�����
 
 	return KOD_TRUE;
 }
 
 // Function: GetConAPara
-// Type104 円錐曲線の読み込み(未実装)
+// Type104 �~���Ȑ��̓ǂݍ���(������)
 // 
 // Parameters:
-// str[] - 文字列バッファ
-// pD - ディレクトリ部への逆ポインタの値  
-// *dpara - ディレクトリ部のパラメータ構造体へのポインタ 
-// body - BODY構造体 
+// str[] - ������o�b�t�@
+// pD - �f�B���N�g�����ւ̋t�|�C���^�̒l  
+// *dpara - �f�B���N�g�����̃p�����[�^�\���̂ւ̃|�C���^ 
+// body - BODY�\���� 
 //
 // Return:
 // KOD_TRUE
@@ -698,13 +741,13 @@ int IGES_PARSER::GetConAPara(char str[],int pD,DirectoryParam *dpara,BODY body)
 }
 
 // Function: GetLinePara
-// Type110 線分の読み込み
+// Type110 �����̓ǂݍ���
 //
 // Parameters:
-// str[] - 文字列バッファ
-// pD - ディレクトリ部への逆ポインタの値  
-// *dpara - ディレクトリ部のパラメータ構造体へのポインタ 
-// body - BODY構造体 
+// str[] - ������o�b�t�@
+// pD - �f�B���N�g�����ւ̋t�|�C���^�̒l  
+// *dpara - �f�B���N�g�����̃p�����[�^�\���̂ւ̃|�C���^ 
+// body - BODY�\���� 
 //
 // Return:
 // KOD_TRUE
@@ -714,28 +757,28 @@ int IGES_PARSER::GetLinePara(char str[],int pD,DirectoryParam *dpara,BODY body)
 
 	p = str;
 
-	body.Line[TypeCount[_LINE]].cp[0].x = CatchStringD(&p);		// 始点のX座標
-	body.Line[TypeCount[_LINE]].cp[0].y = CatchStringD(&p);		// 始点のY座標
-	body.Line[TypeCount[_LINE]].cp[0].z = CatchStringD(&p);		// 始点のZ座標
-	body.Line[TypeCount[_LINE]].cp[1].x = CatchStringD(&p);		// 終点のX座標
-	body.Line[TypeCount[_LINE]].cp[1].y = CatchStringD(&p);		// 終点のY座標
-	body.Line[TypeCount[_LINE]].cp[1].z = CatchStringD(&p);		// 終点のZ座標
+	body.Line[TypeCount[_LINE]].cp[0].x = CatchStringD(&p);		// �n�_��X���W
+	body.Line[TypeCount[_LINE]].cp[0].y = CatchStringD(&p);		// �n�_��Y���W
+	body.Line[TypeCount[_LINE]].cp[0].z = CatchStringD(&p);		// �n�_��Z���W
+	body.Line[TypeCount[_LINE]].cp[1].x = CatchStringD(&p);		// �I�_��X���W
+	body.Line[TypeCount[_LINE]].cp[1].y = CatchStringD(&p);		// �I�_��Y���W
+	body.Line[TypeCount[_LINE]].cp[1].z = CatchStringD(&p);		// �I�_��Z���W
 
-	body.Line[TypeCount[_LINE]].pD = pD;		// ディレクトリ部への逆ポインタの値
+	body.Line[TypeCount[_LINE]].pD = pD;		// �f�B���N�g�����ւ̋t�|�C���^�̒l
 
-	InitDisplayStat(&body.Line[TypeCount[_LINE]].Dstat);	// 表示属性の初期化
+	InitDisplayStat(&body.Line[TypeCount[_LINE]].Dstat);	// �\�������̏�����
 
 	return KOD_TRUE;
 }
 
 // Function: GetTMatPara
-// Type124 変換行列の読み込み
+// Type124 �ϊ��s��̓ǂݍ���
 //
 // Parameters:
-// str[] - 文字列バッファ
-// pD - ディレクトリ部への逆ポインタの値  
-// *dpara - ディレクトリ部のパラメータ構造体へのポインタ 
-// body - BODY構造体 
+// str[] - ������o�b�t�@
+// pD - �f�B���N�g�����ւ̋t�|�C���^�̒l  
+// *dpara - �f�B���N�g�����̃p�����[�^�\���̂ւ̃|�C���^ 
+// body - BODY�\���� 
 //
 // Return:
 // KOD_TRUE
@@ -748,88 +791,88 @@ int IGES_PARSER::GetTMatPara(char str[],int pD,DirectoryParam *dpara,BODY body)
 	for(i=0;i<3;i++){
 		for(j=0;j<4;j++){
 			if(j != 3){
-				body.TMat[TypeCount[_TRANSFORMATION_MATRIX]].R[i][j] = CatchStringD(&p);	// 3×3回転行列成分
+				body.TMat[TypeCount[_TRANSFORMATION_MATRIX]].R[i][j] = CatchStringD(&p);	// 3�~3��]�s�񐬕�
 			}
 			else{
-				body.TMat[TypeCount[_TRANSFORMATION_MATRIX]].T[i] = CatchStringD(&p);		// 並進ベクトル成分
+				body.TMat[TypeCount[_TRANSFORMATION_MATRIX]].T[i] = CatchStringD(&p);		// ���i�x�N�g������
 			}
 		}
 	}
 	
-	body.TMat[TypeCount[_TRANSFORMATION_MATRIX]].pD = pD;		// DE部への逆ポインタの値
+	body.TMat[TypeCount[_TRANSFORMATION_MATRIX]].pD = pD;		// DE���ւ̋t�|�C���^�̒l
 	
 	return KOD_TRUE;
 }
 
 // Function: GetNurbsCPara
-// Type126 NRBS曲線の読み込み
+// Type126 NRBS�Ȑ��̓ǂݍ���
 //
 // Parameters:
-// str[] - 文字列バッファ
-// pD - ディレクトリ部への逆ポインタの値  
-// *dpara - ディレクトリ部のパラメータ構造体へのポインタ 
-// body - BODY構造体 
+// str[] - ������o�b�t�@
+// pD - �f�B���N�g�����ւ̋t�|�C���^�̒l  
+// *dpara - �f�B���N�g�����̃p�����[�^�\���̂ւ̃|�C���^ 
+// body - BODY�\���� 
 //
 // Return:
-// KOD_TRUE:成功	KOD_ERR:メモリー確保に失敗
+// KOD_TRUE:����	KOD_ERR:�������[�m�ۂɎ��s
 int IGES_PARSER::GetNurbsCPara(char str[],int pD,DirectoryParam *dpara,BODY body)
 {
 	char *p;
 	int i=0;
 
 	p = str;
-	body.NurbsC[TypeCount[_NURBSC]].K = CatchStringI(&p) + 1;		// 総和記号の上側添字（コントロールポイント-1）の値
-	body.NurbsC[TypeCount[_NURBSC]].M = CatchStringI(&p) + 1;		// 基底関数の階数
-	body.NurbsC[TypeCount[_NURBSC]].N = body.NurbsC[TypeCount[_NURBSC]].K + body.NurbsC[TypeCount[_NURBSC]].M;	// ノットベクトルの数
-	for(i=0;i<4;i++){	// ブーリアン型プロパティ4つ
+	body.NurbsC[TypeCount[_NURBSC]].K = CatchStringI(&p) + 1;		// ���a�L���̏㑤�Y���i�R���g���[���|�C���g-1�j�̒l
+	body.NurbsC[TypeCount[_NURBSC]].M = CatchStringI(&p) + 1;		// ���֐��̊K��
+	body.NurbsC[TypeCount[_NURBSC]].N = body.NurbsC[TypeCount[_NURBSC]].K + body.NurbsC[TypeCount[_NURBSC]].M;	// �m�b�g�x�N�g���̐�
+	for(i=0;i<4;i++){	// �u�[���A���^�v���p�e�B4��
 		body.NurbsC[TypeCount[_NURBSC]].prop[i] = CatchStringI(&p);
 	}
 
-	// メモリー確保
+	// �������[�m��
 	if(NFunc.New_NurbsC(&body.NurbsC[TypeCount[_NURBSC]],body.NurbsC[TypeCount[_NURBSC]].K,body.NurbsC[TypeCount[_NURBSC]].N) == KOD_ERR){
 		GuiIF.SetMessage("PARAMETER SECTION KOD_ERROR:fail to allocate memory");
 		return KOD_ERR;
 	}
 
 	for(i=0;i<body.NurbsC[TypeCount[_NURBSC]].N;i++){
-		body.NurbsC[TypeCount[_NURBSC]].T[i] = CatchStringD(&p);	// ノットベクトルの値
+		body.NurbsC[TypeCount[_NURBSC]].T[i] = CatchStringD(&p);	// �m�b�g�x�N�g���̒l
 	}
-	for(i=0;i<body.NurbsC[TypeCount[_NURBSC]].K;i++){				// Weightの値
+	for(i=0;i<body.NurbsC[TypeCount[_NURBSC]].K;i++){				// Weight�̒l
 		body.NurbsC[TypeCount[_NURBSC]].W[i] = CatchStringD(&p);
 	}
-	for(i=0;i<body.NurbsC[TypeCount[_NURBSC]].K;i++){				// コントロールポイントの座標値
+	for(i=0;i<body.NurbsC[TypeCount[_NURBSC]].K;i++){				// �R���g���[���|�C���g�̍��W�l
 		body.NurbsC[TypeCount[_NURBSC]].cp[i].x = CatchStringD(&p);
 		body.NurbsC[TypeCount[_NURBSC]].cp[i].y = CatchStringD(&p);
 		body.NurbsC[TypeCount[_NURBSC]].cp[i].z = CatchStringD(&p);
 	}
-	body.NurbsC[TypeCount[_NURBSC]].V[0] = CatchStringD(&p);		// パラメータの範囲
+	body.NurbsC[TypeCount[_NURBSC]].V[0] = CatchStringD(&p);		// �p�����[�^�͈̔�
 	body.NurbsC[TypeCount[_NURBSC]].V[1] = CatchStringD(&p);
 
-	// 法線ベクトルは記述されている場合とされていない場合があるようなので、記述されている場合のみ読み込む
+	// �@���x�N�g���͋L�q����Ă���ꍇ�Ƃ���Ă��Ȃ��ꍇ������悤�Ȃ̂ŁA�L�q����Ă���ꍇ�̂ݓǂݍ���
 	if(strchr(p,',') != NULL){
-		body.NurbsC[TypeCount[_NURBSC]].norm.x = CatchStringD(&p);	// 法線ベクトル
+		body.NurbsC[TypeCount[_NURBSC]].norm.x = CatchStringD(&p);	// �@���x�N�g��
 		body.NurbsC[TypeCount[_NURBSC]].norm.y = CatchStringD(&p);
 		body.NurbsC[TypeCount[_NURBSC]].norm.z = CatchStringD(&p);
 	}
 
-	body.NurbsC[TypeCount[_NURBSC]].pD = pD;		// DE部への逆ポインタの値
+	body.NurbsC[TypeCount[_NURBSC]].pD = pD;		// DE���ւ̋t�|�C���^�̒l
 
-	InitDisplayStat(&body.NurbsC[TypeCount[_NURBSC]].Dstat);	// 表示属性の初期化
+	InitDisplayStat(&body.NurbsC[TypeCount[_NURBSC]].Dstat);	// �\�������̏�����
 
 	return KOD_TRUE;
 }
 
 // Function: GetNurbsSPara
-// Type128 NURBS曲面の読み込み
+// Type128 NURBS�Ȗʂ̓ǂݍ���
 //
 // Parameters:
-// str[] - 文字列バッファ
-// pD - ディレクトリ部への逆ポインタの値  
-// *dpara - ディレクトリ部のパラメータ構造体へのポインタ 
-// body - BODY構造体 
+// str[] - ������o�b�t�@
+// pD - �f�B���N�g�����ւ̋t�|�C���^�̒l  
+// *dpara - �f�B���N�g�����̃p�����[�^�\���̂ւ̃|�C���^ 
+// body - BODY�\���� 
 //
 // Return:
-// KOD_TRUE:成功	KOD_ERR:メモリー確保に失敗
+// KOD_TRUE:����	KOD_ERR:�������[�m�ۂɎ��s
 int IGES_PARSER::GetNurbsSPara(char str[],int pD,DirectoryParam *dpara,BODY body)
 {
 	char *p;
@@ -837,235 +880,238 @@ int IGES_PARSER::GetNurbsSPara(char str[],int pD,DirectoryParam *dpara,BODY body
 
 	p = str;
 
-	body.NurbsS[TypeCount[_NURBSS]].K[0] = CatchStringI(&p) + 1;	// u方向コントロールポイントの数
-	body.NurbsS[TypeCount[_NURBSS]].K[1] = CatchStringI(&p) + 1;	// v方向コントロールポイントの数
-	body.NurbsS[TypeCount[_NURBSS]].M[0] = CatchStringI(&p) + 1;	// 基底関数のu方向階数
-	body.NurbsS[TypeCount[_NURBSS]].M[1] = CatchStringI(&p) + 1;	// 基底関数のv方向階数
-	body.NurbsS[TypeCount[_NURBSS]].N[0] = body.NurbsS[TypeCount[_NURBSS]].K[0] + body.NurbsS[TypeCount[_NURBSS]].M[0];	// u方向ノットベクトルの数
-	body.NurbsS[TypeCount[_NURBSS]].N[1] = body.NurbsS[TypeCount[_NURBSS]].K[1] + body.NurbsS[TypeCount[_NURBSS]].M[1];	// v方向ノットベクトルの数
+	body.NurbsS[TypeCount[_NURBSS]].K[0] = CatchStringI(&p) + 1;	// u�����R���g���[���|�C���g�̐�
+	body.NurbsS[TypeCount[_NURBSS]].K[1] = CatchStringI(&p) + 1;	// v�����R���g���[���|�C���g�̐�
+	body.NurbsS[TypeCount[_NURBSS]].M[0] = CatchStringI(&p) + 1;	// ���֐���u�����K��
+	body.NurbsS[TypeCount[_NURBSS]].M[1] = CatchStringI(&p) + 1;	// ���֐���v�����K��
+	body.NurbsS[TypeCount[_NURBSS]].N[0] = body.NurbsS[TypeCount[_NURBSS]].K[0] + body.NurbsS[TypeCount[_NURBSS]].M[0];	// u�����m�b�g�x�N�g���̐�
+	body.NurbsS[TypeCount[_NURBSS]].N[1] = body.NurbsS[TypeCount[_NURBSS]].K[1] + body.NurbsS[TypeCount[_NURBSS]].M[1];	// v�����m�b�g�x�N�g���̐�
 	for(i=0;i<5;i++){
-		body.NurbsS[TypeCount[_NURBSS]].prop[i] = CatchStringI(&p);	// ブーリアン型プロパティ5つ
+		body.NurbsS[TypeCount[_NURBSS]].prop[i] = CatchStringI(&p);	// �u�[���A���^�v���p�e�B5��
 	}
 
-	// メモリー確保
+	// �������[�m��
 	if(NFunc.New_NurbsS(&body.NurbsS[TypeCount[_NURBSS]],body.NurbsS[TypeCount[_NURBSS]].K,body.NurbsS[TypeCount[_NURBSS]].N) == KOD_ERR){
 		GuiIF.SetMessage("PARAMETER SECTION KOD_ERROR:fail to allocate memory");
 		return KOD_ERR;
 	}
 	
 	for(i=0;i<body.NurbsS[TypeCount[_NURBSS]].N[0];i++){
-		body.NurbsS[TypeCount[_NURBSS]].S[i] = CatchStringD(&p);	// u方向ノットベクトル
+		body.NurbsS[TypeCount[_NURBSS]].S[i] = CatchStringD(&p);	// u�����m�b�g�x�N�g��
 	}
 	for(i=0;i<body.NurbsS[TypeCount[_NURBSS]].N[1];i++){
-		body.NurbsS[TypeCount[_NURBSS]].T[i] = CatchStringD(&p);	// v方向ノットベクトル
+		body.NurbsS[TypeCount[_NURBSS]].T[i] = CatchStringD(&p);	// v�����m�b�g�x�N�g��
 	}
 	for(i=0;i<body.NurbsS[TypeCount[_NURBSS]].K[1];i++){
 		for(j=0;j<body.NurbsS[TypeCount[_NURBSS]].K[0];j++){
-			body.NurbsS[TypeCount[_NURBSS]].W[j][i] = CatchStringD(&p);	//  u方向Weight
+			body.NurbsS[TypeCount[_NURBSS]].W[j][i] = CatchStringD(&p);	//  u����Weight
 		}
 	}
 	for(i=0;i<body.NurbsS[TypeCount[_NURBSS]].K[1];i++){
 		for(j=0;j<body.NurbsS[TypeCount[_NURBSS]].K[0];j++){
-			body.NurbsS[TypeCount[_NURBSS]].cp[j][i].x = CatchStringD(&p);	// コントロールポイントX
-			body.NurbsS[TypeCount[_NURBSS]].cp[j][i].y = CatchStringD(&p);	// コントロールポイントY
-			body.NurbsS[TypeCount[_NURBSS]].cp[j][i].z = CatchStringD(&p);	// コントロールポイントZ
+			body.NurbsS[TypeCount[_NURBSS]].cp[j][i].x = CatchStringD(&p);	// �R���g���[���|�C���gX
+			body.NurbsS[TypeCount[_NURBSS]].cp[j][i].y = CatchStringD(&p);	// �R���g���[���|�C���gY
+			body.NurbsS[TypeCount[_NURBSS]].cp[j][i].z = CatchStringD(&p);	// �R���g���[���|�C���gZ
 		}
 	}
-	body.NurbsS[TypeCount[_NURBSS]].U[0] = CatchStringD(&p);			// u方向の開始値
-	body.NurbsS[TypeCount[_NURBSS]].U[1] = CatchStringD(&p);			// u方向の終了値
-	body.NurbsS[TypeCount[_NURBSS]].V[0] = CatchStringD(&p);			// v方向の開始値
-	body.NurbsS[TypeCount[_NURBSS]].V[1] = CatchStringD(&p);			// v方向の終了値
+	body.NurbsS[TypeCount[_NURBSS]].U[0] = CatchStringD(&p);			// u�����̊J�n�l
+	body.NurbsS[TypeCount[_NURBSS]].U[1] = CatchStringD(&p);			// u�����̏I���l
+	body.NurbsS[TypeCount[_NURBSS]].V[0] = CatchStringD(&p);			// v�����̊J�n�l
+	body.NurbsS[TypeCount[_NURBSS]].V[1] = CatchStringD(&p);			// v�����̏I���l
 
-	body.NurbsS[TypeCount[_NURBSS]].pD = pD;		// DE部への逆ポインタの値
+	body.NurbsS[TypeCount[_NURBSS]].pD = pD;		// DE���ւ̋t�|�C���^�̒l
 
-	body.NurbsS[TypeCount[_NURBSS]].TrmdSurfFlag = KOD_FALSE;	// とりあえずトリムされていない独立面としておく(Type144を読みに言ったときに変更される)
+	body.NurbsS[TypeCount[_NURBSS]].TrmdSurfFlag = KOD_FALSE;	// �Ƃ肠�����g��������Ă��Ȃ��Ɨ��ʂƂ��Ă���(Type144��ǂ݂Ɍ������Ƃ��ɕύX�����)
 
-	body.ChangeStatColor(body.NurbsS[TypeCount[_NURBSS]].Dstat.Color,0.2,0.2,0.2,0.5);	// 曲面の色を設定
+	body.ChangeStatColor(body.NurbsS[TypeCount[_NURBSS]].Dstat.Color,0.2,0.2,0.2,0.5);	// �Ȗʂ̐F��ݒ�
 
 	return KOD_TRUE;
 }
 
 // Function: GetCompCPara
-// Type102 複合曲線の読み込み
+// Type102 �����Ȑ��̓ǂݍ���
 //
 // Parameters:
-// str[] - 文字列バッファ
-// pD - ディレクトリ部への逆ポインタの値  
-// *dpara - ディレクトリ部のパラメータ構造体へのポインタ 
-// body - BODY構造体 
+// str[] - ������o�b�t�@
+// pD - �f�B���N�g�����ւ̋t�|�C���^�̒l  
+// *dpara - �f�B���N�g�����̃p�����[�^�\���̂ւ̃|�C���^ 
+// body - BODY�\���� 
 //
 // Return:
-// KOD_TRUE:成功	KOD_ERR:メモリー確保に失敗
+// KOD_TRUE:����	KOD_ERR:�������[�m�ۂɎ��s
 int IGES_PARSER::GetCompCPara(char str[],int pD,DirectoryParam *dpara,int dline,BODY body)
 {
 	char *p;
-	int  pdnum;		// DE部のシーケンスナンバー取得用
+	int  pdnum;		// DE���̃V�[�P���X�i���o�[�擾�p
 	int  i;
 
 	p = str;
 
-	body.CompC[TypeCount[_COMPOSITE_CURVE]].N = CatchStringI(&p);	// 複合曲線の構成要素数
+	body.CompC[TypeCount[_COMPOSITE_CURVE]].N = CatchStringI(&p);	// �����Ȑ��̍\���v�f��
 
-	// 複合曲線のメモリーを確保
+	// �����Ȑ��̃������[���m��
 	if(NFunc.New_CompC(&body.CompC[TypeCount[_COMPOSITE_CURVE]],body.CompC[TypeCount[_COMPOSITE_CURVE]].N) == KOD_ERR){
 		GuiIF.SetMessage("PARAMETER SECTION KOD_ERROR:fail to allocate memory");
 		return KOD_ERR;
 	}
 
-	for(i=0;i<body.CompC[TypeCount[_COMPOSITE_CURVE]].N;i++){		// 構成要素のDE部へのポインタ値
-		pdnum = CatchStringI(&p);		// 各構成要素のDE部のシーケンスナンバーを得る
-		body.CompC[TypeCount[_COMPOSITE_CURVE]].DEType[i] = SearchEntType(dpara,pdnum,dline);		// pdnumが示すエンティティタイプを判別
-		body.CompC[TypeCount[_COMPOSITE_CURVE]].pDE[i] = (COMPELEM *)GetDEPointer(pdnum,body);		// pdnumが示す構造体のポインタを得る
+	for(i=0;i<body.CompC[TypeCount[_COMPOSITE_CURVE]].N;i++){		// �\���v�f��DE���ւ̃|�C���^�l
+		pdnum = CatchStringI(&p);		// �e�\���v�f��DE���̃V�[�P���X�i���o�[�𓾂�
+		body.CompC[TypeCount[_COMPOSITE_CURVE]].DEType[i] = SearchEntType(dpara,pdnum,dline);		// pdnum�������G���e�B�e�B�^�C�v�𔻕�
+//		body.CompC[TypeCount[_COMPOSITE_CURVE]].pDE[i] = (COMPELEM *)GetDEPointer(pdnum,body);		// pdnum�������\���̂̃|�C���^�𓾂�
+		body.CompC[TypeCount[_COMPOSITE_CURVE]].pDE[i].substitution = GetDEPointer(pdnum,body);		// pdnum�������\���̂̃|�C���^�𓾂�
 	}
 
-	body.CompC[TypeCount[_COMPOSITE_CURVE]].pD = pD;		// DE部への逆ポインタの値
+	body.CompC[TypeCount[_COMPOSITE_CURVE]].pD = pD;		// DE���ւ̋t�|�C���^�̒l
 
 	return KOD_TRUE;
 }
 
 // Function: GeConpSPara
-// Type142 面上線の読み込み
+// Type142 �ʏ���̓ǂݍ���
 //
 // Parameters:
-// str[] - 文字列バッファ
-// pD - ディレクトリ部への逆ポインタの値  
-// *dpara - ディレクトリ部のパラメータ構造体へのポインタ 
-// body - BODY構造体 
+// str[] - ������o�b�t�@
+// pD - �f�B���N�g�����ւ̋t�|�C���^�̒l  
+// *dpara - �f�B���N�g�����̃p�����[�^�\���̂ւ̃|�C���^ 
+// body - BODY�\���� 
 //
 // Return:
 // KOD_TRUE
 int IGES_PARSER::GeConpSPara(char str[],int pD,DirectoryParam *dpara,int dline,BODY body)
 {
 	char *p;
-	int pdnum;		// DE部のシーケンスナンバー取得用
+	int pdnum;		// DE���̃V�[�P���X�i���o�[�擾�p
 
 	p = str;
 
-	body.ConpS[TypeCount[_CURVE_ON_PARAMETRIC_SURFACE]].crtn = CatchStringI(&p);	// 面上線がどのように作られたかを表す
+	body.ConpS[TypeCount[_CURVE_ON_PARAMETRIC_SURFACE]].crtn = CatchStringI(&p);	// �ʏ�����ǂ̂悤�ɍ��ꂽ����\��
 
-	pdnum = CatchStringI(&p);			// Curveが乗るSurfaceのDE部のシーケンスナンバーを得る
-	body.ConpS[TypeCount[_CURVE_ON_PARAMETRIC_SURFACE]].SType = SearchEntType(dpara,pdnum,dline);	// pdnumが示すエンティティタイプを判別
-	body.ConpS[TypeCount[_CURVE_ON_PARAMETRIC_SURFACE]].pS = (NURBSS *)GetDEPointer(pdnum,body);		// pdnumが示す構造体のポインタを得る
+	pdnum = CatchStringI(&p);			// Curve�����Surface��DE���̃V�[�P���X�i���o�[�𓾂�
+	body.ConpS[TypeCount[_CURVE_ON_PARAMETRIC_SURFACE]].SType = SearchEntType(dpara,pdnum,dline);	// pdnum�������G���e�B�e�B�^�C�v�𔻕�
+	body.ConpS[TypeCount[_CURVE_ON_PARAMETRIC_SURFACE]].pS = (NURBSS *)GetDEPointer(pdnum,body);		// pdnum�������\���̂̃|�C���^�𓾂�
 
-	pdnum = CatchStringI(&p);			// Surfaceのパラメータ空間におけるcurveを定義するEntityのDE部のシーケンスナンバーを得る
-	body.ConpS[TypeCount[_CURVE_ON_PARAMETRIC_SURFACE]].BType = SearchEntType(dpara,pdnum,dline);	// pdnumが示すエンティティタイプを判別
-	body.ConpS[TypeCount[_CURVE_ON_PARAMETRIC_SURFACE]].pB = (CURVE *)GetDEPointer(pdnum,body);		// pdnumが示す構造体のポインタを得る(共用体)
+	pdnum = CatchStringI(&p);			// Surface�̃p�����[�^��Ԃɂ�����curve���`����Entity��DE���̃V�[�P���X�i���o�[�𓾂�
+	body.ConpS[TypeCount[_CURVE_ON_PARAMETRIC_SURFACE]].BType = SearchEntType(dpara,pdnum,dline);	// pdnum�������G���e�B�e�B�^�C�v�𔻕�
+//	body.ConpS[TypeCount[_CURVE_ON_PARAMETRIC_SURFACE]].pB = (CURVE *)GetDEPointer(pdnum,body);		// pdnum�������\���̂̃|�C���^�𓾂�(���p��)
+	body.ConpS[TypeCount[_CURVE_ON_PARAMETRIC_SURFACE]].pB.substitution = GetDEPointer(pdnum,body);		// pdnum�������\���̂̃|�C���^�𓾂�(���p��)
 
-	pdnum = CatchStringI(&p);			// Curve CのDE部へのポインタ
-	body.ConpS[TypeCount[_CURVE_ON_PARAMETRIC_SURFACE]].CType = SearchEntType(dpara,pdnum,dline);	// pdnumが示すエンティティタイプを判別
-	body.ConpS[TypeCount[_CURVE_ON_PARAMETRIC_SURFACE]].pC = (CURVE *)GetDEPointer(pdnum,body);		// pdnumが示す構造体のポインタを得る(共用体)
+	pdnum = CatchStringI(&p);			// Curve C��DE���ւ̃|�C���^
+	body.ConpS[TypeCount[_CURVE_ON_PARAMETRIC_SURFACE]].CType = SearchEntType(dpara,pdnum,dline);	// pdnum�������G���e�B�e�B�^�C�v�𔻕�
+//	body.ConpS[TypeCount[_CURVE_ON_PARAMETRIC_SURFACE]].pC = (CURVE *)GetDEPointer(pdnum,body);		// pdnum�������\���̂̃|�C���^�𓾂�(���p��)
+	body.ConpS[TypeCount[_CURVE_ON_PARAMETRIC_SURFACE]].pC.substitution = GetDEPointer(pdnum,body);		// pdnum�������\���̂̃|�C���^�𓾂�(���p��)
 
-	body.ConpS[TypeCount[_CURVE_ON_PARAMETRIC_SURFACE]].pref = CatchStringI(&p);	// 送り側システムで採られていた表現を表すフラグ
+	body.ConpS[TypeCount[_CURVE_ON_PARAMETRIC_SURFACE]].pref = CatchStringI(&p);	// ���葤�V�X�e���ō̂��Ă����\����\���t���O
 
-	body.ConpS[TypeCount[_CURVE_ON_PARAMETRIC_SURFACE]].pD = pD;	// DE部のシーケンスナンバーを得る
+	body.ConpS[TypeCount[_CURVE_ON_PARAMETRIC_SURFACE]].pD = pD;	// DE���̃V�[�P���X�i���o�[�𓾂�
 
 	return KOD_TRUE;
 }
 
 // Function: GetTrmSPara
-// Type144 トリム面の読み込み
+// Type144 �g�����ʂ̓ǂݍ���
 //
 // Parameters:
-// str[] - 文字列バッファ
-// pD - ディレクトリ部への逆ポインタの値  
-// *dpara - ディレクトリ部のパラメータ構造体へのポインタ 
-// body - BODY構造体 
+// str[] - ������o�b�t�@
+// pD - �f�B���N�g�����ւ̋t�|�C���^�̒l  
+// *dpara - �f�B���N�g�����̃p�����[�^�\���̂ւ̃|�C���^ 
+// body - BODY�\���� 
 //
 // Return:
-// KOD_TRUE:成功	KOD_ERR:メモリー確保に失敗
+// KOD_TRUE:����	KOD_ERR:�������[�m�ۂɎ��s
 int IGES_PARSER::GetTrmSPara(char str[],int pD,DirectoryParam *dpara,BODY body)
 {
 	char *p;
 	int  i;
-	int  pdnum;		// DE部のシーケンスナンバー取得用
+	int  pdnum;		// DE���̃V�[�P���X�i���o�[�擾�p
 
 	p = str;
 	
-	pdnum = CatchStringI(&p);		// トリムされるSurface EntityのDE部の値を取得
-	body.TrmS[TypeCount[_TRIMMED_SURFACE]].pts = (NURBSS *)GetDEPointer(pdnum,body);		// トリムされるSurface Entityへのポインタを取得
-	body.TrmS[TypeCount[_TRIMMED_SURFACE]].pts->TrmdSurfFlag = KOD_TRUE;		// トリム面としてのNURBS曲面であることを示す
-	body.TrmS[TypeCount[_TRIMMED_SURFACE]].n1 = CatchStringI(&p);		// ０：外周がDの境界と一致している　１：それ以外
-	body.TrmS[TypeCount[_TRIMMED_SURFACE]].n2 = CatchStringI(&p);		// Trimmed Surfaceの内周の単純閉曲線の数
+	pdnum = CatchStringI(&p);		// �g���������Surface Entity��DE���̒l���擾
+	body.TrmS[TypeCount[_TRIMMED_SURFACE]].pts = (NURBSS *)GetDEPointer(pdnum,body);		// �g���������Surface Entity�ւ̃|�C���^���擾
+	body.TrmS[TypeCount[_TRIMMED_SURFACE]].pts->TrmdSurfFlag = KOD_TRUE;		// �g�����ʂƂ��Ă�NURBS�Ȗʂł��邱�Ƃ�����
+	body.TrmS[TypeCount[_TRIMMED_SURFACE]].n1 = CatchStringI(&p);		// �O�F�O����D�̋��E�ƈ�v���Ă���@�P�F����ȊO
+	body.TrmS[TypeCount[_TRIMMED_SURFACE]].n2 = CatchStringI(&p);		// Trimmed Surface�̓����̒P���Ȑ��̐�
 
-	pdnum = CatchStringI(&p);		// Trimmed Surfaceの外周の単純閉曲線の数
-	body.TrmS[TypeCount[_TRIMMED_SURFACE]].pTO = (CONPS *)GetDEPointer(pdnum,body); // 単純閉曲線構造体へのポインタを取得
+	pdnum = CatchStringI(&p);		// Trimmed Surface�̊O���̒P���Ȑ��̐�
+	body.TrmS[TypeCount[_TRIMMED_SURFACE]].pTO = (CONPS *)GetDEPointer(pdnum,body); // �P���Ȑ��\���̂ւ̃|�C���^���擾
 
-	// 単純閉曲線N2の数だけメモリー確保
+	// �P���Ȑ�N2�̐������������[�m��
 	if((NFunc.New_TrmS(&body.TrmS[TypeCount[_TRIMMED_SURFACE]],body.TrmS[TypeCount[_TRIMMED_SURFACE]].n2)) == KOD_ERR){
 		GuiIF.SetMessage("PARAMETER SECTION KOD_ERROR:fail to allocate memory");
 		return KOD_ERR;
 	}
 
 	for(i=0;i<body.TrmS[TypeCount[_TRIMMED_SURFACE]].n2;i++){
-		pdnum = CatchStringI(&p);	// Trimmed Surfaceの内周の単純閉曲線のDE部の値を取得
-		body.TrmS[TypeCount[_TRIMMED_SURFACE]].pTI[i] = (CONPS *)GetDEPointer(pdnum,body);	// 単純閉曲線構造体へのポインタを取得
+		pdnum = CatchStringI(&p);	// Trimmed Surface�̓����̒P���Ȑ���DE���̒l���擾
+		body.TrmS[TypeCount[_TRIMMED_SURFACE]].pTI[i] = (CONPS *)GetDEPointer(pdnum,body);	// �P���Ȑ��\���̂ւ̃|�C���^���擾
 	}
 
-	body.TrmS[TypeCount[_TRIMMED_SURFACE]].pD = pD;		// DE部のシーケンスナンバーを得る
+	body.TrmS[TypeCount[_TRIMMED_SURFACE]].pD = pD;		// DE���̃V�[�P���X�i���o�[�𓾂�
 
 	return KOD_TRUE;
 }
 
 // Function: GetDirectorySection
-// ディレクトリ部読み込み
+// �f�B���N�g�����ǂݍ���
 //
 // Parameters:
-// *fp - 読み込んだIGESファイルへのポインタ
-// *dpara - ディレクトリ部のパラメータ構造体へのポインタ 
-// TypeNum[] - BODYを構成する各エンティティの数 
-// dline - ディレクトリ部のライン数 
+// *fp - �ǂݍ���IGES�t�@�C���ւ̃|�C���^
+// *dpara - �f�B���N�g�����̃p�����[�^�\���̂ւ̃|�C���^ 
+// TypeNum[] - BODY���\������e�G���e�B�e�B�̐� 
+// dline - �f�B���N�g�����̃��C���� 
 //
 // Return:
-// KOD_TRUE:成功	KOD_ERR:失敗
+// KOD_TRUE:����	KOD_ERR:���s
 int IGES_PARSER::GetDirectorySection(FILE *fp,DirectoryParam *dpara,int TypeNum[],int dline)
 {
 	int i,j;
-	char *p;						// 文字列先頭判別用ポインタ
-	char str[COLUMN_MAX*2+1];		// 2行分（1エンティティ分）の文字列配列
-	char field[FIELD_NUM+1];		// 8文字で1フィールド
+	char *p;						// ������擪���ʗp�|�C���^
+	char str[COLUMN_MAX*2+1];		// 2�s���i1�G���e�B�e�B���j�̕�����z��
+	char field[FIELD_NUM+1];		// 8������1�t�B�[���h
 	char dmy;
 
 	for(i=0;i<ALL_ENTITY_TYPE_NUM;i++){
-		TypeNum[i] = 0;			// 初期化
+		TypeNum[i] = 0;			// ������
 	}
 
 	for(i=0;i<dline;i++){
-		strcpy(str,"");				// str初期化
+		strcpy(str,"");				// str������
 
-		if(fgets(buf,COLUMN_MAX_,fp) == NULL){		// i番目のエンティティの1行目を読み込み
+		if(fgets(buf,COLUMN_MAX_,fp) == NULL){		// i�Ԗڂ̃G���e�B�e�B��1�s�ڂ�ǂݍ���
 			GuiIF.SetMessage("DIRECTORY SECTION KOD_ERROR: fail to read this file");
 			exit(KOD_ERR);
 		}
 		strncat(str,buf,COLUMN_MAX);
-		if(fgets(buf,COLUMN_MAX_,fp) == NULL){		// i番目のエンティティの2行目を読み込み
+		if(fgets(buf,COLUMN_MAX_,fp) == NULL){		// i�Ԗڂ̃G���e�B�e�B��2�s�ڂ�ǂݍ���
 			GuiIF.SetMessage("DIRECTORY SECTION KOD_ERROR: fail to read this file");
 			exit(KOD_ERR);
 		}
-		strncat(str,buf,COLUMN_MAX);				// 読み込んだ2行はstrに全て格納される
+		strncat(str,buf,COLUMN_MAX);				// �ǂݍ���2�s��str�ɑS�Ċi�[�����
 
-		p = str;									// pをまずstrの先頭にする
-		for(j=0;j<DIRECTORYPARANUM;j++){			// ディレクトリ部のパラメータの数分だけループ
-			strncpy(field,p,8);						// pの先頭8文字をfieldへ格納
-			field[FIELD_NUM] = '\0';				// 一応、終端文字をfieldのお尻につけておく
-			p += FIELD_NUM;							// pを次のフィールドの先頭へ移動
-			// ディレクトリ部の情報が必要な場合は以下にコードを追加する
-			if(j == ENTITY_TYPE_NUM){					// 要素番号を取得
+		p = str;									// p���܂�str�̐擪�ɂ���
+		for(j=0;j<DIRECTORYPARANUM;j++){			// �f�B���N�g�����̃p�����[�^�̐����������[�v
+			strncpy(field,p,8);						// p�̐擪8������field�֊i�[
+			field[FIELD_NUM] = '\0';				// �ꉞ�A�I�[������field�̂��K�ɂ��Ă���
+			p += FIELD_NUM;							// p�����̃t�B�[���h�̐擪�ֈړ�
+			// �f�B���N�g�����̏�񂪕K�v�ȏꍇ�͈ȉ��ɃR�[�h��ǉ�����
+			if(j == ENTITY_TYPE_NUM){					// �v�f�ԍ����擾
 				dpara[i].entity_type = atoi(field);
-				GetType(dpara[i].entity_type,TypeNum);	// エンティティタイプの数を加算
+				GetType(dpara[i].entity_type,TypeNum);	// �G���e�B�e�B�^�C�v�̐������Z
 			}
-			else if(j == PARAM_DATA){					// パラメータ部へのポインタを取得
+			else if(j == PARAM_DATA){					// �p�����[�^���ւ̃|�C���^���擾
 				dpara[i].p_param = atoi(field);
 			}
-			else if(j == TRAN_MATRIX){					// マトリックスへのポインタを取得
+			else if(j == TRAN_MATRIX){					// �}�g���b�N�X�ւ̃|�C���^���擾
 				dpara[i].p_tm = atoi(field);
 			}
-			else if(j == STATUS_NUM){					// ステータスを取得
+			else if(j == STATUS_NUM){					// �X�e�[�^�X���擾
 				GetStatusNumber(field,&dpara[i]);
 			}
-			else if(j == SEQUENCE_NUM){					// シーケンス番号を取得
+			else if(j == SEQUENCE_NUM){					// �V�[�P���X�ԍ����擾
 				sscanf(field,"%c %d",&dmy,&dpara[i].seq_num);
 			}
-			else if(j == PARAM_LINE_COUNT){				// パラメータ部のライン数
+			else if(j == PARAM_LINE_COUNT){				// �p�����[�^���̃��C����
 				dpara[i].param_line_count = atoi(field);
 			}
 		}
@@ -1075,33 +1121,33 @@ int IGES_PARSER::GetDirectorySection(FILE *fp,DirectoryParam *dpara,int TypeNum[
 }
 
 // Function: GetType
-// 各エンティティタイプの数を取得する
+// �e�G���e�B�e�B�^�C�v�̐����擾����
 //
 // Parameters:
-// type - エンティティのタイプ
-// entitynum[] - エンティティの数 
+// type - �G���e�B�e�B�̃^�C�v
+// entitynum[] - �G���e�B�e�B�̐� 
 void IGES_PARSER::GetType(int type,int entitynum[])
 {
 	int i;
 
-	// 直線または円・円弧エンティティの場合はNURBS曲線エンティティも同時にインクリメント
+	// �����܂��͉~�E�~�ʃG���e�B�e�B�̏ꍇ��NURBS�Ȑ��G���e�B�e�B�������ɃC���N�������g
 	if(type == LINE || type == CIRCLE_ARC){
 		entitynum[_NURBSC]++;
 	}
 
 	for(i=0;i<ALL_ENTITY_TYPE_NUM;i++){
 		if(type == entity[i]){
-			entitynum[i]++;		// iはenum型EntityTypに対応 ex) entitynum[10]は_NURBSC（有理Bスプライン曲線）の数を表す
+			entitynum[i]++;		// i��enum�^EntityTyp�ɑΉ� ex) entitynum[10]��_NURBSC�i�L��B�X�v���C���Ȑ��j�̐���\��
 		}
 	}
 }
 
 // Function: GetStatusNumber
-// DE#9(ステータス)部の読み込み
+// DE#9(�X�e�[�^�X)���̓ǂݍ���
 //
 // Parameters:
-// field[] - フィールド
-// *dpara - ディレクトリ部のパラメータ構造体へのポインタ
+// field[] - �t�B�[���h
+// *dpara - �f�B���N�g�����̃p�����[�^�\���̂ւ̃|�C���^
 void IGES_PARSER::GetStatusNumber(char field[],DirectoryParam *dpara)
 {
 	char str[3]="";
@@ -1120,56 +1166,57 @@ void IGES_PARSER::GetStatusNumber(char field[],DirectoryParam *dpara)
 }
 
 // Function: GetGlobalSection
-// グローバル部読み込み
+// �O���[�o�����ǂݍ���
 //
 // Parameters:
-// *fp - 読み込んだIGESファイルへのポインタ
-// *gpara - グローバル部のパラメータ構造体へのポインタ
-// gline - グローバル部のライン数
+// *fp - �ǂݍ���IGES�t�@�C���ւ̃|�C���^
+// *gpara - �O���[�o�����̃p�����[�^�\���̂ւ̃|�C���^
+// gline - �O���[�o�����̃��C����
 //
 // Return:
-// KOD_TRUE:成功	KOD_ERR:失敗
+// KOD_TRUE:����	KOD_ERR:���s
 int IGES_PARSER::GetGlobalSection(FILE *fp,GlobalParam *gpara,int gline)
 {
-	char *str;					// グローバル部文字列全てを格納する
-	char para_delim = ',';		// パラメータデリミタ
-	char record_delim = ';';	// レコードデリミタ
-	int  para_length;			// 各パラメータの文字列の長さを格納
+	char *str;					// �O���[�o����������S�Ă��i�[����
+	char para_delim = ',';		// �p�����[�^�f���~�^
+	char record_delim = ';';	// ���R�[�h�f���~�^
+//	int  para_length;			// �e�p�����[�^�̕�����̒������i�[
 	char *p,*p_;
 	int  i;
 
-	// グローバル部のライン数*COL_CHAR分メモリー確保
-	str = (char *)malloc(sizeof(char) * gline*COL_CHAR);
+	// �O���[�o�����̃��C����*COL_CHAR���������[�m��
+//	str = (char *)malloc(sizeof(char) * gline*COL_CHAR);
+	str = new char[gline*COL_CHAR];
 	if(str == NULL){
 		GuiIF.SetMessage("GLOBAL SECTION KOD_ERROR: faile to allocate memory");
 		exit(KOD_ERR);
 	}
 
-	strcpy(str,"");			// str初期化
+	strcpy(str,"");			// str������
 	for(i=0;i<gline;i++){
 		if(fgets(buf,COLUMN_MAX_,fp) == NULL){
 			GuiIF.SetMessage("GLOBAL SECTION KOD_ERROR: faile to read this file");
 			exit(KOD_ERR);
 		}
-		strncat(str,buf,COL_CHAR-1);	// strにセクション判別文字までの文字列をつけたしていく
+		strncat(str,buf,COL_CHAR-1);	// str�ɃZ�N�V�������ʕ����܂ł̕�������������Ă���
 	}
 
-	// パラメータデリミタとレコードデリミタのチェック(インベンタ対応のため，コメントアウト（2015/0706）)
-	//sscanf(str,"%dH%c",&para_length,&para_delim);		// パラメータデリミタを取得
+	// �p�����[�^�f���~�^�ƃ��R�[�h�f���~�^�̃`�F�b�N(�C���x���^�Ή��̂��߁C�R�����g�A�E�g�i2015/0706�j)
+	//sscanf(str,"%dH%c",&para_length,&para_delim);		// �p�����[�^�f���~�^���擾
 	//fprintf(stderr,"%d,%c\n",para_length,para_delim);
 	//if(para_delim != ','){
 	//	GuiIF.SetMessage("GLOBAL SECTION KOD_ERROR: The parameter delimiter is not governed by and construed for JAMA-IS");
 	//	exit(KOD_ERR);
 	//}
 	//else{
-	//	sscanf(str,"%dH[^,],[^,],%dH%c",&para_length,&para_length,&record_delim);		// レコードデリミタを取得
+	//	sscanf(str,"%dH[^,],[^,],%dH%c",&para_length,&para_length,&record_delim);		// ���R�[�h�f���~�^���擾
 	//	if(record_delim != ';'){
 	//		GuiIF.SetMessage("GLOBAL SECTION KOD_ERROR: The record delimiter is not governed by and construed for JAMA-IS");
 	//		exit(KOD_ERR);
 	//	}
 	//}
 
-	// インベンタ対応．パラメータデリミタとレコードデリミタを読み飛ばす
+	// �C���x���^�Ή��D�p�����[�^�f���~�^�ƃ��R�[�h�f���~�^��ǂݔ�΂�
 	p = p_ = str;
 	p = strchr(p_,',');
 	strncpy(str,p_,p-p_);
@@ -1184,7 +1231,7 @@ int IGES_PARSER::GetGlobalSection(FILE *fp,GlobalParam *gpara,int gline)
 	}
 	p_ = p;
 
-	for(i=3;i<GLOBALPARAMNUM;i++){		// 2つのデリミタを抜かした残りのパラメータを逐次読み込む
+	for(i=3;i<GLOBALPARAMNUM;i++){		// 2�̃f���~�^�𔲂������c��̃p�����[�^�𒀎��ǂݍ���
 		if((p = strchr(p_,',')) == NULL){
 			GuiIF.SetMessage("GLOBAL SECTION KOD_ERROR: Low parameter count of global section");
 			exit(KOD_ERR);
@@ -1192,16 +1239,16 @@ int IGES_PARSER::GetGlobalSection(FILE *fp,GlobalParam *gpara,int gline)
 		strncpy(str,p_,p-p_);
 		str[p-p_] = '\0';
 
-		// グローバル部の情報が必要な場合は以下にコードを記入
-		if(i == MODEL_SCALE){				// モデルスケール読み込み
+		// �O���[�o�����̏�񂪕K�v�ȏꍇ�͈ȉ��ɃR�[�h���L��
+		if(i == MODEL_SCALE){				// ���f���X�P�[���ǂݍ���
 			gpara->scale = atof(str);
 			fprintf(stderr,"%lf\n",gpara->scale);	// debug
 		}
-		else if(i == UNIT_FLAG){			// 単位フラグ読み込み
+		else if(i == UNIT_FLAG){			// �P�ʃt���O�ǂݍ���
 			gpara->unit_flag = atoi(str);
 			fprintf(stderr,"%d\n",gpara->unit_flag);	// debug
 		}
-		else if(i == MODEL_SPACE_SIZE){		// モデル空間の大きさ読み込み
+		else if(i == MODEL_SPACE_SIZE){		// ���f����Ԃ̑傫���ǂݍ���
 			gpara->space_size = atof(str);
 			fprintf(stderr,"%lf\n",gpara->space_size);	// debug
 		}
@@ -1209,20 +1256,21 @@ int IGES_PARSER::GetGlobalSection(FILE *fp,GlobalParam *gpara,int gline)
 		p_ = p;
 	}
 
-	free(str);		// メモリー開放
+//	free(str);		// �������[�J��
+	delete[]	str;
 
 	return KOD_TRUE;
 }
 
 // Function: GetStartSection
-// スタート部読み込み
+// �X�^�[�g���ǂݍ���
 //
 // Parameter: 
-// *fp - 読み込んだIGESファイルへのポインタ
-// sline - スタート部のライン数 
+// *fp - �ǂݍ���IGES�t�@�C���ւ̃|�C���^
+// sline - �X�^�[�g���̃��C���� 
 //
 // Return:
-// KOD_TRUE:成功	KOD_ERR:失敗
+// KOD_TRUE:����	KOD_ERR:���s
 int IGES_PARSER::GetStartSection(FILE *fp,int sline)
 {
 	int i;
@@ -1233,17 +1281,17 @@ int IGES_PARSER::GetStartSection(FILE *fp,int sline)
 			exit(KOD_ERR);
 		}
 
-		// スタート部の情報が必要な場合は以下にコードを追加する
+		// �X�^�[�g���̏�񂪕K�v�ȏꍇ�͈ȉ��ɃR�[�h��ǉ�����
 	}
 
 	return KOD_TRUE;
 }
 
 // Function: GetTerminateSection
-// ターミネート部読み込み
+// �^�[�~�l�[�g���ǂݍ���
 //
 // Parameter: 
-// *fp - 読み込んだIGESファイルへのポインタ
+// *fp - �ǂݍ���IGES�t�@�C���ւ̃|�C���^
 //
 // Return:
 // KOD_TRUE
@@ -1252,10 +1300,10 @@ int IGES_PARSER::GetTerminateSection(FILE *fp)
 	return KOD_TRUE;
 }
 
-// 各セクションのライン数を調べる
+// �e�Z�N�V�����̃��C�����𒲂ׂ�
 void IGES_PARSER::GetSectionLine(FILE *fp,int line[])
 {
-	line[0] = line[1] = line[2] = line[3] = line[4] = 0;	// 初期化
+	line[0] = line[1] = line[2] = line[3] = line[4] = 0;	// ������
 
 	while(fgets(buf,COLUMN_MAX_,fp)){
 		if(buf[COL_CHAR-1] == 'S'){
@@ -1273,23 +1321,23 @@ void IGES_PARSER::GetSectionLine(FILE *fp,int line[])
 		else if(buf[COL_CHAR-1] == 'T'){
 			line[SECTION_TERMINATE]++;
 		}
-		else{							// どのセクションにも属さない文字を検出
+		else{							// �ǂ̃Z�N�V�����ɂ������Ȃ����������o
 			GuiIF.SetMessage("KOD_ERROR: IGES FORMAT");
 			exit(KOD_ERR);
 		}
 	}
-	fseek(fp,0L,SEEK_SET);				// ファイル先頭に戻る
+	fseek(fp,0L,SEEK_SET);				// �t�@�C���擪�ɖ߂�
 
 }
 
 // Funciton: CatchStringI
-// カンマまでの数値を読み込んで返す(int)
+// �J���}�܂ł̐��l��ǂݍ���ŕԂ�(int)
 //
 // Parameters:
-// **p - 文字列へのポインタ
+// **p - ������ւ̃|�C���^
 //
 // Return:
-// カンマまでの数値 
+// �J���}�܂ł̐��l 
 int IGES_PARSER::CatchStringI(char **p)
 {
 	int a;
@@ -1306,13 +1354,13 @@ int IGES_PARSER::CatchStringI(char **p)
 }
 
 // Funciton: CatchStringD
-// カンマまでの数値を読み込んで返す(double)
+// �J���}�܂ł̐��l��ǂݍ���ŕԂ�(double)
 //
 // Parameters:
-// **p - 文字列へのポインタ
+// **p - ������ւ̃|�C���^
 //
 // Return:
-// カンマまでの数値 
+// �J���}�܂ł̐��l 
 double IGES_PARSER::CatchStringD(char **p)
 {
 	double a;
@@ -1329,14 +1377,14 @@ double IGES_PARSER::CatchStringD(char **p)
 }
 
 // Funciton: GetDEPointer
-// DE部へのポインタが示す実際の構造体へのポインタを返す
+// DE���ւ̃|�C���^���������ۂ̍\���̂ւ̃|�C���^��Ԃ�
 //
 // Parameters:
-// TypeNum - エンティティのタイプの数 
-// body - BODYクラスへのインスタンス
+// TypeNum - �G���e�B�e�B�̃^�C�v�̐� 
+// body - BODY�N���X�ւ̃C���X�^���X
 //
 // Return:
-// DE部へのポインタが示す実際の構造体へのポインタをvoid型で返す
+// DE���ւ̃|�C���^���������ۂ̍\���̂ւ̃|�C���^��void�^�ŕԂ�
 void *IGES_PARSER::GetDEPointer(int TypeNum,BODY body)
 {
 	int i,j;
@@ -1377,15 +1425,15 @@ void *IGES_PARSER::GetDEPointer(int TypeNum,BODY body)
 }
 
 // Funciton: SearchEntType
-// DE部へのポインタの値からエンティティのタイプを調べて返す
+// DE���ւ̃|�C���^�̒l����G���e�B�e�B�̃^�C�v�𒲂ׂĕԂ�
 //
 // Parameters:
-// *dpara - ディレクトリ部のパラメータ構造体へのポインタ
-// pdnum - DE部のシーケンスナンバー
-// dline - ディレクトリ部のライン数  
+// *dpara - �f�B���N�g�����̃p�����[�^�\���̂ւ̃|�C���^
+// pdnum - DE���̃V�[�P���X�i���o�[
+// dline - �f�B���N�g�����̃��C����  
 //
 // Return: 
-// エンティティタイプ(DE部のシーケンスナンバーと一致し無かった場合はKOD_ERR)
+// �G���e�B�e�B�^�C�v(DE���̃V�[�P���X�i���o�[�ƈ�v�����������ꍇ��KOD_ERR)
 int IGES_PARSER::SearchEntType(DirectoryParam *dpara,int pdnum,int dline)
 {
 	int i;
@@ -1400,14 +1448,14 @@ int IGES_PARSER::SearchEntType(DirectoryParam *dpara,int pdnum,int dline)
 }
 
 // Funciton: SearchMaxCoord
-// 全てのエンティティにおける座標値の最大値を調べる
+// �S�ẴG���e�B�e�B�ɂ�������W�l�̍ő�l�𒲂ׂ�
 //
 // Parameters:
-// *body - BODY構造体へのポインタ 
-// TypeNum[] - エンティティタイプの数
+// *body - BODY�\���̂ւ̃|�C���^ 
+// TypeNum[] - �G���e�B�e�B�^�C�v�̐�
 //
 // Return: 
-// KOD_TRUE:成功	KOD_ERR:失敗
+// KOD_TRUE:����	KOD_ERR:���s
 int IGES_PARSER::SearchMaxCoord(BODY *body,int TypeNum[])
 {
 	int i,j;
@@ -1415,85 +1463,92 @@ int IGES_PARSER::SearchMaxCoord(BODY *body,int TypeNum[])
 	int bufnum=0;
 	double *CoordBuf;
 	
-	// #100(円、円弧)、#110(線分)、#126(NURBS曲線)のコントロールポイントの座標値の個数を得る
+	// #100(�~�A�~��)�A#110(����)�A#126(NURBS�Ȑ�)�̃R���g���[���|�C���g�̍��W�l�̌��𓾂�
 	for(i=0;i<TypeNum[_NURBSC];i++){
 		bufnum += 3*body->NurbsC[i].K;
 	}
 	
-	// メモリ確保
-	if((CoordBuf = (double*)malloc(sizeof(double)*bufnum)) == NULL){
+	// �������m��
+//	if((CoordBuf = (double*)malloc(sizeof(double)*bufnum)) == NULL){
+	CoordBuf = new double[bufnum];
+	if ( !CoordBuf ) {
 		GuiIF.SetMessage("SEARCH MAXCOORD KOD_ERROR:fail to allocate memory");
 		return KOD_ERR;
 	}
 
-	// #100(円、円弧)、#110(線分)、#126(NURBS曲線)のコントロールポイントの座標値を得る
+	// #100(�~�A�~��)�A#110(����)�A#126(NURBS�Ȑ�)�̃R���g���[���|�C���g�̍��W�l�𓾂�
 	for(i=0;i<TypeNum[_NURBSC];i++){
 		for(j=0;j<body->NurbsC[i].K;j++){
-			CoordBuf[temp*3] = fabs(body->NurbsC[i].cp[j].x);	// コントロールポイントX
-			CoordBuf[temp*3+1] = fabs(body->NurbsC[i].cp[j].y);	// コントロールポイントY
-			CoordBuf[temp*3+2] = fabs(body->NurbsC[i].cp[j].z);	// コントロールポイントZ
+			CoordBuf[temp*3] = fabs(body->NurbsC[i].cp[j].x);	// �R���g���[���|�C���gX
+			CoordBuf[temp*3+1] = fabs(body->NurbsC[i].cp[j].y);	// �R���g���[���|�C���gY
+			CoordBuf[temp*3+2] = fabs(body->NurbsC[i].cp[j].z);	// �R���g���[���|�C���gZ
 			temp++;
+			// Add by K.Magara
+			// NCVC�p�̃f�[�^�ݒ�
+			body->minmaxCoord[0].SetMinCoord(body->NurbsC[i].cp[j]);
+			body->minmaxCoord[1].SetMaxCoord(body->NurbsC[i].cp[j]);
 		}
 	}
 	
-	qsort(CoordBuf,bufnum,sizeof(double),QCmp);	// 全ての座標値をクイックソートにより降順にソート
-	body->MaxCoord = CoordBuf[0];				// 最も大きい座標値を得る
+	qsort(CoordBuf,bufnum,sizeof(double),QCmp);	// �S�Ă̍��W�l���N�C�b�N�\�[�g�ɂ��~���Ƀ\�[�g
+	body->MaxCoord = CoordBuf[0];				// �ł��傫�����W�l�𓾂�
 
-	// メモリ解放
-	free(CoordBuf);
+	// ���������
+//	free(CoordBuf);
+	delete[]	CoordBuf;
 	
 	return KOD_TRUE;
 }
 
 // Funciton: IGES_PARSER
-// コンストラクタ
+// �R���X�g���N�^
 IGES_PARSER::IGES_PARSER()
 {
-		entity[0] = CIRCLE_ARC;							// 円/円弧
-		entity[1] = COMPOSITE_CURVE;					// 複合曲線
-		entity[2] = CONIC_ARC;							// 円錐曲線
-		entity[3] = COPIOUS_DATA;						// 有意点列
-		entity[4] = PLANE;								// 平面
-		entity[5] = LINE;								// 線分
-		entity[6] = PARAMETRIC_SPLINE_CURVE;			// パラメトリックスプライン曲線
-		entity[7] = PARAMETRIC_SPLINE_SURFACE;			// パラメトリックスプライン曲面
-		entity[8] = POINT;								// 点
-		entity[9] = TRANSFORMATION_MATRIX;				// 変換行列
-		entity[10] = NURBS_CURVE;						// 有理Bスプライン曲線
-		entity[11] = NURBS_SURFACE;						// 有理Bスプライン曲面
-		entity[12] = CURVE_ON_PARAMETRIC_SURFACE; 		// 面上線
-		entity[13] = TRIMMED_SURFACE;					// トリム面
-		entity[14] = SUBFIGURE_DEFINITION;				// 子図の定義
-		entity[15] = ASSOCIATIVITY_INSTANCE;			// グループ
-		entity[16] = DRAWING;							// 図面
-		entity[17] = PROPERTY;							// 図面サイズ
-		entity[18] = SINGULAR_SUBFIGURE_INSTANCE;		// 子図の参照
-		entity[19] = VIEW;								// 投象面
+		entity[0] = CIRCLE_ARC;							// �~/�~��
+		entity[1] = COMPOSITE_CURVE;					// �����Ȑ�
+		entity[2] = CONIC_ARC;							// �~���Ȑ�
+		entity[3] = COPIOUS_DATA;						// �L�ӓ_��
+		entity[4] = PLANE;								// ����
+		entity[5] = LINE;								// ����
+		entity[6] = PARAMETRIC_SPLINE_CURVE;			// �p�����g���b�N�X�v���C���Ȑ�
+		entity[7] = PARAMETRIC_SPLINE_SURFACE;			// �p�����g���b�N�X�v���C���Ȗ�
+		entity[8] = POINT;								// �_
+		entity[9] = TRANSFORMATION_MATRIX;				// �ϊ��s��
+		entity[10] = NURBS_CURVE;						// �L��B�X�v���C���Ȑ�
+		entity[11] = NURBS_SURFACE;						// �L��B�X�v���C���Ȗ�
+		entity[12] = CURVE_ON_PARAMETRIC_SURFACE; 		// �ʏ��
+		entity[13] = TRIMMED_SURFACE;					// �g������
+		entity[14] = SUBFIGURE_DEFINITION;				// �q�}�̒�`
+		entity[15] = ASSOCIATIVITY_INSTANCE;			// �O���[�v
+		entity[16] = DRAWING;							// �}��
+		entity[17] = PROPERTY;							// �}�ʃT�C�Y
+		entity[18] = SINGULAR_SUBFIGURE_INSTANCE;		// �q�}�̎Q��
+		entity[19] = VIEW;								// ���ۖ�
 }
 
 // Funciton: InitDisplayStat
-// 各エンティティの表示属性を設定
+// �e�G���e�B�e�B�̕\��������ݒ�
 //
 // Parameters:
-// *Dstat - エンティティの表示属性 
+// *Dstat - �G���e�B�e�B�̕\������ 
 void IGES_PARSER::InitDisplayStat(DispStat *Dstat)
 {
-	// 白色を設定
+	// ���F��ݒ�
 	Dstat->Color[0] = 1.0;
 	Dstat->Color[1] = 1.0;
 	Dstat->Color[2] = 1.0;
 	Dstat->Color[3] = 0.5;
 
-	// 表示属性を追加する場合は以下に追加のコードを記述
+	// �\��������ǉ�����ꍇ�͈ȉ��ɒǉ��̃R�[�h���L�q
 }
 
 // Funciton: TransformNurbsC
-// Type124(変換行列)を用いてNURBS曲線を座標変換する
+// Type124(�ϊ��s��)��p����NURBS�Ȑ������W�ϊ�����
 //
 // Parameters:
-// NurbsCount - NURBS曲線の数 
-// TMp - 変換行列の数 
-// body - BODY構造体 
+// NurbsCount - NURBS�Ȑ��̐� 
+// TMp - �ϊ��s��̐� 
+// body - BODY�\���� 
 //
 // Return:
 // KOD_TRUE

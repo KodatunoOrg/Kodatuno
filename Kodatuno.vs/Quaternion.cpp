@@ -1,14 +1,19 @@
-ï»¿#include "Quaternion.h"
+#include "stdafx.h"
+#include "Quaternion.h"
+
+#if defined(_DEBUG) && defined(_MSC_VER)
+#define new DEBUG_NEW
+#endif
 
 // Function: QInit
-// ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ã‚’å¼•æ•°ã§æŒ‡å®šã—ãŸæ•°å€¤ã§åˆæœŸåŒ–
+// ƒNƒH[ƒ^ƒjƒIƒ“‚ğˆø”‚Åw’è‚µ‚½”’l‚Å‰Šú‰»
 //
 // Parameters: 
-// t - å®Ÿéƒ¨
-// x,y,z -è™šéƒ¨
+// t - À•”
+// x,y,z -‹••”
 // 
 // Return:
-// åˆæœŸåŒ–ã•ã‚ŒãŸQuat
+// ‰Šú‰»‚³‚ê‚½Quat
 Quat QUATERNION::QInit(double t,double x,double y,double z)
 {
 	Quat q;
@@ -22,14 +27,14 @@ Quat QUATERNION::QInit(double t,double x,double y,double z)
 }
 
 // Function: QGenRot
-// å›è»¢ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³qã‚’ç”Ÿæˆ q = {cos(r/2):x*sin(r/2),y*sin(r/2),z*sin(r/2)}
+// ‰ñ“]ƒNƒH[ƒ^ƒjƒIƒ“q‚ğ¶¬ q = {cos(r/2):x*sin(r/2),y*sin(r/2),z*sin(r/2)}
 //
 // Parameters: 
-// r - å›è»¢è§’[rad] 
-// x,y,z - å›è»¢è»¸ãƒ™ã‚¯ãƒˆãƒ«
+// r - ‰ñ“]Šp[rad] 
+// x,y,z - ‰ñ“]²ƒxƒNƒgƒ‹
 // 
 // Return:
-// å›è»¢ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³q
+// ‰ñ“]ƒNƒH[ƒ^ƒjƒIƒ“q
 Quat QUATERNION::QGenRot(double r,double x,double y,double z)
 {
 	Quat q;
@@ -43,13 +48,13 @@ Quat QUATERNION::QGenRot(double r,double x,double y,double z)
 }
 
 // Function: QConjugation
-// å…±å½¹ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ã‚’ç”Ÿæˆ
+// ‹¤–ğƒNƒH[ƒ^ƒjƒIƒ“‚ğ¶¬
 //
 // Parameters: 
-// q - ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³
+// q - ƒNƒH[ƒ^ƒjƒIƒ“
 // 
 // Return:
-// qã®å…±å½¹ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³
+// q‚Ì‹¤–ğƒNƒH[ƒ^ƒjƒIƒ“
 Quat QUATERNION::QConjugation(Quat q)
 {
 	Quat p;
@@ -63,13 +68,13 @@ Quat QUATERNION::QConjugation(Quat q)
 }
 
 // Function: QMult
-// ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ã®ç©ã‚’æ±‚ã‚ã‚‹
+// ƒNƒH[ƒ^ƒjƒIƒ“‚ÌÏ‚ğ‹‚ß‚é
 //
 // Parameters: 
 // p,q - p x q
 //
 // Return:
-// è¨ˆç®—çµæœ
+// ŒvZŒ‹‰Ê
 Quat QUATERNION::QMult(Quat p,Quat q)
 {
 	Quat r;
@@ -83,26 +88,26 @@ Quat QUATERNION::QMult(Quat p,Quat q)
 }
 
 // Function: QRot
-// ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ã«ã‚ˆã‚‹å›è»¢ãƒ™ã‚¯ãƒˆãƒ«æ¼”ç®—
+// ƒNƒH[ƒ^ƒjƒIƒ“‚É‚æ‚é‰ñ“]ƒxƒNƒgƒ‹‰‰Z
 //
 // Parameters: 
-// r - qã®å…±å½¹ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³  
-// p - å›è»¢ã—ãŸã„åº§æ¨™å€¤ã‚’æŒã£ãŸã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³  
-// q - å›è»¢ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ 
+// r - q‚Ì‹¤–ğƒNƒH[ƒ^ƒjƒIƒ“  
+// p - ‰ñ“]‚µ‚½‚¢À•W’l‚ğ‚Á‚½ƒNƒH[ƒ^ƒjƒIƒ“  
+// q - ‰ñ“]ƒNƒH[ƒ^ƒjƒIƒ“ 
 //
 // Return:
-// è¨ˆç®—çµæœ
+// ŒvZŒ‹‰Ê
 Quat QUATERNION::QRot(Quat r,Quat p,Quat q)
 {
 	return QMult(QMult(r,p),q);
 }
 
 // Function: QtoR
-// ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³qã‚’å›è»¢è¡Œåˆ—rã¸å¤‰æ›
+// ƒNƒH[ƒ^ƒjƒIƒ“q‚ğ‰ñ“]s—ñr‚Ö•ÏŠ·
 //
 // Parameters: 
-// r[16] - 4*4è¡Œåˆ—ã‚’ï¼‘æ¬¡å…ƒé…åˆ—ã§è¡¨ç¾ã—ãŸã‚‚ã®
-// q - å¤‰æ›ã™ã‚‹ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³
+// r[16] - 4*4s—ñ‚ğ‚PŸŒ³”z—ñ‚Å•\Œ»‚µ‚½‚à‚Ì
+// q - •ÏŠ·‚·‚éƒNƒH[ƒ^ƒjƒIƒ“
 void QUATERNION::QtoR(double r[],Quat q)
 {
 	double x2 = q.x * q.x * 2.0;
@@ -129,11 +134,11 @@ void QUATERNION::QtoR(double r[],Quat q)
 }
 
 // Function: QtoR
-// ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³qã‚’å›è»¢è¡Œåˆ—rã¸å¤‰æ›(ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰)
+// ƒNƒH[ƒ^ƒjƒIƒ“q‚ğ‰ñ“]s—ñr‚Ö•ÏŠ·(ƒI[ƒo[ƒ[ƒh)
 //
 // Parameters: 
-// r[16] - 4*4è¡Œåˆ—ã‚’ï¼‘æ¬¡å…ƒé…åˆ—ã§è¡¨ç¾ã—ãŸã‚‚ã®
-// t,x,y,z - å¤‰æ›ã™ã‚‹ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ã®è¦ç´ è¡¨ç¾
+// r[16] - 4*4s—ñ‚ğ‚PŸŒ³”z—ñ‚Å•\Œ»‚µ‚½‚à‚Ì
+// t,x,y,z - •ÏŠ·‚·‚éƒNƒH[ƒ^ƒjƒIƒ“‚Ì—v‘f•\Œ»
 void QUATERNION::QtoR(double r[],double t,double x,double y,double z)
 {
 	double x2 = x * x * 2.0;
@@ -160,26 +165,26 @@ void QUATERNION::QtoR(double r[],double t,double x,double y,double z)
 }
 
 // Function: QCopy
-// ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ã®ã‚³ãƒ”ãƒ¼ p <- q
+// ƒNƒH[ƒ^ƒjƒIƒ“‚ÌƒRƒs[ p <- q
 //
 // Parameters: 
-// q - ã‚³ãƒ”ãƒ¼å…ƒã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³
+// q - ƒRƒs[Œ³ƒNƒH[ƒ^ƒjƒIƒ“
 //
 // Return:
-// ã‚³ãƒ”ãƒ¼å…ˆã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³
+// ƒRƒs[æƒNƒH[ƒ^ƒjƒIƒ“
 Quat QUATERNION::QCopy(Quat q)
 {
 	return q;
 }
 
 // Function: QtoC
-// ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ã®3ã¤ã®è™šéƒ¨ã‚’Coordæ§‹é€ ä½“ã«ä»£å…¥ã™ã‚‹
+// ƒNƒH[ƒ^ƒjƒIƒ“‚Ì3‚Â‚Ì‹••”‚ğCoord\‘¢‘Ì‚É‘ã“ü‚·‚é
 // 
 // Parameters: 
-// q - ä»£å…¥ã™ã‚‹ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³
+// q - ‘ã“ü‚·‚éƒNƒH[ƒ^ƒjƒIƒ“
 //
 // Return:
-// ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³è™šéƒ¨(x,y,z)ã‚’ãã®ã¾ã¾Coordå€¤(x,y,z)ã¨ã—ãŸã‚‚ã®
+// ƒNƒH[ƒ^ƒjƒIƒ“‹••”(x,y,z)‚ğ‚»‚Ì‚Ü‚ÜCoord’l(x,y,z)‚Æ‚µ‚½‚à‚Ì
 Coord QUATERNION::QtoC(Quat q)
 {
 	Coord a;
@@ -192,13 +197,13 @@ Coord QUATERNION::QtoC(Quat q)
 }
 
 // Function: CtoQ
-// ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³å®Ÿéƒ¨ã‚’0ã€è™šéƒ¨ã‚’Coordã¨ã—ã¦ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ã‚’ç”Ÿæˆ
+// ƒNƒH[ƒ^ƒjƒIƒ“À•”‚ğ0A‹••”‚ğCoord‚Æ‚µ‚ÄƒNƒH[ƒ^ƒjƒIƒ“‚ğ¶¬
 //
 // Parameters: 
-// a - è™šéƒ¨ã¨ãªã‚‹Coordå€¤
+// a - ‹••”‚Æ‚È‚éCoord’l
 //
 // Return:
-// ç”Ÿæˆã•ã‚ŒãŸã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ 
+// ¶¬‚³‚ê‚½ƒNƒH[ƒ^ƒjƒIƒ“ 
 Quat QUATERNION::CtoQ(Coord a)
 {
 	Quat q;
@@ -212,17 +217,17 @@ Quat QUATERNION::CtoQ(Coord a)
 }
 
 // Function: QSlerp
-// ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ã«ã‚ˆã‚‹çƒé¢ç·šå½¢è£œé–“
+// ƒNƒH[ƒ^ƒjƒIƒ“‚É‚æ‚é‹…–ÊüŒ`•âŠÔ
 //
-// 2ã¤ã®ãƒ™ã‚¯ãƒˆãƒ«p(t=0)ã€q(t=1)é–“ã‚’tã§æŒ‡å®šã—ãŸå†…åˆ†ä¸Šã«çƒé¢ç·šå½¢è£œé–“ã™ã‚‹.
-// p,qã¯å˜ä½ãƒ™ã‚¯ãƒˆãƒ«ã§ã‚ã‚‹ã“ã¨.
+// 2‚Â‚ÌƒxƒNƒgƒ‹p(t=0)Aq(t=1)ŠÔ‚ğt‚Åw’è‚µ‚½“à•ªã‚É‹…–ÊüŒ`•âŠÔ‚·‚é.
+// p,q‚Í’PˆÊƒxƒNƒgƒ‹‚Å‚ ‚é‚±‚Æ.
 //
 // Parameters: 
-// p, q - åˆ†å‰²ã—ãŸã„ä¸¡ç«¯ã®ç‚¹ã®åº§æ¨™ã‚’è™šéƒ¨ã¨ã—ãŸã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³
-// t - å†…åˆ†æ¯”
+// p, q - •ªŠ„‚µ‚½‚¢—¼’[‚Ì“_‚ÌÀ•W‚ğ‹••”‚Æ‚µ‚½ƒNƒH[ƒ^ƒjƒIƒ“
+// t - “à•ª”ä
 //
 // Return:
-// è£œé–“ã•ã‚ŒãŸç‚¹ã‚’è¡¨ã™ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³
+// •âŠÔ‚³‚ê‚½“_‚ğ•\‚·ƒNƒH[ƒ^ƒjƒIƒ“
 Quat QUATERNION::QSlerp(Quat p,Quat q,double t)
 {
 	double ca = CalcInnerProduct(QtoC(p),QtoC(q));	// cos(a)

@@ -1,28 +1,47 @@
-ï»¿#include "BODY.h"
+#include "stdafx.h"
+#include "BODY.h"
 
+#if defined(_DEBUG) && defined(_MSC_VER)
+#define new DEBUG_NEW
+#endif
 
 // Function: BODY
-// BODYã‚¯ãƒ©ã‚¹ã®ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼å„ç¨®åˆæœŸåŒ–
+// BODYƒNƒ‰ƒX‚ÌƒRƒ“ƒXƒgƒ‰ƒNƒ^DŠeí‰Šú‰»
 BODY::BODY()
 {
-	// åˆæœŸåŒ–
+	// ‰Šú‰»
 	for(int i=0;i<ALL_ENTITY_TYPE_NUM;i++){
 		TypeNum[i] = 0;
 	}
 	Mesh = NULL;
 
 	MaxCoord = 1;
+
+	// Add by K.Magara
+	ClearMinMaxCoord();		// NCVC—p‚Ì‰Šú‰»
 }
 
+BODY::~BODY()
+{
+//	DelBodyElem();
+}
+
+// Add by K.Magara
+void BODY::ClearMinMaxCoord(void)
+{
+	minmaxCoord[0] = SetCoord( DBL_MAX, DBL_MAX, DBL_MAX);		// Å¬•Û‚ğÅ‘å’l‚Å‰Šú‰»
+	minmaxCoord[1] = SetCoord(-DBL_MAX,-DBL_MAX,-DBL_MAX);		// Å‘å•Û‚ğÅ¬’l‚Å‰Šú‰»
+}
+// --
 
 // Function: NewBodyElem
-// BODYã‚¯ãƒ©ã‚¹ã®ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿
+// BODYƒNƒ‰ƒX‚Ìƒƒ‚ƒŠ[Šm•Û
 void BODY::NewBodyElem()
 {
 	int flag=0;
 
-	// ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚’æ–°ãŸã«è¿½åŠ ã™ã‚‹å ´åˆã¯ä»¥ä¸‹ã«æ–°ãŸãªmallocã‚’è¨˜è¿°ã—ã¦ãã ã•ã„ã€‚
-	// ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚¿ã‚¤ãƒ—ã®ç•ªå·ãŒè‹¥ã„é †ã«è¨˜è¿°
+	// ƒGƒ“ƒeƒBƒeƒB‚ğV‚½‚É’Ç‰Á‚·‚éê‡‚ÍˆÈ‰º‚ÉV‚½‚Èmalloc‚ğ‹Lq‚µ‚Ä‚­‚¾‚³‚¢B
+	// ƒGƒ“ƒeƒBƒeƒBƒ^ƒCƒv‚Ì”Ô†‚ªá‚¢‡‚É‹Lq
 	if(TypeNum[_CIRCLE_ARC]){
 		if(NewCirA(TypeNum[_CIRCLE_ARC]) == NULL)  goto EXIT;
 		flag = _CIRCLE_ARC+1;
@@ -68,37 +87,53 @@ void BODY::NewBodyElem()
 		flag = _TRIMMED_SURFACE+1;
 	}
 
-	Mesh = NULL;		// ãƒ¡ãƒƒã‚·ãƒ¥ã¯NULLã«è¨­å®šã—ã¦ãŠã
+	Mesh = NULL;		// ƒƒbƒVƒ…‚ÍNULL‚Éİ’è‚µ‚Ä‚¨‚­
 
-	return;		// ãƒ¡ãƒ¢ãƒªãƒ¼ã‚’æ­£å¸¸ã«ç¢ºä¿
+	return;		// ƒƒ‚ƒŠ[‚ğ³í‚ÉŠm•Û
 
 
-EXIT:	// ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿ã«å¤±æ•—ã—ãŸå ´åˆã¯ã€ã“ã‚Œã¾ã§ç¢ºä¿ã—ãŸåˆ†ã‚’è§£æ”¾ã—ã¦çµ‚äº†
+EXIT:	// ƒƒ‚ƒŠ[Šm•Û‚É¸”s‚µ‚½ê‡‚ÍA‚±‚ê‚Ü‚ÅŠm•Û‚µ‚½•ª‚ğ‰ğ•ú‚µ‚ÄI—¹
 	GuiIF.SetMessage("KOD_ERROR: malloc BODY");
 	while(flag){
 		if(flag == _CURVE_ON_PARAMETRIC_SURFACE+1 && TypeNum[_TRIMMED_SURFACE]){
-			free(ConpS);
+//			free(ConpS);
+			delete[]	ConpS;
+			ConpS = NULL;
 		}
 		else if(flag == _NURBSS+1 && TypeNum[_NURBSS]){
-			free(NurbsS);
+//			free(NurbsS);
+			delete[]	NurbsS;
+			NurbsS = NULL;
 		}
 		else if(flag == _NURBSC+1 && TypeNum[_NURBSC]){
-			free(NurbsC);
+//			free(NurbsC);
+			delete[]	NurbsC;
+			NurbsC = NULL;
 		}
 		else if(flag == _TRANSFORMATION_MATRIX+1 && TypeNum[_TRANSFORMATION_MATRIX]){
-			free(TMat);
+//			free(TMat);
+			delete[]	TMat;
+			TMat = NULL;
 		}
 		else if(flag == _LINE+1 && TypeNum[_LINE]){
-			free(Line);
+//			free(Line);
+			delete[]	Line;
+			Line = NULL;
 		}
 		else if(flag == _CONIC_ARC+1 && TypeNum[_CONIC_ARC]){
-			free(ConA);
+//			free(ConA);
+			delete[]	ConA;
+			ConA = NULL;
 		}
 		else if(flag == _COMPOSITE_CURVE+1 && TypeNum[_COMPOSITE_CURVE]){
-			free(CompC);
+//			free(CompC);
+			delete[]	CompC;
+			CompC = NULL;
 		}
 		else if(flag == _CIRCLE_ARC+1 && TypeNum[_CIRCLE_ARC]){
-			free(CirA);
+//			free(CirA);
+			delete[]	CirA;
+			CirA = NULL;
 		}
 		flag--;
 	}
@@ -107,12 +142,13 @@ EXIT:	// ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿ã«å¤±æ•—ã—ãŸå ´åˆã¯ã€ã“ã‚Œã¾ã§ç¢ºä¿ã—ãŸåˆ
 
 
 // Function: DleBodyElem
-// BODYã‚’æ§‹æˆã™ã‚‹å…¨ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã®ãƒ¡ãƒ¢ãƒªé–‹æ”¾
+// BODY‚ğ\¬‚·‚é‘SƒGƒ“ƒeƒBƒeƒB‚Ìƒƒ‚ƒŠŠJ•ú
 void BODY::DelBodyElem()
 {
+/*
 	NURBS_Func NFunc;
 
-	// ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚’æ–°ãŸã«è¿½åŠ ã™ã‚‹å ´åˆã¯ä»¥ä¸‹ã«æ–°ãŸãªfreeã‚’è¿½åŠ ã™ã‚‹
+	// ƒGƒ“ƒeƒBƒeƒB‚ğV‚½‚É’Ç‰Á‚·‚éê‡‚ÍˆÈ‰º‚ÉV‚½‚Èfree‚ğ’Ç‰Á‚·‚é
 	if(TypeNum[_TRIMMED_SURFACE]){
 		NFunc.Free_TrmS_1DArray(TrmS,TypeNum[_TRIMMED_SURFACE]);
 		free(TrmS);
@@ -147,207 +183,297 @@ void BODY::DelBodyElem()
 	if(Mesh != NULL){
 		Mesh->clear();
 	}
+*/
+	DelBodyElem(TypeNum);
 }
 
 
 // Function: DelBodyElem
-// BODYã‚’æ§‹æˆã™ã‚‹ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚’æŒ‡å®šã—ãŸæ•°ã ã‘ãƒ¡ãƒ¢ãƒªé–‹æ”¾
+// BODY‚ğ\¬‚·‚éƒGƒ“ƒeƒBƒeƒB‚ğw’è‚µ‚½”‚¾‚¯ƒƒ‚ƒŠŠJ•ú
 //
 // Parameters: 
-//	TypeNum_[] - å„ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ç•ªå·ã‚’ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã¨ã—ãŸé…åˆ—ã«ï¼Œç¢ºä¿ã•ã‚Œã¦ã„ã‚‹å„ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£æ•°ã‚’ä»£å…¥
+//	TypeNum_[] - ŠeƒGƒ“ƒeƒBƒeƒB”Ô†‚ğƒCƒ“ƒfƒbƒNƒX‚Æ‚µ‚½”z—ñ‚ÉCŠm•Û‚³‚ê‚Ä‚¢‚éŠeƒGƒ“ƒeƒBƒeƒB”‚ğ‘ã“ü
 void BODY::DelBodyElem(int TypeNum_[])
 {
 	NURBS_Func NFunc;
 
-	// ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚’æ–°ãŸã«è¿½åŠ ã™ã‚‹å ´åˆã¯ä»¥ä¸‹ã«æ–°ãŸãªfreeã‚’è¿½åŠ ã™ã‚‹
+	// ƒGƒ“ƒeƒBƒeƒB‚ğV‚½‚É’Ç‰Á‚·‚éê‡‚ÍˆÈ‰º‚ÉV‚½‚Èfree‚ğ’Ç‰Á‚·‚é
 	if(TypeNum_[_TRIMMED_SURFACE]){
 		NFunc.Free_TrmS_1DArray(TrmS,TypeNum_[_TRIMMED_SURFACE]);
-		free(TrmS);
+//		free(TrmS);
+		if ( TrmS ) {
+			delete[]	TrmS;
+			TrmS = NULL;
+		}
+		TypeNum_[_TRIMMED_SURFACE] = 0;
 	}
 	if(TypeNum_[_CURVE_ON_PARAMETRIC_SURFACE]){
-		free(ConpS);
+//		free(ConpS);
+		if ( ConpS ) {
+			delete[]	ConpS;
+			ConpS = NULL;
+		}
+		TypeNum_[_CURVE_ON_PARAMETRIC_SURFACE] = 0;
 	}
 	if(TypeNum_[_NURBSS]){
 		NFunc.Free_NurbsS_1DArray(NurbsS,TypeNum_[_NURBSS]);
-		free(NurbsS);
+//		free(NurbsS);
+		if ( NurbsS ) {
+			delete[]	NurbsS;
+			NurbsS = NULL;
+		}
+		TypeNum_[_NURBSS] = 0;
 	}
 	if(TypeNum_[_NURBSC]){
 		NFunc.Free_NurbsC_1DArray(NurbsC,TypeNum_[_NURBSC]);
-		free(NurbsC);
+//		NFunc.Free_NurbsC_1DArray(NurbsC.get(),TypeNum_[_NURBSC]);
+//		free(NurbsC);
+		if ( NurbsC ) {
+			delete[]	NurbsC;
+			NurbsC = NULL;
+		}
+		TypeNum_[_NURBSC] = 0;
 	}
 	if(TypeNum_[_TRANSFORMATION_MATRIX]){
-		free(TMat);
+//		free(TMat);
+		if ( TMat ) {
+			delete[]	TMat;
+			TMat = NULL;
+		}
+		TypeNum_[_TRANSFORMATION_MATRIX] = 0;
 	}
 	if(TypeNum_[_LINE]){
-		free(Line);
+//		free(Line);
+		if ( Line ) {
+			delete[]	Line;
+			Line = NULL;
+		}
+		TypeNum_[_LINE] = 0;
 	}
 	if(TypeNum_[_CONIC_ARC]){
-		free(ConA);
+//		free(ConA);
+		if ( ConA ) {
+			delete[]	ConA;
+			ConA = NULL;
+		}
+		TypeNum_[_CONIC_ARC] = 0;
 	}
 	if(TypeNum_[_COMPOSITE_CURVE]){
 		NFunc.Free_CompC_1DArray(CompC,TypeNum_[_COMPOSITE_CURVE]);
-		free(CompC);
+//		free(CompC);
+		if ( CompC ) {
+			delete[]	CompC;
+			CompC = NULL;
+		}
+		TypeNum_[_COMPOSITE_CURVE] = 0;
 	}
 	if(TypeNum_[_CIRCLE_ARC]){
-		free(CirA);
+//		free(CirA);
+		if ( CirA ) {
+			delete[]	CirA;
+			CirA = NULL;
+		}
+		TypeNum_[_CIRCLE_ARC] = 0;
 	}
 	if(Mesh != NULL){
 		Mesh->clear();
+		Mesh = NULL;
 	}
 }
 
 
 // Function: RotBody
-// BODYã‚’å›è»¢ã•ã›ã‚‹
+// BODY‚ğ‰ñ“]‚³‚¹‚é
 
 // Parameters:
-//	Axis - å›è»¢è»¸
-//	deg - å›è»¢è§’åº¦
+//	Axis - ‰ñ“]²
+//	deg - ‰ñ“]Šp“x
 void BODY::RotBody(Coord Axis,double deg)
 {
-	NURBS_Func NFunc;
+//	NURBS_Func NFunc;
 
-	for(int i=0;i<TypeNum[_NURBSS];i++)			// NURBSæ›²é¢ã®å›è»¢
-		NFunc.RotNurbsS(&NurbsS[i],Axis,deg);
-	for(int i=0;i<TypeNum[_NURBSC];i++){		// NURBSæ›²ç·šã®å›è»¢
-		if(NurbsC[i].EntUseFlag == GEOMTRYELEM)	// NURBSæ›²é¢ã®ãƒ‘ãƒ©ãƒ¡ãƒˆãƒªãƒƒã‚¯è¦ç´ ã¨ã—ã¦ã®NURBSæ›²ç·šã«é–¢ã—ã¦ã¯ä½•ã‚‚ã—ãªã„
-			NFunc.RotNurbsC(&NurbsC[i],Axis,deg);
+	for(int i=0;i<TypeNum[_NURBSS];i++)	{		// NURBS‹È–Ê‚Ì‰ñ“]
+//		NFunc.RotNurbsS(&NurbsS[i],Axis,deg);
+		NurbsS[i].RotNurbsS(Axis,deg);
+	}
+	for(int i=0;i<TypeNum[_NURBSC];i++){		// NURBS‹Èü‚Ì‰ñ“]
+		if(NurbsC[i].EntUseFlag == GEOMTRYELEM) {	// NURBS‹È–Ê‚Ìƒpƒ‰ƒƒgƒŠƒbƒN—v‘f‚Æ‚µ‚Ä‚ÌNURBS‹Èü‚ÉŠÖ‚µ‚Ä‚Í‰½‚à‚µ‚È‚¢
+//			NFunc.RotNurbsC(&NurbsC[i],Axis,deg);
+			NurbsC[i].RotNurbsC(Axis,deg);
+		}
 	}
 }
 
 
 // Function: ShiftBody
-// BODYã‚’ã‚·ãƒ•ãƒˆã•ã›ã‚‹
+// BODY‚ğƒVƒtƒg‚³‚¹‚é
 //
 // Parameters:
-//	d - ç§»å‹•é‡
+//	d - ˆÚ“®—Ê
 void BODY::ShiftBody(Coord d)
 {
-	NURBS_Func NFunc;
+//	NURBS_Func NFunc;
 
-	for(int i=0;i<TypeNum[_NURBSS];i++)			// NURBSæ›²é¢ã®ã‚·ãƒ•ãƒˆ
-		NFunc.ShiftNurbsS(&NurbsS[i],d);
-	for(int i=0;i<TypeNum[_NURBSC];i++){		// NURBSæ›²ç·šã®ã‚·ãƒ•ãƒˆ
-		if(NurbsC[i].EntUseFlag == GEOMTRYELEM)	// NURBSæ›²é¢ã®ãƒ‘ãƒ©ãƒ¡ãƒˆãƒªãƒƒã‚¯è¦ç´ ã¨ã—ã¦ã®NURBSæ›²ç·šã«é–¢ã—ã¦ã¯ä½•ã‚‚ã—ãªã„
-			NFunc.ShiftNurbsC(&NurbsC[i],d);
+	// Add by K.Magara
+	ClearMinMaxCoord();
+	// --
+	for(int i=0;i<TypeNum[_NURBSS];i++)	{		// NURBS‹È–Ê‚ÌƒVƒtƒg
+//		NFunc.ShiftNurbsS(&NurbsS[i],d);
+		NurbsS[i].ShiftNurbsS(d);
+		// Add by K.Magara
+		for ( int j=0; j<NurbsS[i].K[0]; j++ ) {
+			for ( int k=0; k<NurbsS[i].K[1]; k++ ) {
+				minmaxCoord[0].SetMinCoord(NurbsS[i].cp[j][k]);
+				minmaxCoord[1].SetMaxCoord(NurbsS[i].cp[j][k]);
+			}
+		}
+		// --
+	}
+	for(int i=0;i<TypeNum[_NURBSC];i++){		// NURBS‹Èü‚ÌƒVƒtƒg
+		if(NurbsC[i].EntUseFlag == GEOMTRYELEM) {	// NURBS‹È–Ê‚Ìƒpƒ‰ƒƒgƒŠƒbƒN—v‘f‚Æ‚µ‚Ä‚ÌNURBS‹Èü‚ÉŠÖ‚µ‚Ä‚Í‰½‚à‚µ‚È‚¢
+//			NFunc.ShiftNurbsC(&NurbsC[i],d);
+			NurbsC[i].ShiftNurbsC(d);
+			// Add by K.Magara
+			for ( int j=0; j<NurbsC[i].K; j++ ) {
+				minmaxCoord[0].SetMinCoord(NurbsC[i].cp[j]);
+				minmaxCoord[1].SetMaxCoord(NurbsC[i].cp[j]);
+			}
+			// --
+		}
 	}
 }
 
 // Function: ExpandBody
-//			  BODYã®æ‹¡å¤§ç¸®å°
+//			  BODY‚ÌŠg‘åk¬
 //
 // Parameters:
-//		  r - X, Y, Zå„æ–¹å‘ãã‚Œãã‚Œã®æ‹¡å¤§(ç¸®å°)ç‡(1ã‚’åŸºæº–)
+//		  r - X, Y, ZŠe•ûŒü‚»‚ê‚¼‚ê‚ÌŠg‘å(k¬)—¦(1‚ğŠî€)
 void BODY::ExpandBody(Coord r)
 {
-	NURBS_Func NFunc;
+//	NURBS_Func NFunc;
 
-	for(int i=0;i<TypeNum[_NURBSS];i++)			// NURBSæ›²é¢ã®ã‚·ãƒ•ãƒˆ
-		NFunc.ChRatioNurbsS(&NurbsS[i],r);
-	for(int i=0;i<TypeNum[_NURBSC];i++){		// NURBSæ›²ç·šã®ã‚·ãƒ•ãƒˆ
-		if(NurbsC[i].EntUseFlag == GEOMTRYELEM)	// NURBSæ›²é¢ã®ãƒ‘ãƒ©ãƒ¡ãƒˆãƒªãƒƒã‚¯è¦ç´ ã¨ã—ã¦ã®NURBSæ›²ç·šã«é–¢ã—ã¦ã¯ä½•ã‚‚ã—ãªã„
-		NFunc.ChRatioNurbsC(&NurbsC[i],r);		// NURBSæ›²ç·šã®æ‹¡å¤§
+	for(int i=0;i<TypeNum[_NURBSS];i++) {			// NURBS‹È–Ê‚ÌƒVƒtƒg
+//		NFunc.ChRatioNurbsS(&NurbsS[i],r);
+		NurbsS[i].ChRatioNurbsS(r);
+	}
+	for(int i=0;i<TypeNum[_NURBSC];i++){		// NURBS‹Èü‚ÌƒVƒtƒg
+		if(NurbsC[i].EntUseFlag == GEOMTRYELEM) {	// NURBS‹È–Ê‚Ìƒpƒ‰ƒƒgƒŠƒbƒN—v‘f‚Æ‚µ‚Ä‚ÌNURBS‹Èü‚ÉŠÖ‚µ‚Ä‚Í‰½‚à‚µ‚È‚¢
+//			NFunc.ChRatioNurbsC(&NurbsC[i],r);		// NURBS‹Èü‚ÌŠg‘å
+			NurbsC[i].ChRatioNurbsC(r);		// NURBS‹Èü‚ÌŠg‘å
+		}
 	}
 }
 // Function: RegistBody
-//	è‡ªåˆ†ã‚’æ–°ãŸãªBODYã¨ã—ã¦ç™»éŒ²ã™ã‚‹
+//	©•ª‚ğV‚½‚ÈBODY‚Æ‚µ‚Ä“o˜^‚·‚é
 // 
 // Parameters:
-//	*BodyList - ç™»éŒ²å…ˆãƒªã‚¹ãƒˆ
-//	BodyName[] - ç™»éŒ²ã™ã‚‹BODYå
+//	*BodyList - “o˜^æƒŠƒXƒg
+//	BodyName[] - “o˜^‚·‚éBODY–¼
 void BODY::RegistBody(BODYList *BodyList,const char BodyName[])
 {
-	Mom = BodyList->add(this);				// èª­ã¿è¾¼ã‚“ã IGESãƒ‡ãƒ¼ã‚¿ã‚’BODYListã«ç™»éŒ²ã™ã‚‹
-	GuiIF.AddBodyNameToWin(BodyName);		// Bodyãƒªã‚¹ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«BODYåã‚’ç™»éŒ²
-	strcpy(Name,BodyName);					// ãƒ•ã‚¡ã‚¤ãƒ«åã‚’bodyåã¨ã—ã¦ç™»éŒ²
+	Mom = BodyList->add(this);				// “Ç‚İ‚ñ‚¾IGESƒf[ƒ^‚ğBODYList‚É“o˜^‚·‚é
+	GuiIF.AddBodyNameToWin(BodyName);		// BodyƒŠƒXƒgƒEƒBƒ“ƒhƒE‚ÉBODY–¼‚ğ“o˜^
+//	strcpy(Name,BodyName);					// ƒtƒ@ƒCƒ‹–¼‚ğbody–¼‚Æ‚µ‚Ä“o˜^
+	Name = BodyName;
 }
 
 // Function: RegistNurbsCtoBody
-//	1ã¤ã®NURBSæ›²ç·šã‚’æ–°ãŸãªBODYã¨ã—ã¦ç™»éŒ²ã™ã‚‹
+//	1‚Â‚ÌNURBS‹Èü‚ğV‚½‚ÈBODY‚Æ‚µ‚Ä“o˜^‚·‚é
 // 
 // Parameters:
-//	*BodyList - ç™»éŒ²å…ˆãƒªã‚¹ãƒˆ
-//	Nurb - ç™»éŒ²ã™ã‚‹NURBSæ›²ç·šã®å®Ÿä½“
-//  BodyName[] - ç™»éŒ²ã™ã‚‹BODYå
-void BODY::RegistNurbsCtoBody(BODYList *BodyList,NURBSC Nurb,const char BodyName[])
+//	*BodyList - “o˜^æƒŠƒXƒg
+//	Nurb - “o˜^‚·‚éNURBS‹Èü‚ÌÀ‘Ì
+//  BodyName[] - “o˜^‚·‚éBODY–¼
+//void BODY::RegistNurbsCtoBody(BODYList *BodyList,NURBSC Nurb,const char BodyName[])
+void BODY::RegistNurbsCtoBody(BODYList *BodyList,const NURBSC& Nurb,const char BodyName[])
 {
-	NurbsC = (NURBSC *)malloc(sizeof(NURBSC));
-	NurbsC[0] = Nurb;												// NURBSæ›²é¢ã®å®Ÿä½“ã‚’ä»£å…¥
-	TypeNum[_NURBSC] = 1;											// NURBSæ›²é¢ã®æ•°1ã«ã™ã‚‹
-	ChangeStatColor(this->NurbsC[0].Dstat.Color,0.2,0.2,1.0,0.5);	// é’è‰²
-	BodyList->add(this);											// ãƒªã‚¹ãƒˆã«æ–°ã—ã„BODYã‚’ç™»éŒ²
-	GuiIF.AddBodyNameToWin(BodyName);								// Bodyãƒªã‚¹ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«BODYåã‚’ç™»éŒ²
-	strcpy(Name,BodyName);											// æ–°ã—ã„BODYåã‚’ç™»éŒ²
+//	NurbsC = (NURBSC *)malloc(sizeof(NURBSC));
+	NurbsC = new NURBSC[1];
+//	NurbsC = boost::shared_array<NURBSC>( new NURBSC );
+	NurbsC[0] = Nurb;												// NURBS‹È–Ê‚ÌÀ‘Ì‚ğ‘ã“ü
+	TypeNum[_NURBSC] = 1;											// NURBS‹È–Ê‚Ì”1‚É‚·‚é
+	ChangeStatColor(this->NurbsC[0].Dstat.Color,0.2,0.2,1.0,0.5);	// ÂF
+	BodyList->add(this);											// ƒŠƒXƒg‚ÉV‚µ‚¢BODY‚ğ“o˜^
+	GuiIF.AddBodyNameToWin(BodyName);								// BodyƒŠƒXƒgƒEƒBƒ“ƒhƒE‚ÉBODY–¼‚ğ“o˜^
+//	strcpy(Name,BodyName);											// V‚µ‚¢BODY–¼‚ğ“o˜^
+	Name = BodyName;											// V‚µ‚¢BODY–¼‚ğ“o˜^
 }
 
 // Function: RegistNurbsCtoBodyN
-// Nå€‹ã®NURBSæ›²ç·šã‚’æ–°ãŸãªBODYã¨ã—ã¦ç™»éŒ²ã™ã‚‹
+// NŒÂ‚ÌNURBS‹Èü‚ğV‚½‚ÈBODY‚Æ‚µ‚Ä“o˜^‚·‚é
 // 
 // Parameters:
-//	*BodyList - ç™»éŒ²å…ˆãƒªã‚¹ãƒˆ
-//	Nurb[] - ç™»éŒ²ã™ã‚‹NURBSæ›²ç·šã®å®Ÿä½“
-//  BodyName[] - ç™»éŒ²ã™ã‚‹BODYå
-//	N - ç™»éŒ²ã™ã‚‹NURBSæ›²ç·šã®æ•°
+//	*BodyList - “o˜^æƒŠƒXƒg
+//	Nurb[] - “o˜^‚·‚éNURBS‹Èü‚ÌÀ‘Ì
+//  BodyName[] - “o˜^‚·‚éBODY–¼
+//	N - “o˜^‚·‚éNURBS‹Èü‚Ì”
 void BODY::RegistNurbsCtoBodyN(BODYList *BodyList,NURBSC Nurb[],const char BodyName[],int N)
 {
-	NurbsC = (NURBSC *)malloc(sizeof(NURBSC)*N);
+//	NurbsC = (NURBSC *)malloc(sizeof(NURBSC)*N);
+	NurbsC = new NURBSC[N];
+//	NurbsC = boost::shared_array<NURBSC>( new NURBSC[N] );
 	for(int i=0;i<N;i++){
-		NurbsC[i] = Nurb[i];										// NURBSæ›²é¢ã®å®Ÿä½“ã‚’ä»£å…¥
-		TypeNum[_NURBSC] = N;										// NURBSæ›²é¢ã®æ•°1ã«ã™ã‚‹
-		ChangeStatColor(this->NurbsC[i].Dstat.Color,0.2,0.2,1.0,0.5);	// é’è‰²
+		NurbsC[i] = Nurb[i];										// NURBS‹È–Ê‚ÌÀ‘Ì‚ğ‘ã“ü
+		TypeNum[_NURBSC] = N;										// NURBS‹È–Ê‚Ì”1‚É‚·‚é
+		ChangeStatColor(this->NurbsC[i].Dstat.Color,0.2,0.2,1.0,0.5);	// ÂF
 	}
-	BodyList->add((void *)this);									// ãƒªã‚¹ãƒˆã«æ–°ã—ã„BODYã‚’ç™»éŒ²
-	GuiIF.AddBodyNameToWin(BodyName);									// Bodyãƒªã‚¹ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«BODYåã‚’ç™»éŒ²
-	strcpy(Name,BodyName);											// æ–°ã—ã„BODYåã‚’ç™»éŒ²
+	BodyList->add((void *)this);									// ƒŠƒXƒg‚ÉV‚µ‚¢BODY‚ğ“o˜^
+	GuiIF.AddBodyNameToWin(BodyName);									// BodyƒŠƒXƒgƒEƒBƒ“ƒhƒE‚ÉBODY–¼‚ğ“o˜^
+//	strcpy(Name,BodyName);											// V‚µ‚¢BODY–¼‚ğ“o˜^
+	Name = BodyName;											// V‚µ‚¢BODY–¼‚ğ“o˜^
 }
 
 // Function: RegistNurbsStoBody
-// 1å€‹ã®NURBSæ›²é¢ã‚’æ–°ãŸãªBODYã¨ã—ã¦ç™»éŒ²ã™ã‚‹
+// 1ŒÂ‚ÌNURBS‹È–Ê‚ğV‚½‚ÈBODY‚Æ‚µ‚Ä“o˜^‚·‚é
 //
 // Parameters:
-//	*BodyList - ç™»éŒ²å…ˆãƒªã‚¹ãƒˆ
-//	Nurb - ç™»éŒ²ã™ã‚‹NURBSæ›²é¢ã®å®Ÿä½“
-//  BodyName[] - ç™»éŒ²ã™ã‚‹BODYå
+//	*BodyList - “o˜^æƒŠƒXƒg
+//	Nurb - “o˜^‚·‚éNURBS‹È–Ê‚ÌÀ‘Ì
+//  BodyName[] - “o˜^‚·‚éBODY–¼
 void BODY::RegistNurbsStoBody(BODYList *BodyList,NURBSS Nurb,const char BodyName[])
 {
-	NurbsS = (NURBSS *)malloc(sizeof(NURBSS));
-	NurbsS[0] = Nurb;												// NURBSæ›²é¢ã®å®Ÿä½“ã‚’ä»£å…¥
-	NurbsS[0].TrmdSurfFlag = KOD_FALSE;								// ãƒˆãƒªãƒ ã®ãªã„å˜ç´”ãªNURBSæ›²é¢ã§ã‚ã‚‹ã“ã¨ã‚’æ˜ç¤º
-	TypeNum[_NURBSS] = 1;											// NURBSæ›²é¢ã®æ•°1ã«ã™ã‚‹
-	ChangeStatColor(this->NurbsS[0].Dstat.Color,0.2,0.2,1.0,0.5);	// é’è‰²
-	BodyList->add((void *)this);									// ãƒªã‚¹ãƒˆã«æ–°ã—ã„BODYã‚’ç™»éŒ²
-	GuiIF.AddBodyNameToWin(BodyName);									// Bodyãƒªã‚¹ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«BODYåã‚’ç™»éŒ²
-	strcpy(Name,BodyName);											// æ–°ã—ã„BODYåã‚’ç™»éŒ²
+//	NurbsS = (NURBSS *)malloc(sizeof(NURBSS));
+	NurbsS = new NURBSS[1];
+	NurbsS[0] = Nurb;												// NURBS‹È–Ê‚ÌÀ‘Ì‚ğ‘ã“ü
+	NurbsS[0].TrmdSurfFlag = KOD_FALSE;								// ƒgƒŠƒ€‚Ì‚È‚¢’Pƒ‚ÈNURBS‹È–Ê‚Å‚ ‚é‚±‚Æ‚ğ–¾¦
+	TypeNum[_NURBSS] = 1;											// NURBS‹È–Ê‚Ì”1‚É‚·‚é
+	ChangeStatColor(this->NurbsS[0].Dstat.Color,0.2,0.2,1.0,0.5);	// ÂF
+	BodyList->add((void *)this);									// ƒŠƒXƒg‚ÉV‚µ‚¢BODY‚ğ“o˜^
+	GuiIF.AddBodyNameToWin(BodyName);									// BodyƒŠƒXƒgƒEƒBƒ“ƒhƒE‚ÉBODY–¼‚ğ“o˜^
+//	strcpy(Name,BodyName);											// V‚µ‚¢BODY–¼‚ğ“o˜^
+	Name = BodyName;											// V‚µ‚¢BODY–¼‚ğ“o˜^
 }
 
 // Function: RegistNurbsStoBodyN
-// Nå€‹ã®NURBSæ›²é¢ã‚’æ–°ãŸãªBODYã¨ã—ã¦ç™»éŒ²ã™ã‚‹
+// NŒÂ‚ÌNURBS‹È–Ê‚ğV‚½‚ÈBODY‚Æ‚µ‚Ä“o˜^‚·‚é
 // 
 // Parameters:
-//	*BodyList - ç™»éŒ²å…ˆãƒªã‚¹ãƒˆ
-//	Nurb[] - ç™»éŒ²ã™ã‚‹NURBSæ›²é¢ã®å®Ÿä½“
-//  BodyName[] - ç™»éŒ²ã™ã‚‹BODYå
-//	N - ç™»éŒ²ã™ã‚‹NURBSæ›²é¢ã®æ•°
+//	*BodyList - “o˜^æƒŠƒXƒg
+//	Nurb[] - “o˜^‚·‚éNURBS‹È–Ê‚ÌÀ‘Ì
+//  BodyName[] - “o˜^‚·‚éBODY–¼
+//	N - “o˜^‚·‚éNURBS‹È–Ê‚Ì”
 void BODY::RegistNurbsStoBodyN(BODYList *BodyList,NURBSS Nurb[],const char BodyName[],int N)
 {
-	NurbsS = (NURBSS *)malloc(sizeof(NURBSS)*N);
+//	NurbsS = (NURBSS *)malloc(sizeof(NURBSS)*N);
+	NurbsS = new NURBSS[N];
 	for(int i=0;i<N;i++){
-		NurbsS[i] = Nurb[i];										// NURBSæ›²é¢ã®å®Ÿä½“ã‚’ä»£å…¥
-		NurbsS[i].TrmdSurfFlag = KOD_FALSE;							// ãƒˆãƒªãƒ ã®ãªã„å˜ç´”ãªNURBSæ›²é¢ã§ã‚ã‚‹ã“ã¨ã‚’æ˜ç¤º
-		TypeNum[_NURBSS] = N;										// NURBSæ›²é¢ã®æ•°1ã«ã™ã‚‹
-		ChangeStatColor(this->NurbsS[i].Dstat.Color,0.2,0.2,1.0,0.5);	// é’è‰²
+		NurbsS[i] = Nurb[i];										// NURBS‹È–Ê‚ÌÀ‘Ì‚ğ‘ã“ü
+		NurbsS[i].TrmdSurfFlag = KOD_FALSE;							// ƒgƒŠƒ€‚Ì‚È‚¢’Pƒ‚ÈNURBS‹È–Ê‚Å‚ ‚é‚±‚Æ‚ğ–¾¦
+		TypeNum[_NURBSS] = N;										// NURBS‹È–Ê‚Ì”1‚É‚·‚é
+		ChangeStatColor(this->NurbsS[i].Dstat.Color,0.2,0.2,1.0,0.5);	// ÂF
 	}
-	BodyList->add((void *)this);									// ãƒªã‚¹ãƒˆã«æ–°ã—ã„BODYã‚’ç™»éŒ²
-	GuiIF.AddBodyNameToWin(BodyName);									// Bodyãƒªã‚¹ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«BODYåã‚’ç™»éŒ²
-	strcpy(Name,BodyName);											// æ–°ã—ã„BODYåã‚’ç™»éŒ²
+	BodyList->add((void *)this);									// ƒŠƒXƒg‚ÉV‚µ‚¢BODY‚ğ“o˜^
+	GuiIF.AddBodyNameToWin(BodyName);									// BodyƒŠƒXƒgƒEƒBƒ“ƒhƒE‚ÉBODY–¼‚ğ“o˜^
+//	strcpy(Name,BodyName);											// V‚µ‚¢BODY–¼‚ğ“o˜^
+	Name = BodyName;											// V‚µ‚¢BODY–¼‚ğ“o˜^
 }
 
 // Function: ChangeStatColor
-// ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã®ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã§å®šç¾©ã•ã‚Œã¦ã„ã‚‹è‰²ã‚’å¤‰æ›´
+// ƒGƒ“ƒeƒBƒeƒB‚ÌƒXƒe[ƒ^ƒX‚Å’è‹`‚³‚ê‚Ä‚¢‚éF‚ğ•ÏX
 //
 // Parameters:
-// *col - è‰²ã‚’å¤‰æ›´ã—ãŸã„ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã®ãƒ¡ãƒ³ãƒå¤‰æ•°Dstatã®ãƒ¡ãƒ³ãƒå¤‰æ•°Color[4]ã¸ã®ãƒã‚¤ãƒ³ã‚¿
-// r,g,b,t - è‰²å±æ€§(0.0 - 1.0)
+// *col - F‚ğ•ÏX‚µ‚½‚¢ƒGƒ“ƒeƒBƒeƒB‚Ìƒƒ“ƒo•Ï”Dstat‚Ìƒƒ“ƒo•Ï”Color[4]‚Ö‚Ìƒ|ƒCƒ“ƒ^
+// r,g,b,t - F‘®«(0.0 - 1.0)
 void BODY::ChangeStatColor(float *col,float r,float g,float b,float t)
 {
 	col[0] = r;
@@ -357,10 +483,10 @@ void BODY::ChangeStatColor(float *col,float r,float g,float b,float t)
 }
 
 // Function: InitCurveColor
-// ç·šã®è‰²ã®åˆæœŸå€¤ã‚’ä¸ãˆã‚‹
+// ü‚ÌF‚Ì‰Šú’l‚ğ—^‚¦‚é
 //
 // Parameters:
-// *col - è‰²ã‚’å¤‰æ›´ã—ãŸã„ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã®ãƒ¡ãƒ³ãƒå¤‰æ•°Dstatã®ãƒ¡ãƒ³ãƒå¤‰æ•°Color[4]ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+// *col - F‚ğ•ÏX‚µ‚½‚¢ƒGƒ“ƒeƒBƒeƒB‚Ìƒƒ“ƒo•Ï”Dstat‚Ìƒƒ“ƒo•Ï”Color[4]‚Ö‚Ìƒ|ƒCƒ“ƒ^
 void BODY::InitCurveColor(float *col)
 {
 	col[0] = col[1] = col[2] = 1.0;
@@ -368,10 +494,10 @@ void BODY::InitCurveColor(float *col)
 }
 
 // Function: InitSurfaceColor
-// é¢ã®è‰²ã®åˆæœŸå€¤ã‚’ä¸ãˆã‚‹
+// –Ê‚ÌF‚Ì‰Šú’l‚ğ—^‚¦‚é
 //
 // Parameters:
-// *col - è‰²ã‚’å¤‰æ›´ã—ãŸã„ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã®ãƒ¡ãƒ³ãƒå¤‰æ•°Dstatã®ãƒ¡ãƒ³ãƒå¤‰æ•°Color[4]ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+// *col - F‚ğ•ÏX‚µ‚½‚¢ƒGƒ“ƒeƒBƒeƒB‚Ìƒƒ“ƒo•Ï”Dstat‚Ìƒƒ“ƒo•Ï”Color[4]‚Ö‚Ìƒ|ƒCƒ“ƒ^
 void BODY::InitSurfaceColor(float *col)
 {
 	col[0] = col[1] = col[2] = 0.2;
@@ -379,15 +505,18 @@ void BODY::InitSurfaceColor(float *col)
 }
 
 // Function: NewCirA
-// å††ãƒ»å††å¼§CIRAã‚’æŒ‡å®šã—ãŸæ•°ã ã‘ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿ã—ï¼ŒåˆæœŸåŒ–ã™ã‚‹
+// ‰~E‰~ŒÊCIRA‚ğw’è‚µ‚½”‚¾‚¯ƒƒ‚ƒŠ[Šm•Û‚µC‰Šú‰»‚·‚é
 // 
 // Parameters:
-// N - ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿ã™ã‚‹CIRAã®æ•°
-CIRA *BODY::NewCirA(int N)
+// N - ƒƒ‚ƒŠ[Šm•Û‚·‚éCIRA‚Ì”
+CIRA* BODY::NewCirA(int N)
 {
-	if((CirA = (CIRA *)malloc(sizeof(CIRA)*N/*TypeNum[_CIRCLE_ARC]*/)) == NULL)
+//	if((CirA = (CIRA *)malloc(sizeof(CIRA)*N/*TypeNum[_CIRCLE_ARC]*/)) == NULL)
+	CirA = new CIRA[N];
+	if( !CirA )
 		return NULL;
 
+/*	-- ‰Šú‰»‚ÍƒRƒ“ƒXƒgƒ‰ƒNƒ^‚É‚Ä
 	for(int i=0;i<N;i++){
 		CirA[i].zt = 0;
 		CirA[i].cp[0] = CirA[i].cp[1] = CirA[i].cp[3] = SetCoord(0,0,0);
@@ -398,21 +527,25 @@ CIRA *BODY::NewCirA(int N)
 		CirA[i].pD = 0;
 		CirA[i].Dstat.Color[0] = CirA[i].Dstat.Color[1] = CirA[i].Dstat.Color[2] = CirA[i].Dstat.Color[3] = 0;
 	}
+*/
 	TypeNum[_CIRCLE_ARC] = N;
 
 	return CirA;
 }
 
 // Function: NewCompC
-// è¤‡åˆæ›²ç·šCOMPCã‚’æŒ‡å®šã—ãŸæ•°ã ã‘ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿ã—ï¼ŒåˆæœŸåŒ–ã™ã‚‹
+// •¡‡‹ÈüCOMPC‚ğw’è‚µ‚½”‚¾‚¯ƒƒ‚ƒŠ[Šm•Û‚µC‰Šú‰»‚·‚é
 // 
 // Parameters:
-// N - ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿ã™ã‚‹COMPCã®æ•°
-COMPC *BODY::NewCompC(int N)
+// N - ƒƒ‚ƒŠ[Šm•Û‚·‚éCOMPC‚Ì”
+COMPC* BODY::NewCompC(int N)
 {
-	if((CompC = (COMPC *)malloc(sizeof(COMPC)*N/*TypeNum[_COMPOSITE_CURVE]*/)) == NULL)
+//	if((CompC = (COMPC *)malloc(sizeof(COMPC)*N/*TypeNum[_COMPOSITE_CURVE]*/)) == NULL)
+	CompC = new COMPC[N];
+	if ( !CompC )
 		return NULL;
 
+/*	-- ‰Šú‰»‚ÍƒRƒ“ƒXƒgƒ‰ƒNƒ^‚É‚Ä
 	for(int i=0;i<N;i++){
 		CompC[i].DegeFlag = 0;
 		CompC[i].DEType = NULL;
@@ -420,21 +553,25 @@ COMPC *BODY::NewCompC(int N)
 		CompC[i].pD = 0;
 		CompC[i].pDE = NULL;
 	}
+*/
 	TypeNum[_COMPOSITE_CURVE] = N;
 
 	return CompC;
 }
 
 // Function: NewConA
-// å††éŒæ›²ç·šCONAã‚’æŒ‡å®šã—ãŸæ•°ã ã‘ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿ã—ï¼ŒåˆæœŸåŒ–ã™ã‚‹
+// ‰~‹ÈüCONA‚ğw’è‚µ‚½”‚¾‚¯ƒƒ‚ƒŠ[Šm•Û‚µC‰Šú‰»‚·‚é
 // 
 // Parameters:
-// N - ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿ã™ã‚‹CONAã®æ•°
-CONA *BODY::NewConA(int N)
+// N - ƒƒ‚ƒŠ[Šm•Û‚·‚éCONA‚Ì”
+CONA* BODY::NewConA(int N)
 {
-	if((ConA = (CONA *)malloc(sizeof(CONA)*N/*TypeNum[_CONIC_ARC]*/)) == NULL)
+//	if((ConA = (CONA *)malloc(sizeof(CONA)*N/*TypeNum[_CONIC_ARC]*/)) == NULL)
+	ConA = new CONA[N];
+	if ( !ConA )
 		return NULL;
 
+/*	-- ‰Šú‰»‚ÍƒRƒ“ƒXƒgƒ‰ƒNƒ^‚É‚Ä
 	for(int i=0;i<N;i++){
 		ConA[i].cp[0] = ConA[i].cp[1] = SetCoord(0,0,0);
 		ConA[i].Dstat.Color[0] = ConA[i].Dstat.Color[1] = ConA[i].Dstat.Color[2] = ConA[i].Dstat.Color[3] = 0;
@@ -442,63 +579,76 @@ CONA *BODY::NewConA(int N)
 		InitVector(ConA[i].prop,6);
 		ConA[i].zt = 0;
 	}
+*/
 	TypeNum[_CONIC_ARC] = N;
 
 	return ConA;
 }
 
 // Function: NewLine
-// ç·šåˆ†LINE_ã‚’æŒ‡å®šã—ãŸæ•°ã ã‘ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿ã—ï¼ŒåˆæœŸåŒ–ã™ã‚‹
+// ü•ªLINE_‚ğw’è‚µ‚½”‚¾‚¯ƒƒ‚ƒŠ[Šm•Û‚µC‰Šú‰»‚·‚é
 //
 // Parameters:
-// N - ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿ã™ã‚‹LINE_ã®æ•°
-LINE_ *BODY::NewLine(int N)
+// N - ƒƒ‚ƒŠ[Šm•Û‚·‚éLINE_‚Ì”
+LINE_* BODY::NewLine(int N)
 {
-	if((Line = (LINE_ *)malloc(sizeof(LINE_)*N/*TypeNum[_LINE]*/)) == NULL)
+//	if((Line = (LINE_ *)malloc(sizeof(LINE_)*N/*TypeNum[_LINE]*/)) == NULL)
+	Line = new LINE_[N];
+	if ( !Line )
 		return NULL;
 
+/*	-- ‰Šú‰»‚ÍƒRƒ“ƒXƒgƒ‰ƒNƒ^‚É‚Ä
 	for(int i=0;i<N;i++){
 		Line[i].cp[0] = Line[i].cp[1] = SetCoord(0,0,0);
 		Line[i].Dstat.Color[0] = Line[i].Dstat.Color[1] = Line[i].Dstat.Color[2] = Line[i].Dstat.Color[3] = 0;
 		Line[i].EntUseFlag = 0;
 		Line[i].pD = 0;
 	}
+*/
 	TypeNum[_LINE] = N;
 
 	return Line;
 }
 
 // Function: NewTMat
-// å¤‰æ›ãƒãƒˆãƒªãƒƒã‚¯ã‚¹TMATã‚’æŒ‡å®šã—ãŸæ•°ã ã‘ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿ã—ï¼ŒåˆæœŸåŒ–ã™ã‚‹
+// •ÏŠ·ƒ}ƒgƒŠƒbƒNƒXTMAT‚ğw’è‚µ‚½”‚¾‚¯ƒƒ‚ƒŠ[Šm•Û‚µC‰Šú‰»‚·‚é
 //
 // Parameters:
-// N - ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿ã™ã‚‹TMATã®æ•°
-TMAT *BODY::NewTMat(int N)
+// N - ƒƒ‚ƒŠ[Šm•Û‚·‚éTMAT‚Ì”
+TMAT* BODY::NewTMat(int N)
 {
-	if((TMat = (TMAT *)malloc(sizeof(TMAT)*N/*TypeNum[_TRANSFORMATION_MATRIX]*/)) == NULL)
+//	if((TMat = (TMAT *)malloc(sizeof(TMAT)*N/*TypeNum[_TRANSFORMATION_MATRIX]*/)) == NULL)
+	TMat = new TMAT[N];
+	if ( !TMat )
 		return NULL;
 
+/*	-- ‰Šú‰»‚ÍƒRƒ“ƒXƒgƒ‰ƒNƒ^‚É‚Ä
 	for(int i=0;i<N;i++){
 		for(int j=0;j<3;j++)
 			InitVector(TMat[i].R[j],3);
 		InitVector(TMat[i].T,3);
 		TMat[i].pD = 0;
 	}
+*/
 	TypeNum[_TRANSFORMATION_MATRIX] = N;
 
 	return TMat;
 }
 
 // Function: NewNurbsC
-// NURBSæ›²ç·šNURBSCã‚’æŒ‡å®šã—ãŸæ•°ã ã‘ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿ã—ï¼ŒåˆæœŸåŒ–ã™ã‚‹
+// NURBS‹ÈüNURBSC‚ğw’è‚µ‚½”‚¾‚¯ƒƒ‚ƒŠ[Šm•Û‚µC‰Šú‰»‚·‚é
 //
 // Parameters:
-// N - ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿ã™ã‚‹NURBSCã®æ•°
-NURBSC *BODY::NewNurbsC(int N)
+// N - ƒƒ‚ƒŠ[Šm•Û‚·‚éNURBSC‚Ì”
+NURBSC* BODY::NewNurbsC(int N)
 {
-	if((NurbsC = (NURBSC *)malloc(sizeof(NURBSC)*N/*TypeNum[_NURBSC]*/)) == NULL)
+//	if((NurbsC = (NURBSC *)malloc(sizeof(NURBSC)*N/*TypeNum[_NURBSC]*/)) == NULL)
+	NurbsC = new NURBSC[N];
+//	NurbsC = boost::shared_array<NURBSC>( new NURBSC[N] );
+	if ( !NurbsC )
 		return NULL;
 
+/*	-- ‰Šú‰»‚ÍƒRƒ“ƒXƒgƒ‰ƒNƒ^‚É‚Ä
 	for(int i=0;i<N;i++){
 		NurbsC[i].cp = NULL;
 		NurbsC[i].Dstat.Color[0] = NurbsC[i].Dstat.Color[1] = NurbsC[i].Dstat.Color[2] = NurbsC[i].Dstat.Color[3] = 0;
@@ -515,21 +665,26 @@ NURBSC *BODY::NewNurbsC(int N)
 		NurbsC[i].V[0] = NurbsC[i].V[1] = 0;
 		NurbsC[i].W = NULL;
 	}
+*/
 	TypeNum[_NURBSC] = N;
 
 	return NurbsC;
+//	return NurbsC.get();
 }
 
 // Function: NewNurbsS
-// NURBSæ›²ç·šNURBSSã‚’æŒ‡å®šã—ãŸæ•°ã ã‘ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿ã—ï¼ŒåˆæœŸåŒ–ã™ã‚‹
+// NURBS‹ÈüNURBSS‚ğw’è‚µ‚½”‚¾‚¯ƒƒ‚ƒŠ[Šm•Û‚µC‰Šú‰»‚·‚é
 //
 // Parameters:
-// N - ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿ã™ã‚‹NURBSSã®æ•°
-NURBSS *BODY::NewNurbsS(int N)
+// N - ƒƒ‚ƒŠ[Šm•Û‚·‚éNURBSS‚Ì”
+NURBSS* BODY::NewNurbsS(int N)
 {
-	if((NurbsS = (NURBSS *)malloc(sizeof(NURBSS)*N/*TypeNum[_NURBSS]*/)) == NULL)
+//	if((NurbsS = (NURBSS *)malloc(sizeof(NURBSS)*N/*TypeNum[_NURBSS]*/)) == NULL)
+	NurbsS = new NURBSS[N];
+	if ( !NurbsS )
 		return NULL;
 
+/*	-- ‰Šú‰»‚ÍƒRƒ“ƒXƒgƒ‰ƒNƒ^‚É‚Ä
 	for(int i=0;i<N;i++){
 		NurbsS[i].cp = NULL;
 		NurbsS[i].Dstat.Color[0] = NurbsS[i].Dstat.Color[1] = NurbsS[i].Dstat.Color[2] = NurbsS[i].Dstat.Color[3] = 0;
@@ -545,21 +700,25 @@ NURBSS *BODY::NewNurbsS(int N)
 		NurbsS[i].V[0] = NurbsS[i].V[1] = 0;
 		NurbsS[i].W = NULL;
 	}
+*/
 	TypeNum[_NURBSS] = N;
 
 	return NurbsS;
 }
 
 // Function: NewConpS
-// é¢ä¸Šç·šCONPSã‚’æŒ‡å®šã—ãŸæ•°ã ã‘ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿ã—ï¼ŒåˆæœŸåŒ–ã™ã‚‹
+// –ÊãüCONPS‚ğw’è‚µ‚½”‚¾‚¯ƒƒ‚ƒŠ[Šm•Û‚µC‰Šú‰»‚·‚é
 //
 // Parameters:
-// N - ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿ã™ã‚‹CONPSã®æ•°
-CONPS *BODY::NewConpS(int N)
+// N - ƒƒ‚ƒŠ[Šm•Û‚·‚éCONPS‚Ì”
+CONPS* BODY::NewConpS(int N)
 {
-	if((ConpS = (CONPS *)malloc(sizeof(CONPS)*N/*TypeNum[_CURVE_ON_PARAMETRIC_SURFACE]*/)) == NULL)
+//	if((ConpS = (CONPS *)malloc(sizeof(CONPS)*N/*TypeNum[_CURVE_ON_PARAMETRIC_SURFACE]*/)) == NULL)
+	ConpS = new CONPS[N];
+	if ( !ConpS )
 		return NULL;
 
+/*	-- ‰Šú‰»‚ÍƒRƒ“ƒXƒgƒ‰ƒNƒ^‚É‚Ä
 	for(int i=0;i<N;i++){
 		ConpS[i].BType = 0;
 		ConpS[i].crtn = 0;
@@ -571,20 +730,24 @@ CONPS *BODY::NewConpS(int N)
 		ConpS[i].pS = NULL;
 		ConpS[i].SType = 0;
 	}
+*/
 	TypeNum[_CURVE_ON_PARAMETRIC_SURFACE] = N;
 	return ConpS;
 }
 
 // Function: NewTrmS
-// ãƒˆãƒªãƒ é¢TRMSã‚’æŒ‡å®šã—ãŸæ•°ã ã‘ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿ã—ï¼ŒåˆæœŸåŒ–ã™ã‚‹
+// ƒgƒŠƒ€–ÊTRMS‚ğw’è‚µ‚½”‚¾‚¯ƒƒ‚ƒŠ[Šm•Û‚µC‰Šú‰»‚·‚é
 //
 // Parameters:
-// N - ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿ã™ã‚‹TRMSã®æ•°
-TRMS *BODY::NewTrmS(int N)
+// N - ƒƒ‚ƒŠ[Šm•Û‚·‚éTRMS‚Ì”
+TRMS* BODY::NewTrmS(int N)
 {
-	if((TrmS = (TRMS *)malloc(sizeof(TRMS)*N/*TypeNum[_TRIMMED_SURFACE]*/)) == NULL)
+//	if((TrmS = (TRMS *)malloc(sizeof(TRMS)*N/*TypeNum[_TRIMMED_SURFACE]*/)) == NULL)
+	TrmS = new TRMS[N];
+	if ( !TrmS )
 		return NULL;
 
+/*	-- ‰Šú‰»‚ÍƒRƒ“ƒXƒgƒ‰ƒNƒ^‚É‚Ä
 	for(int i=0;i<N;i++){
 		TrmS[i].n1 = 0;
 		TrmS[i].n2 = 0;
@@ -593,96 +756,112 @@ TRMS *BODY::NewTrmS(int N)
 		TrmS[i].pTO = NULL;
 		TrmS[i].pts = NULL;
 	}
+*/
 	TypeNum[_TRIMMED_SURFACE] = N;
 
 	return TrmS;
 }
 
 // Function: GetNurbsCFromLine
-// ç›´ç·šã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚’NURBSæ›²ç·šã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã¸ã¨å¤‰æ›ã™ã‚‹
+// ’¼üƒGƒ“ƒeƒBƒeƒB‚ğNURBS‹ÈüƒGƒ“ƒeƒBƒeƒB‚Ö‚Æ•ÏŠ·‚·‚é
 //
 // Parameters:
-// NurbsCount - NURBSæ›²ç·šã¸ã®å¤‰æ›å¾Œã®NURBSCã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ç•ªå·
-// LineCount - å¤‰æ›ã—ãŸã„LINEã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ç•ªå·
+// NurbsCount - NURBS‹Èü‚Ö‚Ì•ÏŠ·Œã‚ÌNURBSC‚ÌƒCƒ“ƒfƒbƒNƒX”Ô†
+// LineCount - •ÏŠ·‚µ‚½‚¢LINE‚ÌƒCƒ“ƒfƒbƒNƒX”Ô†
 int BODY::GetNurbsCFromLine(int NurbsCount,int LineCount)	
 {
 	int i=0;
 	int KOD_ERRflag=0;
 
-	NurbsC[NurbsCount].K = 2;		// ç·å’Œè¨˜å·ã®ä¸Šå´æ·»å­—ï¼ˆã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆ-1ï¼‰ã®å€¤
-	NurbsC[NurbsCount].M = 2;		// åŸºåº•é–¢æ•°ã®éšæ•°
-	NurbsC[NurbsCount].N = NurbsC[NurbsCount].K + NurbsC[NurbsCount].M;	// ãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«ã®æ•°
+	NurbsC[NurbsCount].K = 2;		// ‘˜a‹L†‚Ìã‘¤“YšiƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒg-1j‚Ì’l
+	NurbsC[NurbsCount].M = 2;		// Šî’êŠÖ”‚ÌŠK”
+	NurbsC[NurbsCount].N = NurbsC[NurbsCount].K + NurbsC[NurbsCount].M;	// ƒmƒbƒgƒxƒNƒgƒ‹‚Ì”
 
-	// ãƒ–ãƒ¼ãƒªã‚¢ãƒ³å‹ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£4ã¤
+	// ƒu[ƒŠƒAƒ“Œ^ƒvƒƒpƒeƒB4‚Â
 	NurbsC[NurbsCount].prop[0] = 0;
 	NurbsC[NurbsCount].prop[1] = 0;
 	NurbsC[NurbsCount].prop[2] = 1;
 	NurbsC[NurbsCount].prop[3] = 0;
 
-	// ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿
+	// ƒƒ‚ƒŠ[Šm•Û
 	KOD_ERRflag++;	// 1
-	if((NurbsC[NurbsCount].T = (double *)malloc(sizeof(double)*NurbsC[NurbsCount].N)) == NULL){
+//	if((NurbsC[NurbsCount].T = (double *)malloc(sizeof(double)*NurbsC[NurbsCount].N)) == NULL){
+	NurbsC[NurbsCount].T = new double[NurbsC[NurbsCount].N];
+//	NurbsC[NurbsCount].T = boost::shared_array<double>( new double[NurbsC[NurbsCount].N] );
+	if ( !NurbsC[NurbsCount].T ) {
 		goto EXIT;
 	}
 	KOD_ERRflag++;	// 2
-	if((NurbsC[NurbsCount].W = (double *)malloc(sizeof(double)*NurbsC[NurbsCount].K)) == NULL){
+//	if((NurbsC[NurbsCount].W = (double *)malloc(sizeof(double)*NurbsC[NurbsCount].K)) == NULL){
+	NurbsC[NurbsCount].W = new double[NurbsC[NurbsCount].K];
+//	NurbsC[NurbsCount].W = boost::shared_array<double>( new double[NurbsC[NurbsCount].K] );
+	if ( !NurbsC[NurbsCount].W ) {
 		goto EXIT;
 	}
 	KOD_ERRflag++;	// 3
-	if((NurbsC[NurbsCount].cp = (Coord *)malloc(sizeof(Coord)*NurbsC[NurbsCount].K)) == NULL){
+//	if((NurbsC[NurbsCount].cp = (Coord *)malloc(sizeof(Coord)*NurbsC[NurbsCount].K)) == NULL){
+	NurbsC[NurbsCount].cp = new Coord[NurbsC[NurbsCount].K];
+//	NurbsC[NurbsCount].cp = boost::shared_array<Coord>( new Coord[NurbsC[NurbsCount].K] );
+	if ( !NurbsC[NurbsCount].cp ) {
 		goto EXIT;
 	}
 
-	// ãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«ã®å€¤	
+	// ƒmƒbƒgƒxƒNƒgƒ‹‚Ì’l	
 	NurbsC[NurbsCount].T[0] = 0.;
 	NurbsC[NurbsCount].T[1] = 0.;
 	NurbsC[NurbsCount].T[2] = 1.;
 	NurbsC[NurbsCount].T[3] = 1.;
 	
-	for(i=0;i<NurbsC[NurbsCount].K;i++){				// Weightã®å€¤
+	for(i=0;i<NurbsC[NurbsCount].K;i++){				// Weight‚Ì’l
 		NurbsC[NurbsCount].W[i] = 1.;
 	}
-	for(i=0;i<NurbsC[NurbsCount].K;i++){				// ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆã®åº§æ¨™å€¤
+	for(i=0;i<NurbsC[NurbsCount].K;i++){				// ƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒg‚ÌÀ•W’l
 		NurbsC[NurbsCount].cp[i].x = Line[LineCount].cp[i].x;
 		NurbsC[NurbsCount].cp[i].y = Line[LineCount].cp[i].y;
 		NurbsC[NurbsCount].cp[i].z = Line[LineCount].cp[i].z;
 	}
 	
-	// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤
+	// ƒpƒ‰ƒ[ƒ^‚Ì’l
 	NurbsC[NurbsCount].V[0] = 0.;
 	NurbsC[NurbsCount].V[1] = 1.;
 
-	NurbsC[NurbsCount].EntUseFlag = Line[LineCount].EntUseFlag;	// ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªéƒ¨ã®æƒ…å ±"Entity Use Flag"ã‚’å¾—ã‚‹(NURBSC)
-	NurbsC[NurbsCount].OriginEnt = LINE;						// å…ƒã¯ç·šåˆ†è¦ç´ ã§ã‚ã£ãŸã“ã¨ã‚’è¨˜æ†¶
-	NurbsC[NurbsCount].pOriginEnt = &Line[LineCount];			// å…ƒã¯ç·šåˆ†è¦ç´ ã§ã‚ã£ãŸã“ã¨ã‚’è¨˜æ†¶
+	NurbsC[NurbsCount].EntUseFlag = Line[LineCount].EntUseFlag;	// ƒfƒBƒŒƒNƒgƒŠ•”‚Ìî•ñ"Entity Use Flag"‚ğ“¾‚é(NURBSC)
+	NurbsC[NurbsCount].OriginEnt = LINE;						// Œ³‚Íü•ª—v‘f‚Å‚ ‚Á‚½‚±‚Æ‚ğ‹L‰¯
+	NurbsC[NurbsCount].pOriginEnt = &Line[LineCount];			// Œ³‚Íü•ª—v‘f‚Å‚ ‚Á‚½‚±‚Æ‚ğ‹L‰¯
 	for(int i=0;i<4;i++)
 		NurbsC[NurbsCount].Dstat.Color[i] = Line[LineCount].Dstat.Color[i];
 
 	return KOD_TRUE;
 
-	// ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿ã«å¤±æ•—ã—ãŸå ´åˆã¯ä»Šã¾ã§ç¢ºä¿ã—ãŸåˆ†ã‚’é–‹æ”¾ã—ã¦KOD_ERRã‚’è¿”ã™
+	// ƒƒ‚ƒŠ[Šm•Û‚É¸”s‚µ‚½ê‡‚Í¡‚Ü‚ÅŠm•Û‚µ‚½•ª‚ğŠJ•ú‚µ‚ÄKOD_ERR‚ğ•Ô‚·
 EXIT:
 		GuiIF.SetMessage("PARAMETER SECTION KOD_ERROR:fail to allocate memory");
 	if(KOD_ERRflag == 3){
-		free(NurbsC[NurbsCount].cp);
+//		free(NurbsC[NurbsCount].cp);
+		delete[]	NurbsC[NurbsCount].cp;
+		NurbsC[NurbsCount].cp = NULL;
 		KOD_ERRflag--;
 	}
 	if(KOD_ERRflag == 2){
-		free(NurbsC[NurbsCount].W);
+//		free(NurbsC[NurbsCount].W);
+		delete[]	NurbsC[NurbsCount].W;
+		NurbsC[NurbsCount].W = NULL;
 		KOD_ERRflag--;
 	}
 	if(KOD_ERRflag == 1){
-		free(NurbsC[NurbsCount].T);
+//		free(NurbsC[NurbsCount].T);
+		delete[]	NurbsC[NurbsCount].T;
+		NurbsC[NurbsCount].T = NULL;
 	}
 	return KOD_ERR;
 }
 
 // Function: GetNurbsCFromCirA
-// å††ãƒ»å††å¼§ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚’NURBSæ›²ç·šã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã¸ã¨å¤‰æ›ã™ã‚‹
+// ‰~E‰~ŒÊƒGƒ“ƒeƒBƒeƒB‚ğNURBS‹ÈüƒGƒ“ƒeƒBƒeƒB‚Ö‚Æ•ÏŠ·‚·‚é
 //
 // Parameters:
-// NurbsCount - NURBSæ›²ç·šã¸ã®å¤‰æ›å¾Œã®NURBSCã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ç•ªå·
-// CirCount - å¤‰æ›ã—ãŸã„CIRAã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ç•ªå·
+// NurbsCount - NURBS‹Èü‚Ö‚Ì•ÏŠ·Œã‚ÌNURBSC‚ÌƒCƒ“ƒfƒbƒNƒX”Ô†
+// CirCount - •ÏŠ·‚µ‚½‚¢CIRA‚ÌƒCƒ“ƒfƒbƒNƒX”Ô†
 int BODY::GetNurbsCFromCirA(int NurbsCount,int CirCount)	
 {
 	int	 flag=KOD_TRUE;
@@ -691,40 +870,40 @@ int BODY::GetNurbsCFromCirA(int NurbsCount,int CirCount)
 			radius = 0.0;
 	Coord	vec[2];
 	
-	// å††/å††å¼§ã®ä¸­å¿ƒç‚¹O-å§‹ç‚¹Psãƒ™ã‚¯ãƒˆãƒ«æˆåˆ†ã€ä¸­å¿ƒç‚¹-çµ‚ç‚¹Peãƒ™ã‚¯ãƒˆãƒ«æˆåˆ†ã‚’ãã‚Œãã‚Œæ±‚ã‚ã‚‹
+	// ‰~/‰~ŒÊ‚Ì’†S“_O-n“_PsƒxƒNƒgƒ‹¬•ªA’†S“_-I“_PeƒxƒNƒgƒ‹¬•ª‚ğ‚»‚ê‚¼‚ê‹‚ß‚é
 	vec[0] = SubCoord(CirA[CirCount].cp[1],CirA[CirCount].cp[0]);
 	vec[1] = SubCoord(CirA[CirCount].cp[2],CirA[CirCount].cp[0]);	
 
-	radius = CirA[CirCount].R;	// å††/å††å¼§ã®ä¸­å¿ƒç‚¹ã¨å§‹ç‚¹ã®è·é›¢(åŠå¾„)
-	angle_rad = CalcVecAngle2D(vec[0],vec[1]);			// å††/å††å¼§ã‚’æˆã™ä¸­å¿ƒè§’ã®å¤§ãã•(degree)ã‚’æ±‚ã‚ã‚‹
-	angle_deg = RadToDeg(angle_rad);				// å††/å††å¼§ã‚’æˆã™ä¸­å¿ƒè§’ã®å¤§ãã•(radian)ã‚’æ±‚ã‚ã‚‹
+	radius = CirA[CirCount].R;	// ‰~/‰~ŒÊ‚Ì’†S“_‚Æn“_‚Ì‹——£(”¼Œa)
+	angle_rad = CalcVecAngle2D(vec[0],vec[1]);			// ‰~/‰~ŒÊ‚ğ¬‚·’†SŠp‚Ì‘å‚«‚³(degree)‚ğ‹‚ß‚é
+	angle_deg = RadToDeg(angle_rad);				// ‰~/‰~ŒÊ‚ğ¬‚·’†SŠp‚Ì‘å‚«‚³(radian)‚ğ‹‚ß‚é
 
-	// ä¸­å¿ƒè§’(degree)ã®å¤§ãã•ã”ã¨ã«ã‚»ã‚°ãƒ¡ãƒ³ãƒˆæ•°ã‚’å¤‰æ›´ã™ã‚‹
-	if( angle_deg > 0 && angle_deg <= 90 ){								// 0Â°<Î¸<=90Â°
-		flag = CirAToNurbsC_seg1(NurbsCount ,CirCount ,vec, angle_rad);		// 1ã‚»ã‚°ãƒ¡ãƒ³ãƒˆ
+	// ’†SŠp(degree)‚Ì‘å‚«‚³‚²‚Æ‚ÉƒZƒOƒƒ“ƒg”‚ğ•ÏX‚·‚é
+	if( angle_deg > 0 && angle_deg <= 90 ){								// 0‹<ƒÆ<=90‹
+		flag = CirAToNurbsC_seg1(NurbsCount ,CirCount ,vec, angle_rad);		// 1ƒZƒOƒƒ“ƒg
 	}
-	else if( angle_deg > 90 && angle_deg <= 270 ){						// 90Â°<Î¸<=270Â°
-		flag = CirAToNurbsC_seg2(NurbsCount ,CirCount ,vec, angle_rad);		// 2ã‚»ã‚°ãƒ¡ãƒ³ãƒˆ
+	else if( angle_deg > 90 && angle_deg <= 270 ){						// 90‹<ƒÆ<=270‹
+		flag = CirAToNurbsC_seg2(NurbsCount ,CirCount ,vec, angle_rad);		// 2ƒZƒOƒƒ“ƒg
 	}
-	else if( angle_deg > 270 && angle_deg < 360 ){						// 270Â°<Î¸<360Â°
-		flag = CirAToNurbsC_seg3(NurbsCount ,CirCount ,vec, angle_rad);		// 3ã‚»ã‚°ãƒ¡ãƒ³ãƒˆ
+	else if( angle_deg > 270 && angle_deg < 360 ){						// 270‹<ƒÆ<360‹
+		flag = CirAToNurbsC_seg3(NurbsCount ,CirCount ,vec, angle_rad);		// 3ƒZƒOƒƒ“ƒg
 	}
-	else if( angle_deg == 0 ){											// Î¸=0Â°(360Â°)
-		flag = CirAToNurbsC_seg4(NurbsCount ,CirCount ,vec, radius);			//ã€€4ã‚»ã‚°ãƒ¡ãƒ³ãƒˆ
+	else if( angle_deg == 0 ){											// ƒÆ=0‹(360‹)
+		flag = CirAToNurbsC_seg4(NurbsCount ,CirCount ,vec, radius);			//@4ƒZƒOƒƒ“ƒg
 	}
 	else{
 		GuiIF.SetMessage("Center angle of a circle or circular arc is not calculated normally");
 		return KOD_ERR;
 	}
 
-	NurbsC[NurbsCount].EntUseFlag = CirA[CirCount].EntUseFlag;	// ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªéƒ¨ã®æƒ…å ±"Entity Use Flag"ã‚’å¾—ã‚‹(NURBSC)
-	NurbsC[NurbsCount].OriginEnt = CIRCLE_ARC;					// å…ƒã¯å††ãƒ»å††å¼§è¦ç´ ã§ã‚ã£ãŸã“ã¨ã‚’è¨˜æ†¶
-	NurbsC[NurbsCount].pOriginEnt = &CirA[CirCount];		// ãã®å††ãƒ»å††å¼§è¦ç´ ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+	NurbsC[NurbsCount].EntUseFlag = CirA[CirCount].EntUseFlag;	// ƒfƒBƒŒƒNƒgƒŠ•”‚Ìî•ñ"Entity Use Flag"‚ğ“¾‚é(NURBSC)
+	NurbsC[NurbsCount].OriginEnt = CIRCLE_ARC;					// Œ³‚Í‰~E‰~ŒÊ—v‘f‚Å‚ ‚Á‚½‚±‚Æ‚ğ‹L‰¯
+	NurbsC[NurbsCount].pOriginEnt = &CirA[CirCount];		// ‚»‚Ì‰~E‰~ŒÊ—v‘f‚Ö‚Ìƒ|ƒCƒ“ƒ^
 
 	return KOD_TRUE;
 }
 
-// 1ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã®å††å¼§(ä¸­å¿ƒè§’ãŒ0Â°<Î¸<=90Â°ã®æ™‚)
+// 1ƒZƒOƒƒ“ƒg‚Ì‰~ŒÊ(’†SŠp‚ª0‹<ƒÆ<=90‹‚Ì)
 int BODY::CirAToNurbsC_seg1(int NurbsCount,int CirCount,Coord vec[], double angle_rad)
 {
 	int i=0;
@@ -732,31 +911,40 @@ int BODY::CirAToNurbsC_seg1(int NurbsCount,int CirCount,Coord vec[], double angl
 	
 	Coord	vec_cp;
 	
-	NurbsC[NurbsCount].K = 3;		// ç·å’Œè¨˜å·ã®ä¸Šå´æ·»å­—ï¼ˆã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆ-1ï¼‰ã®å€¤
-	NurbsC[NurbsCount].M = 3;		// åŸºåº•é–¢æ•°ã®éšæ•°
-	NurbsC[NurbsCount].N = NurbsC[NurbsCount].K + NurbsC[NurbsCount].M;	// ãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«ã®æ•°
+	NurbsC[NurbsCount].K = 3;		// ‘˜a‹L†‚Ìã‘¤“YšiƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒg-1j‚Ì’l
+	NurbsC[NurbsCount].M = 3;		// Šî’êŠÖ”‚ÌŠK”
+	NurbsC[NurbsCount].N = NurbsC[NurbsCount].K + NurbsC[NurbsCount].M;	// ƒmƒbƒgƒxƒNƒgƒ‹‚Ì”
 
-	// ãƒ–ãƒ¼ãƒªã‚¢ãƒ³å‹ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£4ã¤
+	// ƒu[ƒŠƒAƒ“Œ^ƒvƒƒpƒeƒB4‚Â
 	NurbsC[NurbsCount].prop[0] = 0;
 	NurbsC[NurbsCount].prop[1] = 0;
 	NurbsC[NurbsCount].prop[2] = 1;
 	NurbsC[NurbsCount].prop[3] = 0;
 	
-	// ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿
+	// ƒƒ‚ƒŠ[Šm•Û
 	KOD_ERRflag++;	// 1
-	if((NurbsC[NurbsCount].T = (double *)malloc(sizeof(double)*NurbsC[NurbsCount].N)) == NULL){
+//	if((NurbsC[NurbsCount].T = (double *)malloc(sizeof(double)*NurbsC[NurbsCount].N)) == NULL){
+	NurbsC[NurbsCount].T = new double[NurbsC[NurbsCount].N];
+//	NurbsC[NurbsCount].T = boost::shared_array<double>( new double[NurbsC[NurbsCount].N] );
+	if ( !NurbsC[NurbsCount].T ) {
 		goto EXIT;
 	}
 	KOD_ERRflag++;	// 2
-	if((NurbsC[NurbsCount].W = (double *)malloc(sizeof(double)*NurbsC[NurbsCount].K)) == NULL){
+//	if((NurbsC[NurbsCount].W = (double *)malloc(sizeof(double)*NurbsC[NurbsCount].K)) == NULL){
+	NurbsC[NurbsCount].W = new double[NurbsC[NurbsCount].K];
+//	NurbsC[NurbsCount].W = boost::shared_array<double>( new double[NurbsC[NurbsCount].K] );
+	if ( !NurbsC[NurbsCount].W ) {
 		goto EXIT;
 	}
 	KOD_ERRflag++;	// 3
-	if((NurbsC[NurbsCount].cp = (Coord *)malloc(sizeof(Coord)*NurbsC[NurbsCount].K)) == NULL){
+//	if((NurbsC[NurbsCount].cp = (Coord *)malloc(sizeof(Coord)*NurbsC[NurbsCount].K)) == NULL){
+	NurbsC[NurbsCount].cp = new Coord[NurbsC[NurbsCount].K];
+//	NurbsC[NurbsCount].cp = boost::shared_array<Coord>( new Coord[NurbsC[NurbsCount].K] );
+	if ( !NurbsC[NurbsCount].cp ) {
 		goto EXIT;
 	}
 	
-	// ãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«ã®å€¤	
+	// ƒmƒbƒgƒxƒNƒgƒ‹‚Ì’l	
 	NurbsC[NurbsCount].T[0] = 0.;
 	NurbsC[NurbsCount].T[1] = 0.;
 	NurbsC[NurbsCount].T[2] = 0.;
@@ -764,7 +952,7 @@ int BODY::CirAToNurbsC_seg1(int NurbsCount,int CirCount,Coord vec[], double angl
 	NurbsC[NurbsCount].T[4] = 1.;
 	NurbsC[NurbsCount].T[5] = 1.;
 		
-	// Weightã®å€¤
+	// Weight‚Ì’l
 	for(i=0; i<3; i++){
 		if(i % 2 == 0){
 			NurbsC[NurbsCount].W[i] = 1.;
@@ -774,9 +962,9 @@ int BODY::CirAToNurbsC_seg1(int NurbsCount,int CirCount,Coord vec[], double angl
 		}
 	}
 		
-	vec_cp = Arc_CP(vec[0], vec[1], cos(angle_rad));	//ã€€å††ã®ä¸­å¿ƒç‚¹ã‹ã‚‰ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆP1ã¸ã®ãƒ™ã‚¯ãƒˆãƒ«ã‚’æ±‚ã‚ã‚‹
+	vec_cp = Arc_CP(vec[0], vec[1], cos(angle_rad));	//@‰~‚Ì’†S“_‚©‚çƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒgP1‚Ö‚ÌƒxƒNƒgƒ‹‚ğ‹‚ß‚é
 	
-	// ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆã®åº§æ¨™å€¤
+	// ƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒg‚ÌÀ•W’l
 	NurbsC[NurbsCount].cp[0].x = CirA[CirCount].cp[1].x;
 	NurbsC[NurbsCount].cp[0].y = CirA[CirCount].cp[1].y;		
 	NurbsC[NurbsCount].cp[1].x = vec_cp.x + CirA[CirCount].cp[0].x;
@@ -785,33 +973,39 @@ int BODY::CirAToNurbsC_seg1(int NurbsCount,int CirCount,Coord vec[], double angl
 	NurbsC[NurbsCount].cp[2].y = CirA[CirCount].cp[2].y;
 
 	for(i=0; i<3; i++){
-		NurbsC[NurbsCount].cp[i].z = CirA[CirCount].zt;	// Zæ–¹å‘ã®å¤§ãã•ã¯ä¸€å®š
+		NurbsC[NurbsCount].cp[i].z = CirA[CirCount].zt;	// Z•ûŒü‚Ì‘å‚«‚³‚Íˆê’è
 	}
 		
-	NurbsC[NurbsCount].V[0] = 0.;		// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤
+	NurbsC[NurbsCount].V[0] = 0.;		// ƒpƒ‰ƒ[ƒ^‚Ì’l
 	NurbsC[NurbsCount].V[1] = 1.;
 		  
 	return KOD_TRUE;
 
-	// ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿ã«å¤±æ•—ã—ãŸå ´åˆã¯ä»Šã¾ã§ç¢ºä¿ã—ãŸåˆ†ã‚’é–‹æ”¾ã—ã¦KOD_ERRã‚’è¿”ã™
+	// ƒƒ‚ƒŠ[Šm•Û‚É¸”s‚µ‚½ê‡‚Í¡‚Ü‚ÅŠm•Û‚µ‚½•ª‚ğŠJ•ú‚µ‚ÄKOD_ERR‚ğ•Ô‚·
 EXIT:
 		GuiIF.SetMessage("PARAMETER SECTION KOD_ERROR:fail to allocate memory");
 	if(KOD_ERRflag == 3){
-		free(NurbsC[NurbsCount].cp);
+//		free(NurbsC[NurbsCount].cp);
+		delete[]	NurbsC[NurbsCount].cp;
+		NurbsC[NurbsCount].cp = NULL;
 		KOD_ERRflag--;
 	}
 	if(KOD_ERRflag == 2){
-		free(NurbsC[NurbsCount].W);
+//		free(NurbsC[NurbsCount].W);
+		delete[]	NurbsC[NurbsCount].W;
+		NurbsC[NurbsCount].W = NULL;
 		KOD_ERRflag--;
 	}
 	if(KOD_ERRflag == 1){
-		free(NurbsC[NurbsCount].T);
+//		free(NurbsC[NurbsCount].T);
+		delete[]	NurbsC[NurbsCount].T;
+		NurbsC[NurbsCount].T = NULL;
 	}
 	return KOD_ERR;
 }
 
 // private
-// 2ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã®å††å¼§(ä¸­å¿ƒè§’ãŒ90Â°<Î¸<=270Â°ã®æ™‚)
+// 2ƒZƒOƒƒ“ƒg‚Ì‰~ŒÊ(’†SŠp‚ª90‹<ƒÆ<=270‹‚Ì)
 int BODY::CirAToNurbsC_seg2(int NurbsCount,int CirCount,Coord vec[], double angle_rad)
 {
 	int	i = 0,
@@ -820,30 +1014,39 @@ int BODY::CirAToNurbsC_seg2(int NurbsCount,int CirCount,Coord vec[], double angl
 	
 	Coord vec_cp[3];
 	
-	NurbsC[NurbsCount].K = 5;		// ç·å’Œè¨˜å·ã®ä¸Šå´æ·»å­—ï¼ˆã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆ-1ï¼‰ã®å€¤
-	NurbsC[NurbsCount].M = 3;		// åŸºåº•é–¢æ•°ã®éšæ•°
-	NurbsC[NurbsCount].N = NurbsC[NurbsCount].K + NurbsC[NurbsCount].M;	// ãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«ã®æ•°
-	// ãƒ–ãƒ¼ãƒªã‚¢ãƒ³å‹ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£4ã¤
+	NurbsC[NurbsCount].K = 5;		// ‘˜a‹L†‚Ìã‘¤“YšiƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒg-1j‚Ì’l
+	NurbsC[NurbsCount].M = 3;		// Šî’êŠÖ”‚ÌŠK”
+	NurbsC[NurbsCount].N = NurbsC[NurbsCount].K + NurbsC[NurbsCount].M;	// ƒmƒbƒgƒxƒNƒgƒ‹‚Ì”
+	// ƒu[ƒŠƒAƒ“Œ^ƒvƒƒpƒeƒB4‚Â
 	NurbsC[NurbsCount].prop[0] = 0;
 	NurbsC[NurbsCount].prop[1] = 0;
 	NurbsC[NurbsCount].prop[2] = 1;
 	NurbsC[NurbsCount].prop[3] = 0;
 	
-	// ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿
+	// ƒƒ‚ƒŠ[Šm•Û
 	KOD_ERRflag++;	// 1
-	if((NurbsC[NurbsCount].T = (double *)malloc(sizeof(double)*NurbsC[NurbsCount].N)) == NULL){
+//	if((NurbsC[NurbsCount].T = (double *)malloc(sizeof(double)*NurbsC[NurbsCount].N)) == NULL){
+	NurbsC[NurbsCount].T = new double[NurbsC[NurbsCount].N];
+//	NurbsC[NurbsCount].T = boost::shared_array<double>( new double[NurbsC[NurbsCount].N] );
+	if ( !NurbsC[NurbsCount].T ) {
 		goto EXIT;
 	}
 	KOD_ERRflag++;	// 2
-	if((NurbsC[NurbsCount].W = (double *)malloc(sizeof(double)*NurbsC[NurbsCount].K)) == NULL){
+//	if((NurbsC[NurbsCount].W = (double *)malloc(sizeof(double)*NurbsC[NurbsCount].K)) == NULL){
+	NurbsC[NurbsCount].W = new double[NurbsC[NurbsCount].K];
+//	NurbsC[NurbsCount].W = boost::shared_array<double>( new double[NurbsC[NurbsCount].K] );
+	if ( !NurbsC[NurbsCount].W ) {
 		goto EXIT;
 	}
 	KOD_ERRflag++;	// 3
-	if((NurbsC[NurbsCount].cp = (Coord *)malloc(sizeof(Coord)*NurbsC[NurbsCount].K)) == NULL){
+//	if((NurbsC[NurbsCount].cp = (Coord *)malloc(sizeof(Coord)*NurbsC[NurbsCount].K)) == NULL){
+	NurbsC[NurbsCount].cp = new Coord[NurbsC[NurbsCount].K];
+//	NurbsC[NurbsCount].cp = boost::shared_array<Coord>( new Coord[NurbsC[NurbsCount].K] );
+	if ( !NurbsC[NurbsCount].cp ) {
 		goto EXIT;
 	}
 	
-	// ãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«ã®å€¤	
+	// ƒmƒbƒgƒxƒNƒgƒ‹‚Ì’l	
 	NurbsC[NurbsCount].T[0] = 0.;
 	NurbsC[NurbsCount].T[1] = 0.;
 	NurbsC[NurbsCount].T[2] = 0.;
@@ -853,7 +1056,7 @@ int BODY::CirAToNurbsC_seg2(int NurbsCount,int CirCount,Coord vec[], double angl
 	NurbsC[NurbsCount].T[6] = 1.;
 	NurbsC[NurbsCount].T[7] = 1.;
 		
-	// Weightã®å€¤
+	// Weight‚Ì’l
 	for(i=0; i<5; i++){
 		if(i % 2 == 0){
 			NurbsC[NurbsCount].W[i] = 1.;
@@ -863,13 +1066,13 @@ int BODY::CirAToNurbsC_seg2(int NurbsCount,int CirCount,Coord vec[], double angl
 		}
 	}
 		
-	angle_rad2 = angle_rad/2;	// (ä¸­å¿ƒè§’)Ã·2
+	angle_rad2 = angle_rad/2;	// (’†SŠp)€2
 	
-	vec_cp[1] = CalcRotVec2D(vec[0], angle_rad2);		// å††ã®ä¸­å¿ƒç‚¹ã‹ã‚‰ä¸­å¿ƒè§’ã®åŠåˆ†ã®ä½ç½®(ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆP2)ã¸ã®ãƒ™ã‚¯ãƒˆãƒ«ã‚’æ±‚ã‚ã‚‹
-	vec_cp[0] = Arc_CP(vec[0], vec_cp[1], cos(angle_rad2));	// å††ã®ä¸­å¿ƒç‚¹ã‹ã‚‰ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆP1ã¸ã®ãƒ™ã‚¯ãƒˆãƒ«ã‚’æ±‚ã‚ã‚‹
-	vec_cp[2] = Arc_CP(vec_cp[1], vec[1], cos(angle_rad2));	// å††ã®ä¸­å¿ƒç‚¹ã‹ã‚‰ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆP3ã¸ã®ãƒ™ã‚¯ãƒˆãƒ«ã‚’æ±‚ã‚ã‚‹
+	vec_cp[1] = CalcRotVec2D(vec[0], angle_rad2);		// ‰~‚Ì’†S“_‚©‚ç’†SŠp‚Ì”¼•ª‚ÌˆÊ’u(ƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒgP2)‚Ö‚ÌƒxƒNƒgƒ‹‚ğ‹‚ß‚é
+	vec_cp[0] = Arc_CP(vec[0], vec_cp[1], cos(angle_rad2));	// ‰~‚Ì’†S“_‚©‚çƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒgP1‚Ö‚ÌƒxƒNƒgƒ‹‚ğ‹‚ß‚é
+	vec_cp[2] = Arc_CP(vec_cp[1], vec[1], cos(angle_rad2));	// ‰~‚Ì’†S“_‚©‚çƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒgP3‚Ö‚ÌƒxƒNƒgƒ‹‚ğ‹‚ß‚é
 	
-	// ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆã®åº§æ¨™å€¤
+	// ƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒg‚ÌÀ•W’l
 	NurbsC[NurbsCount].cp[0].x = CirA[CirCount].cp[1].x;
 	NurbsC[NurbsCount].cp[0].y = CirA[CirCount].cp[1].y;		
  	NurbsC[NurbsCount].cp[1].x = vec_cp[0].x + CirA[CirCount].cp[0].x;
@@ -881,33 +1084,39 @@ int BODY::CirAToNurbsC_seg2(int NurbsCount,int CirCount,Coord vec[], double angl
  	NurbsC[NurbsCount].cp[4].x = CirA[CirCount].cp[2].x;
  	NurbsC[NurbsCount].cp[4].y = CirA[CirCount].cp[2].y;
 	for(i=0; i<5; i++){
-		NurbsC[NurbsCount].cp[i].z = CirA[CirCount].zt;	// Zæ–¹å‘ã®å¤§ãã•ã¯ä¸€å®š
+		NurbsC[NurbsCount].cp[i].z = CirA[CirCount].zt;	// Z•ûŒü‚Ì‘å‚«‚³‚Íˆê’è
 	}
 	
-	NurbsC[NurbsCount].V[0] = 0.;		// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤
+	NurbsC[NurbsCount].V[0] = 0.;		// ƒpƒ‰ƒ[ƒ^‚Ì’l
 	NurbsC[NurbsCount].V[1] = 1.;
 		  
 	return KOD_TRUE;
 
-	// ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿ã«å¤±æ•—ã—ãŸå ´åˆã¯ä»Šã¾ã§ç¢ºä¿ã—ãŸåˆ†ã‚’é–‹æ”¾ã—ã¦KOD_ERRã‚’è¿”ã™
+	// ƒƒ‚ƒŠ[Šm•Û‚É¸”s‚µ‚½ê‡‚Í¡‚Ü‚ÅŠm•Û‚µ‚½•ª‚ğŠJ•ú‚µ‚ÄKOD_ERR‚ğ•Ô‚·
 EXIT:
 		GuiIF.SetMessage("PARAMETER SECTION KOD_ERROR:fail to allocate memory");
 	if(KOD_ERRflag == 3){
-		free(NurbsC[NurbsCount].cp);
+//		free(NurbsC[NurbsCount].cp);
+		delete[]	NurbsC[NurbsCount].cp;
+		NurbsC[NurbsCount].cp = NULL;
 		KOD_ERRflag--;
 	}
 	if(KOD_ERRflag == 2){
-		free(NurbsC[NurbsCount].W);
+//		free(NurbsC[NurbsCount].W);
+		delete[]	NurbsC[NurbsCount].W;
+		NurbsC[NurbsCount].W = NULL;
 		KOD_ERRflag--;
 	}
 	if(KOD_ERRflag == 1){
-		free(NurbsC[NurbsCount].T);
+//		free(NurbsC[NurbsCount].T);
+		delete[]	NurbsC[NurbsCount].T;
+		NurbsC[NurbsCount].T = NULL;
 	}
 	return KOD_ERR;
 }
 
 // private
-// 3ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã®å††å¼§(ä¸­å¿ƒè§’ãŒ270Â°<Î¸<360Â°ã®æ™‚)
+// 3ƒZƒOƒƒ“ƒg‚Ì‰~ŒÊ(’†SŠp‚ª270‹<ƒÆ<360‹‚Ì)
 int BODY::CirAToNurbsC_seg3(int NurbsCount,int CirCount,Coord vec[], double angle_rad)
 {
 	int	i=0,
@@ -916,31 +1125,40 @@ int BODY::CirAToNurbsC_seg3(int NurbsCount,int CirCount,Coord vec[], double angl
 	
 	Coord	vec_cp[5];
 	
-	NurbsC[NurbsCount].K = 7;		// ç·å’Œè¨˜å·ã®ä¸Šå´æ·»å­—ï¼ˆã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆ-1ï¼‰ã®å€¤
-	NurbsC[NurbsCount].M = 3;		// åŸºåº•é–¢æ•°ã®éšæ•°
-	NurbsC[NurbsCount].N = NurbsC[NurbsCount].K + NurbsC[NurbsCount].M;	// ãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«ã®æ•°
+	NurbsC[NurbsCount].K = 7;		// ‘˜a‹L†‚Ìã‘¤“YšiƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒg-1j‚Ì’l
+	NurbsC[NurbsCount].M = 3;		// Šî’êŠÖ”‚ÌŠK”
+	NurbsC[NurbsCount].N = NurbsC[NurbsCount].K + NurbsC[NurbsCount].M;	// ƒmƒbƒgƒxƒNƒgƒ‹‚Ì”
 	
-	// ãƒ–ãƒ¼ãƒªã‚¢ãƒ³å‹ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£4ã¤
+	// ƒu[ƒŠƒAƒ“Œ^ƒvƒƒpƒeƒB4‚Â
 	NurbsC[NurbsCount].prop[0] = 0;
 	NurbsC[NurbsCount].prop[1] = 0;
 	NurbsC[NurbsCount].prop[2] = 1;
 	NurbsC[NurbsCount].prop[3] = 0;
 	
-	// ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿
+	// ƒƒ‚ƒŠ[Šm•Û
 	KOD_ERRflag++;	// 1
-	if((NurbsC[NurbsCount].T = (double *)malloc(sizeof(double)*NurbsC[NurbsCount].N)) == NULL){
+//	if((NurbsC[NurbsCount].T = (double *)malloc(sizeof(double)*NurbsC[NurbsCount].N)) == NULL){
+	NurbsC[NurbsCount].T = new double[NurbsC[NurbsCount].N];
+//	NurbsC[NurbsCount].T = boost::shared_array<double>( new double[NurbsC[NurbsCount].N] );
+	if ( !NurbsC[NurbsCount].T ) {
 		goto EXIT;
 	}
 	KOD_ERRflag++;	// 2
-	if((NurbsC[NurbsCount].W = (double *)malloc(sizeof(double)*NurbsC[NurbsCount].K)) == NULL){
+//	if((NurbsC[NurbsCount].W = (double *)malloc(sizeof(double)*NurbsC[NurbsCount].K)) == NULL){
+	NurbsC[NurbsCount].W = new double[NurbsC[NurbsCount].K];
+//	NurbsC[NurbsCount].W = boost::shared_array<double>( new double[NurbsC[NurbsCount].K] );
+	if ( !NurbsC[NurbsCount].W ) {
 		goto EXIT;
 	}
 	KOD_ERRflag++;	// 3
-	if((NurbsC[NurbsCount].cp = (Coord *)malloc(sizeof(Coord)*NurbsC[NurbsCount].K)) == NULL){
+//	if((NurbsC[NurbsCount].cp = (Coord *)malloc(sizeof(Coord)*NurbsC[NurbsCount].K)) == NULL){
+	NurbsC[NurbsCount].cp = new Coord[NurbsC[NurbsCount].K];
+//	NurbsC[NurbsCount].cp = boost::shared_array<Coord>( new Coord[NurbsC[NurbsCount].K] );
+	if ( !NurbsC[NurbsCount].cp ) {
 		goto EXIT;
 	}
 	
-	// ãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«ã®å€¤	
+	// ƒmƒbƒgƒxƒNƒgƒ‹‚Ì’l	
 	NurbsC[NurbsCount].T[0] = 0.;
 	NurbsC[NurbsCount].T[1] = 0.;
 	NurbsC[NurbsCount].T[2] = 0.;
@@ -952,7 +1170,7 @@ int BODY::CirAToNurbsC_seg3(int NurbsCount,int CirCount,Coord vec[], double angl
 	NurbsC[NurbsCount].T[8] = 1.;
 	NurbsC[NurbsCount].T[9] = 1.;
 	
-	// Weightã®å€¤
+	// Weight‚Ì’l
 	for(i=0; i<7; i++){
 		if(i % 2 == 0){
 			NurbsC[NurbsCount].W[i] = 1.;
@@ -962,15 +1180,15 @@ int BODY::CirAToNurbsC_seg3(int NurbsCount,int CirCount,Coord vec[], double angl
 		}
 	}
 
-	angle_rad3 = angle_rad/3;	// (ä¸­å¿ƒè§’)Ã·3
+	angle_rad3 = angle_rad/3;	// (’†SŠp)€3
 	
-	vec_cp[1] = CalcRotVec2D(vec[0], angle_rad3);		// å††ã®ä¸­å¿ƒç‚¹ã‹ã‚‰ä¸­å¿ƒè§’ã®1/3ã®ä½ç½®(ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆP2)ã¸ã®ãƒ™ã‚¯ãƒˆãƒ«ã‚’æ±‚ã‚ã‚‹
-	vec_cp[0] = Arc_CP(vec[0], vec_cp[1], cos(angle_rad3));	// å††ã®ä¸­å¿ƒç‚¹ã‹ã‚‰ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆP1ã¸ã®ãƒ™ã‚¯ãƒˆãƒ«ã‚’æ±‚ã‚ã‚‹
-	vec_cp[3] = CalcRotVec2D(vec_cp[1], angle_rad3);		// å††ã®ä¸­å¿ƒç‚¹ã‹ã‚‰ä¸­å¿ƒè§’ã®2/3ã®ä½ç½®(ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆP4)ã¸ã®ãƒ™ã‚¯ãƒˆãƒ«ã‚’æ±‚ã‚ã‚‹
-	vec_cp[2] = Arc_CP(vec_cp[1], vec_cp[3], cos(angle_rad3));	// å††ã®ä¸­å¿ƒç‚¹ã‹ã‚‰ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆP3ã¸ã®ãƒ™ã‚¯ãƒˆãƒ«ã‚’æ±‚ã‚ã‚‹
-	vec_cp[4] = Arc_CP(vec_cp[3], vec[1], cos(angle_rad3));	// å††ã®ä¸­å¿ƒç‚¹ã‹ã‚‰ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆP4ã¸ã®ãƒ™ã‚¯ãƒˆãƒ«ã‚’æ±‚ã‚ã‚‹
+	vec_cp[1] = CalcRotVec2D(vec[0], angle_rad3);		// ‰~‚Ì’†S“_‚©‚ç’†SŠp‚Ì1/3‚ÌˆÊ’u(ƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒgP2)‚Ö‚ÌƒxƒNƒgƒ‹‚ğ‹‚ß‚é
+	vec_cp[0] = Arc_CP(vec[0], vec_cp[1], cos(angle_rad3));	// ‰~‚Ì’†S“_‚©‚çƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒgP1‚Ö‚ÌƒxƒNƒgƒ‹‚ğ‹‚ß‚é
+	vec_cp[3] = CalcRotVec2D(vec_cp[1], angle_rad3);		// ‰~‚Ì’†S“_‚©‚ç’†SŠp‚Ì2/3‚ÌˆÊ’u(ƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒgP4)‚Ö‚ÌƒxƒNƒgƒ‹‚ğ‹‚ß‚é
+	vec_cp[2] = Arc_CP(vec_cp[1], vec_cp[3], cos(angle_rad3));	// ‰~‚Ì’†S“_‚©‚çƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒgP3‚Ö‚ÌƒxƒNƒgƒ‹‚ğ‹‚ß‚é
+	vec_cp[4] = Arc_CP(vec_cp[3], vec[1], cos(angle_rad3));	// ‰~‚Ì’†S“_‚©‚çƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒgP4‚Ö‚ÌƒxƒNƒgƒ‹‚ğ‹‚ß‚é
 		
-	// ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆã®åº§æ¨™å€¤
+	// ƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒg‚ÌÀ•W’l
 	NurbsC[NurbsCount].cp[0].x = CirA[CirCount].cp[1].x;
 	NurbsC[NurbsCount].cp[0].y = CirA[CirCount].cp[1].y;		
 	NurbsC[NurbsCount].cp[1].x = vec_cp[0].x + CirA[CirCount].cp[0].x;
@@ -987,63 +1205,78 @@ int BODY::CirAToNurbsC_seg3(int NurbsCount,int CirCount,Coord vec[], double angl
 	NurbsC[NurbsCount].cp[6].y = CirA[CirCount].cp[2].y;
 
 	for(i=0; i<7; i++){
-		NurbsC[NurbsCount].cp[i].z = CirA[CirCount].zt;	// Zæ–¹å‘ã®å¤§ãã•ã¯ä¸€å®š
+		NurbsC[NurbsCount].cp[i].z = CirA[CirCount].zt;	// Z•ûŒü‚Ì‘å‚«‚³‚Íˆê’è
 	}
 		
-	NurbsC[NurbsCount].V[0] = 0.;		// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤
+	NurbsC[NurbsCount].V[0] = 0.;		// ƒpƒ‰ƒ[ƒ^‚Ì’l
 	NurbsC[NurbsCount].V[1] = 1.;
 		  
 	return KOD_TRUE;
 
-	// ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿ã«å¤±æ•—ã—ãŸå ´åˆã¯ä»Šã¾ã§ç¢ºä¿ã—ãŸåˆ†ã‚’é–‹æ”¾ã—ã¦KOD_ERRã‚’è¿”ã™
+	// ƒƒ‚ƒŠ[Šm•Û‚É¸”s‚µ‚½ê‡‚Í¡‚Ü‚ÅŠm•Û‚µ‚½•ª‚ğŠJ•ú‚µ‚ÄKOD_ERR‚ğ•Ô‚·
 EXIT:
 		GuiIF.SetMessage("PARAMETER SECTION KOD_ERROR:fail to allocate memory");
 	if(KOD_ERRflag == 3){
-		free(NurbsC[NurbsCount].cp);
+//		free(NurbsC[NurbsCount].cp);
+		delete[]	NurbsC[NurbsCount].cp;
+		NurbsC[NurbsCount].cp = NULL;
 		KOD_ERRflag--;
 	}
 	if(KOD_ERRflag == 2){
-		free(NurbsC[NurbsCount].W);
+//		free(NurbsC[NurbsCount].W);
+		delete[]	NurbsC[NurbsCount].W;
+		NurbsC[NurbsCount].W = NULL;
 		KOD_ERRflag--;
 	}
 	if(KOD_ERRflag == 1){
-		free(NurbsC[NurbsCount].T);
+//		free(NurbsC[NurbsCount].T);
+		delete[]	NurbsC[NurbsCount].T;
+		NurbsC[NurbsCount].T = NULL;
 	}
 	return KOD_ERR;
 }
 
 // private
-// 4ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã®å††å¼§(å††)
+// 4ƒZƒOƒƒ“ƒg‚Ì‰~ŒÊ(‰~)
 int BODY::CirAToNurbsC_seg4(int NurbsCount,int CirCount,Coord vec[], double radius)
 {
 	int i=0;
 	int KOD_ERRflag=0;
 
-	NurbsC[NurbsCount].K = 9;		// ç·å’Œè¨˜å·ã®ä¸Šå´æ·»å­—ï¼ˆã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆ-1ï¼‰ã®å€¤
-	NurbsC[NurbsCount].M = 3;		// åŸºåº•é–¢æ•°ã®éšæ•°
-	NurbsC[NurbsCount].N = NurbsC[NurbsCount].K + NurbsC[NurbsCount].M;	// ãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«ã®æ•°
+	NurbsC[NurbsCount].K = 9;		// ‘˜a‹L†‚Ìã‘¤“YšiƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒg-1j‚Ì’l
+	NurbsC[NurbsCount].M = 3;		// Šî’êŠÖ”‚ÌŠK”
+	NurbsC[NurbsCount].N = NurbsC[NurbsCount].K + NurbsC[NurbsCount].M;	// ƒmƒbƒgƒxƒNƒgƒ‹‚Ì”
 	
-	// ãƒ–ãƒ¼ãƒªã‚¢ãƒ³å‹ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£4ã¤
+	// ƒu[ƒŠƒAƒ“Œ^ƒvƒƒpƒeƒB4‚Â
 	NurbsC[NurbsCount].prop[0] = 0;
 	NurbsC[NurbsCount].prop[1] = 0;
 	NurbsC[NurbsCount].prop[2] = 1;
 	NurbsC[NurbsCount].prop[3] = 0;
 	
-	// ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿
+	// ƒƒ‚ƒŠ[Šm•Û
 	KOD_ERRflag++;	// 1
-	if((NurbsC[NurbsCount].T = (double *)malloc(sizeof(double)*NurbsC[NurbsCount].N)) == NULL){
+//	if((NurbsC[NurbsCount].T = (double *)malloc(sizeof(double)*NurbsC[NurbsCount].N)) == NULL){
+	NurbsC[NurbsCount].T = new double[NurbsC[NurbsCount].N];
+//	NurbsC[NurbsCount].T = boost::shared_array<double>( new double[NurbsC[NurbsCount].N] );
+	if ( !NurbsC[NurbsCount].T ) {
 		goto EXIT;
 	}
 	KOD_ERRflag++;	// 2
-	if((NurbsC[NurbsCount].W = (double *)malloc(sizeof(double)*NurbsC[NurbsCount].K)) == NULL){
+//	if((NurbsC[NurbsCount].W = (double *)malloc(sizeof(double)*NurbsC[NurbsCount].K)) == NULL){
+	NurbsC[NurbsCount].W = new double[NurbsC[NurbsCount].K];
+//	NurbsC[NurbsCount].W = boost::shared_array<double>( new double[NurbsC[NurbsCount].K] );
+	if ( !NurbsC[NurbsCount].W ) {
 		goto EXIT;
 	}
 	KOD_ERRflag++;	// 3
-	if((NurbsC[NurbsCount].cp = (Coord *)malloc(sizeof(Coord)*NurbsC[NurbsCount].K)) == NULL){
+//	if((NurbsC[NurbsCount].cp = (Coord *)malloc(sizeof(Coord)*NurbsC[NurbsCount].K)) == NULL){
+	NurbsC[NurbsCount].cp = new Coord[NurbsC[NurbsCount].K];
+//	NurbsC[NurbsCount].cp = boost::shared_array<Coord>( new Coord[NurbsC[NurbsCount].K] );
+	if ( !NurbsC[NurbsCount].cp ) {
 		goto EXIT;
 	}
 	
-	// ãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«ã®å€¤	
+	// ƒmƒbƒgƒxƒNƒgƒ‹‚Ì’l	
 	NurbsC[NurbsCount].T[0] = 0.;
 	NurbsC[NurbsCount].T[1] = 0.;
 	NurbsC[NurbsCount].T[2] = 0.;
@@ -1057,7 +1290,7 @@ int BODY::CirAToNurbsC_seg4(int NurbsCount,int CirCount,Coord vec[], double radi
 	NurbsC[NurbsCount].T[10] = 1.;
 	NurbsC[NurbsCount].T[11] = 1.;
 		
-	// Weightã®å€¤
+	// Weight‚Ì’l
 	for(i=0; i<9; i++){
 		if(i % 2 == 0){
 			NurbsC[NurbsCount].W[i] = 1.;
@@ -1067,7 +1300,7 @@ int BODY::CirAToNurbsC_seg4(int NurbsCount,int CirCount,Coord vec[], double radi
 		}
 	}
 
-	// ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆã®åº§æ¨™å€¤
+	// ƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒg‚ÌÀ•W’l
 	NurbsC[NurbsCount].cp[0].x = CirA[CirCount].cp[0].x + radius;
 	NurbsC[NurbsCount].cp[0].y = CirA[CirCount].cp[0].y;		
 	NurbsC[NurbsCount].cp[1].x = CirA[CirCount].cp[0].x + radius;
@@ -1088,94 +1321,104 @@ int BODY::CirAToNurbsC_seg4(int NurbsCount,int CirCount,Coord vec[], double radi
 	NurbsC[NurbsCount].cp[8].y = CirA[CirCount].cp[0].y;
 
 	for(i=0; i<9; i++){
-		NurbsC[NurbsCount].cp[i].z = CirA[CirCount].zt;	// Zæ–¹å‘ã®å¤§ãã•ã¯ä¸€å®š
+		NurbsC[NurbsCount].cp[i].z = CirA[CirCount].zt;	// Z•ûŒü‚Ì‘å‚«‚³‚Íˆê’è
 	}
 		
-	NurbsC[NurbsCount].V[0] = 0.;		// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤
+	NurbsC[NurbsCount].V[0] = 0.;		// ƒpƒ‰ƒ[ƒ^‚Ì’l
 	NurbsC[NurbsCount].V[1] = 1.;
 	
 	return KOD_TRUE;
 
-	// ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿ã«å¤±æ•—ã—ãŸå ´åˆã¯ä»Šã¾ã§ç¢ºä¿ã—ãŸåˆ†ã‚’é–‹æ”¾ã—ã¦KOD_ERRã‚’è¿”ã™
+	// ƒƒ‚ƒŠ[Šm•Û‚É¸”s‚µ‚½ê‡‚Í¡‚Ü‚ÅŠm•Û‚µ‚½•ª‚ğŠJ•ú‚µ‚ÄKOD_ERR‚ğ•Ô‚·
 EXIT:
 		GuiIF.SetMessage("PARAMETER SECTION KOD_ERROR:fail to allocate memory");
 	if(KOD_ERRflag == 3){
-		free(NurbsC[NurbsCount].cp);
+//		free(NurbsC[NurbsCount].cp);
+		delete[]	NurbsC[NurbsCount].cp;
+		NurbsC[NurbsCount].cp = NULL;
 		KOD_ERRflag--;
 	}
 	if(KOD_ERRflag == 2){
-		free(NurbsC[NurbsCount].W);
+//		free(NurbsC[NurbsCount].W);
+		delete[]	NurbsC[NurbsCount].W;
+		NurbsC[NurbsCount].W = NULL;
 		KOD_ERRflag--;
 	}
 	if(KOD_ERRflag == 1){
-		free(NurbsC[NurbsCount].T);
+//		free(NurbsC[NurbsCount].T);
+		delete[]	NurbsC[NurbsCount].T;
+		NurbsC[NurbsCount].T = NULL;
 	}
 	return KOD_ERR;
 }
 
 // Function: GetOuterEdgeNum
-// ãƒˆãƒªãƒ é¢ã‚’æ§‹æˆã™ã‚‹å¤–å´ã‚¨ãƒƒã‚¸ã®æ•°ã‚’å–å¾—ã™ã‚‹
+// ƒgƒŠƒ€–Ê‚ğ\¬‚·‚éŠO‘¤ƒGƒbƒW‚Ì”‚ğæ“¾‚·‚é
 //
 // Return:
-// ãƒˆãƒªãƒ é¢ã‚’æ§‹æˆã™ã‚‹å¤–å´ã‚¨ãƒƒã‚¸ã®æ•°
+// ƒgƒŠƒ€–Ê‚ğ\¬‚·‚éŠO‘¤ƒGƒbƒW‚Ì”
 int TRMS::GetOuterEdgeNum()
 {
-    COMPC *CompC = (COMPC *)pTO->pB;
+//	COMPC *CompC = (COMPC *)pTO->pB;
+	COMPC *CompC = pTO->pB.CompC;
     return CompC->N;
 }
 
 // Function: GetInnerTrmNum
-// ãƒˆãƒªãƒ é¢ã‚’æ§‹æˆã™ã‚‹å†…å´ãƒˆãƒªãƒ ã®æ•°ã‚’å–å¾—ã™ã‚‹
+// ƒgƒŠƒ€–Ê‚ğ\¬‚·‚é“à‘¤ƒgƒŠƒ€‚Ì”‚ğæ“¾‚·‚é
 //
 // Return:
-// ãƒˆãƒªãƒ é¢ã‚’æ§‹æˆã™ã‚‹å†…å´ãƒˆãƒªãƒ ã®æ•°
+// ƒgƒŠƒ€–Ê‚ğ\¬‚·‚é“à‘¤ƒgƒŠƒ€‚Ì”
 int TRMS::GetInnerTrmNum()
 {
     return n2;
 }
 
 // Function: GetInnerEdgeNum
-// ãƒˆãƒªãƒ é¢ã‚’æ§‹æˆã™ã‚‹å†…å´ã‚¨ãƒƒã‚¸ã®æ•°ã‚’å–å¾—ã™ã‚‹
+// ƒgƒŠƒ€–Ê‚ğ\¬‚·‚é“à‘¤ƒGƒbƒW‚Ì”‚ğæ“¾‚·‚é
 //
 // Parameters:
-// N - å†…å´ãƒˆãƒªãƒ ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ç•ªå·
+// N - “à‘¤ƒgƒŠƒ€‚ÌƒCƒ“ƒfƒbƒNƒX”Ô†
 //
 // Return:
-// ãƒˆãƒªãƒ é¢ã‚’æ§‹æˆã™ã‚‹å†…å´ã‚¨ãƒƒã‚¸ã®æ•°
+// ƒgƒŠƒ€–Ê‚ğ\¬‚·‚é“à‘¤ƒGƒbƒW‚Ì”
 int TRMS::GetInnerEdgeNum(int N)
 {
-    COMPC *CompC = (COMPC *)pTI[N]->pB;
+//	COMPC *CompC = (COMPC *)pTI[N]->pB;
+	COMPC *CompC = pTI[N]->pB.CompC;
     return CompC->N;
 }
 
 // Function: GetOuterCompC
-// ãƒˆãƒªãƒ é¢ã‚’æ§‹æˆã™ã‚‹å¤–å´ãƒˆãƒªãƒ æ›²ç·š(è¤‡åˆæ›²ç·š)ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’å–å¾—ã™ã‚‹
+// ƒgƒŠƒ€–Ê‚ğ\¬‚·‚éŠO‘¤ƒgƒŠƒ€‹Èü(•¡‡‹Èü)‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğæ“¾‚·‚é
 //
 // Return:
-// ãƒˆãƒªãƒ é¢ã‚’æ§‹æˆã™ã‚‹å¤–å´ãƒˆãƒªãƒ æ›²ç·š(è¤‡åˆæ›²ç·š)ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+// ƒgƒŠƒ€–Ê‚ğ\¬‚·‚éŠO‘¤ƒgƒŠƒ€‹Èü(•¡‡‹Èü)‚Ö‚Ìƒ|ƒCƒ“ƒ^
 COMPC *TRMS::GetOuterCompC()
 {
-    return (COMPC *)pTO->pB;
+//	return (COMPC *)pTO->pB;
+	return pTO->pB.CompC;
 }
 
 // Function: GetInnerCompC
-// ãƒˆãƒªãƒ é¢ã‚’æ§‹æˆã™ã‚‹å¤–å´ãƒˆãƒªãƒ æ›²ç·š(è¤‡åˆæ›²ç·š)ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’å–å¾—ã™ã‚‹
+// ƒgƒŠƒ€–Ê‚ğ\¬‚·‚éŠO‘¤ƒgƒŠƒ€‹Èü(•¡‡‹Èü)‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğæ“¾‚·‚é
 //
 // Parameters:
-// N - å†…å´ãƒˆãƒªãƒ ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ç•ªå·
+// N - “à‘¤ƒgƒŠƒ€‚ÌƒCƒ“ƒfƒbƒNƒX”Ô†
 //
 // Return:
-// ãƒˆãƒªãƒ é¢ã‚’æ§‹æˆã™ã‚‹å¤–å´ãƒˆãƒªãƒ æ›²ç·š(è¤‡åˆæ›²ç·š)ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+// ƒgƒŠƒ€–Ê‚ğ\¬‚·‚éŠO‘¤ƒgƒŠƒ€‹Èü(•¡‡‹Èü)‚Ö‚Ìƒ|ƒCƒ“ƒ^
 COMPC *TRMS::GetInnerCompC(int N)
 {
-    return (COMPC *)pTI[N]->pB;
+//	return (COMPC *)pTI[N]->pB;
+	return pTI[N]->pB.CompC;
 }
 
 // Funciton: GetNurbsS
-// ãƒˆãƒªãƒ é¢ã‚’æ§‹æˆã™ã‚‹NURBSæ›²é¢ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’å¾—ã‚‹
+// ƒgƒŠƒ€–Ê‚ğ\¬‚·‚éNURBS‹È–Ê‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğ“¾‚é
 //
 // Return:
-// ãƒˆãƒªãƒ é¢ã‚’æ§‹æˆã™ã‚‹NURBSæ›²é¢ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+// ƒgƒŠƒ€–Ê‚ğ\¬‚·‚éNURBS‹È–Ê‚Ö‚Ìƒ|ƒCƒ“ƒ^
 NURBSS *TRMS::GetNurbsS()
 {
     return pts;

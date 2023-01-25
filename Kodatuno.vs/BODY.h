@@ -1,4 +1,4 @@
-ï»¿// BODYã®å®šç¾©
+// BODY‚Ì’è‹`
 
 #ifndef _BODY_H_
 #define _BODY_H_
@@ -6,16 +6,18 @@
 #include "StdAfx.h"
 #include "KodListFunc.h"
 #include "MESH.h"
+#include <string>
+//#include "boost/variant.hpp"
+//#include "boost/shared_array.hpp"
 
 // Constants: General Defines
-// ALL_ENTITY_TYPE_NUM -	å…¨ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚¿ã‚¤ãƒ—ã®æ•°(21)
-// CTLPNUMMAX -				NURBSã§ç”¨ã„ã‚‰ã‚Œã‚‹ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆã®æ•°ã®ä¸Šé™(1024)
-// KNOTNUMMAX -				NURBSã§ç”¨ã„ã‚‰ã‚Œã‚‹ãƒãƒƒãƒˆã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã®æ•°ã®ä¸Šé™(1024)
-// GEOMTRYELEM -			IGESãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªéƒ¨"Entity Use Flag"ã‚ˆã‚Šã€å¹¾ä½•è¦ç´ ã‚’ç¤ºã™(0)
-// PARAMETRICELEM -			IGESãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªéƒ¨"Entity Use Flag"ã‚ˆã‚Šã€2Dãƒ‘ãƒ©ãƒ¡ãƒˆãƒªãƒƒã‚¯è¦ç´ ã‚’ç¤ºã™(5)
-// NORM_KNOT_VAL -			ãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«ã‚’æ­£è¦åŒ–ã™ã‚‹ã¨ãã®ç¯„å›²ã®æœ€å¤§å€¤(1)
-// MIN_KNOT_RANG -			éš£ã‚Šåˆã†ãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«ã®å·®ãŒã“ã®å€¤ä»¥ä¸Šã§ã‚ã‚‹ã“ã¨(0.0002)
-#define ALL_ENTITY_TYPE_NUM	21
+// ALL_ENTITY_TYPE_NUM -	‘SƒGƒ“ƒeƒBƒeƒBƒ^ƒCƒv‚Ì”(21)
+// CTLPNUMMAX -				NURBS‚Å—p‚¢‚ç‚ê‚éƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒg‚Ì”‚ÌãŒÀ(1024)
+// KNOTNUMMAX -				NURBS‚Å—p‚¢‚ç‚ê‚éƒmƒbƒgƒV[ƒPƒ“ƒX‚Ì”‚ÌãŒÀ(1024)
+// GEOMTRYELEM -			IGESƒfƒBƒŒƒNƒgƒŠ•”"Entity Use Flag"‚æ‚èAŠô‰½—v‘f‚ğ¦‚·(0)
+// PARAMETRICELEM -			IGESƒfƒBƒŒƒNƒgƒŠ•”"Entity Use Flag"‚æ‚èA2Dƒpƒ‰ƒƒgƒŠƒbƒN—v‘f‚ğ¦‚·(5)
+// NORM_KNOT_VAL -			ƒmƒbƒgƒxƒNƒgƒ‹‚ğ³‹K‰»‚·‚é‚Æ‚«‚Ì”ÍˆÍ‚ÌÅ‘å’l(1)
+// MIN_KNOT_RANG -			—×‚è‡‚¤ƒmƒbƒgƒxƒNƒgƒ‹‚Ì·‚ª‚±‚Ì’lˆÈã‚Å‚ ‚é‚±‚Æ(0.0002)
 #define CTLPNUMMAX  1024
 #define KNOTNUMMAX  1024
 #define GEOMTRYELEM 0
@@ -23,33 +25,27 @@
 #define NORM_KNOT_VAL	1
 #define MIN_KNOT_RANGE	0.0002
 
-// Typedefs: KODlistData
-// BODYList - æ±ç”¨ãƒ‡ãƒ¼ã‚¿ãƒªã‚¹ãƒˆã®å‹ã‚’BODYListã¨ã—ã¦å†ç™»éŒ²
-// OBJECTList - æ±ç”¨ãƒ‡ãƒ¼ã‚¿ãƒªã‚¹ãƒˆã®å‹ã‚’OBJECTListã¨ã—ã¦å†ç™»éŒ²
-typedef KODlistData BODYList;
-typedef KODlistData OBJECTList;
-
 // Constants: Symbol of Entity Type
-//	CIRCLE_ARC -				å††/å††å¼§(100)
-//	COMPOSITE_CURVE -			è¤‡åˆæ›²ç·š(102)
-//	CONIC_ARC -					å††éŒæ›²ç·š(104)
-//	COPIOUS_DATA -				æœ‰æ„ç‚¹åˆ—(106)
-//	PLANE -						å¹³é¢(108)
-//	LINE -						ç·šåˆ†(110)
-//	PARAMETRIC_SPLINE_CURVE -	ãƒ‘ãƒ©ãƒ¡ãƒˆãƒªãƒƒã‚¯ã‚¹ãƒ—ãƒ©ã‚¤ãƒ³æ›²ç·š(112)
-//	PARAMETRIC_SPLINE_SURFACE - ãƒ‘ãƒ©ãƒ¡ãƒˆãƒªãƒƒã‚¯ã‚¹ãƒ—ãƒ©ã‚¤ãƒ³æ›²é¢(114)
-//	POINT -						ç‚¹(116)
-//	TRANSFORMATION_MATRIX -		å¤‰æ›è¡Œåˆ—(124)
-//	NURBS_CURVE -				æœ‰ç†Bã‚¹ãƒ—ãƒ©ã‚¤ãƒ³æ›²ç·š(126)
-//	NURBS_SURFACE -				æœ‰ç†Bã‚¹ãƒ—ãƒ©ã‚¤ãƒ³æ›²é¢(128)
-//	CURVE_ON_PARAMETRIC_SURFACE - é¢ä¸Šç·š(142)
-//	TRIMMED_SURFACE -			ãƒˆãƒªãƒ é¢(144)
-//	SUBFIGURE_DEFINITION -		å­å›³ã®å®šç¾©(308)
-//	ASSOCIATIVITY_INSTANCE -	ã‚°ãƒ«ãƒ¼ãƒ—(402)
-//	DRAWING -					å›³é¢(404)
-//	PROPERTY -					å›³é¢ã‚µã‚¤ã‚º(406)
-//	SINGULAR_SUBFIGURE_INSTANCE - å­å›³ã®å‚ç…§(408)
-//	VIEW - æŠ•è±¡é¢(410)
+//	CIRCLE_ARC -				‰~/‰~ŒÊ(100)
+//	COMPOSITE_CURVE -			•¡‡‹Èü(102)
+//	CONIC_ARC -					‰~‹Èü(104)
+//	COPIOUS_DATA -				—LˆÓ“_—ñ(106)
+//	PLANE -						•½–Ê(108)
+//	LINE -						ü•ª(110)
+//	PARAMETRIC_SPLINE_CURVE -	ƒpƒ‰ƒƒgƒŠƒbƒNƒXƒvƒ‰ƒCƒ“‹Èü(112)
+//	PARAMETRIC_SPLINE_SURFACE - ƒpƒ‰ƒƒgƒŠƒbƒNƒXƒvƒ‰ƒCƒ“‹È–Ê(114)
+//	POINT -						“_(116)
+//	TRANSFORMATION_MATRIX -		•ÏŠ·s—ñ(124)
+//	NURBS_CURVE -				—L—BƒXƒvƒ‰ƒCƒ“‹Èü(126)
+//	NURBS_SURFACE -				—L—BƒXƒvƒ‰ƒCƒ“‹È–Ê(128)
+//	CURVE_ON_PARAMETRIC_SURFACE - –Êãü(142)
+//	TRIMMED_SURFACE -			ƒgƒŠƒ€–Ê(144)
+//	SUBFIGURE_DEFINITION -		q}‚Ì’è‹`(308)
+//	ASSOCIATIVITY_INSTANCE -	ƒOƒ‹[ƒv(402)
+//	DRAWING -					}–Ê(404)
+//	PROPERTY -					}–ÊƒTƒCƒY(406)
+//	SINGULAR_SUBFIGURE_INSTANCE - q}‚ÌQÆ(408)
+//	VIEW - “ŠÛ–Ê(410)
 #define	CIRCLE_ARC					100
 #define	COMPOSITE_CURVE				102
 #define	CONIC_ARC					104
@@ -72,29 +68,29 @@ typedef KODlistData OBJECTList;
 #define	VIEW						410
 
 // Enum: Enum Symbol of Entity Type
-// _CIRCLE_ARC -					0:å††ãƒ»å††å¼§
-// _COMPOSITE_CURVE -				1:è¤‡åˆæ›²ç·š
-// _CONIC_ARC -						2:å††éŒæ›²ç·š
-// _COPIOUS_DATA -					3:æœ‰æ„ç‚¹åˆ—
-// _PLANE -							4:å¹³é¢
-// _LINE -							5:ç·šåˆ†
-// _PARAMETRIC_SPLINE_CURVE -		6:ãƒ‘ãƒ©ãƒ¡ãƒˆãƒªãƒƒã‚¯ã‚¹ãƒ—ãƒ©ã‚¤ãƒ³æ›²ç·š
-// _PARAMETRIC_SPLINE_SURFACE -		7:ãƒ‘ãƒ©ãƒ¡ãƒˆãƒªãƒƒã‚¯ã‚¹ãƒ—ãƒ©ã‚¤ãƒ³æ›²é¢
-// _POINT -							8:ç‚¹
-// _TRANSFORMATION_MATRIX -			9:å¤‰æ›è¡Œåˆ—
-// _NURBSC -						10:æœ‰ç†Bã‚¹ãƒ—ãƒ©ã‚¤ãƒ³æ›²ç·š
-// _NURBSS -						11:æœ‰ç†Bã‚¹ãƒ—ãƒ©ã‚¤ãƒ³æ›²é¢
-// _CURVE_ON_PARAMETRIC_SURFACE -	12:é¢ä¸Šç·š
-// _TRIMMED_SURFACE -				13:ãƒˆãƒªãƒ é¢
-// _SUBFIGURE_DEFINITION -			14:å­å›³ã®å®šç¾©
-// _ASSOCIATIVITY_INSTANCE -		15:ã‚°ãƒ«ãƒ¼ãƒ—
-// _DRAWING -						16:å›³é¢
-// _PROPERTY -						17:å›³é¢ã‚µã‚¤ã‚º
-// _SINGULAR_SUBFIGURE_INSTANCE -	18:å­å›³ã®å‚ç…§
-// _VIEW -							19:æŠ•è±¡é¢
-// _MESH -							20:ãƒ¡ãƒƒã‚·ãƒ¥
+// _CIRCLE_ARC -					0:‰~E‰~ŒÊ
+// _COMPOSITE_CURVE -				1:•¡‡‹Èü
+// _CONIC_ARC -						2:‰~‹Èü
+// _COPIOUS_DATA -					3:—LˆÓ“_—ñ
+// _PLANE -							4:•½–Ê
+// _LINE -							5:ü•ª
+// _PARAMETRIC_SPLINE_CURVE -		6:ƒpƒ‰ƒƒgƒŠƒbƒNƒXƒvƒ‰ƒCƒ“‹Èü
+// _PARAMETRIC_SPLINE_SURFACE -		7:ƒpƒ‰ƒƒgƒŠƒbƒNƒXƒvƒ‰ƒCƒ“‹È–Ê
+// _POINT -							8:“_
+// _TRANSFORMATION_MATRIX -			9:•ÏŠ·s—ñ
+// _NURBSC -						10:—L—BƒXƒvƒ‰ƒCƒ“‹Èü
+// _NURBSS -						11:—L—BƒXƒvƒ‰ƒCƒ“‹È–Ê
+// _CURVE_ON_PARAMETRIC_SURFACE -	12:–Êãü
+// _TRIMMED_SURFACE -				13:ƒgƒŠƒ€–Ê
+// _SUBFIGURE_DEFINITION -			14:q}‚Ì’è‹`
+// _ASSOCIATIVITY_INSTANCE -		15:ƒOƒ‹[ƒv
+// _DRAWING -						16:}–Ê
+// _PROPERTY -						17:}–ÊƒTƒCƒY
+// _SINGULAR_SUBFIGURE_INSTANCE -	18:q}‚ÌQÆ
+// _VIEW -							19:“ŠÛ–Ê
+// _MESH -							20:ƒƒbƒVƒ…
 enum EntityType{
-	_CIRCLE_ARC,
+	_CIRCLE_ARC = 0,
 	_COMPOSITE_CURVE,
 	_CONIC_ARC,
 	_COPIOUS_DATA,
@@ -114,28 +110,30 @@ enum EntityType{
 	_PROPERTY,
 	_SINGULAR_SUBFIGURE_INSTANCE,
 	_VIEW,
-	_MESH
+	_MESH,
+		ALL_ENTITY_TYPE_NUM		// 21
 };
 
 /*
- * ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚¿ã‚¤ãƒ—ã”ã¨ã«æ§‹é€ ä½“ã‚’å®šç¾©
- * 9ã¤ã®ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚¿ã‚¤ãƒ—ã‚’èª­ã¿è¾¼ã¿å¯¾è±¡ã¨ã™ã‚‹(ãã‚Œä»¥å¤–ã¯èª­ã¿æ¨ã¦)
- * è¿½åŠ ã™ã‚‹å ´åˆã¯ã€ä»¥ä¸‹ã«è¿½åŠ ã™ã‚‹ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚¿ã‚¤ãƒ—ã®æ§‹é€ ä½“ã‚’å®šç¾©ã—ã¦ãã ã•ã„
+ * ƒGƒ“ƒeƒBƒeƒBƒ^ƒCƒv‚²‚Æ‚É\‘¢‘Ì‚ğ’è‹`
+ * 9‚Â‚ÌƒGƒ“ƒeƒBƒeƒBƒ^ƒCƒv‚ğ“Ç‚İ‚İ‘ÎÛ‚Æ‚·‚é(‚»‚êˆÈŠO‚Í“Ç‚İÌ‚Ä)
+ * ’Ç‰Á‚·‚éê‡‚ÍAˆÈ‰º‚É’Ç‰Á‚·‚éƒGƒ“ƒeƒBƒeƒBƒ^ƒCƒv‚Ì\‘¢‘Ì‚ğ’è‹`‚µ‚Ä‚­‚¾‚³‚¢
  */
 
 // Structure: CIRA
-// å††ãƒ»å††å¼§ã‚’è¡¨ã‚ã™æ§‹é€ ä½“
+// ‰~E‰~ŒÊ‚ğ•\‚í‚·\‘¢‘Ì
 // 
 // Variables:
-// double	zt -			Zè»¸æ–¹å‘ã®æ·±ã•
-// Coord	cp[3] -			å††ãƒ»å††å¼§ã®ä¸­å¿ƒç‚¹ã€å§‹ç‚¹ã€çµ‚ç‚¹
-// double	R -				åŠå¾„
-// double	t[2] -			t[0]:å§‹ç‚¹ã®è§’åº¦ t[1]:çµ‚ç‚¹ã®è§’åº¦
-// Coord	U,V -			å††ï¼Œå††å¼§ã‚’æ§‹æˆã™ã‚‹å¹³é¢ã®ä»»æ„ã®ç›´äº¤ãƒ™ã‚¯ãƒˆãƒ«
-// int		EntUseFlag -	ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªéƒ¨ Entity Use Flag ã®å€¤(0:å¹¾ä½•è¦ç´  5:2Dãƒ‘ãƒ©ãƒ¡ãƒˆãƒªãƒƒã‚¯è¦ç´ )
-// int		pD -			ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªéƒ¨ã¸ã®é€†ãƒã‚¤ãƒ³ã‚¿
-// DispStat	Dstat -			 è¡¨ç¤ºå±æ€§ï¼ˆè‰²r,g,bï¼‰
-typedef struct{
+// double	zt -			Z²•ûŒü‚Ì[‚³
+// Coord	cp[3] -			‰~E‰~ŒÊ‚Ì’†S“_An“_AI“_
+// double	R -				”¼Œa
+// double	t[2] -			t[0]:n“_‚ÌŠp“x t[1]:I“_‚ÌŠp“x
+// Coord	U,V -			‰~C‰~ŒÊ‚ğ\¬‚·‚é•½–Ê‚Ì”CˆÓ‚Ì’¼ŒğƒxƒNƒgƒ‹
+// int		EntUseFlag -	ƒfƒBƒŒƒNƒgƒŠ•” Entity Use Flag ‚Ì’l(0:Šô‰½—v‘f 5:2Dƒpƒ‰ƒƒgƒŠƒbƒN—v‘f)
+// int		pD -			ƒfƒBƒŒƒNƒgƒŠ•”‚Ö‚Ì‹tƒ|ƒCƒ“ƒ^
+// DispStat	Dstat -			 •\¦‘®«iFr,g,bj
+struct CIRA
+{
 	double zt;		
 	Coord  cp[3];	
 	double R;
@@ -144,76 +142,110 @@ typedef struct{
 	int EntUseFlag;
 	int pD;
 	DispStat Dstat;
-}CIRA;
+
+	CIRA() {
+		zt = 0;
+		cp[0] = cp[1] = cp[2] = SetCoord(0,0,0);
+		R = 0;
+		t[0] = t[1] = 0;
+		U = V = SetCoord(0,0,0);
+		EntUseFlag = 0;
+		pD = 0;
+	}
+};
 
 // Structure: CONA
-// å††éŒæ›²ç·šã‚’è¡¨ã‚ã™æ§‹é€ ä½“
+// ‰~‹Èü‚ğ•\‚í‚·\‘¢‘Ì
 //
 // Variables:
-// double prop[6] - ä¿‚æ•°
-// double zt -		ZTå¹³é¢ã®å®šç¾©
-// Coord  cp[2] -	å§‹ç‚¹ã€çµ‚ç‚¹
-// int pD -			ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªéƒ¨ã¸ã®é€†ãƒã‚¤ãƒ³ã‚¿
-// DispStat Dstat - è¡¨ç¤ºå±æ€§ï¼ˆè‰²r,g,bï¼‰
-typedef struct{
+// double prop[6] - ŒW”
+// double zt -		ZT•½–Ê‚Ì’è‹`
+// Coord  cp[2] -	n“_AI“_
+// int pD -			ƒfƒBƒŒƒNƒgƒŠ•”‚Ö‚Ì‹tƒ|ƒCƒ“ƒ^
+// DispStat Dstat - •\¦‘®«iFr,g,bj
+struct CONA
+{
 	double prop[6];
 	double zt;
 	Coord  cp[2];
 	int pD;
 	DispStat Dstat;
-}CONA;
+
+	CONA() {
+		InitVector(prop,6);
+		zt = 0;
+		cp[0] = cp[1] = SetCoord(0,0,0);
+		pD = 0;
+	}
+};
 
 // Structure: LINE_
-// ç·šåˆ†ã‚’è¡¨ã‚ã™æ§‹é€ ä½“
+// ü•ª‚ğ•\‚í‚·\‘¢‘Ì
 //
 // Variables:
-// Coord cp[2] -	å§‹ç‚¹ã€çµ‚ç‚¹
-// int EntUseFlag - ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªéƒ¨ Entity Use Flag ã®å€¤(0:å¹¾ä½•è¦ç´  5:2Dãƒ‘ãƒ©ãƒ¡ãƒˆãƒªãƒƒã‚¯è¦ç´ )
-// int pD -			ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªéƒ¨ã¸ã®é€†ãƒã‚¤ãƒ³ã‚¿
-// DispStat Dstat - è¡¨ç¤ºå±æ€§ï¼ˆè‰²r,g,bï¼‰
-typedef struct{
+// Coord cp[2] -	n“_AI“_
+// int EntUseFlag - ƒfƒBƒŒƒNƒgƒŠ•” Entity Use Flag ‚Ì’l(0:Šô‰½—v‘f 5:2Dƒpƒ‰ƒƒgƒŠƒbƒN—v‘f)
+// int pD -			ƒfƒBƒŒƒNƒgƒŠ•”‚Ö‚Ì‹tƒ|ƒCƒ“ƒ^
+// DispStat Dstat - •\¦‘®«iFr,g,bj
+struct LINE_
+{
 	Coord cp[2];
 	int EntUseFlag;
 	int pD;
 	DispStat Dstat;
-}LINE_;
+
+	LINE_() {
+		cp[0] = cp[1] = SetCoord(0,0,0);
+		EntUseFlag = 0;
+		pD = 0;
+	}
+};
 
 // Structure: TMAT
-// å¤‰æ›ãƒãƒˆãƒªãƒƒã‚¯ã‚¹ã‚’è¡¨ã‚ã™æ§‹é€ ä½“
+// •ÏŠ·ƒ}ƒgƒŠƒbƒNƒX‚ğ•\‚í‚·\‘¢‘Ì
 //
 // Variables:
-// double R[3][3] - å›è»¢è¡Œåˆ—
-// double T[3] -	ä¸¦é€²ãƒ™ã‚¯ãƒˆãƒ«
-// int pD -			ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªéƒ¨ã¸ã®é€†ãƒã‚¤ãƒ³ã‚¿
-typedef struct{
-	double R[3][3];	// å›è»¢è¡Œåˆ—
-	double T[3];	// ä¸¦é€²ãƒ™ã‚¯ãƒˆãƒ«
-	int pD;			// ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªéƒ¨ã¸ã®é€†ãƒã‚¤ãƒ³ã‚¿
-}TMAT;
+// double R[3][3] - ‰ñ“]s—ñ
+// double T[3] -	•ÀiƒxƒNƒgƒ‹
+// int pD -			ƒfƒBƒŒƒNƒgƒŠ•”‚Ö‚Ì‹tƒ|ƒCƒ“ƒ^
+struct TMAT
+{
+	double R[3][3];	// ‰ñ“]s—ñ
+	double T[3];	// •ÀiƒxƒNƒgƒ‹
+	int pD;			// ƒfƒBƒŒƒNƒgƒŠ•”‚Ö‚Ì‹tƒ|ƒCƒ“ƒ^
+
+	TMAT() {
+		for(int j=0;j<3;j++)
+			InitVector(R[j],3);
+		InitVector(T,3);
+		pD = 0;
+	}
+};
 
 // Structure: NURBSC
-// æœ‰ç†Bã‚¹ãƒ—ãƒ©ã‚¤ãƒ³(NURBS)æ›²ç·šã‚’è¡¨ã‚ã™æ§‹é€ ä½“
+// —L—BƒXƒvƒ‰ƒCƒ“(NURBS)‹Èü‚ğ•\‚í‚·\‘¢‘Ì
 //
 // Variables:
-// int K -			ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆã®æ•°
-// int M -			éšæ•°(=æ¬¡æ•°+1)
-// int N -			ãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«ã®æ•°
-// int prop[4] -	å„ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£
-//					prop[0]==0:éå¹³é¢å†…æ›²ç·š, 1:å¹³é¢å†…æ›²ç·š
-//					prop[1]==0:é–‰æ›²ç·šã§ãªã„ï¼Œ1:é–‰æ›²ç·š
-//					prop[2]==0:æœ‰ç†å¼ï¼Œ1:å¤šé …å¼
-//					prop[3]==0:éå‘¨æœŸçš„æ›²ç·š, 1:å‘¨æœŸçš„æ›²ç·š	
-// double *T -		ãƒãƒƒãƒˆã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã®å€¤ K+Må€‹				
-// double *W -		Weightã®å€¤ Kå€‹							
-// Coord *cp -		ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆ Kå€‹								
-// double V[2] -	ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®ç¯„å›²
-// Coord norm -		æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«
-// int EntUseFlag - ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªéƒ¨ Entity Use Flag ã®å€¤(0:å¹¾ä½•è¦ç´  5:2Dãƒ‘ãƒ©ãƒ¡ãƒˆãƒªãƒƒã‚¯è¦ç´ )
-// int pD -			ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªéƒ¨ã¸ã®é€†ãƒã‚¤ãƒ³ã‚¿
-// int OriginEnt -	å…ƒã®ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚¿ã‚¤ãƒ—
-// void *pOriginEnt - å…ƒã®ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã¸ã®ãƒã‚¤ãƒ³ã‚¿
-// DispStat Dstat - è¡¨ç¤ºå±æ€§ï¼ˆè‰²r,g,bï¼‰
-typedef struct{
+// int K -			ƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒg‚Ì”
+// int M -			ŠK”(=Ÿ”+1)
+// int N -			ƒmƒbƒgƒxƒNƒgƒ‹‚Ì”
+// int prop[4] -	ŠeƒvƒƒpƒeƒB
+//					prop[0]==0:”ñ•½–Ê“à‹Èü, 1:•½–Ê“à‹Èü
+//					prop[1]==0:•Â‹Èü‚Å‚È‚¢C1:•Â‹Èü
+//					prop[2]==0:—L—®C1:‘½€®
+//					prop[3]==0:”ñüŠú“I‹Èü, 1:üŠú“I‹Èü	
+// double *T -		ƒmƒbƒgƒV[ƒPƒ“ƒX‚Ì’l K+MŒÂ				
+// double *W -		Weight‚Ì’l KŒÂ							
+// Coord *cp -		ƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒg KŒÂ								
+// double V[2] -	ƒpƒ‰ƒ[ƒ^‚Ì”ÍˆÍ
+// Coord norm -		–@üƒxƒNƒgƒ‹
+// int EntUseFlag - ƒfƒBƒŒƒNƒgƒŠ•” Entity Use Flag ‚Ì’l(0:Šô‰½—v‘f 5:2Dƒpƒ‰ƒƒgƒŠƒbƒN—v‘f)
+// int pD -			ƒfƒBƒŒƒNƒgƒŠ•”‚Ö‚Ì‹tƒ|ƒCƒ“ƒ^
+// int OriginEnt -	Œ³‚ÌƒGƒ“ƒeƒBƒeƒBƒ^ƒCƒv
+// void *pOriginEnt - Œ³‚ÌƒGƒ“ƒeƒBƒeƒB‚Ö‚Ìƒ|ƒCƒ“ƒ^
+// DispStat Dstat - •\¦‘®«iFr,g,bj
+struct NURBSC
+{
 	int K;
 	int M;
 	int N;
@@ -221,6 +253,9 @@ typedef struct{
 	double *T;
 	double *W;
 	Coord *cp;
+//	boost::shared_array<double>	T;
+//	boost::shared_array<double>	W;
+//	boost::shared_array<Coord>	cp;
 	double V[2];
 	Coord norm;
 	int EntUseFlag;
@@ -228,31 +263,156 @@ typedef struct{
 	int OriginEnt;
 	void *pOriginEnt;
 	DispStat Dstat;
-}NURBSC;
+
+	NURBSC() {
+		K = 0;
+		M = 0;
+		N = 0;
+		prop[0] = prop[1] = prop[2] = prop[3] = 0;
+		T = NULL;
+		W = NULL;
+		cp = NULL;
+		V[0] = V[1] = 0;
+		norm = SetCoord(0,0,0);
+		EntUseFlag = 0;
+		pD = 0;
+		OriginEnt = 0;
+		pOriginEnt = NULL;
+	}
+
+	~NURBSC() {		// ƒƒ‚ƒŠƒŠ[ƒN–h~BBB‚Å‚«‚È‚¢HH
+		if ( T )
+			delete[]	T;
+		if ( W )
+			delete[]	W;
+		if ( cp )
+			delete[]	cp;
+	}
+
+	// Function: CalcNurbsCCoord
+	// w’è‚µ‚½t‚Å‚ÌNURBS‹Èü‚ÌÀ•W’l‚ğ‹‚ß‚é
+	Coord CalcNurbsCCoord(double);
+
+	// Function: CalcNurbsCCoords
+	// w’è‚µ‚½tŒQ‚Å‚ÌNURBS‹Èü‚ÌÀ•W’lŒQ‚ğ‹‚ß‚é
+	void CalcNurbsCCoords(int,double *,Coord *);
+
+	// Function: CalcDiffNurbsC
+	// NURBS‹Èü‚Ì1ŠK”÷•ªŒW”‚ğ‹‚ß‚é
+	Coord CalcDiffNurbsC(double);						
+
+	// Function: CalcDiff2NurbsC
+	// NURBS‹Èü‚Ì2ŠK”÷•ªŒW”‚ğ‹‚ß‚é
+	Coord CalcDiff2NurbsC(double);						
+
+	// Function: CalcDiffNNurbsC
+	// NURBS‹Èü‚ÌrŠK”÷•ªŒW”‚ğ‹‚ß‚é
+	Coord CalcDiffNNurbsC(int,double);					
+
+	// Function: CalcNurbsCLength
+	// NURBS‹Èü‚Ìü•ª’·‚ğ‹‚ß‚é
+	double CalcNurbsCLength(void);							
+
+	// Function: CalcNurbsCLength
+	// NURBS‹Èü‚Ìw’è‹æŠÔ‚Ìü•ª’·‚ğ‹‚ß‚é
+	double CalcNurbsCLength(double,double);			
+
+	// Function: CalcDeltaPtsOnNurbsC
+	// w’è‚µ‚½•ªŠ„”‚ÅNURBS‹Èüã‚ÌÀ•W’l‚ğ‹‚ß‚é
+	int CalcDeltaPtsOnNurbsC(int,Coord *);				
+
+	// Function: CalcTanVecOnNurbsC
+	// NURBS‹Èüã‚Ìt‚É‚¨‚¯‚é’PˆÊÚƒxƒNƒgƒ‹‚ğ‚à‚Æ‚ß‚é
+	Coord CalcTanVecOnNurbsC(double);					
+
+	// Function: CalcCurvatureNurbsC
+	// NURBS‹Èü‚Ì‹È—¦‚ğ‹‚ß‚é
+	double CalcCurvatureNurbsC(double);				
+
+	// Function: ShiftNurbsC
+	// NURBS‹Èü‚ÌƒVƒtƒg
+	void ShiftNurbsC(Coord);							
+
+	// Function: ChRatioNurbsC
+	// NURBS‹Èü‚Ì”{—¦‚ğ•ÏX‚·‚é
+	void ChRatioNurbsC(Coord);							
+
+	// Function: RotNurbsC
+	// NURBS‹Èü‚ğ‰ñ“]
+	void RotNurbsC(Coord,double);						
+
+	// Function: CalcIntersecPtNurbsPt
+	// ‹óŠÔã‚Ì1“_‚©‚çNURBS‹Èüã‚ÌÅ‹ß–T“_‚ğ‹‚ß‚é(ƒjƒ…[ƒgƒ“–@)(ƒI[ƒo[ƒ[ƒh)
+	int CalcIntersecPtNurbsPt(Coord,int,int,double *);			
+
+	// Function: CalcIntersecCurve
+	// NURBS‹Èü‚Æ•½–Ê‚Æ‚ÌŒğ“_‚ğ‹‚ß‚é(ƒjƒ…[ƒgƒ“–@)
+	int CalcIntersecCurve(Coord,Coord,int,double *,int,int);	
+
+	// Function: CalcIntersecCurve3
+	// 3ŸˆÈ‰º‚ÌNURBS‹Èü‚Æ•½–Ê‚Æ‚ÌŒğ“_‚ğ‹‚ß‚é
+	int CalcIntersecCurve3(Coord,Coord,double *,int);	
+
+    // Function: CalcIntersecPtsNurbsCLine
+    // 2ŸŒ³NURBS‹Èü‚Æ’¼ü‚Æ‚ÌŒğ“_‚ğ‹‚ß‚é
+    int ClacIntersecPtsNurbsCLine(Coord, Coord, double *, double *);
+
+    // Function: CalcIntersecPtsNurbsCLineSeg
+    // 2ŸŒ³NURBS‹Èü‚Æü•ª‚Æ‚ÌŒğ“_‚ğ‹‚ß‚é
+    int ClacIntersecPtsNurbsCLineSeg(Coord, Coord, double, double, double *, double *);
+
+	// Function: CalcParamLengthOnNurbsC
+	// NURBS‹Èü‚É‚¨‚¢‚Äˆê’[‚©‚ç‚Ìw’è‹——£‚É‚¨‚¯‚éƒpƒ‰ƒ[ƒ^’l‚ğ•Ô‚·
+	double CalcParamLengthOnNurbsC(double,double);		
+
+	// Function: CalcDeltaPtsOnNurbsC
+	// w’è‚µ‚½ŠÔŠu‚ÅNURBS‹Èüã‚ÌÀ•W’l‚ğ‹‚ß‚é
+	int CalcDeltaPtsOnNurbsC(double,Coord *);			
+
+	// Function: ReverseNurbsC
+	// NURBS‹Èü‚ÌƒmƒbƒgƒxƒNƒgƒ‹Œü‚«‚ğ”½“]‚·‚é
+	void ReverseNurbsC(void);								
+
+	// Function: CalcExtremumNurbsC
+	// NURBS‹Èü‚Ìw’è‚µ‚½•ûŒü‚É‚¨‚¯‚é‹É’l‚ÌÀ•W’l‚ğ“¾‚é
+	int CalcExtremumNurbsC(Coord,double *,int);		
+
+#ifdef _DEBUG
+	// Function: DebugForNurbsC
+	// NURBS‹Èüî•ñ‚ğƒfƒoƒbƒOƒvƒŠƒ“ƒg
+	void DebugForNurbsC(void);				
+#endif
+
+private:
+	// Function: GetNurbsCCoef
+	// (private)NURBS‹Èü‚ÌŒW”‚ğ‹‚ß‚é(Å‚3Ÿ)
+	int GetNurbsCCoef(double **,int,Coord *,double *);	
+};
 
 // Structure: NURBSS
-// æœ‰ç†Bã‚¹ãƒ—ãƒ©ã‚¤ãƒ³(NURBS)æ›²é¢ã‚’è¡¨ã‚ã™æ§‹é€ ä½“
+// —L—BƒXƒvƒ‰ƒCƒ“(NURBS)‹È–Ê‚ğ•\‚í‚·\‘¢‘Ì
 //
 // Variables:
-// int K[2] -		ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆã®æ•°(uæ–¹å‘,væ–¹å‘)
-// int M[2] -		éšæ•°(=æ¬¡æ•°+1)
-// int N[2] -		ãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«ã®æ•°(K+M)
-// int prop[5] -	ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
-//					prop[0]==0:uæ–¹å‘ã§é–‰ã˜ã¦ã„ã‚‹, 1:é–‰ã˜ã¦ã„ãªã„
-//					prop[1]==0:væ–¹å‘ã§é–‰ã˜ã¦ã„ã‚‹ï¼Œ1:é–‰ã˜ã¦ã„ãªã„
-//					prop[2]==0:æœ‰ç†å¼ï¼Œ1:å¤šé …å¼
-//					prop[3]==0:uæ–¹å‘ã§éå‘¨æœŸçš„, 1:å‘¨æœŸçš„
-//					prop[4]==0:væ–¹å‘ã§éå‘¨æœŸçš„, 1:å‘¨æœŸçš„
-// double *S -		uæ–¹å‘ãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«ã®å€¤ A+1å€‹			
-// double *T -		væ–¹å‘ãƒãƒƒãƒˆãƒ™ã‚¯ãƒˆãƒ«ã®å€¤ B+1å€‹			
-// double **W -		Weightã®å€¤								
-// Coord  **cp -	ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚¤ãƒ³ãƒˆ Cå€‹					
-// double U[2] -	uæ–¹å‘ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®ç¯„å›²
-// double V[2] -	væ–¹å‘ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®ç¯„å›²
-// int pD -			ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªéƒ¨ã¸ã®é€†ãƒã‚¤ãƒ³ã‚¿
-// int TrmdSurfFlag - ã“ã®NURBSæ›²é¢ãŒãƒˆãƒªãƒ é¢ã¨ã—ã¦å‘¼ã°ã‚Œã¦ã„ã‚‹ã®ã‹ã€ç‹¬ç«‹ã—ã¦å­˜åœ¨ã™ã‚‹ã®ã‹ã‚’ç¤ºã™ãƒ•ãƒ©ã‚°(ãƒˆãƒªãƒ é¢:KOD_TRUE  ç‹¬ç«‹é¢:KOD_FALSE)
-// DispStat Dstat - è¡¨ç¤ºå±æ€§ï¼ˆè‰²r,g,b,ï¼‰
-typedef struct{
+// int K[2] -		ƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒg‚Ì”(u•ûŒü,v•ûŒü)
+// int M[2] -		ŠK”(=Ÿ”+1)
+// int N[2] -		ƒmƒbƒgƒxƒNƒgƒ‹‚Ì”(K+M)
+// int prop[5] -	ƒpƒ‰ƒ[ƒ^
+//					prop[0]==0:u•ûŒü‚Å•Â‚¶‚Ä‚¢‚é, 1:•Â‚¶‚Ä‚¢‚È‚¢
+//					prop[1]==0:v•ûŒü‚Å•Â‚¶‚Ä‚¢‚éC1:•Â‚¶‚Ä‚¢‚È‚¢
+//					prop[2]==0:—L—®C1:‘½€®
+//					prop[3]==0:u•ûŒü‚Å”ñüŠú“I, 1:üŠú“I
+//					prop[4]==0:v•ûŒü‚Å”ñüŠú“I, 1:üŠú“I
+// double *S -		u•ûŒüƒmƒbƒgƒxƒNƒgƒ‹‚Ì’l A+1ŒÂ			
+// double *T -		v•ûŒüƒmƒbƒgƒxƒNƒgƒ‹‚Ì’l B+1ŒÂ			
+// double **W -		Weight‚Ì’l								
+// Coord  **cp -	ƒRƒ“ƒgƒ[ƒ‹ƒ|ƒCƒ“ƒg CŒÂ					
+// double U[2] -	u•ûŒüƒpƒ‰ƒ[ƒ^‚Ì”ÍˆÍ
+// double V[2] -	v•ûŒüƒpƒ‰ƒ[ƒ^‚Ì”ÍˆÍ
+// int pD -			ƒfƒBƒŒƒNƒgƒŠ•”‚Ö‚Ì‹tƒ|ƒCƒ“ƒ^
+// int TrmdSurfFlag - ‚±‚ÌNURBS‹È–Ê‚ªƒgƒŠƒ€–Ê‚Æ‚µ‚ÄŒÄ‚Î‚ê‚Ä‚¢‚é‚Ì‚©A“Æ—§‚µ‚Ä‘¶İ‚·‚é‚Ì‚©‚ğ¦‚·ƒtƒ‰ƒO(ƒgƒŠƒ€–Ê:KOD_TRUE  “Æ—§–Ê:KOD_FALSE)
+// DispStat Dstat - •\¦‘®«iFr,g,b,j
+struct NURBSS
+{
 	int K[2];
 	int M[2];
 	int N[2];
@@ -266,344 +426,582 @@ typedef struct{
 	int pD;
 	int TrmdSurfFlag;
 	DispStat Dstat;
-}NURBSS;
+
+	NURBSS() {
+		K[0] = K[1] = 0;
+		M[0] = M[1] = 0;
+		N[0] = N[0] = 0;
+		prop[0] = prop[1] = prop[2] = prop[3] = prop[4] = 0;
+		S = NULL;
+		T = NULL;
+		W = NULL;
+		cp = NULL;
+		U[0] = U[1] = 0;
+		V[0] = V[1] = 0;
+		pD = 0;
+		TrmdSurfFlag = 0;
+	}
+
+	// Function: CalcNurbsSCoord
+	// w’è‚µ‚½u,v‚Å‚ÌNURBS‹È–Ê‚ÌÀ•W“_‚ğ‹‚ß‚é
+	Coord CalcNurbsSCoord(double,double);				
+
+	// Function: CalcNurbsSCoords
+	// w’è‚µ‚½u,vŒQ‚Å‚ÌNURBS‹È–Ê‚ÌÀ•W’lŒQ‚ğ‹‚ß‚é
+	void CalcNurbsSCoords(int,Coord *,Coord *);		
+
+	// Function: CalcDiffuNurbsS
+	// NURBS‹È–Ê‚Ìu•ûŒü1ŠK”÷•ªŒW”‚ğ‹‚ß‚é
+	Coord CalcDiffuNurbsS(double,double);				
+
+	// Function: CalcDiffvNurbsS
+	// NURBS‹È–Ê‚Ìv•ûŒü1ŠK”÷•ªŒW”‚ğ‹‚ß‚é
+	Coord CalcDiffvNurbsS(double,double);				
+
+	// Function: CalcDiffNNurbsS
+	// NURBS‹È–Ê‚ÌŠe•ûŒü‚ğ”CˆÓŠK”÷•ª‚µ‚½‚Æ‚«‚Ì”÷•ªŒW”‚ğ‹‚ß‚é
+	Coord CalcDiffNNurbsS(int,int,double,double);		
+
+	// Function: CalcNormVecOnNurbsS
+	// NURBS‹È–Êã‚Ì(u,v)‚É‚¨‚¯‚é–@üƒxƒNƒgƒ‹‚ğ‚à‚Æ‚ß‚é
+	Coord CalcNormVecOnNurbsS(double,double);			
+
+	// Function: CalcDiffuNormVecOnNurbsS
+	// NURBS‹È–Êã‚Ì(u,v)‚É‚¨‚¯‚é–@üƒxƒNƒgƒ‹‚Ìu•ûŒü1ŠK”÷•ª‚ğ‚à‚Æ‚ß‚é
+	Coord CalcDiffuNormVecOnNurbsS(double,double);		
+
+	// Function: CalcDiffvNormVecOnNurbsS
+	// NURBS‹È–Êã‚Ì(u,v)‚É‚¨‚¯‚é–@üƒxƒNƒgƒ‹‚Ìv•ûŒü1ŠK”÷•ª‚ğ‚à‚Æ‚ß‚é
+	Coord CalcDiffvNormVecOnNurbsS(double,double);		
+
+	// Function: CalcMeanCurvature
+	// NURBS‹È–Êã‚Ì(u,v)‚É‚¨‚¯‚é•½‹Ï‹È—¦‚ğ‹‚ß‚é
+	double CalcMeanCurvature(double,double);			
+
+	// Function: CalcMeanCurvatureNormVec
+	// NURBS‹È–Êã‚Ì(u,v)‚É‚¨‚¯‚é•½‹Ï‹È—¦–@üƒxƒNƒgƒ‹‚ğ‹‚ß‚é
+	Coord CalcMeanCurvatureNormVec(double,double);		
+
+	// Function: CalcGaussCurvature
+	// NURBS‹È–Êã‚Ì(u,v)‚É‚¨‚¯‚éƒKƒEƒX‹È—¦‚ğ‹‚ß‚é
+	double CalcGaussCurvature(double,double);			
+
+	// Function: CalcGaussCurvatureNormVec
+	// NURBS‹È–Êã‚Ì(u,v)‚É‚¨‚¯‚éƒKƒEƒX‹È—¦–@üƒxƒNƒgƒ‹‚ğ‹‚ß‚é
+	Coord CalcGaussCurvatureNormVec(double,double);	
+
+	// Function: ShiftNurbsS
+	// NURBS‹È–Ê‚ÌƒVƒtƒg
+	void ShiftNurbsS(Coord);							
+
+	// Function: ChRatioNurbsS
+	// NURBS‹È–Ê‚Ì”{—¦‚ğ•ÏX‚·‚é
+	void ChRatioNurbsS(Coord);							
+
+	// Function: RotNurbsS
+	// NURBS‹È–Ê‚ğ‰ñ“]
+	void RotNurbsS(Coord,double);						
+
+	// Function: CalcuIntersecPtNurbsLine
+	// NURBS‹È–Ê‚Æ’¼ü‚ÌŒğ“_‚ğZo
+	int CalcuIntersecPtNurbsLine(Coord,Coord,int,Coord *,int,int);	
+
+	// Function: CalcIntersecPtNurbsPt
+	// ‹óŠÔã‚Ì1“_‚©‚çNURBS‹È–Êã‚ÌÅ‹ß–T“_‚ğ‹‚ß‚é(ƒjƒ…[ƒgƒ“–@)
+	int CalcIntersecPtNurbsPt(Coord,int,int,Coord *);		
+
+	// Function: CalcIntersecIsparaCurveU
+	// u•ûŒüƒAƒCƒ\ƒpƒ‰‹Èü‚Æ•½–Ê‚Æ‚ÌŒğ“_‚ğ‹‚ß‚é(ƒjƒ…[ƒgƒ“–@)
+	int CalcIntersecIsparaCurveU(double,Coord,Coord,int,double *,int);	
+
+	// Function: CalcIntersecIsparaCurveV
+	// v•ûŒüƒAƒCƒ\ƒpƒ‰‹Èü‚Æ•½–Ê‚Æ‚ÌŒğ“_‚ğ‹‚ß‚é(ƒjƒ…[ƒgƒ“–@)
+	int CalcIntersecIsparaCurveV(double,Coord,Coord,int,double *,int); 
+
+	// Function: CalcIntersecPtsPlaneV3
+	// V•ûŒü‚ÌƒAƒCƒ\ƒpƒ‰‹Èü‚ğw’è‚µ‚½•ªŠ„”‚Å¶¬‚µCŠe3ŸˆÈ‰º‚Ì‹Èü‚ÆNURBS‹È–Ê‚Æ‚ÌŒğ“_‚ğ‘ã”ŒvZ‚ÅZo‚·‚é
+	int CalcIntersecPtsPlaneV3(Coord,Coord,int,Coord *,int);	
+
+	// Function: CalcIntersecPtsPlaneU3
+	// V•ûŒü‚ÌƒAƒCƒ\ƒpƒ‰‹Èü‚ğw’è‚µ‚½•ªŠ„”‚Å¶¬‚µCŠe3ŸˆÈ‰º‚Ì‹Èü‚ÆNURBS‹È–Ê‚Æ‚ÌŒğ“_‚ğ‘ã”ŒvZ‚ÅZo‚·‚é
+	int CalcIntersecPtsPlaneU3(Coord,Coord,int,Coord *,int);	
+
+	// Function: CalcIntersecPtsPlaneV
+	// V•ûŒü‚ÌƒAƒCƒ\ƒpƒ‰‹Èü‚ğw’è‚µ‚½•ªŠ„”‚Å¶¬‚µCŠe‹Èü‚ÆNURBS‹È–Ê‚Æ‚ÌŒğ“_‚ğZo‚·‚é
+	int CalcIntersecPtsPlaneV(Coord,Coord,int,Coord *,int);	
+
+	// Function: CalcIntersecPtsPlaneU
+	// U•ûŒü‚ÌƒAƒCƒ\ƒpƒ‰‹Èü‚ğw’è‚µ‚½•ªŠ„”‚Å¶¬‚µCŠe‹Èü‚ÆNURBS‹È–Ê‚Æ‚ÌŒğ“_‚ğZo‚·‚é
+	int CalcIntersecPtsPlaneU(Coord,Coord,int,Coord *,int);	
+
+	// Function: CalcIntersecPtsPlaneGeom
+	// NURBS‹È–Ê‚Æ•½–Ê‚ÆŒğ“_’ÇÕ—p‰Šú“_‚ğ“¾‚é(•â••½–Ê‚ğ—p‚¢‚½•û–@)
+	int CalcIntersecPtsPlaneGeom(Coord,Coord,int,int,Coord *,int);			
+
+	// Function: CalcIntersecPtsPlaneSearch
+	// NURBS‹È–Ê‚Æ•½–Ê‚Æ‚ÌŒğ“_ŒQ‚ğŒğü’ÇÕ–@‚Å‹‚ß‚é
+	int CalcIntersecPtsPlaneSearch(Coord,Coord,double,int,Coord *,int,int);	
+
+	// Function: CalcIntersecPtsOffsetPlaneGeom
+	// ƒIƒtƒZƒbƒgNURBS‹È–Ê‚Æ•½–Ê‚ÆŒğ“_’ÇÕ—p‰Šú“_‚ğ“¾‚é(•â••½–Ê‚ğ—p‚¢‚½•û–@)(€”õ’†)
+	int CalcIntersecPtsOffsetPlaneGeom(double,Coord,Coord,int,Coord *,int);	
+
+	// Function: CalcIntersecPtsOffsetPlaneSearch
+	// ƒIƒtƒZƒbƒgNURBS‹È–Ê‚Æ•½–Ê‚Æ‚ÌŒğ“_ŒQ‚ğŒğü’ÇÕ–@‚Å‹‚ß‚é(€”õ’†)
+	int CalcIntersecPtsOffsetPlaneSearch(double,Coord,Coord,double,int,Coord *,int);
+
+	// Function: SearchExtremum_BS
+	// Bulirsch-Stoer–@‚É‚æ‚è‹É’n’Tõ‚ğs‚¤
+	int SearchExtremum_BS(Coord,double,double,double,int,int,Coord *);	
+
+	// Function: CalcDeltaPtsOnNurbsS
+	// w’è‚µ‚½•ªŠ„”‚ÅNURBS‹È–Êã‚ÌÀ•W’l‚ğ‹‚ß‚é
+	int CalcDeltaPtsOnNurbsS(int,int,Coord **);		
+
+#ifdef _DEBUG
+	// Function: DebugForNurbsS
+	// NURBS‹È–Êî•ñ‚ğƒfƒoƒbƒOƒvƒŠƒ“ƒg
+	void DebugForNurbsS(void);
+#endif
+
+private:
+	// Function: CalcDiffNurbsSDenom
+	// (private)NURBS‹È–Ê•ª•ê‚ÌŠe•ûŒü‚ğ”CˆÓŠK”÷•ª‚µ‚½‚Æ‚«‚Ì”÷•ªŒW”‚ğ‹‚ß‚é
+	double CalcDiffNurbsSDenom(int,int,double,double);		
+
+	// Function: CalcDiffNurbsSNumer
+	// (private)NURBS‹È–Ê•ªq‚ÌŠe•ûŒü‚ğ”CˆÓŠK”÷•ª‚µ‚½‚Æ‚«‚Ì”÷•ªŒW”‚ğ‹‚ß‚é
+	Coord CalcDiffNurbsSNumer(int,int,double,double);		
+
+	// Function: GetMinDist
+	// (private)Å¬‹——£‚ğ’²‚×‚é
+	int GetMinDist(Coord ,Coord *,int ,Coord *);			
+
+	// Function: SearchIntersectPt
+	// (private)ƒjƒ…[ƒgƒ“–@‚É‚æ‚èŒğ“_‚ğû‘©‚³‚¹‚é(NURBS‹È–Ê‚Æ•½–Ê)
+	int SearchIntersectPt(Coord,Coord,double,double *,double *,int);	
+
+	// Function: SearchIntersectPt_RKM
+	// (private)4Ÿ‚Ìƒ‹ƒ“ƒQƒNƒbƒ^–@‚É‚æ‚èŒğ“_‚ğû‘©‚³‚¹‚é(NURBS‹È–Ê‚Æ•½–Ê)
+	int SearchIntersectPt_RKM(Coord,Coord,double,double *,double *,int);	
+
+	// Function: SearchIntersectPt_BS
+	// (private)Bulirsch-Stoer–@‚É‚æ‚èŒğ“_‚ğû‘©‚³‚¹‚é(NURBS‹È–Ê‚Æ•½–Ê)
+	int SearchIntersectPt_BS(Coord,Coord,double,double *,double *,int);	
+
+	// Function: SearchIntersectPt_OS
+	// (private)4Ÿ‚Ìƒ‹ƒ“ƒQƒNƒbƒ^–@‚É‚æ‚èŒğ“_‚ğû‘©‚³‚¹‚é(ƒIƒtƒZƒbƒgNURBS‹È–Ê‚Æ•½–Ê)
+	int SearchIntersectPt_OS(Coord,Coord,double,double *,double *,int);		
+
+	// Function: GetSIPParam1
+	// (private)NURBS‹È–Ê‚Æ•½–Ê‚ÌŒğ“_‚ğ•\‚·”÷•ª•û’ö®‚Ì‰E•Ó‚Ì’l‚ğ“¾‚é
+	int GetSIPParam1(double ,double ,Coord ,Coord ,int ,Coord *);		
+
+	// Function: CalcIntersecPtsPlaneSearch_Sub
+	// (private)–Ê‚©‚ç”ò‚Ño‚µ‚½(u,v)‚ğQl‚É–Ê‚ÌƒGƒbƒW•”(new_u,new_v)‚ğ“¾‚é
+	Coord CalcIntersecPtsPlaneSearch_Sub(double,double,Coord,Coord);	
+
+	// Function: RemoveTheSamePoints
+	// (private)NURBS‹È–Êã‚Ì“¯ˆê“_‚ğœ‹‚·‚é
+	int RemoveTheSamePoints(Coord *,int);					
+
+	// Function: GetSECParam1
+	// (private)‹É’l’TõüSubŠÖ”1
+	int GetSECParam1(double,double,Coord,int,int,Coord *);	
+};
 
 // Structure: COMPELEM
-// è¤‡åˆæ›²ç·šã‚’æ§‹æˆã§ãã‚‹æ›²ç·šç¾¤ã‚’å…±ç”¨ä½“ã§å®£è¨€
+// •¡‡‹Èü‚ğ\¬‚Å‚«‚é‹ÈüŒQ‚ğ‹¤—p‘Ì‚ÅéŒ¾
 //
 // Variables:
-// CONA ConA -		å††éŒæ›²ç·š
-// LINE_ Line -		ç›´ç·š
-// NURBSC NurbsC -	NURBSæ›²ç·š
-typedef union{
-	CIRA CirA;
-	CONA ConA;
-	LINE_ Line;
-	NURBSC NurbsC;
-}COMPELEM;
+// CONA ConA -		‰~‹Èü
+// LINE_ Line -		’¼ü
+// NURBSC NurbsC -	NURBS‹Èü
+union COMPELEM
+{
+//	CIRA CirA;
+//	CONA ConA;
+//	LINE_ Line;
+//	NURBSC NurbsC;
+	void*	substitution;	// ‚±‚±‚É‘ã“ü
+	CIRA*	CirA;
+	CONA*	ConA;
+	LINE_*	Line;
+	NURBSC*	NurbsC;
+};
 
 // Structure: COMPC
-// è¤‡åˆæ›²ç·š
+// •¡‡‹Èü
 //
 // Variables:
-// int N -				æ§‹æˆè¦ç´ æ•°
-// int *DEType -		å„æ§‹æˆè¦ç´ ã®ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚¿ã‚¤ãƒ—
-// COMPELEM **pDE -		å„æ§‹æˆè¦ç´ ã®æ§‹é€ ä½“ã¸ã®ãƒã‚¤ãƒ³ã‚¿
-// int DegeFlag -		è¤‡åˆæ›²ç·šãŒç¸®é€€ã—ãŸ2Dãƒ‘ãƒ©ãƒ¡ãƒˆãƒªãƒƒã‚¯æ›²ç·šã‚’è¡¨ã™ãƒ•ãƒ©ã‚°
-// NURBSC DegeNurbs -	è¤‡åˆæ›²ç·šãŒç¸®é€€ã—ãŸ2Dãƒ‘ãƒ©ãƒ¡ãƒˆãƒªãƒƒã‚¯æ›²ç·šã ã£ãŸå ´åˆã«ç¸®é€€ã‚’è§£æ¶ˆã™ã‚‹ãŸã‚ã®NURBSæ›²ç·š
-// int pD -				ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªéƒ¨ã¸ã®é€†ãƒã‚¤ãƒ³ã‚¿
-typedef struct{
+// int N -				\¬—v‘f”
+// int *DEType -		Še\¬—v‘f‚ÌƒGƒ“ƒeƒBƒeƒBƒ^ƒCƒv
+// COMPELEM **pDE -		Še\¬—v‘f‚Ì\‘¢‘Ì‚Ö‚Ìƒ|ƒCƒ“ƒ^
+// int DegeFlag -		•¡‡‹Èü‚ªk‘Ş‚µ‚½2Dƒpƒ‰ƒƒgƒŠƒbƒN‹Èü‚ğ•\‚·ƒtƒ‰ƒO
+// NURBSC DegeNurbs -	•¡‡‹Èü‚ªk‘Ş‚µ‚½2Dƒpƒ‰ƒƒgƒŠƒbƒN‹Èü‚¾‚Á‚½ê‡‚Ék‘Ş‚ğ‰ğÁ‚·‚é‚½‚ß‚ÌNURBS‹Èü
+// int pD -				ƒfƒBƒŒƒNƒgƒŠ•”‚Ö‚Ì‹tƒ|ƒCƒ“ƒ^
+struct COMPC
+{
 	int N;
 	int *DEType;
-	COMPELEM **pDE;
+//	COMPELEM **pDE;
+	COMPELEM*	pDE;
 	int DegeFlag;
 	NURBSC DegeNurbs;
 	int pD;
-}COMPC;
+
+	COMPC() {
+		N = 0;
+		DEType = NULL;
+		pDE = NULL;
+		DegeFlag = 0;
+		pD = 0;
+	}
+};
 
 // Structure: CURVE
-// é¢ä¸Šç·šã‚’æ§‹æˆã§ãã‚‹æ›²ç·šç¾¤ã‚’å…±ç”¨ä½“ã§å®£è¨€
+// –Êãü‚ğ\¬‚Å‚«‚é‹ÈüŒQ‚ğ‹¤—p‘Ì‚ÅéŒ¾
 //
 // Variables:
-// CIRA  CirA -		å††ãƒ»å††å¼§
-// COMPC CompC -	è¤‡åˆæ›²ç·š
-// CONA  ConA -		å††éŒæ›²ç·š
-// NURBSC NurbsC -	NURBSæ›²ç·š
-typedef union{
-	CIRA  CirA;
-	COMPC CompC;
-	CONA  ConA;
-	NURBSC NurbsC;
-}CURVE;
+// CIRA  CirA -		‰~E‰~ŒÊ
+// COMPC CompC -	•¡‡‹Èü
+// CONA  ConA -		‰~‹Èü
+// NURBSC NurbsC -	NURBS‹Èü
+union CURVE
+{
+//	CIRA  CirA;
+//	COMPC CompC;
+//	CONA  ConA;
+//	NURBSC NurbsC;
+	void*	substitution;	// ‚±‚±‚É‘ã“ü
+	CIRA*	CirA;
+	COMPC*	CompC;
+	CONA*	ConA;
+	NURBSC*	NurbsC;
+};
+//typedef CURVE	boost::variant<CIRA*, COMPC*, CONA*, NURBSC*>
 
 // Structure: CONPS
-// é¢ä¸Šç·š
+// –Êãü
 //
 // Variables:
-// int crtn -	é¢ä¸Šç·šãŒã©ã®ã‚ˆã†ã«ä½œã‚‰ã‚ŒãŸã‹ã‚’ç¤ºã™
-// int SType -	Surface Sã®ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚¿ã‚¤ãƒ—
-// int BType -	Curve Bã®ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚¿ã‚¤ãƒ—
-// int CType -	Curve Cã®ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚¿ã‚¤ãƒ—
-// NURBSS *pS - CurveãŒä¹—ã‚‹Surfaceæ§‹é€ ä½“ã¸ã®ãƒã‚¤ãƒ³ã‚¿
-// CURVE *pB -	Surface Sã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ç©ºé–“ã«ãŠã‘ã‚‹Curve Bæ§‹é€ ä½“ã¸ã®ãƒã‚¤ãƒ³ã‚¿
-// CURVE *pC -	Curve Cæ§‹é€ ä½“ã¸ã®ãƒã‚¤ãƒ³ã‚¿
-// int pref -	é€ã‚Šå´ã‚·ã‚¹ãƒ†ãƒ ã§æ¡ã‚‰ã‚Œã¦ã„ãŸè¡¨ç¾ã‚’ç¤ºã™ãƒ•ãƒ©ã‚°
-// int pD -		ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªéƒ¨ã¸ã®é€†ãƒã‚¤ãƒ³ã‚¿
-typedef struct{
+// int crtn -	–Êãü‚ª‚Ç‚Ì‚æ‚¤‚Éì‚ç‚ê‚½‚©‚ğ¦‚·
+// int SType -	Surface S‚ÌƒGƒ“ƒeƒBƒeƒBƒ^ƒCƒv
+// int BType -	Curve B‚ÌƒGƒ“ƒeƒBƒeƒBƒ^ƒCƒv
+// int CType -	Curve C‚ÌƒGƒ“ƒeƒBƒeƒBƒ^ƒCƒv
+// NURBSS *pS - Curve‚ªæ‚éSurface\‘¢‘Ì‚Ö‚Ìƒ|ƒCƒ“ƒ^
+// CURVE *pB -	Surface S‚Ìƒpƒ‰ƒ[ƒ^‹óŠÔ‚É‚¨‚¯‚éCurve B\‘¢‘Ì‚Ö‚Ìƒ|ƒCƒ“ƒ^
+// CURVE *pC -	Curve C\‘¢‘Ì‚Ö‚Ìƒ|ƒCƒ“ƒ^
+// int pref -	‘—‚è‘¤ƒVƒXƒeƒ€‚ÅÌ‚ç‚ê‚Ä‚¢‚½•\Œ»‚ğ¦‚·ƒtƒ‰ƒO
+// int pD -		ƒfƒBƒŒƒNƒgƒŠ•”‚Ö‚Ì‹tƒ|ƒCƒ“ƒ^
+struct CONPS
+{
 	int crtn;
 	int SType;
 	int BType;
 	int CType;
 	NURBSS *pS;
-	CURVE *pB;
-	CURVE *pC;
+//	CURVE *pB;
+//	CURVE *pC;
+	CURVE pB;
+	CURVE pC;
 	int pref;
 	int pD;
-}CONPS;
+
+	CONPS() {
+		crtn = 0;
+		SType = 0;
+		BType = 0;
+		CType = 0;
+		pS = NULL;
+		pB.substitution = NULL;
+		pC.substitution = NULL;
+		pref = 0;
+		pD = 0;
+	}
+};
 
 // Class TRMS
-// ãƒˆãƒªãƒ é¢å®šç¾©ã‚¯ãƒ©ã‚¹
-class TRMS{
+// ƒgƒŠƒ€–Ê’è‹`ƒNƒ‰ƒX
+class TRMS
+{
 public:
+	TRMS() {
+		pts = NULL;
+		n1 = 0;
+		n2 = 0;
+		pTO = NULL;
+		pTI = NULL;
+		pD = 0;
+	}
+
     // Function: GetOuterEdgeNum
-    // ãƒˆãƒªãƒ é¢ã‚’æ§‹æˆã™ã‚‹å¤–å´ã‚¨ãƒƒã‚¸ã®æ•°ã‚’å–å¾—ã™ã‚‹
+    // ƒgƒŠƒ€–Ê‚ğ\¬‚·‚éŠO‘¤ƒGƒbƒW‚Ì”‚ğæ“¾‚·‚é
     int GetOuterEdgeNum();
 
     // Function: GetInnerTrmNum
-    // ãƒˆãƒªãƒ é¢ã‚’æ§‹æˆã™ã‚‹å†…å´ãƒˆãƒªãƒ ã®æ•°ã‚’å–å¾—ã™ã‚‹
+    // ƒgƒŠƒ€–Ê‚ğ\¬‚·‚é“à‘¤ƒgƒŠƒ€‚Ì”‚ğæ“¾‚·‚é
     int GetInnerTrmNum();
 
     // Function: GetInnerEdgeNum
-    // ãƒˆãƒªãƒ é¢ã‚’æ§‹æˆã™ã‚‹å†…å´ãƒˆãƒªãƒ ã‚’æ§‹æˆã™ã‚‹ã‚¨ãƒƒã‚¸ã®æ•°ã‚’å–å¾—ã™ã‚‹
+    // ƒgƒŠƒ€–Ê‚ğ\¬‚·‚é“à‘¤ƒgƒŠƒ€‚ğ\¬‚·‚éƒGƒbƒW‚Ì”‚ğæ“¾‚·‚é
     int GetInnerEdgeNum(int);
 
     // Function: GetOuterCompC
-    // ãƒˆãƒªãƒ é¢ã‚’æ§‹æˆã™ã‚‹å¤–å´ãƒˆãƒªãƒ æ›²ç·š(è¤‡åˆæ›²ç·š)ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’å–å¾—ã™ã‚‹
+    // ƒgƒŠƒ€–Ê‚ğ\¬‚·‚éŠO‘¤ƒgƒŠƒ€‹Èü(•¡‡‹Èü)‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğæ“¾‚·‚é
     COMPC *GetOuterCompC();
 
     // Function: GetInnerCompC
-    // ãƒˆãƒªãƒ é¢ã‚’æ§‹æˆã™ã‚‹å†…å´ãƒˆãƒªãƒ æ›²ç·š(è¤‡åˆæ›²ç·š)ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’å–å¾—ã™ã‚‹
+    // ƒgƒŠƒ€–Ê‚ğ\¬‚·‚é“à‘¤ƒgƒŠƒ€‹Èü(•¡‡‹Èü)‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğæ“¾‚·‚é
     COMPC *GetInnerCompC(int);
 
     // Funciton: GetNurbsS
-    // ãƒˆãƒªãƒ é¢ã‚’æ§‹æˆã™ã‚‹NURBSæ›²é¢ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’å¾—ã‚‹
+    // ƒgƒŠƒ€–Ê‚ğ\¬‚·‚éNURBS‹È–Ê‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğ“¾‚é
     NURBSS *GetNurbsS();
 
 public:
     // Variable: *pts
-    // ãƒˆãƒªãƒ ã•ã‚Œã‚‹Surface Entityã®DEéƒ¨ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+    // ƒgƒŠƒ€‚³‚ê‚éSurface Entity‚ÌDE•”‚Ö‚Ìƒ|ƒCƒ“ƒ^
     NURBSS *pts;
 
     // Variable: n1
-    // 0:å¤–å‘¨ãŒDã®å¢ƒç•Œã¨ä¸€è‡´ã€1:ãã‚Œä»¥å¤–
+    // 0:ŠOü‚ªD‚Ì‹«ŠE‚Æˆê’vA1:‚»‚êˆÈŠO
     int n1;
 
     // Variable: n2
-    // Trimmed Surfaceã®å†…å‘¨ã«ã‚ãŸã‚‹å˜ç´”é–‰æ›²ç·šã®æ•°
+    // Trimmed Surface‚Ì“àü‚É‚ ‚½‚é’Pƒ•Â‹Èü‚Ì”
     int n2;
 
     // Variable: *pTO
-    // Trimmed Surfaceã®å¤–å‘¨ã«ã‚ãŸã‚‹å˜ç´”é–‰æ›²ç·šæ§‹é€ ä½“ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+    // Trimmed Surface‚ÌŠOü‚É‚ ‚½‚é’Pƒ•Â‹Èü\‘¢‘Ì‚Ö‚Ìƒ|ƒCƒ“ƒ^
     CONPS *pTO;
 
     // Variable: **pTI
-    // Trimmed Surfaceã®å†…å‘¨ã«ã‚ãŸã‚‹å˜ç´”é–‰æ›²ç·šæ§‹é€ ä½“ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+    // Trimmed Surface‚Ì“àü‚É‚ ‚½‚é’Pƒ•Â‹Èü\‘¢‘Ì‚Ö‚Ìƒ|ƒCƒ“ƒ^
     CONPS **pTI;
 
     // Variable: pD
-    // ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªéƒ¨ã¸ã®é€†ãƒã‚¤ãƒ³ã‚¿
+    // ƒfƒBƒŒƒNƒgƒŠ•”‚Ö‚Ì‹tƒ|ƒCƒ“ƒ^
     int pD;
 };
 
 // Typedef: TRMS
-// TRIMD_NURBSS - ãƒˆãƒªãƒ é¢ã«å¯¾ã—ã¦Nurbsæ›²é¢ã‚’æƒ³èµ·ã•ã›ã‚‹åç§°ã‚’ä¸ãˆã¦ãŠã
-typedef TRMS TRIMD_NURBSS;	// ãƒˆãƒªãƒ é¢ã«å¯¾ã—ã¦Nurbsæ›²é¢ã‚’æƒ³èµ·ã•ã›ã‚‹åç§°ã‚’ä¸ãˆã¦ãŠã
+// TRIMD_NURBSS - ƒgƒŠƒ€–Ê‚É‘Î‚µ‚ÄNurbs‹È–Ê‚ğ‘z‹N‚³‚¹‚é–¼Ì‚ğ—^‚¦‚Ä‚¨‚­
+typedef TRMS TRIMD_NURBSS;	// ƒgƒŠƒ€–Ê‚É‘Î‚µ‚ÄNurbs‹È–Ê‚ğ‘z‹N‚³‚¹‚é–¼Ì‚ğ—^‚¦‚Ä‚¨‚­
 
 // Structure: OBJECT
-// ãƒ”ãƒƒã‚¯ã•ã‚ŒãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ç¤ºã™æ§‹é€ ä½“
+// ƒsƒbƒN‚³‚ê‚½ƒIƒuƒWƒFƒNƒg‚ğ¦‚·\‘¢‘Ì
 //
 // Variables:
-// int Body -	BODYã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ç•ªå·
-// int Type -	ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚¿ã‚¤ãƒ—ã®ã‚·ãƒ³ãƒœãƒ«(NURBSæ›²ç·š:126 , NURBSæ›²é¢:128 , ãƒˆãƒªãƒ é¢:144)
-// int Num -	Typeã«ãŠã‘ã‚‹è¦ç´ ç•ªå·(NURBSæ›²ç·šãŒ4æœ¬ã‚ã£ãŸã‚‰ã€ãã®4æœ¬ã«å‰²ã‚Šå½“ã¦ã‚‰ã‚ŒãŸ0ï½3ã®ç•ªå·)
-// int CCount - ä½•ç•ªç›®ã«ãƒ”ãƒƒã‚¯ã•ã‚ŒãŸæ›²ç·šã‹ã‚’è¡¨ã™
-// int SCount - ä½•ç•ªç›®ã«ãƒ”ãƒƒã‚¯ã•ã‚ŒãŸæ›²é¢ã‹ã‚’è¡¨ã™
-typedef struct{
-	int Body;		// BODYã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ç•ªå·
-	int Type;		// ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚¿ã‚¤ãƒ—ã®ã‚·ãƒ³ãƒœãƒ«(NURBSæ›²ç·š:126 , NURBSæ›²é¢:128 , ãƒˆãƒªãƒ é¢:144)
-	int Num;		// Typeã«ãŠã‘ã‚‹è¦ç´ ç•ªå·(NURBSæ›²ç·šãŒ4æœ¬ã‚ã£ãŸã‚‰ã€ãã®4æœ¬ã«å‰²ã‚Šå½“ã¦ã‚‰ã‚ŒãŸ0ï½3ã®ç•ªå·)
-	int CCount;		// ä½•ç•ªç›®ã«ãƒ”ãƒƒã‚¯ã•ã‚ŒãŸæ›²ç·šã‹ã‚’è¡¨ã™
-	int SCount;		// ä½•ç•ªç›®ã«ãƒ”ãƒƒã‚¯ã•ã‚ŒãŸæ›²é¢ã‹ã‚’è¡¨ã™
-}OBJECT;
-
+// int Body -	BODYƒIƒuƒWƒFƒNƒg‚Ì”Ô†
+// int Type -	ƒGƒ“ƒeƒBƒeƒBƒ^ƒCƒv‚ÌƒVƒ“ƒ{ƒ‹(NURBS‹Èü:126 , NURBS‹È–Ê:128 , ƒgƒŠƒ€–Ê:144)
+// int Num -	Type‚É‚¨‚¯‚é—v‘f”Ô†(NURBS‹Èü‚ª4–{‚ ‚Á‚½‚çA‚»‚Ì4–{‚ÉŠ„‚è“–‚Ä‚ç‚ê‚½0`3‚Ì”Ô†)
+// int CCount - ‰½”Ô–Ú‚ÉƒsƒbƒN‚³‚ê‚½‹Èü‚©‚ğ•\‚·
+// int SCount - ‰½”Ô–Ú‚ÉƒsƒbƒN‚³‚ê‚½‹È–Ê‚©‚ğ•\‚·
+struct OBJECT
+{
+	int Body;		// BODYƒIƒuƒWƒFƒNƒg‚Ì”Ô†
+	int Type;		// ƒGƒ“ƒeƒBƒeƒBƒ^ƒCƒv‚ÌƒVƒ“ƒ{ƒ‹(NURBS‹Èü:126 , NURBS‹È–Ê:128 , ƒgƒŠƒ€–Ê:144)
+	int Num;		// Type‚É‚¨‚¯‚é—v‘f”Ô†(NURBS‹Èü‚ª4–{‚ ‚Á‚½‚çA‚»‚Ì4–{‚ÉŠ„‚è“–‚Ä‚ç‚ê‚½0`3‚Ì”Ô†)
+	int CCount;		// ‰½”Ô–Ú‚ÉƒsƒbƒN‚³‚ê‚½‹Èü‚©‚ğ•\‚·
+	int SCount;		// ‰½”Ô–Ú‚ÉƒsƒbƒN‚³‚ê‚½‹È–Ê‚©‚ğ•\‚·
+};
 
 #include "NURBS_Func.h"
 
 // Class: BODY
-// å…¨ã¦ã®ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚’çµ±æ‹¬ã™ã‚‹BODYã‚¯ãƒ©ã‚¹
+// ‘S‚Ä‚ÌƒGƒ“ƒeƒBƒeƒB‚ğ“Š‡‚·‚éBODYƒNƒ‰ƒX
 class BODY
 {
 public:
 	// Constructor: BODY
-	// BODYã‚¯ãƒ©ã‚¹ã®ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼å„ç¨®åˆæœŸåŒ–
+	// BODYƒNƒ‰ƒX‚ÌƒRƒ“ƒXƒgƒ‰ƒNƒ^DŠeí‰Šú‰»
 	BODY();
+	~BODY();
 
 	// Function: NewBodyElem
-	// BODYã‚’æ§‹æˆã™ã‚‹å…¨è¦ç´ ã®ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿
+	// BODY‚ğ\¬‚·‚é‘S—v‘f‚Ìƒƒ‚ƒŠ[Šm•Û
 	void NewBodyElem();				
 
 	// Function: DelBodyElem
-	// BODYã‚’æ§‹æˆã™ã‚‹å…¨è¦ç´ ã®ãƒ¡ãƒ¢ãƒªãƒ¼è§£æ”¾
+	// BODY‚ğ\¬‚·‚é‘S—v‘f‚Ìƒƒ‚ƒŠ[‰ğ•ú
 	void DelBodyElem();				
 
 	// Function: DelBodyElem
-	// æŒ‡å®šã—ãŸTypeNum[]åˆ†ã®ãƒ¡ãƒ¢ãƒªãƒ¼ã‚’è§£æ”¾
+	// w’è‚µ‚½TypeNum[]•ª‚Ìƒƒ‚ƒŠ[‚ğ‰ğ•ú
 	void DelBodyElem(int []);		
 
 	// Function: NewCirA
-	// CIRAã‚’æŒ‡å®šã—ãŸæ•°ã ã‘ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿ã—ï¼ŒåˆæœŸåŒ–ã™ã‚‹
+	// CIRA‚ğw’è‚µ‚½”‚¾‚¯ƒƒ‚ƒŠ[Šm•Û‚µC‰Šú‰»‚·‚é
 	CIRA *NewCirA(int);	
 
 	// Function: NewCompC
-	// COMPCã‚’æŒ‡å®šã—ãŸæ•°ã ã‘ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿ã—ï¼ŒåˆæœŸåŒ–ã™ã‚‹
+	// COMPC‚ğw’è‚µ‚½”‚¾‚¯ƒƒ‚ƒŠ[Šm•Û‚µC‰Šú‰»‚·‚é
 	COMPC *NewCompC(int);
 
 	// Function: NewConA
-	// CONAã‚’æŒ‡å®šã—ãŸæ•°ã ã‘ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿ã—ï¼ŒåˆæœŸåŒ–ã™ã‚‹
+	// CONA‚ğw’è‚µ‚½”‚¾‚¯ƒƒ‚ƒŠ[Šm•Û‚µC‰Šú‰»‚·‚é
 	CONA *NewConA(int);	
 
 	// Function: NewLine
-	// LINE_ã‚’æŒ‡å®šã—ãŸæ•°ã ã‘ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿ã—ï¼ŒåˆæœŸåŒ–ã™ã‚‹
+	// LINE_‚ğw’è‚µ‚½”‚¾‚¯ƒƒ‚ƒŠ[Šm•Û‚µC‰Šú‰»‚·‚é
 	LINE_ *NewLine(int);
 
 	// Function: NewTMat
-	// TMATã‚’æŒ‡å®šã—ãŸæ•°ã ã‘ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿ã—ï¼ŒåˆæœŸåŒ–ã™ã‚‹
+	// TMAT‚ğw’è‚µ‚½”‚¾‚¯ƒƒ‚ƒŠ[Šm•Û‚µC‰Šú‰»‚·‚é
 	TMAT *NewTMat(int);		
 
 	// Function: NewNurbsC
-	// NURBSCã‚’æŒ‡å®šã—ãŸæ•°ã ã‘ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿ã—ï¼ŒåˆæœŸåŒ–ã™ã‚‹
+	// NURBSC‚ğw’è‚µ‚½”‚¾‚¯ƒƒ‚ƒŠ[Šm•Û‚µC‰Šú‰»‚·‚é
 	NURBSC *NewNurbsC(int);			
 
 	// Function: NewNurbsS
-	// NURBSSã‚’æŒ‡å®šã—ãŸæ•°ã ã‘ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿ã—ï¼ŒåˆæœŸåŒ–ã™ã‚‹
+	// NURBSS‚ğw’è‚µ‚½”‚¾‚¯ƒƒ‚ƒŠ[Šm•Û‚µC‰Šú‰»‚·‚é
 	NURBSS *NewNurbsS(int);			
 	
 	// Function: NewConpS
-	// CONPSã‚’æŒ‡å®šã—ãŸæ•°ã ã‘ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿ã—ï¼ŒåˆæœŸåŒ–ã™ã‚‹
+	// CONPS‚ğw’è‚µ‚½”‚¾‚¯ƒƒ‚ƒŠ[Šm•Û‚µC‰Šú‰»‚·‚é
 	CONPS *NewConpS(int);			
 
 	// Function: NewTrmS
-	// TRMSã‚’æŒ‡å®šã—ãŸæ•°ã ã‘ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿ã—ï¼ŒåˆæœŸåŒ–ã™ã‚‹
+	// TRMS‚ğw’è‚µ‚½”‚¾‚¯ƒƒ‚ƒŠ[Šm•Û‚µC‰Šú‰»‚·‚é
 	TRMS *NewTrmS(int);				
 	
 	// Function: RotBody
-	// BODYã®å›è»¢
+	// BODY‚Ì‰ñ“]
 	void RotBody(Coord,double);	
 
 	// Function: ShiftBody
-	// BODYã®ã‚·ãƒ•ãƒˆ
+	// BODY‚ÌƒVƒtƒg
 	void ShiftBody(Coord);		
 
 	// Function: ExpandBody
-	// BODYã®æ‹¡å¤§ç¸®å°
+	// BODY‚ÌŠg‘åk¬
 	void ExpandBody(Coord);		
 
 	// Function: RegistBody
-	// è‡ªåˆ†ã‚’æ–°ãŸãªBODYã¨ã—ã¦ç™»éŒ²ã™ã‚‹
+	// ©•ª‚ğV‚½‚ÈBODY‚Æ‚µ‚Ä“o˜^‚·‚é
 	void RegistBody(BODYList *,const char []);		
 
 	// Function: DeleteBody
-	// è‡ªåˆ†è‡ªèº«ã‚’æ¶ˆå»ã™ã‚‹
+	// ©•ª©g‚ğÁ‹‚·‚é
 	void DeleteBody(BODYList *);	
 
 	// Function: RegistNurbsCtoBody
-	// 1ã¤ã®NURBSæ›²ç·šã‚’æ–°ãŸãªBODYã¨ã—ã¦ç™»éŒ²ã™ã‚‹
-	void RegistNurbsCtoBody(BODYList *,NURBSC,const char []);	
+	// 1‚Â‚ÌNURBS‹Èü‚ğV‚½‚ÈBODY‚Æ‚µ‚Ä“o˜^‚·‚é
+//	void RegistNurbsCtoBody(BODYList *,NURBSC,const char []);	
+	void RegistNurbsCtoBody(BODYList *,const NURBSC&,const char []);	
 
 	// Function: RegistNurbsCtoBodyN
-	// Nå€‹ã®NURBSæ›²ç·šã‚’æ–°ãŸãªBODYã¨ã—ã¦ç™»éŒ²ã™ã‚‹
+	// NŒÂ‚ÌNURBS‹Èü‚ğV‚½‚ÈBODY‚Æ‚µ‚Ä“o˜^‚·‚é
 	void RegistNurbsCtoBodyN(BODYList *,NURBSC [],const char [],int);	
 
 	// Function: RegistNurbsStoBody
-	// 1ã¤ã®NURBSæ›²é¢ã‚’æ–°ãŸãªBODYã¨ã—ã¦ç™»éŒ²ã™ã‚‹
+	// 1‚Â‚ÌNURBS‹È–Ê‚ğV‚½‚ÈBODY‚Æ‚µ‚Ä“o˜^‚·‚é
 	void RegistNurbsStoBody(BODYList *,NURBSS,const char []);	
 
 	// Function: RegistNurbsStoBodyN
-	// Nå€‹ã®NURBSæ›²é¢ã‚’æ–°ãŸãªBODYã¨ã—ã¦ç™»éŒ²ã™ã‚‹
+	// NŒÂ‚ÌNURBS‹È–Ê‚ğV‚½‚ÈBODY‚Æ‚µ‚Ä“o˜^‚·‚é
 	void RegistNurbsStoBodyN(BODYList *,NURBSS [],const char [],int);	
 
 	// Function: ChangeStatColor
-	// ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã®ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã§å®šç¾©ã•ã‚Œã¦ã„ã‚‹è‰²ã‚’å¤‰æ›´
+	// ƒGƒ“ƒeƒBƒeƒB‚ÌƒXƒe[ƒ^ƒX‚Å’è‹`‚³‚ê‚Ä‚¢‚éF‚ğ•ÏX
 	void ChangeStatColor(float *,float,float,float,float);	
 
 	// Function: InitCurveColor
-	// ç·šã®è‰²ã®åˆæœŸå€¤ã‚’ä¸ãˆã‚‹
+	// ü‚ÌF‚Ì‰Šú’l‚ğ—^‚¦‚é
 	void InitCurveColor(float *);	
 
 	// Function: InitSurfaceColor
-	// é¢ã®è‰²ã®åˆæœŸå€¤ã‚’ä¸ãˆã‚‹
+	// –Ê‚ÌF‚Ì‰Šú’l‚ğ—^‚¦‚é
 	void InitSurfaceColor(float *);							
 
 	// Function: GetNurbsCFromLine
-	// ç›´ç·šã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚’NURBSæ›²ç·šã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã¸ã¨å¤‰æ›ã™ã‚‹
+	// ’¼üƒGƒ“ƒeƒBƒeƒB‚ğNURBS‹ÈüƒGƒ“ƒeƒBƒeƒB‚Ö‚Æ•ÏŠ·‚·‚é
 	int GetNurbsCFromLine(int,int);					
 
 	// Function: GetNurbsCFromCirA
-	// å††ãƒ»å††å¼§ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚’NURBSæ›²ç·šã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã¸ã¨å¤‰æ›ã™ã‚‹
+	// ‰~E‰~ŒÊƒGƒ“ƒeƒBƒeƒB‚ğNURBS‹ÈüƒGƒ“ƒeƒBƒeƒB‚Ö‚Æ•ÏŠ·‚·‚é
 	int GetNurbsCFromCirA(int,int);							
 
 private:
 	// Function: CirAToNurbsC_seg1
-	// (private)å††ãƒ»å††å¼§ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ãŒ1ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã®å ´åˆ
+	// (private)‰~E‰~ŒÊƒGƒ“ƒeƒBƒeƒB‚ª1ƒZƒOƒƒ“ƒg‚Ìê‡
 	int CirAToNurbsC_seg1(int,int,Coord [],double);
 
 	// Function: CirAToNurbsC_seg2
-	// (private)å††ãƒ»å††å¼§ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ãŒ2ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã®å ´åˆ
+	// (private)‰~E‰~ŒÊƒGƒ“ƒeƒBƒeƒB‚ª2ƒZƒOƒƒ“ƒg‚Ìê‡
 	int CirAToNurbsC_seg2(int,int,Coord [],double);	
 
 	// Function: CirAToNurbsC_seg3
-	// (private)å††ãƒ»å††å¼§ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ãŒ3ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã®å ´åˆ
+	// (private)‰~E‰~ŒÊƒGƒ“ƒeƒBƒeƒB‚ª3ƒZƒOƒƒ“ƒg‚Ìê‡
 	int CirAToNurbsC_seg3(int,int,Coord [],double);	
 
 	// Function: CirAToNurbsC_seg4
-	// (private)å††ãƒ»å††å¼§ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ãŒ4ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã®å ´åˆ
+	// (private)‰~E‰~ŒÊƒGƒ“ƒeƒBƒeƒB‚ª4ƒZƒOƒƒ“ƒg‚Ìê‡
 	int CirAToNurbsC_seg4(int,int,Coord [],double);			
 
 public:
 	// Variable: *CirA
-	// å††ãƒ»å††å¼§
+	// ‰~E‰~ŒÊ
 	CIRA  *CirA;		
 
 	// Variable: *CompC
-	// è¤‡åˆæ›²ç·š
+	// •¡‡‹Èü
 	COMPC *CompC;
 
 	// Variable: *ConA
-	// å††éŒæ›²ç·š
+	// ‰~‹Èü
 	CONA  *ConA;
 
 	// Variable: *Line
-	// ç·šåˆ†
+	// ü•ª
 	LINE_ *Line;	
 
 	// Variable: *TMat
-	// å¤‰æ›è¡Œåˆ—
+	// •ÏŠ·s—ñ
 	TMAT  *TMat;	
 
 	// Variable: *NurbsC
-	// NURBSæ›²ç·š
-	NURBSC *NurbsC;		
+	// NURBS‹Èü
+	NURBSC *NurbsC;
+//	boost::shared_array<NURBSC>	NurbsC;	// ‚±‚ê©‘Ì‚ğƒXƒ}[ƒgƒ|ƒCƒ“ƒ^‚É‚µ‚Ä‚à...
 
 	// Variable: *NurbsS
-	// NURBSæ›²é¢
-	NURBSS *NurbsS;		
+	// NURBS‹È–Ê
+	NURBSS *NurbsS;
 
 	// Variable: *ConpS
-	// é¢ä¸Šç·š
+	// –Êãü
 	CONPS *ConpS;		
 
 	// Variable: *TrmS
-	// ãƒˆãƒªãƒ é¢
+	// ƒgƒŠƒ€–Ê
 	TRMS  *TrmS;	
 
 	// Variable: TypeNum[ALL_ENTITY_TYPE_NUM]
-	// BODYã‚’æ§‹æˆã™ã‚‹å„ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã®æ•°ã‚’æ ¼ç´ã—ãŸé…åˆ—
+	// BODY‚ğ\¬‚·‚éŠeƒGƒ“ƒeƒBƒeƒB‚Ì”‚ğŠi”[‚µ‚½”z—ñ
 	int  TypeNum[ALL_ENTITY_TYPE_NUM];	
 
 	// Variable: *Mesh
-	// Half-Edgeæ§‹é€ ãƒ¡ãƒƒã‚·ãƒ¥(ãƒªã‚¹ãƒˆæ§‹é€ ã€ãƒªã‚¹ãƒˆã®å…ˆé ­ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’ç¤ºã™)
+	// Half-Edge\‘¢ƒƒbƒVƒ…(ƒŠƒXƒg\‘¢AƒŠƒXƒg‚Ìæ“ªƒAƒhƒŒƒX‚ğ¦‚·)
 	MESH  *Mesh;
 
 	// Variable: MaxCoord
-	// ç«‹ä½“ã®å¯¸æ³•ã®æœ€å¤§å€¤(ã“ã®å€¤ã§åˆæœŸè¡¨ç¤ºå€ç‡ã‚’æ±ºå®š)
-	double MaxCoord;		
+	// —§‘Ì‚Ì¡–@‚ÌÅ‘å’l(‚±‚Ì’l‚Å‰Šú•\¦”{—¦‚ğŒˆ’è)
+	double MaxCoord;
+	// Add by K.Magara
+	Coord	minmaxCoord[2];		// NCVC—p [0]:min [1]:max
+	void	ClearMinMaxCoord(void);
+	// --
 
 	// Variable: Name[FNAMEMAX]
-	// BODYå
-	char Name[FNAMEMAX];	
+	// BODY–¼
+//	char Name[FNAMEMAX];	
+	std::string		Name;
 
 	// Variable: *Mom
-	// è‡ªåˆ†ãŒå±ã™ã‚‹è¦ª(BodyList)ã®ã‚¢ãƒ‰ãƒ¬ã‚¹
+	// ©•ª‚ª‘®‚·‚ée(BodyList)‚ÌƒAƒhƒŒƒX
 	Data *Mom;				
 };
 

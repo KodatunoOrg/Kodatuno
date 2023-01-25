@@ -1,18 +1,18 @@
-ï»¿// Half-Edgeãƒ‡ãƒ¼ã‚¿æ§‹é€ ã®å®šç¾©
-// 2012/4æ™‚ç‚¹ã§ã®ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ã®ãƒ«ãƒ¼ãƒ«
-// ä¸‰è§’ãƒ‘ãƒƒãƒã‹å››è§’ãƒ‘ãƒƒãƒã¨ã™ã‚‹ï¼
-// ä¸‰è§’ãƒ‘ãƒƒãƒã¨å››è§’ãƒ‘ãƒƒãƒã®æ··åœ¨ã¯è¨±ã•ãªã„ï¼
+// Half-Edgeƒf[ƒ^\‘¢‚Ì’è‹`
+// 2012/4“_‚Å‚ÌƒƒbƒVƒ…ƒf[ƒ^‚Ìƒ‹[ƒ‹
+// OŠpƒpƒbƒ`‚©lŠpƒpƒbƒ`‚Æ‚·‚éD
+// OŠpƒpƒbƒ`‚ÆlŠpƒpƒbƒ`‚Ì¬İ‚Í‹–‚³‚È‚¢D
 
 #ifndef _HALF_EDGE_H_
 #define _HALF_EDGE_H_
 
-#include "StdAfx.h"
+//#include "StdAfx.h"
 #include "KodListFunc.h"
 
 // Constants: General Defines
-// MAXVERTNUMINFACE -	1ã¤ã®ãƒ¡ãƒƒã‚·ãƒ¥ãŒæŒã¤é ‚ç‚¹æ•°ã®ä¸Šé™(å››è§’å½¢ã¾ã§)(4)
-// TRIMESHVERTNUM -		ä¸‰è§’ãƒ¡ãƒƒã‚·ãƒ¥ã®é ‚ç‚¹æ•°(3)
-// QUADMESHVERTNUM -	å››è§’å½¢ãƒ¡ãƒƒã‚·ãƒ¥ã®é ‚ç‚¹æ•°(4)
+// MAXVERTNUMINFACE -	1‚Â‚ÌƒƒbƒVƒ…‚ª‚Â’¸“_”‚ÌãŒÀ(lŠpŒ`‚Ü‚Å)(4)
+// TRIMESHVERTNUM -		OŠpƒƒbƒVƒ…‚Ì’¸“_”(3)
+// QUADMESHVERTNUM -	lŠpŒ`ƒƒbƒVƒ…‚Ì’¸“_”(4)
 #define MAXVERTNUMINFACE	4
 #define TRIMESHVERTNUM		3
 #define QUADMESHVERTNUM		4
@@ -22,515 +22,515 @@ class HEvert;
 class HEface;
 
 // Class: HEvert
-// é ‚ç‚¹ã‚¯ãƒ©ã‚¹
+// ’¸“_ƒNƒ‰ƒX
 class HEvert{
 public:
 	// Constructor: HEvert
-	// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
 	HEvert() {cod=InitCoord(); edge=NULL; index=-1; mom = NULL; qemQ=NULL; NewQEM(); flag = false;}
 
 	// Function: GetCoord
-	// ã“ã®é ‚ç‚¹ã®åº§æ¨™å€¤ã‚’è¿”ã™
+	// ‚±‚Ì’¸“_‚ÌÀ•W’l‚ğ•Ô‚·
 	//
 	// Return:
 	// cod
 	Coord	GetCoord()	{return cod;}
 
 	// Function: GetHE
-	// ã“ã®é ‚ç‚¹ã‹ã‚‰ä¼¸ã³ã‚‹ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã®1ã¤ã‚’è¿”ã™
+	// ‚±‚Ì’¸“_‚©‚çL‚Ñ‚éƒn[ƒtƒGƒbƒW‚Ì1‚Â‚ğ•Ô‚·
 	//
 	// Return:
 	// edge
 	HEedge	*GetHE()	{return edge;}
 
 	// Function: GetIndex
-	// ã“ã®é ‚ç‚¹ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’è¿”ã™
+	// ‚±‚Ì’¸“_‚ÌƒCƒ“ƒfƒbƒNƒX‚ğ•Ô‚·
 	//
 	// Return:
 	// index
 	int		GetIndex()	{return index;}
 
 	// Function: GetFlag
-	// ãƒ•ãƒ©ã‚°ã‚’è¿”ã™
+	// ƒtƒ‰ƒO‚ğ•Ô‚·
 	//
 	// Return:
 	// flag
 	int    GetFlag()	{return flag;}			
 
 	// Function: NewQEM
-	// QEMæ³•ç”¨ä¿‚æ•°è¡Œåˆ—qemQã®ãƒ¡ãƒ¢ãƒªç¢ºä¿(4x4)
+	// QEM–@—pŒW”s—ñqemQ‚Ìƒƒ‚ƒŠŠm•Û(4x4)
 	void NewQEM();
 
 	// Function: DelQEM
-	// QEMæ³•ç”¨ä¿‚æ•°è¡Œåˆ—qemQã®ãƒ¡ãƒ¢ãƒªè§£æ”¾
+	// QEM–@—pŒW”s—ñqemQ‚Ìƒƒ‚ƒŠ‰ğ•ú
 	void DelQEM();
 
 	// Function: InitQEM
-	// QEMæ³•ç”¨ä¿‚æ•°è¡Œåˆ—qemQã®åˆæœŸåŒ–
+	// QEM–@—pŒW”s—ñqemQ‚Ì‰Šú‰»
 	void InitQEM();
 
 	// Function: SetQEM
-	// QEMæ³•ç”¨ä¿‚æ•°è¡Œåˆ—qemQã®qemãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
+	// QEM–@—pŒW”s—ñqemQ‚Ìqemƒpƒ‰ƒ[ƒ^‚ğƒZƒbƒg‚·‚é
 	int SetQEM(Matrix);
 
 	// Function: AddQEM
-	// QEMæ³•ç”¨ä¿‚æ•°è¡Œåˆ—qemQã®qemãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’åŠ ãˆã‚‹
+	// QEM–@—pŒW”s—ñqemQ‚Ìqemƒpƒ‰ƒ[ƒ^‚ğ‰Á‚¦‚é
 	int AddQEM(Matrix);	
 
 	// Function: GetQEM
-	// QEMæ³•ç”¨ä¿‚æ•°è¡Œåˆ—qemQã®qemãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’å¾—ã‚‹
+	// QEM–@—pŒW”s—ñqemQ‚Ìqemƒpƒ‰ƒ[ƒ^‚ğ“¾‚é
 	double **GetQEM();
 
 	// Function: SetEdge
-	// ã“ã®é ‚ç‚¹ã‹ã‚‰ä¼¸ã³ã‚‹ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã‚’ã‚»ãƒƒãƒˆ
+	// ‚±‚Ì’¸“_‚©‚çL‚Ñ‚éƒn[ƒtƒGƒbƒW‚ğƒZƒbƒg
 	//
 	// Parameter:
-	// *e - ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+	// *e - ƒn[ƒtƒGƒbƒW‚Ö‚Ìƒ|ƒCƒ“ƒ^
 	void SetEdge(HEedge *e)	{edge = e;}
 
 	// Function: SetCod
-	// ã“ã®é ‚ç‚¹ã®åº§æ¨™å€¤ã‚’ã‚»ãƒƒãƒˆ
+	// ‚±‚Ì’¸“_‚ÌÀ•W’l‚ğƒZƒbƒg
 	//
 	// Parameter:
-	// c - åº§æ¨™å€¤
+	// c - À•W’l
 	void SetCod(Coord c)	{cod = c;}
 
 	// Function: SetIndex
-	// ã“ã®é ‚ç‚¹ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’ã‚»ãƒƒãƒˆ
+	// ‚±‚Ì’¸“_‚ÌƒCƒ“ƒfƒbƒNƒX‚ğƒZƒbƒg
 	//
 	// Parameter:
-	// n - ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹å€¤
+	// n - ƒCƒ“ƒfƒbƒNƒX’l
 	void SetIndex(int n)	{index = n;}
 
 	// Function: SetFlag
-	// ãƒ•ãƒ©ã‚°ã‚’ã‚»ãƒƒãƒˆ
+	// ƒtƒ‰ƒO‚ğƒZƒbƒg
 	// 
 	// Parameter:
-	// f - ãƒ•ãƒ©ã‚°
+	// f - ƒtƒ‰ƒO
 	void SetFlag(int f)	{flag = f;}			
 
 
 public:
 	// Variable: cod
-	// ã“ã®é ‚ç‚¹ã®ä¸‰æ¬¡å…ƒåº§æ¨™
+	// ‚±‚Ì’¸“_‚ÌOŸŒ³À•W
 	Coord  cod;		
 
 	// Variable: *edge
-	// ã“ã®é ‚ç‚¹ã‹ã‚‰ä¼¸ã³ã‚‹ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã¸ã®ãƒã‚¤ãƒ³ã‚¿(æ³¨ï¼šé ‚ç‚¹ã‹ã‚‰ä¼¸ã³ã‚‹HEã¯1æœ¬ã¨ã¯é™ã‚‰ãªã„ã€‚ã©ã®HEã¨ç¹‹ãŒã£ã¦ã„ã‚‹ã‹åˆ†ã‹ã‚‰ãªã„)
+	// ‚±‚Ì’¸“_‚©‚çL‚Ñ‚éƒn[ƒtƒGƒbƒW‚Ö‚Ìƒ|ƒCƒ“ƒ^(’F’¸“_‚©‚çL‚Ñ‚éHE‚Í1–{‚Æ‚ÍŒÀ‚ç‚È‚¢B‚Ç‚ÌHE‚ÆŒq‚ª‚Á‚Ä‚¢‚é‚©•ª‚©‚ç‚È‚¢)
 	HEedge *edge;
 
 	// Variable: index
-	// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+	// ƒCƒ“ƒfƒbƒNƒX
 	int    index;
 
 	// Variable: *mom
-	// è‡ªåˆ†ãŒå±ã™ã‚‹è¦ª(Dataã‚¯ãƒ©ã‚¹)ã®ã‚¢ãƒ‰ãƒ¬ã‚¹
+	// ©•ª‚ª‘®‚·‚ée(DataƒNƒ‰ƒX)‚ÌƒAƒhƒŒƒX
 	Data   *mom;
 
 	// Variable: **qemQ
-	// QEMæ³•ç”¨ä¿‚æ•°è¡Œåˆ—
+	// QEM–@—pŒW”s—ñ
 	double **qemQ;	
 
 	// Variable: flag
-	// æ±ç”¨ãƒ•ãƒ©ã‚°
+	// ”Ä—pƒtƒ‰ƒO
 	int   flag;		
 };
 
 // Class: HEedge
-// ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã‚¯ãƒ©ã‚¹
+// ƒn[ƒtƒGƒbƒWƒNƒ‰ƒX
 class HEedge{
 public:
 	// Fucntion: HEedge
-	// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
 	HEedge() {vert=NULL; pair=NULL; face=NULL; ne=NULL; index=-1; mom = NULL; InitQEMP(); InitQEMD();}
 
 	// Function: GetStartVert
-	// ã“ã®ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã®å§‹ç‚¹ã‚’è¿”ã™
+	// ‚±‚Ìƒn[ƒtƒGƒbƒW‚Ìn“_‚ğ•Ô‚·
 	//
 	// Return:
 	// vert
 	HEvert	*GetStartVert()	{return vert;}
 
 	// Function: GetStartVcoord
-	// ã“ã®ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã®å§‹ç‚¹åº§æ¨™ã‚’è¿”ã™
+	// ‚±‚Ìƒn[ƒtƒGƒbƒW‚Ìn“_À•W‚ğ•Ô‚·
 	//
 	// Return:
 	// vert->cod
 	Coord	GetStartVcoord()	{return vert->cod;}
 
 	// Function: GetPairHE
-	// ã“ã®ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã®å¯¾ã¨ãªã‚‹ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã‚’è¿”ã™
+	// ‚±‚Ìƒn[ƒtƒGƒbƒW‚Ì‘Î‚Æ‚È‚éƒn[ƒtƒGƒbƒW‚ğ•Ô‚·
 	//
 	// Return:
 	// pair
 	HEedge	*GetPairHE()	{return pair;}
 
 	// Function: GetFace
-	// ã“ã®ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ãŒå±ã™ã‚‹é¢ã‚’è¿”ã™
+	// ‚±‚Ìƒn[ƒtƒGƒbƒW‚ª‘®‚·‚é–Ê‚ğ•Ô‚·
 	//
 	// Return:
 	// face
 	HEface	*GetFace()	{return face;}
 
 	// Function: GetNextHE
-	// ã“ã®ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã®æ¬¡ã®ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã‚’è¿”ã™
+	// ‚±‚Ìƒn[ƒtƒGƒbƒW‚ÌŸ‚Ìƒn[ƒtƒGƒbƒW‚ğ•Ô‚·
 	//
 	// Return:
 	// ne
 	HEedge	*GetNextHE()	{return ne;}
 
 	// Function: GetNextHE
-	// ã“ã®ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã®(å…±æœ‰ã™ã‚‹é¢ã«ãŠã‘ã‚‹)1ã¤å‰ã®ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã‚’è¿”ã™
+	// ‚±‚Ìƒn[ƒtƒGƒbƒW‚Ì(‹¤—L‚·‚é–Ê‚É‚¨‚¯‚é)1‚Â‘O‚Ìƒn[ƒtƒGƒbƒW‚ğ•Ô‚·
 	HEedge  *GetPrevHE();
 
 	// Function: GetIndex
-	// ã“ã®ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’è¿”ã™
+	// ‚±‚Ìƒn[ƒtƒGƒbƒW‚ÌƒCƒ“ƒfƒbƒNƒX‚ğ•Ô‚·
 	//
 	// Return:
 	// index
 	int	GetIndex()	{return index;}
 
 	// Function: GetStartVindex
-	// ã“ã®ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã®å§‹ç‚¹ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’è¿”ã™
+	// ‚±‚Ìƒn[ƒtƒGƒbƒW‚Ìn“_‚ÌƒCƒ“ƒfƒbƒNƒX‚ğ•Ô‚·
 	//
 	// Return:
 	// vert->index
 	int	GetStartVindex()	{return vert->index;}
 
 	// Function: GetStartVindex
-	// ãƒ•ãƒ©ã‚°ã‚’è¿”ã™
+	// ƒtƒ‰ƒO‚ğ•Ô‚·
 	//
 	// Return:
 	// vert->index
 	int	GetFlag()	{return flag;}			
 	
 	// Function: InitQEMP
-	// QEMæ³•ç”¨ä¸‰æ¬¡å…ƒåº§æ¨™å€¤(Edge Collapseé©ç”¨å¾Œã®é ‚ç‚¹ä½ç½®)qemPã®åˆæœŸåŒ–
+	// QEM–@—pOŸŒ³À•W’l(Edge Collapse“K—pŒã‚Ì’¸“_ˆÊ’u)qemP‚Ì‰Šú‰»
 	void InitQEMP()	{qemP = InitCoord();}
 
 	// Function: InitQEMD
-	// QEMæ³•ç”¨ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿(Edge Collapseé©ç”¨ã®ã‚³ã‚¹ãƒˆ)qemDã®åˆæœŸåŒ– 
+	// QEM–@—pƒpƒ‰ƒ[ƒ^(Edge Collapse“K—p‚ÌƒRƒXƒg)qemD‚Ì‰Šú‰» 
 	void InitQEMD()	{qemD = 0;}
 
 	// Function: SetQEMP
-	// QEMæ³•ç”¨ä¸‰æ¬¡å…ƒåº§æ¨™å€¤(Edge Collapseé©ç”¨å¾Œã®é ‚ç‚¹ä½ç½®)qemPã‚’ã‚»ãƒƒãƒˆ
+	// QEM–@—pOŸŒ³À•W’l(Edge Collapse“K—pŒã‚Ì’¸“_ˆÊ’u)qemP‚ğƒZƒbƒg
 	// 
 	// Parameter:
-	// p - åº§æ¨™å€¤
+	// p - À•W’l
 	void SetQEMP(Coord p)	{qemP = p;}
 
 	// Function: SetQEMD
-	// QEMæ³•ç”¨ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿(Edge Collapseé©ç”¨ã®ã‚³ã‚¹ãƒˆ)qemDã‚’ã‚»ãƒƒãƒˆ
+	// QEM–@—pƒpƒ‰ƒ[ƒ^(Edge Collapse“K—p‚ÌƒRƒXƒg)qemD‚ğƒZƒbƒg
 	// 
 	// Parameter:
-	// d - é©ç”¨ã‚³ã‚¹ãƒˆãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
+	// d - “K—pƒRƒXƒgƒpƒ‰ƒ[ƒ^
 	void SetQEMD(double d)	{qemD = d;}
 
 	// Function: GetQEMP
-	// QEMæ³•ç”¨ä¸‰æ¬¡å…ƒåº§æ¨™å€¤(Edge Collapseé©ç”¨å¾Œã®é ‚ç‚¹ä½ç½®)qemPã‚’è¿”ã™
+	// QEM–@—pOŸŒ³À•W’l(Edge Collapse“K—pŒã‚Ì’¸“_ˆÊ’u)qemP‚ğ•Ô‚·
 	//
 	// Return
 	// qemP
 	Coord GetQEMP()	{return qemP;}
 
 	// Function: GetQEMD
-	// QEMæ³•ç”¨ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿(Edge Collapseé©ç”¨ã®ã‚³ã‚¹ãƒˆ)qemDã‚’è¿”ã™
+	// QEM–@—pƒpƒ‰ƒ[ƒ^(Edge Collapse“K—p‚ÌƒRƒXƒg)qemD‚ğ•Ô‚·
 	// 
 	// Return
 	// qemD
 	double GetQEMD()	{return qemD;}
 
 	// Function: SetVert
-	// ã“ã®ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã®å§‹ç‚¹ã‚’ã‚»ãƒƒãƒˆ
+	// ‚±‚Ìƒn[ƒtƒGƒbƒW‚Ìn“_‚ğƒZƒbƒg
 	//
 	// Parameter:
-	// *v - ã“ã®ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã®å§‹ç‚¹ã¨ãªã‚‹HEvertã¸ã®ãƒã‚¤ãƒ³ã‚¿
+	// *v - ‚±‚Ìƒn[ƒtƒGƒbƒW‚Ìn“_‚Æ‚È‚éHEvert‚Ö‚Ìƒ|ƒCƒ“ƒ^
 	void SetVert(HEvert *v)		{vert = v;}
 
 	// Function: SetPair
-	// ã“ã®ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã®å¯¾ã¨ãªã‚‹ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã‚’ã‚»ãƒƒãƒˆ
+	// ‚±‚Ìƒn[ƒtƒGƒbƒW‚Ì‘Î‚Æ‚È‚éƒn[ƒtƒGƒbƒW‚ğƒZƒbƒg
 	//
 	// Parameter:
-	// *e - ã“ã®ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã®å¯¾ã¨ãªã‚‹HEedgeã¸ã®ãƒã‚¤ãƒ³ã‚¿
+	// *e - ‚±‚Ìƒn[ƒtƒGƒbƒW‚Ì‘Î‚Æ‚È‚éHEedge‚Ö‚Ìƒ|ƒCƒ“ƒ^
 	void SetPair(HEedge *e)		{pair = e;}
 
 	// Function: SetFace
-	// ã“ã®ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ãŒå±ã™ã‚‹é¢ã‚’ã‚»ãƒƒãƒˆ
+	// ‚±‚Ìƒn[ƒtƒGƒbƒW‚ª‘®‚·‚é–Ê‚ğƒZƒbƒg
 	//
 	// Parameter:
-	// *f - ã“ã®ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ãŒå±ã™ã‚‹é¢HEfaceã¸ã®ãƒã‚¤ãƒ³ã‚¿
+	// *f - ‚±‚Ìƒn[ƒtƒGƒbƒW‚ª‘®‚·‚é–ÊHEface‚Ö‚Ìƒ|ƒCƒ“ƒ^
 	void SetFace(HEface *f)		{face = f;}
 
 	// Function: SetNextHE
-	// ã“ã®ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã®æ¬¡ã®ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã‚’ã‚»ãƒƒãƒˆ
+	// ‚±‚Ìƒn[ƒtƒGƒbƒW‚ÌŸ‚Ìƒn[ƒtƒGƒbƒW‚ğƒZƒbƒg
 	//
 	// Parameter:
-	// *e - ã“ã®ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã®æ¬¡ã®HEedgeã¸ã®ãƒã‚¤ãƒ³ã‚¿
+	// *e - ‚±‚Ìƒn[ƒtƒGƒbƒW‚ÌŸ‚ÌHEedge‚Ö‚Ìƒ|ƒCƒ“ƒ^
 	void SetNextHE(HEedge *e)	{ne = e;}
 
 	// Function: SetIndex
-	// ã“ã®ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’ã‚»ãƒƒãƒˆ
+	// ‚±‚Ìƒn[ƒtƒGƒbƒW‚ÌƒCƒ“ƒfƒbƒNƒX‚ğƒZƒbƒg
 	//
 	// Parameter:
-	// n - ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹å€¤
+	// n - ƒCƒ“ƒfƒbƒNƒX’l
 	void SetIndex(int n)		{index = n;}
 
 	// Function: SetFlag
-	// ã“ã®ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã®ãƒ•ãƒ©ã‚°ã‚’ã‚»ãƒƒãƒˆ
+	// ‚±‚Ìƒn[ƒtƒGƒbƒW‚Ìƒtƒ‰ƒO‚ğƒZƒbƒg
 	//
 	// Parameter:
-	// n - ãƒ•ãƒ©ã‚°
+	// n - ƒtƒ‰ƒO
 	void SetFlag(int f)			{flag = f;}
 
 public:
 
 	// Variable: *vert
-	// ã“ã®ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã®å§‹ç‚¹ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+	// ‚±‚Ìƒn[ƒtƒGƒbƒW‚Ìn“_‚Ö‚Ìƒ|ƒCƒ“ƒ^
 	HEvert *vert;
 
 	// Variable: *pair
-	// å¯¾ã¨ãªã‚‹é€†æ–¹å‘ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+	// ‘Î‚Æ‚È‚é‹t•ûŒüƒn[ƒtƒGƒbƒW‚Ö‚Ìƒ|ƒCƒ“ƒ^
 	HEedge *pair;
 
 	// Variable: *face
-	// ã“ã®ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã«æ¥ã—ã¦ã„ã‚‹é¢ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+	// ‚±‚Ìƒn[ƒtƒGƒbƒW‚ÉÚ‚µ‚Ä‚¢‚é–Ê‚Ö‚Ìƒ|ƒCƒ“ƒ^
 	HEface *face;
 
 	// Variable: *ne
-	// é¢å‘¨ã‚Šã®æ¬¡ã®ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+	// –Êü‚è‚ÌŸ‚Ìƒn[ƒtƒGƒbƒW‚Ö‚Ìƒ|ƒCƒ“ƒ^
 	HEedge *ne;		
 
 	// Variable: index
-	// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+	// ƒCƒ“ƒfƒbƒNƒX
 	int    index;
 
 	// Variable: *mom
-	// è‡ªåˆ†ãŒå±ã™ã‚‹è¦ªã®ã‚¢ãƒ‰ãƒ¬ã‚¹
+	// ©•ª‚ª‘®‚·‚ée‚ÌƒAƒhƒŒƒX
 	Data   *mom;	
 
 	// Variable: qemP
-	// QEMæ³•ç”¨ä¸‰æ¬¡å…ƒåº§æ¨™å€¤(Edge Collapseé©ç”¨å¾Œã®é ‚ç‚¹ä½ç½®)
+	// QEM–@—pOŸŒ³À•W’l(Edge Collapse“K—pŒã‚Ì’¸“_ˆÊ’u)
 	Coord  qemP;
 
 	// Variable: qemD
-	// QEMæ³•ç”¨ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿(Edge Collapseé©ç”¨ã®ã‚³ã‚¹ãƒˆ)
+	// QEM–@—pƒpƒ‰ƒ[ƒ^(Edge Collapse“K—p‚ÌƒRƒXƒg)
 	double qemD;
 
 	// Variable: flag
-	// æ±ç”¨ãƒ•ãƒ©ã‚°
+	// ”Ä—pƒtƒ‰ƒO
 	int   flag;
 };
 
 // Class: HEface
-// é¢ã‚¯ãƒ©ã‚¹
+// –ÊƒNƒ‰ƒX
 class HEface{
 public:
 	// Function: HEface
-	// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
 	HEface() {edge=NULL; index=-1; vertnum=0; mom = NULL;}
 
 	// Function: GetStartHE
-	// ã“ã®é¢ãŒæŒã¤ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã®1ã¤ã‚’è¿”ã™
+	// ‚±‚Ì–Ê‚ª‚Âƒn[ƒtƒGƒbƒW‚Ì1‚Â‚ğ•Ô‚·
 	//
 	// Return:
 	// edge
 	HEedge	*GetStartHE()	{return edge;}
 
 	// Function: GetNormVec
-	// ã“ã®é¢ã®æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã‚’è¿”ã™
+	// ‚±‚Ì–Ê‚Ì–@üƒxƒNƒgƒ‹‚ğ•Ô‚·
 	//
 	// Return:
 	// norm
 	Coord	GetNormVec()	{return norm;}	
 
 	// Function: GetArea
-	// ã“ã®é¢ã®é¢ç©ã‚’è¿”ã™
+	// ‚±‚Ì–Ê‚Ì–ÊÏ‚ğ•Ô‚·
 	//
 	// Return:
 	// area
 	double	GetArea()		{return area;}	
 
 	// Function: GetIndex
-	// ã“ã®é¢ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’è¿”ã™
+	// ‚±‚Ì–Ê‚ÌƒCƒ“ƒfƒbƒNƒX‚ğ•Ô‚·
 	//
 	// Return:
 	// index
 	int		GetIndex()		{return index;}	
 
 	// Function: GetVetexNum
-	// ã“ã®é¢ã®æŒã¤é ‚ç‚¹æ•°ã‚’è¿”ã™
+	// ‚±‚Ì–Ê‚Ì‚Â’¸“_”‚ğ•Ô‚·
 	//
 	// Return:
 	// vertnum
 	int		GetVetexNum()	{return vertnum;}
 
 	// Function: GetDispStat
-	// ã“ã®é¢ã®è¡¨ç¤ºå±æ€§ã‚’è¿”ã™
+	// ‚±‚Ì–Ê‚Ì•\¦‘®«‚ğ•Ô‚·
 	//
 	// Return:
 	// Dstat
 	DispStat GetDispStat()	{return Dstat;}		
 
 	// Function: SetNormVec
-	// ã“ã®é¢ã®æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã‚’ã‚»ãƒƒãƒˆ
+	// ‚±‚Ì–Ê‚Ì–@üƒxƒNƒgƒ‹‚ğƒZƒbƒg
 	//
 	// Parameter:
 	// 
 	void SetNormVec(Coord n)	{norm = n;}		
 
 	// Function: SetFaceArea
-	// ã“ã®é¢ã®é¢ç©ã‚’ã‚»ãƒƒãƒˆ
+	// ‚±‚Ì–Ê‚Ì–ÊÏ‚ğƒZƒbƒg
 	//
 	// Parameter:
-	// a - é¢ç©
+	// a - –ÊÏ
 	void SetFaceArea(double a)	{area = a;}		
 
 	// Function: SetEdge
-	// ã“ã®é¢ãŒæŒã¤ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã®1ã¤ã‚’ã‚»ãƒƒãƒˆ
+	// ‚±‚Ì–Ê‚ª‚Âƒn[ƒtƒGƒbƒW‚Ì1‚Â‚ğƒZƒbƒg
 	//
 	// Parameter:
-	// *e - ã“ã®é¢ãŒæŒã¤ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã®1ã¤ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+	// *e - ‚±‚Ì–Ê‚ª‚Âƒn[ƒtƒGƒbƒW‚Ì1‚Â‚Ö‚Ìƒ|ƒCƒ“ƒ^
 	void SetEdge(HEedge *e)		{edge = e;}		
 
 	// Function: SetVertNum
-	// ã“ã®é¢ã®æŒã¤é ‚ç‚¹æ•°ã‚’ã‚»ãƒƒãƒˆ
+	// ‚±‚Ì–Ê‚Ì‚Â’¸“_”‚ğƒZƒbƒg
 	//
 	// Parameter:
-	// n - é ‚ç‚¹æ•°
+	// n - ’¸“_”
 	void SetVertNum(int n)		{vertnum = n;}	
 
 	// Function: SetIndex
-	// ã“ã®é¢ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’ã‚»ãƒƒãƒˆ
+	// ‚±‚Ì–Ê‚ÌƒCƒ“ƒfƒbƒNƒX‚ğƒZƒbƒg
 	//
 	// Parameter:
-	// n - ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+	// n - ƒCƒ“ƒfƒbƒNƒX
 	void SetIndex(int n)		{index = n;}	
 
 public:
 	// Variable: *edge
-	// ã“ã®é¢ã«æ¥ã—ã¦ã„ã‚‹ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã®æœ€åˆ
+	// ‚±‚Ì–Ê‚ÉÚ‚µ‚Ä‚¢‚éƒn[ƒtƒGƒbƒW‚ÌÅ‰
 	HEedge *edge;	
 
 	// Variable: norm
-	// æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«
+	// –@üƒxƒNƒgƒ‹
 	Coord  norm;
 
 	// Variable: area
-	// é¢ç©
+	// –ÊÏ
 	double area;	
 
 	// Variable: vertnum
-	// é ‚ç‚¹æ•°
+	// ’¸“_”
 	int    vertnum;	
 
 	// Variable: index
-	// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+	// ƒCƒ“ƒfƒbƒNƒX
 	int    index;	
 
 	// Variable: Dstat
-	// è¡¨ç¤ºå±æ€§ï¼ˆè‰²r,g,bï¼‰
+	// •\¦‘®«iFr,g,bj
 	DispStat Dstat;	
 
 	// Variable: *mom
-	// è‡ªåˆ†ãŒå±ã™ã‚‹è¦ªã®ã‚¢ãƒ‰ãƒ¬ã‚¹
+	// ©•ª‚ª‘®‚·‚ée‚ÌƒAƒhƒŒƒX
 	Data   *mom;	
 };
 
 // Class: MESH
-// ãƒ¡ãƒƒã‚·ãƒ¥ã‚¯ãƒ©ã‚¹ã®å®šç¾©
+// ƒƒbƒVƒ…ƒNƒ‰ƒX‚Ì’è‹`
 class MESH
 {
 public:
 	// Function: MESH
-	// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
 	MESH();
 
 	// Function: clear
-	// ãƒ¡ãƒƒã‚·ãƒ¥å…¨æ¶ˆå»
+	// ƒƒbƒVƒ…‘SÁ‹
 	int clear();
 
 	// Function: DelVert
-	// æŒ‡å®šã—ãŸé ‚ç‚¹ã‚’æ¶ˆå»
+	// w’è‚µ‚½’¸“_‚ğÁ‹
 	void DelVert(HEvert *);	
 	
 	// Function: DelEdge
-	// æŒ‡å®šã—ãŸãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã‚’æ¶ˆå»
+	// w’è‚µ‚½ƒn[ƒtƒGƒbƒW‚ğÁ‹
 	void DelEdge(HEedge *);
 	
 	// Function:DelFace 
-	// æŒ‡å®šã—ãŸé¢ã‚’æ¶ˆå»
+	// w’è‚µ‚½–Ê‚ğÁ‹
 	void DelFace(HEface *);
 	
 	// Function: getIndexedVert
-	// æŒ‡å®šã—ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã¨åŒã˜ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’æŒã¤é ‚ç‚¹ã‚’æ¢ã—å‡ºã™
+	// w’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚Æ“¯‚¶ƒCƒ“ƒfƒbƒNƒX‚ğ‚Â’¸“_‚ğ’T‚µo‚·
 	HEvert *getIndexedVert(int);
 	
 	// Function: getIndexedEdge
-	// æŒ‡å®šã—ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã¨åŒã˜ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’æŒã¤ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã‚’æ¢ã—å‡ºã™
+	// w’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚Æ“¯‚¶ƒCƒ“ƒfƒbƒNƒX‚ğ‚Âƒn[ƒtƒGƒbƒW‚ğ’T‚µo‚·
 	HEedge *getIndexedEdge(int);
 	
 	// Function:getIndexedFace
-	// æŒ‡å®šã—ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã¨åŒã˜ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’æŒã¤é¢ã‚’æ¢ã—å‡ºã™
+	// w’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚Æ“¯‚¶ƒCƒ“ƒfƒbƒNƒX‚ğ‚Â–Ê‚ğ’T‚µo‚·
 	HEface *getIndexedFace(int);
 	
 	// Function: setSentinelOnIndexedEdge
-	// æŒ‡å®šã—ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®ã‚¨ãƒƒã‚¸ãƒ‡ãƒ¼ã‚¿ã«æ——ã‚’ç«‹ã¦ã‚‹
+	// w’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚ÌƒGƒbƒWƒf[ƒ^‚ÉŠø‚ğ—§‚Ä‚é
 	HEedge *setSentinelOnIndexedEdge(int);
 	
 	// Function: getIndexedEdgeFromSentinel
-	// æ——ã‹ã‚‰nç•ªç›®å¾Œorå‰ã®ã‚¨ãƒƒã‚¸ãƒ‡ãƒ¼ã‚¿ã‚’å¾—ã‚‹
+	// Šø‚©‚çn”Ô–ÚŒãor‘O‚ÌƒGƒbƒWƒf[ƒ^‚ğ“¾‚é
 	HEedge *getIndexedEdgeFromSentinel(int);
 	
 	// Function: CalcFaceNorm
-	// æŒ‡å®šã—ãŸé¢fã®æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã‚’æ±‚ã‚ã€f->normã«ã‚»ãƒƒãƒˆã™ã‚‹
+	// w’è‚µ‚½–Êf‚Ì–@üƒxƒNƒgƒ‹‚ğ‹‚ßAf->norm‚ÉƒZƒbƒg‚·‚é
 	int CalcFaceNorm(HEface *);
 	
 	// Function: CalcFaceArea
-	// æŒ‡å®šã—ãŸé¢fã®é¢ç©ã‚’æ±‚ã‚ã€f->areaã«ã‚»ãƒƒãƒˆã™ã‚‹
+	// w’è‚µ‚½–Êf‚Ì–ÊÏ‚ğ‹‚ßAf->area‚ÉƒZƒbƒg‚·‚é
 	int CalcFaceArea(HEface *);
 	
 	// Function: EdgeSortbyQEMD
-	// Edgeã‚’QEMã‚³ã‚¹ãƒˆ(Edge.qemD)ã§æ˜‡é †ã‚½ãƒ¼ãƒˆã™ã‚‹
+	// Edge‚ğQEMƒRƒXƒg(Edge.qemD)‚Å¸‡ƒ\[ƒg‚·‚é
 	void EdgeSortbyQEMD();
 	
 	// Function: InsertQEMD
-	//	æ˜‡é †ã‚½ãƒ¼ãƒˆã•ã‚ŒãŸEdgeãƒªã‚¹ãƒˆã«ã€å¤‰æ›´ã•ã‚ŒãŸQEMã‚³ã‚¹ãƒˆã‚’æŒã¤HEedgeã‚’æŒ¿å…¥
+	//	¸‡ƒ\[ƒg‚³‚ê‚½EdgeƒŠƒXƒg‚ÉA•ÏX‚³‚ê‚½QEMƒRƒXƒg‚ğ‚ÂHEedge‚ğ‘}“ü
 	void InsertQEMD(HEedge *);
 
 
 private:
 	// Function: MergeSortForQEMD
-	// (private)Edgeã‚’QEMã‚³ã‚¹ãƒˆ(Edge.qemD)ã§æ˜‡é †ã‚½ãƒ¼ãƒˆã™ã‚‹Sub1
+	// (private)Edge‚ğQEMƒRƒXƒg(Edge.qemD)‚Å¸‡ƒ\[ƒg‚·‚éSub1
 	Data *MergeSortForQEMD(Data *);
 
 	// Function: MergeListForQEMD
-	// (private)Edgeã‚’QEMã‚³ã‚¹ãƒˆ(Edge.qemD)ã§æ˜‡é †ã‚½ãƒ¼ãƒˆã™ã‚‹Sub2
+	// (private)Edge‚ğQEMƒRƒXƒg(Edge.qemD)‚Å¸‡ƒ\[ƒg‚·‚éSub2
 	Data *MergeListForQEMD(Data *,Data *);
 
 
 public:
 	// Variable: 
-	// é¢ãƒªã‚¹ãƒˆã®ãƒ«ãƒ¼ãƒˆ
+	// –ÊƒŠƒXƒg‚Ìƒ‹[ƒg
 	KODlistData Face;
 
 	// Variable: Edge
-	// ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ãƒªã‚¹ãƒˆã®ãƒ«ãƒ¼ãƒˆ
+	// ƒn[ƒtƒGƒbƒWƒŠƒXƒg‚Ìƒ‹[ƒg
 	KODlistData Edge;
 
 	// Variable: Vert
-	// é ‚ç‚¹ãƒªã‚¹ãƒˆã®ãƒ«ãƒ¼ãƒˆ
+	// ’¸“_ƒŠƒXƒg‚Ìƒ‹[ƒg
 	KODlistData Vert;
 
 	// Variable: VertNum
-	// é¢ã®ç·æ•°
+	// –Ê‚Ì‘”
 	int VertNum;
 
 	// Variable: EdgeNum
-	// ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã®ç·æ•°
+	// ƒn[ƒtƒGƒbƒW‚Ì‘”
 	int EdgeNum;
 
 	// Variable: FaceNum
-	// é ‚ç‚¹ã®ç·æ•°
+	// ’¸“_‚Ì‘”
 	int FaceNum;
 };
 

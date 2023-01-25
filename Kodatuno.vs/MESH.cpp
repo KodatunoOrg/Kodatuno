@@ -1,16 +1,21 @@
-ï»¿#include "MESH.h"
+#include "stdafx.h"
+#include "MESH.h"
+
+#if defined(_DEBUG) && defined(_MSC_VER)
+#define new DEBUG_NEW
+#endif
 
 //////////////////////////////////////MESH class////////////////////////////////////////////////////////////////////////
 
 // Function: MESH
-// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
 MESH::MESH()
 {
 	VertNum = EdgeNum = FaceNum = 0;
 }
 
 // Function: clear
-// ãƒ¡ãƒƒã‚·ãƒ¥ã®å…¨ã‚¯ãƒªã‚¢
+// ƒƒbƒVƒ…‚Ì‘SƒNƒŠƒA
 //
 // Return:
 // KOD_TRUE
@@ -46,53 +51,53 @@ int MESH::clear()
 }
 
 // Function: DelVert
-// æŒ‡å®šã—ãŸé ‚ç‚¹ã‚’æ¶ˆå»
+// w’è‚µ‚½’¸“_‚ğÁ‹
 //
 // Parameter:
-// *v - æ¶ˆå»ã™ã‚‹é ‚ç‚¹ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+// *v - Á‹‚·‚é’¸“_‚Ö‚Ìƒ|ƒCƒ“ƒ^
 void MESH::DelVert(HEvert *v)
 {
-	Vert.delData(v->mom);	// ãƒªã‚¹ãƒˆã‹ã‚‰å¤–ã™
+	Vert.delData(v->mom);	// ƒŠƒXƒg‚©‚çŠO‚·
 	//fprintf(stderr,"del v:%p\n",v->mom);		// debug
 	v->DelQEM();
 	VertNum--;
-	delete v;				// è‡ªèº«ã®æ¶ˆæ»…
+	delete v;				// ©g‚ÌÁ–Å
 }
 
 // Function: DelEdge
-// æŒ‡å®šã—ãŸãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã‚’æ¶ˆå»
+// w’è‚µ‚½ƒn[ƒtƒGƒbƒW‚ğÁ‹
 //
 // Parameter:
-// *e - æ¶ˆå»ã™ã‚‹ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+// *e - Á‹‚·‚éƒn[ƒtƒGƒbƒW‚Ö‚Ìƒ|ƒCƒ“ƒ^
 void MESH::DelEdge(HEedge *e)
 {
-	Edge.delData(e->mom);	// ãƒªã‚¹ãƒˆã‹ã‚‰å¤–ã™
+	Edge.delData(e->mom);	// ƒŠƒXƒg‚©‚çŠO‚·
 	// fprintf(stderr,"del e:%p\n",e->mom);		// debug
 	EdgeNum--;
-	delete e;				// è‡ªèº«ã®æ¶ˆæ»…
+	delete e;				// ©g‚ÌÁ–Å
 }
 
 // Function: DelFace
-// æŒ‡å®šã—ãŸé¢ã‚’æ¶ˆå»
+// w’è‚µ‚½–Ê‚ğÁ‹
 //
 // Parameter:
-// *f - æ¶ˆå»ã™ã‚‹é¢ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+// *f - Á‹‚·‚é–Ê‚Ö‚Ìƒ|ƒCƒ“ƒ^
 void MESH::DelFace(HEface *f)
 {
-	Face.delData(f->mom);	// ãƒªã‚¹ãƒˆã‹ã‚‰å¤–ã™
+	Face.delData(f->mom);	// ƒŠƒXƒg‚©‚çŠO‚·
 	//fprintf(stderr,"del f:%p\n",f->mom);		// debug
 	FaceNum--;
-	delete f;				// è‡ªèº«ã®æ¶ˆæ»…
+	delete f;				// ©g‚ÌÁ–Å
 }
 
 // Function: getIndexedVert
-// æŒ‡å®šã—ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã¨åŒã˜ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’æŒã¤é ‚ç‚¹ã‚’æ¢ã—å‡ºã™
+// w’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚Æ“¯‚¶ƒCƒ“ƒfƒbƒNƒX‚ğ‚Â’¸“_‚ğ’T‚µo‚·
 //
 // Parameter:
-// index - ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ç•ªå·
+// index - ƒCƒ“ƒfƒbƒNƒX”Ô†
 //
 // Return:
-// æŒ‡å®šã—ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã¨åŒã˜ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’æŒã¤é ‚ç‚¹ã¸ã®ãƒã‚¤ãƒ³ã‚¿ï¼è¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸã‚‰NULL
+// w’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚Æ“¯‚¶ƒCƒ“ƒfƒbƒNƒX‚ğ‚Â’¸“_‚Ö‚Ìƒ|ƒCƒ“ƒ^DŒ©‚Â‚©‚ç‚È‚©‚Á‚½‚çNULL
 HEvert *MESH::getIndexedVert(int index)
 {
 	int n = Vert.getNum();
@@ -108,13 +113,13 @@ HEvert *MESH::getIndexedVert(int index)
 }
 
 // Function: getIndexedEdge
-// æŒ‡å®šã—ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã¨åŒã˜ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’æŒã¤ã‚¨ãƒƒã‚¸ã‚’æ¢ã—å‡ºã™
+// w’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚Æ“¯‚¶ƒCƒ“ƒfƒbƒNƒX‚ğ‚ÂƒGƒbƒW‚ğ’T‚µo‚·
 //
 // Parameter:
-// index - ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ç•ªå·
+// index - ƒCƒ“ƒfƒbƒNƒX”Ô†
 //
 // Return:
-// æŒ‡å®šã—ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã¨åŒã˜ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’æŒã¤ã‚¨ãƒƒã‚¸ã¸ã®ãƒã‚¤ãƒ³ã‚¿ï¼è¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸã‚‰NULL
+// w’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚Æ“¯‚¶ƒCƒ“ƒfƒbƒNƒX‚ğ‚ÂƒGƒbƒW‚Ö‚Ìƒ|ƒCƒ“ƒ^DŒ©‚Â‚©‚ç‚È‚©‚Á‚½‚çNULL
 HEedge *MESH::getIndexedEdge(int index)
 {
 	int n = Edge.getNum();
@@ -130,13 +135,13 @@ HEedge *MESH::getIndexedEdge(int index)
 }
 
 // Function: getIndexedFace
-// æŒ‡å®šã—ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã¨åŒã˜ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’æŒã¤é¢ã‚’æ¢ã—å‡ºã™
+// w’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚Æ“¯‚¶ƒCƒ“ƒfƒbƒNƒX‚ğ‚Â–Ê‚ğ’T‚µo‚·
 //
 // Parameter:
-// index - ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ç•ªå·
+// index - ƒCƒ“ƒfƒbƒNƒX”Ô†
 //
 // Return:
-// æŒ‡å®šã—ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã¨åŒã˜ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’æŒã¤é¢ã¸ã®ãƒã‚¤ãƒ³ã‚¿ï¼è¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸã‚‰NULL
+// w’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚Æ“¯‚¶ƒCƒ“ƒfƒbƒNƒX‚ğ‚Â–Ê‚Ö‚Ìƒ|ƒCƒ“ƒ^DŒ©‚Â‚©‚ç‚È‚©‚Á‚½‚çNULL
 HEface *MESH::getIndexedFace(int index)
 {
 	int n = Face.getNum();
@@ -152,23 +157,23 @@ HEface *MESH::getIndexedFace(int index)
 }
 
 // Function: setSentinelOnIndexedEdge
-// æŒ‡å®šã—ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®ã‚¨ãƒƒã‚¸ãƒ‡ãƒ¼ã‚¿ã«æ——ã‚’ç«‹ã¦ã‚‹
+// w’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚ÌƒGƒbƒWƒf[ƒ^‚ÉŠø‚ğ—§‚Ä‚é
 //
 // Parameter:
-// index - ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ç•ªå·
+// index - ƒCƒ“ƒfƒbƒNƒX”Ô†
 //
 // Return:
-// æŒ‡å®šã—ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’æŒã¤ã‚¨ãƒƒã‚¸ã¸ã®ãƒã‚¤ãƒ³ã‚¿ï¼è¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸã‚‰NULL
+// w’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚ğ‚ÂƒGƒbƒW‚Ö‚Ìƒ|ƒCƒ“ƒ^DŒ©‚Â‚©‚ç‚È‚©‚Á‚½‚çNULL
 HEedge *MESH::setSentinelOnIndexedEdge(int index)
 {
-	int n = Edge.getNum();	// ã‚¨ãƒƒã‚¸ãƒªã‚¹ãƒˆã®ç·æ•°ã‚’å¾—ã‚‹
+	int n = Edge.getNum();	// ƒGƒbƒWƒŠƒXƒg‚Ì‘”‚ğ“¾‚é
 
-	// æŒ‡å®šã—ãŸindexã¨åŒã˜ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’æŒã¤ãƒ‡ãƒ¼ã‚¿ã‚’æ¢ã™
+	// w’è‚µ‚½index‚Æ“¯‚¶ƒCƒ“ƒfƒbƒNƒX‚ğ‚Âƒf[ƒ^‚ğ’T‚·
 	for(int i=0;i<n;i++){
-		HEedge *e = (HEedge *)Edge.getData(i);	// ãƒ‡ãƒ¼ã‚¿å–å¾—
+		HEedge *e = (HEedge *)Edge.getData(i);	// ƒf[ƒ^æ“¾
 		if(e->index == index){
-			Edge.setSentinel(i);				// è¦‹ã¤ã‹ã‚Œã°ã€ãã“ã«æ——ã‚’ç«‹ã¦ã‚‹
-			return e;							// ãã®ãƒ‡ãƒ¼ã‚¿ã‚’è¿”ã™
+			Edge.setSentinel(i);				// Œ©‚Â‚©‚ê‚ÎA‚»‚±‚ÉŠø‚ğ—§‚Ä‚é
+			return e;							// ‚»‚Ìƒf[ƒ^‚ğ•Ô‚·
 		}
 	}
 
@@ -176,84 +181,84 @@ HEedge *MESH::setSentinelOnIndexedEdge(int index)
 }
 
 // Function: getIndexedEdgeFromSentinel
-// æ——ã‹ã‚‰dnç•ªç›®å¾Œorå‰ã®ã‚¨ãƒƒã‚¸ãƒ‡ãƒ¼ã‚¿ã‚’å¾—ã‚‹(dnãŒãƒã‚¤ãƒŠã‚¹ã®å ´åˆã¯å¾Œã‚å‘ãã®æ¢ç´¢)
+// Šø‚©‚çdn”Ô–ÚŒãor‘O‚ÌƒGƒbƒWƒf[ƒ^‚ğ“¾‚é(dn‚ªƒ}ƒCƒiƒX‚Ìê‡‚ÍŒã‚ëŒü‚«‚Ì’Tõ)
 //
 // Parameter:
-// dn - æ——(ã‚»ãƒ³ãƒãƒãƒ«)ã‹ã‚‰ä½•ç•ªç›®ã‹
+// dn - Šø(ƒZƒ“ƒ`ƒlƒ‹)‚©‚ç‰½”Ô–Ú‚©
 //
 // Return:
-// æ——ã‹ã‚‰dnç•ªç›®å¾Œorå‰ã®ã‚¨ãƒƒã‚¸ã¸ã®ãƒã‚¤ãƒ³ã‚¿ï¼è¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸã‚‰NULL
+// Šø‚©‚çdn”Ô–ÚŒãor‘O‚ÌƒGƒbƒW‚Ö‚Ìƒ|ƒCƒ“ƒ^DŒ©‚Â‚©‚ç‚È‚©‚Á‚½‚çNULL
 HEedge *MESH::getIndexedEdgeFromSentinel(int dn)
 {
 	return (HEedge *)Edge.getDataFromSentinel(dn);
 }
 
 // Function: CalcFaceNorm
-// æŒ‡å®šã—ãŸé¢fã®æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã‚’æ±‚ã‚ã€f->normã«ã‚»ãƒƒãƒˆã™ã‚‹
+// w’è‚µ‚½–Êf‚Ì–@üƒxƒNƒgƒ‹‚ğ‹‚ßAf->norm‚ÉƒZƒbƒg‚·‚é
 //
 // Parameter:
-// *f - é¢
+// *f - –Ê
 //
 // Return:
-// ä¸‰è§’ãƒ¡ãƒƒã‚·ãƒ¥ä»¥å¤–ã®å ´åˆã¯KOD_FALSEï¼æˆåŠŸï¼šKOD_TRUE
+// OŠpƒƒbƒVƒ…ˆÈŠO‚Ìê‡‚ÍKOD_FALSED¬Œ÷FKOD_TRUE
 int MESH::CalcFaceNorm(HEface *f)
 {
 	Coord a[MAXVERTNUMINFACE];
 
 	HEedge *e = f->GetStartHE();
-	for(int j=0;j<f->GetVetexNum();j++){	// é¢ã‚’æ§‹æˆã™ã‚‹ç‚¹ã®åº§æ¨™å€¤ã‚’å–å¾—
+	for(int j=0;j<f->GetVetexNum();j++){	// –Ê‚ğ\¬‚·‚é“_‚ÌÀ•W’l‚ğæ“¾
 		a[j] = e->GetStartVcoord();
 		e = e->GetNextHE();
 	}
-	if(f->GetVetexNum() == TRIMESHVERTNUM){						// ä¸‰è§’ãƒ¡ãƒƒã‚·ãƒ¥ã®å ´åˆã¯
-		f->SetNormVec(CalcNormVecFrom3Pts(a[0],a[1],a[2]));		// 3ç‚¹ã‹ã‚‰æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã‚’è¨ˆç®—ã—ã€f->normã«ã‚»ãƒƒãƒˆ
+	if(f->GetVetexNum() == TRIMESHVERTNUM){						// OŠpƒƒbƒVƒ…‚Ìê‡‚Í
+		f->SetNormVec(CalcNormVecFrom3Pts(a[0],a[1],a[2]));		// 3“_‚©‚ç–@üƒxƒNƒgƒ‹‚ğŒvZ‚µAf->norm‚ÉƒZƒbƒg
 		return KOD_TRUE;
 	}
-	else{									// ä¸‰è§’ãƒ¡ãƒƒã‚·ãƒ¥ä»¥å¤–ã®å ´åˆã¯FALSE
+	else{									// OŠpƒƒbƒVƒ…ˆÈŠO‚Ìê‡‚ÍFALSE
 		f->SetNormVec(SetCoord(0,0,0));
 		return KOD_FALSE;
 	}
 }
 
 // Function: CalcFaceArea
-// æŒ‡å®šã—ãŸé¢fã®é¢ç©ã‚’æ±‚ã‚ã€f->areaã«ã‚»ãƒƒãƒˆã™ã‚‹
+// w’è‚µ‚½–Êf‚Ì–ÊÏ‚ğ‹‚ßAf->area‚ÉƒZƒbƒg‚·‚é
 //
 // Parameter:
-// *f - é¢
+// *f - –Ê
 //
 // Return:
-// ä¸‰è§’ãƒ¡ãƒƒã‚·ãƒ¥ä»¥å¤–ã®å ´åˆã¯KOD_FALSEï¼æˆåŠŸï¼šKOD_TRUE
+// OŠpƒƒbƒVƒ…ˆÈŠO‚Ìê‡‚ÍKOD_FALSED¬Œ÷FKOD_TRUE
 int MESH::CalcFaceArea(HEface *f)
 {
 	Coord a[MAXVERTNUMINFACE];
 
 	HEedge *e = f->GetStartHE();
-	for(int j=0;j<f->GetVetexNum();j++){	// é¢ã‚’æ§‹æˆã™ã‚‹ç‚¹ã®åº§æ¨™å€¤ã‚’å–å¾—
+	for(int j=0;j<f->GetVetexNum();j++){	// –Ê‚ğ\¬‚·‚é“_‚ÌÀ•W’l‚ğæ“¾
 		a[j] = e->GetStartVcoord();
 		e = e->GetNextHE();
 	}
 	if(f->GetVetexNum() == TRIMESHVERTNUM){
-		f->SetFaceArea(CalcEuclid((a[1]-a[0])&&(a[2]-a[0]))/2);		// ä¸‰è§’ãƒ¡ãƒƒã‚·ãƒ¥ã®é¢ç©ã‚’è¨ˆç®—ã—ã€f->areaã«ã‚»ãƒƒãƒˆ
+		f->SetFaceArea(CalcEuclid((a[1]-a[0])&&(a[2]-a[0]))/2);		// OŠpƒƒbƒVƒ…‚Ì–ÊÏ‚ğŒvZ‚µAf->area‚ÉƒZƒbƒg
 		return KOD_TRUE;
 	}
 	else{
-		f->SetFaceArea(0);		// ä¸‰è§’ãƒ¡ãƒƒã‚·ãƒ¥ä»¥å¤–ã¯éå¯¾å¿œã¨ã™ã‚‹
+		f->SetFaceArea(0);		// OŠpƒƒbƒVƒ…ˆÈŠO‚Í”ñ‘Î‰‚Æ‚·‚é
 		return KOD_FALSE;
 	}
 }
 
 // Function: InsertQEMD
-// æ˜‡é †ã‚½ãƒ¼ãƒˆã•ã‚ŒãŸEdgeãƒªã‚¹ãƒˆã«ã€å¤‰æ›´ã•ã‚ŒãŸQEMã‚³ã‚¹ãƒˆã‚’æŒã¤HEedgeã‚’æŒ¿å…¥
+// ¸‡ƒ\[ƒg‚³‚ê‚½EdgeƒŠƒXƒg‚ÉA•ÏX‚³‚ê‚½QEMƒRƒXƒg‚ğ‚ÂHEedge‚ğ‘}“ü
 // 
 // Parameter:
-// *ins - é †ç•ªã‚’å¤‰æ›´ã™ã‚‹ã‚¨ãƒƒã‚¸ãƒ‡ãƒ¼ã‚¿
+// *ins - ‡”Ô‚ğ•ÏX‚·‚éƒGƒbƒWƒf[ƒ^
 void MESH::InsertQEMD(HEedge *ins)
 {
 	Data *d;
 	HEedge *e;
 	int i=0;
 
-	Edge.snipData(ins->mom);		// é †ç•ªã‚’å¤‰æ›´ã™ã‚‹ãƒ‡ãƒ¼ã‚¿insã‚’ãƒªã‚¹ãƒˆã‹ã‚‰æŠœãå‡ºã™
+	Edge.snipData(ins->mom);		// ‡”Ô‚ğ•ÏX‚·‚éƒf[ƒ^ins‚ğƒŠƒXƒg‚©‚ç”²‚«o‚·
 
 	e = (HEedge *)Edge.getData(Edge.getNum()-1);
 
@@ -261,7 +266,7 @@ void MESH::InsertQEMD(HEedge *ins)
 	d = Edge.getpData(0);
 	for(int i=0;i<Edge.getNum();i++){
 		e = (HEedge *)d->GetData();
-		if(e->GetQEMD() > ins->GetQEMD()){		// ãƒªã‚¹ãƒˆã®æ³¨ç›®ä¸­ã®ãƒ‡ãƒ¼ã‚¿ã®QEMDãŒinsã®QEMDã‚ˆã‚Šå¤§ãããªã£ãŸã‚‰ã€ãã®ãƒ‡ãƒ¼ã‚¿ã®å‰ã«insã‚’æŒ¿å…¥ã™ã‚‹
+		if(e->GetQEMD() > ins->GetQEMD()){		// ƒŠƒXƒg‚Ì’–Ú’†‚Ìƒf[ƒ^‚ÌQEMD‚ªins‚ÌQEMD‚æ‚è‘å‚«‚­‚È‚Á‚½‚çA‚»‚Ìƒf[ƒ^‚Ì‘O‚Éins‚ğ‘}“ü‚·‚é
 			if(!i){
 				//fprintf(stderr,"a:%d-%d %p(%lf)-%p(%lf)\n",Edge.getNum(),i,e->mom,e->GetQEMD(),ins->mom,ins->GetQEMD());		// debug
 				Edge.insData(ins->mom,NULL);
@@ -286,17 +291,17 @@ void MESH::InsertQEMD(HEedge *ins)
 }
 
 // Function: EdgeSortbyQEMD
-// Edgeã‚’QEMã‚³ã‚¹ãƒˆ(Edge.qemD)ã§æ˜‡é †ã‚½ãƒ¼ãƒˆã™ã‚‹
+// Edge‚ğQEMƒRƒXƒg(Edge.qemD)‚Å¸‡ƒ\[ƒg‚·‚é
 void MESH::EdgeSortbyQEMD()
 {
 	Data *d;
 
-	d = MergeSortForQEMD(Edge.getpData(0));	// QEMDã§Edgeã‚’ã‚½ãƒ¼ãƒˆ
-	Edge.ChangeHead(d);						// ãƒªã‚¹ãƒˆã®å…ˆé ­ã‚’ã¤ã‘ãªãŠã™
+	d = MergeSortForQEMD(Edge.getpData(0));	// QEMD‚ÅEdge‚ğƒ\[ƒg
+	Edge.ChangeHead(d);						// ƒŠƒXƒg‚Ìæ“ª‚ğ‚Â‚¯‚È‚¨‚·
 
-	while(d->GetNextpData() != NULL)		// ãƒªã‚¹ãƒˆã®æœ«å°¾ã‚’æ¢ç´¢
+	while(d->GetNextpData() != NULL)		// ƒŠƒXƒg‚Ì––”ö‚ğ’Tõ
 		d = d->GetNextpData();
-	Edge.ChangeEnd(d);						// ãƒªã‚¹ãƒˆã®æœ«å°¾ã‚’ã¤ã‘ãªãŠã™
+	Edge.ChangeEnd(d);						// ƒŠƒXƒg‚Ì––”ö‚ğ‚Â‚¯‚È‚¨‚·
 
 	// debug
 	//fprintf(stderr,"////Edge List////\n");
@@ -310,13 +315,13 @@ void MESH::EdgeSortbyQEMD()
 }
 
 // Function: MergeSortForQEMD
-// Edgeã‚’QEMã‚³ã‚¹ãƒˆ(Edge.qemD)ã§æ˜‡é †ã‚½ãƒ¼ãƒˆã™ã‚‹Sub1
+// Edge‚ğQEMƒRƒXƒg(Edge.qemD)‚Å¸‡ƒ\[ƒg‚·‚éSub1
 //
 // Parameter:
-// *x - ãƒªã‚¹ãƒˆã®å…ˆé ­ã‚¢ãƒ‰ãƒ¬ã‚¹
+// *x - ƒŠƒXƒg‚Ìæ“ªƒAƒhƒŒƒX
 //
 // Return:
-// ã‚½ãƒ¼ãƒˆå¾Œã®å…ˆé ­ã‚¢ãƒ‰ãƒ¬ã‚¹
+// ƒ\[ƒgŒã‚Ìæ“ªƒAƒhƒŒƒX
 Data *MESH::MergeSortForQEMD(Data *x)
 {
 	Data *a, *b, *y;
@@ -343,7 +348,7 @@ Data *MESH::MergeSortForQEMD(Data *x)
 }
 
 // Function: MergeListForQEMD
-// Edgeã‚’QEMã‚³ã‚¹ãƒˆ(Edge.qemD)ã§æ˜‡é †ã‚½ãƒ¼ãƒˆã™ã‚‹Sub2
+// Edge‚ğQEMƒRƒXƒg(Edge.qemD)‚Å¸‡ƒ\[ƒg‚·‚éSub2
 Data *MESH::MergeListForQEMD(Data *x,Data *y)
 {
 	Data z,*p;
@@ -385,7 +390,7 @@ Data *MESH::MergeListForQEMD(Data *x,Data *y)
 ////////////////////////////////////HEvert class////////////////////////////////////////////////////////////////////////
 
 // Function: NewQEM
-// qemQ[][]ã®åˆæœŸåŒ–
+// qemQ[][]‚Ì‰Šú‰»
 void HEvert::NewQEM()
 {
 	qemQ = NewMatrix(QUADINDEX,QUADINDEX);
@@ -397,7 +402,7 @@ void HEvert::NewQEM()
 }
 
 // Function: DelQEM
-// qemQã®ãƒ¡ãƒ¢ãƒªè§£æ”¾
+// qemQ‚Ìƒƒ‚ƒŠ‰ğ•ú
 void HEvert::DelQEM()
 {
 	if(qemQ != NULL)
@@ -405,7 +410,7 @@ void HEvert::DelQEM()
 }
 
 // Function: InitQEM
-// qemQã®åˆæœŸåŒ–
+// qemQ‚Ì‰Šú‰»
 void HEvert::InitQEM()
 {
 	for(int i=0;i<QUADINDEX;i++){
@@ -416,13 +421,13 @@ void HEvert::InitQEM()
 }
 
 // Function: SetQEM
-// qemãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
+// qemƒpƒ‰ƒ[ƒ^‚ğƒZƒbƒg‚·‚é
 // 
 // Parameter:
-// buf - ã‚»ãƒƒãƒˆã™ã‚‹qemãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒãƒˆãƒªãƒƒã‚¯ã‚¹
+// buf - ƒZƒbƒg‚·‚éqemƒpƒ‰ƒ[ƒ^ƒ}ƒgƒŠƒbƒNƒX
 //
 // Return:
-// qemQãŒNULLï¼šKOD_ERR, æˆåŠŸï¼šKOD_TURE
+// qemQ‚ªNULLFKOD_ERR, ¬Œ÷FKOD_TURE
 int HEvert::SetQEM(Matrix buf)
 {
 
@@ -438,13 +443,13 @@ int HEvert::SetQEM(Matrix buf)
 }
 
 // Function: AddQEM
-// qemãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’åŠ ãˆã‚‹
+// qemƒpƒ‰ƒ[ƒ^‚ğ‰Á‚¦‚é
 // 
 // Parameter:
-// buf - åŠ ãˆã‚‹qemãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒãƒˆãƒªãƒƒã‚¯ã‚¹
+// buf - ‰Á‚¦‚éqemƒpƒ‰ƒ[ƒ^ƒ}ƒgƒŠƒbƒNƒX
 //
 // Return:
-// qemQãŒNULLï¼šKOD_ERR, æˆåŠŸï¼šKOD_TURE
+// qemQ‚ªNULLFKOD_ERR, ¬Œ÷FKOD_TURE
 int HEvert::AddQEM(Matrix buf)
 {
 	if(qemQ == NULL) return KOD_ERR;
@@ -459,7 +464,7 @@ int HEvert::AddQEM(Matrix buf)
 }
 
 // Function: GetQEM
-// qemãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’å¾—ã‚‹
+// qemƒpƒ‰ƒ[ƒ^‚ğ“¾‚é
 //
 // Return:
 // qemQ
@@ -475,15 +480,15 @@ Matrix HEvert::GetQEM()
 ////////////////////////////////////HEedge class////////////////////////////////////////////////////////////////////////
 
 // Function: GetPrevHE
-// ã“ã®ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã®(å…±æœ‰ã™ã‚‹é¢ã«ãŠã‘ã‚‹)1ã¤å‰ã®ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã‚’è¿”ã™
+// ‚±‚Ìƒn[ƒtƒGƒbƒW‚Ì(‹¤—L‚·‚é–Ê‚É‚¨‚¯‚é)1‚Â‘O‚Ìƒn[ƒtƒGƒbƒW‚ğ•Ô‚·
 //
 // Return:
-// ã“ã®ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸ã®(å…±æœ‰ã™ã‚‹é¢ã«ãŠã‘ã‚‹)1ã¤å‰ã®ãƒãƒ¼ãƒ•ã‚¨ãƒƒã‚¸
+// ‚±‚Ìƒn[ƒtƒGƒbƒW‚Ì(‹¤—L‚·‚é–Ê‚É‚¨‚¯‚é)1‚Â‘O‚Ìƒn[ƒtƒGƒbƒW
 HEedge *HEedge::GetPrevHE()
 {
 	int n = this->face->GetVetexNum();
 
-	HEedge *e,*e_;
+	HEedge *e = nullptr,*e_;
 	
 	e_ = this;
 

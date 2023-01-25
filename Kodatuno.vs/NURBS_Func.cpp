@@ -1,26 +1,131 @@
-п»ї#include "NURBS_Func.h"
+#include "stdafx.h"
+#include "BODY.h"
+#include "NURBS_Func.h"
+#include "Quaternion.h"
 
+#if defined(_DEBUG) && defined(_MSC_VER)
+#define new DEBUG_NEW
+#endif
+
+//////////////////////////////////////////////////////////////////////////////////////
+// Function: CalcBSbasis
+// BѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”‚рЊvЋZ‚µЃAЊvЋZЊ‹‰К‚р•Ф‚·
+static	double CalcBSbasis(double,double [],int,int,int);			
+
+// Function: CalcDiffBSbasis
+// BѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”‚М1ЉK”ч•ЄЊWђ”‚р‹Ѓ‚Я‚й
+static	double CalcDiffBSbasis(double,double [],int,int,int);		
+
+// Function: CalcDiffBSbasisN
+// BѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”‚МNЉK”ч•ЄЊWђ”‚р‹Ѓ‚Я‚й
+static	double CalcDiffBSbasisN(double,double [],int,int,int,int);	
+
+// Function: GetBSplCoef3
+// 3Ћџ‚МBѓXѓvѓ‰ѓCѓ“‹Иђь‚МЉeЊWђ”‚р‹Ѓ‚Я‚йЃ@(at^3 + bt^2 + ct + d‚МЊWђ”a,b,c,d‚р•Ф‚·)
+static	int GetBSplCoef3(int,int,int,double *,double **);			
+
+// Function: GetBSplCoef2
+// 2Ћџ‚МBѓXѓvѓ‰ѓCѓ“‹Иђь‚МЉeЊWђ”‚р‹Ѓ‚Я‚йЃ@(at^2 + bt + c‚МЊWђ”a,b,c‚р•Ф‚·)
+static	int GetBSplCoef2(int,int,int,double *,double **);			
+
+// Function: GetBSplCoef1
+// 1Ћџ‚МBѓXѓvѓ‰ѓCѓ“‹Иђь‚МЉeЊWђ”‚р‹Ѓ‚Я‚йЃ@(at + b‚МЊWђ”a,b‚р•Ф‚·)
+static	int GetBSplCoef1(int,int,int,double *,double **);	
+
+// Function: TrimNurbsSPlaneSub1
+// (private)TrimNurbsSPlane‚МѓTѓuЉЦђ”(2’јђь‚МЊр“_‚р‚а‚Ж‚Я‚й)
+static	Coord TrimNurbsSPlaneSub1(double,double,double,double,double,double); 
+
+// Function: GetIntersecEquation
+// (private)NURBS‹Иђь‚Ж•Ѕ–К‚МЊрђь“±Џo—p3Ћџ•ы’цЋ®‚р“ѕ‚й
+static	void GetIntersecEquation(int,Coord *,double *,Coord,Coord,double *);		
+
+// Function: CalcEquation
+// (private)3Ћџ•ы’цЋ®‚Ь‚Е‚р”»•К‚µ‚Д‰р‚­
+static	int CalcEquation(double *,double *,int);					
+
+// Function: GetNurbsSCoef
+// (private)NURBS‹И–К‚Й‚Ё‚ў‚Дu‚Ь‚Ѕ‚Нv‚рЊЕ’и‚µ‚ЅЏкЌ‡‚Й“ѕ‚з‚к‚йNURBS‹ИђьC(u) or C(v)‚М•Є•к•ЄЋq‚МЊWђ”‚р‹Ѓ‚Я‚й
+static	void GetNurbsSCoef(int,double **,double *,Coord *,int,Coord *,double *);	
+
+// Function: GetMinDistance
+// (private)ЌЕЏ¬‹——Ј‚рЋќ‚ВЌА•W’l‚р•Ф‚·
+static	Coord GetMinDistance(Coord,Coord *,int);						
+
+// Function: CheckClossedPoints
+// (private)Ћw’и‚µ‚Ѕ“_‚Є‘ј‚М2“_‚р‘ОЉp‚Ж‚·‚й—§•ы‘М‚М’†‚Й‘¶ЌЭ‚·‚й‚©‚р’І‚Ч‚й
+static	int CheckClossedPoints(Coord,Coord,Coord);				
+
+// Function: ChangeKnotVecRange
+// ѓmѓbѓgѓxѓNѓgѓ‹‚Мѓpѓ‰ѓЃЃ[ѓ^’и‹`€ж‚р•ПЌX‚·‚й
+static	void ChangeKnotVecRange(Vector,int,int,int,double,double);	
+
+// Function: CalcApproximationCP_LSM
+// (private)ЌЕЏ¬2Џж–@‚Е‹ЯЋ—ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚р‹Ѓ‚Я‚й
+static	void CalcApproximationCP_LSM(Coord *,Vector,Vector,int,int,int,int,Coord *);	
+
+// Function: GetEqIntervalKont
+// ‹Иђь/‹И–Кѓpѓ‰ѓЃЃ[ѓ^‚©‚з“™ЉФЉu‚ИѓmѓbѓgѓxѓNѓgѓ‹‚рЋZЏo
+static	void GetEqIntervalKont(int,int,Vector);						
+
+// Function: SetApproximationCPnum
+// (private)“_—сђ”‚©‚зђ¶ђ¬‚·‚йѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓgђ”‚рЋZ’и‚·‚й
+static	int SetApproximationCPnum(int);									
+
+// Function: GetApproximatedKnot
+// (private)‹Иђь/‹И–Кѓpѓ‰ѓЃЃ[ѓ^‚©‚з‹ЯЋ——pѓmѓbѓgѓxѓNѓgѓ‹‚рЋZЏo
+static	void GetApproximatedKnot(Vector,int,int,int,Vector);			
+
+// Function: GetInterpolatedKnot
+// (private)‹Иђь/‹И–Кѓpѓ‰ѓЃЃ[ѓ^‚©‚з•вЉФ—pѓmѓbѓgѓxѓNѓgѓ‹‚рЋZЏo
+static	void GetInterpolatedKnot(Vector,int,int,int,Vector);			
+
+// Function: GetSurfaceKnotParam
+// (private)Љe’К‰Я“_‚М‹И–Кѓpѓ‰ѓЃЃ[ѓ^‚рЋZЏo
+static	void GetSurfaceKnotParam(Vector,Vector,Coord **,int,int);		
+
+// Function: GetCurveKnotParam1
+// (private)Љe’К‰Я“_‚М‹Иђьѓpѓ‰ѓЃЃ[ѓ^‚рЋZЏo(ѓRЃ[ѓh’·‚М”д‚©‚зЋZЏo)
+static	void GetCurveKnotParam1(Coord *,int,Vector);					
+
+// Function: GetCurveKnotParam2
+// (private)Љe’К‰Я“_‚М‹Иђьѓpѓ‰ѓЃЃ[ѓ^‚рЋZЏo(ѓRЃ[ѓh’·‚М•Ѕ•ыЌЄ‚М”д‚©‚зЋZЏo)
+static	void GetCurveKnotParam2(Coord *,int,Vector);					
+
+//////////////////////////////////////////////////////////////////////////////////////
 // Function: New_NurbsC
-// Nurbsж›Із·љгЃ®гѓЎгѓўгѓЄгѓјзўєдїќ
+// Nurbs‹Иђь‚МѓЃѓ‚ѓЉЃ[Љm•Ы
 //
 // Parameters: 
-// *nurb - гѓЎгѓўгѓЄгѓјзўєдїќгЃ™г‚‹Nurbsж›Із·љгЃёгЃ®гѓќг‚¤гѓіг‚ї
-// K - г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ®ж•°
-// N - гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®ж•°
+// *nurb - ѓЃѓ‚ѓЉЃ[Љm•Ы‚·‚йNurbs‹Иђь‚Ц‚Мѓ|ѓCѓ“ѓ^
+// K - ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Мђ”
+// N - ѓmѓbѓgѓxѓNѓgѓ‹‚Мђ”
 //
 // Return:
-// ж€ђеЉџпјљKOD_TRUE, е¤±ж•—пјљKOD_ERR
+// ђ¬ЊчЃFKOD_TRUE, Ћё”sЃFKOD_ERR
 int NURBS_Func::New_NurbsC(NURBSC *nurb,int K, int N)
 {
-	if((nurb->T = (double *)malloc(sizeof(double)*N)) == NULL)
+//	if((nurb->T = (double *)malloc(sizeof(double)*N)) == NULL)
+	nurb->T = new double[N];
+//	nurb->T = boost::shared_array<double>( new double[N] );
+	if ( !nurb->T )
 		return KOD_ERR;
-	if((nurb->W = (double *)malloc(sizeof(double)*K)) == NULL){
-		free(nurb->T);
+//	if((nurb->W = (double *)malloc(sizeof(double)*K)) == NULL){
+	nurb->W = new double[K];
+//	nurb->W = boost::shared_array<double>( new double[K] );
+	if ( !nurb->W ) {
+//		free(nurb->T);
+		delete[]	nurb->T;
 		return KOD_ERR;
 	}
-	if((nurb->cp = (Coord *)malloc(sizeof(Coord)*K)) == NULL){
-		free(nurb->T);
-		free(nurb->W);
+//	if((nurb->cp = (Coord *)malloc(sizeof(Coord)*K)) == NULL){
+	nurb->cp = new Coord[K];
+//	nurb->cp = boost::shared_array<Coord>( new Coord[K] );
+	if ( !nurb->cp ) {
+//		free(nurb->T);
+//		free(nurb->W);
+		delete[]	nurb->T;
+		delete[]	nurb->W;
 		return KOD_ERR;
 	}
 
@@ -28,11 +133,11 @@ int NURBS_Func::New_NurbsC(NURBSC *nurb,int K, int N)
 }
 
 // Function: Free_NurbsC_1DArray
-// NURBSж›Із·љй…Ќе€—гЃ®гѓЎгѓўгѓЄгѓји§Јж”ѕ
+// NURBS‹Иђь”z—с‚МѓЃѓ‚ѓЉЃ[‰р•ъ
 //
 // Parameters: 
-// *a - гѓЎгѓўгѓЄгѓјг‚’и§Јж”ѕгЃ™г‚‹Nurbsж›Із·љгЃёгЃ®гѓќг‚¤гѓіг‚ї
-// num - гѓЎгѓўгѓЄгѓјг‚’и§Јж”ѕгЃ™г‚‹NURBSж›Із·љгЃ®ж•°
+// *a - ѓЃѓ‚ѓЉЃ[‚р‰р•ъ‚·‚йNurbs‹Иђь‚Ц‚Мѓ|ѓCѓ“ѓ^
+// num - ѓЃѓ‚ѓЉЃ[‚р‰р•ъ‚·‚йNURBS‹Иђь‚Мђ”
 void NURBS_Func::Free_NurbsC_1DArray(NURBSC *a,int num)
 {
 	for(int i=0;i<num;i++)
@@ -40,35 +145,59 @@ void NURBS_Func::Free_NurbsC_1DArray(NURBSC *a,int num)
 }
 
 // Function: Free_NurbsC
-// 1жњ¬гЃ®NURBSж›Із·љгЃ®гѓЎгѓўгѓЄгѓји§Јж”ѕ
+// 1–{‚МNURBS‹Иђь‚МѓЃѓ‚ѓЉЃ[‰р•ъ
 //
 // Parameters: 
-// *a - гѓЎгѓўгѓЄгѓјг‚’и§Јж”ѕгЃ™г‚‹Nurbsж›Із·љгЃёгЃ®гѓќг‚¤гѓіг‚ї
+// *a - ѓЃѓ‚ѓЉЃ[‚р‰р•ъ‚·‚йNurbs‹Иђь‚Ц‚Мѓ|ѓCѓ“ѓ^
 void NURBS_Func::Free_NurbsC(NURBSC *a)
 {
-	free(a->T);
-	free(a->W);
-	free(a->cp);
+//	free(a->T);
+//	free(a->W);
+//	free(a->cp);
+//	delete	a->T;	a->T = NULL;
+//	delete	a->W;	a->W = NULL;
+//	delete	a->cp;	a->cp = NULL;
+// /*
+	if ( a->T ) {
+		delete[]	a->T;
+		a->T = NULL;
+	}
+	if ( a->W ) {
+		delete[]	a->W;
+		a->W = NULL;
+	}
+	if ( a->cp ) {
+		delete[]	a->cp;
+		a->cp = NULL;
+	}
+// */
+//	a->T.reset();
+//	a->W.reset();
+//	a->cp.reset();
 }
 
 // Function: New_NurbsS
-// NURBSж›ІйќўгЃ®гѓЎгѓўгѓЄгѓјзўєдїќ
+// NURBS‹И–К‚МѓЃѓ‚ѓЉЃ[Љm•Ы
 //
 // Parameters: 
-// *nurb - гѓЎгѓўгѓЄгѓјзўєдїќгЃ™г‚‹Nurbsж›ІйќўгЃёгЃ®гѓќг‚¤гѓіг‚ї
-// K[2] - u,vг‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ®ж•°
-// N[2] - u,vгѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®ж•°
+// *nurb - ѓЃѓ‚ѓЉЃ[Љm•Ы‚·‚йNurbs‹И–К‚Ц‚Мѓ|ѓCѓ“ѓ^
+// K[2] - u,vѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Мђ”
+// N[2] - u,vѓmѓbѓgѓxѓNѓgѓ‹‚Мђ”
 //
 // Return:
-// ж€ђеЉџпјљKOD_TRUE, е¤±ж•—пјљKOD_ERR
+// ђ¬ЊчЃFKOD_TRUE, Ћё”sЃFKOD_ERR
 int NURBS_Func::New_NurbsS(NURBSS *nurb,int K[2],int N[2])
 {
 	int KOD_ERRflag = 0;
 
-	if((nurb->S = (double *)malloc(sizeof(double)*N[0])) == NULL)
+//	if((nurb->S = (double *)malloc(sizeof(double)*N[0])) == NULL)
+	nurb->S = new double[N[0]];
+	if ( !nurb->S )
 		goto EXIT;
 	KOD_ERRflag++;	// 1
-	if((nurb->T = (double *)malloc(sizeof(double)*N[1])) == NULL)
+//	if((nurb->T = (double *)malloc(sizeof(double)*N[1])) == NULL)
+	nurb->T = new double[N[1]];
+	if ( !nurb->T )
 		goto EXIT;
 	KOD_ERRflag++;	// 2
 	if((nurb->W = NewMatrix(K[0],K[1])) == NULL)
@@ -85,22 +214,24 @@ EXIT:
 		KOD_ERRflag--;
 	}
 	if(KOD_ERRflag == 2){
-		free(nurb->T);
+//		free(nurb->T);
+		delete[]	nurb->T;	nurb->T = NULL;
 		KOD_ERRflag--;
 	}
 	if(KOD_ERRflag == 1){
-		free(nurb->S);
+//		free(nurb->S);
+		delete[]	nurb->S;	nurb->S = NULL;
 	}
 
 	return KOD_ERR;
 }
 
 // Function: Free_NurbsS_1DArray
-// NURBSж›Ійќўй…Ќе€—гЃ®гѓЎгѓўгѓЄгѓји§Јж”ѕ
+// NURBS‹И–К”z—с‚МѓЃѓ‚ѓЉЃ[‰р•ъ
 // 
 // Parameters:
-// *a - гѓЎгѓўгѓЄгѓјг‚’и§Јж”ѕгЃ™г‚‹Nurbsж›ІйќўгЃёгЃ®гѓќг‚¤гѓіг‚ї
-// num - гѓЎгѓўгѓЄгѓјг‚’и§Јж”ѕгЃ™г‚‹NURBSж›ІйќўгЃ®ж•°
+// *a - ѓЃѓ‚ѓЉЃ[‚р‰р•ъ‚·‚йNurbs‹И–К‚Ц‚Мѓ|ѓCѓ“ѓ^
+// num - ѓЃѓ‚ѓЉЃ[‚р‰р•ъ‚·‚йNURBS‹И–К‚Мђ”
 void NURBS_Func::Free_NurbsS_1DArray(NURBSS *a,int num)
 {
 	for(int i=0;i<num;i++)
@@ -109,30 +240,40 @@ void NURBS_Func::Free_NurbsS_1DArray(NURBSS *a,int num)
 
 
 // Function: Free_NurbsS
-// 1гЃ¤гЃ®NURBSж›ІйќўгЃ®гѓЎгѓўгѓЄгѓји§Јж”ѕ
+// 1‚В‚МNURBS‹И–К‚МѓЃѓ‚ѓЉЃ[‰р•ъ
 //
 // Parameters: 
-// *a - гѓЎгѓўгѓЄгѓјг‚’и§Јж”ѕгЃ™г‚‹Nurbsж›ІйќўгЃёгЃ®гѓќг‚¤гѓіг‚ї
+// *a - ѓЃѓ‚ѓЉЃ[‚р‰р•ъ‚·‚йNurbs‹И–К‚Ц‚Мѓ|ѓCѓ“ѓ^
 void NURBS_Func::Free_NurbsS(NURBSS *a)
 {
-	free(a->S);
-	free(a->T);
+//	free(a->S);
+//	free(a->T);
+	if ( a->S ) {
+		delete[]	a->S;
+		a->S = NULL;
+	}
+	if ( a->T ) {
+		delete[]	a->T;
+		a->T = NULL;
+	}
 	FreeMatrix(a->W,a->K[0]);
 	FreeCoord2(a->cp,a->K[0]);
 }
 
 // Function: New_TrmS
-// гѓ€гѓЄгѓ йќўгЃ®гѓЎгѓўгѓЄгѓјзўєдїќ
+// ѓgѓЉѓЂ–К‚МѓЃѓ‚ѓЉЃ[Љm•Ы
 //
 // Parameters: 
-// *trms - гѓЎгѓўгѓЄгѓјзўєдїќгЃ™г‚‹гѓ€гѓЄгѓ йќўгЃёгЃ®гѓќг‚¤гѓіг‚ї
-// num - гѓЎгѓўгѓЄгѓјзўєдїќгЃ™г‚‹гѓ€гѓЄгѓ йќўгЃ®ж•°
+// *trms - ѓЃѓ‚ѓЉЃ[Љm•Ы‚·‚йѓgѓЉѓЂ–К‚Ц‚Мѓ|ѓCѓ“ѓ^
+// num - ѓЃѓ‚ѓЉЃ[Љm•Ы‚·‚йѓgѓЉѓЂ–К‚Мђ”
 //
 // return:
-// ж€ђеЉџпјљKOD_TRUE, е¤±ж•—пјљKOD_ERR
+// ђ¬ЊчЃFKOD_TRUE, Ћё”sЃFKOD_ERR
 int NURBS_Func::New_TrmS(TRMS *trms,int num)
 {
-	if((trms->pTI = (CONPS **)malloc(sizeof(CONPS *)*num)) == NULL){
+//	if((trms->pTI = (CONPS **)malloc(sizeof(CONPS *)*num)) == NULL){
+	trms->pTI = new CONPS*[num];
+	if ( !trms->pTI ) {
 		return KOD_ERR;
 	}
 
@@ -140,11 +281,11 @@ int NURBS_Func::New_TrmS(TRMS *trms,int num)
 }
 
 // Function: Free_TrmS_1DArray
-// гѓ€гѓЄгѓ йќўй…Ќе€—гЃ®гѓЎгѓўгѓЄгѓји§Јж”ѕ
+// ѓgѓЉѓЂ–К”z—с‚МѓЃѓ‚ѓЉЃ[‰р•ъ
 //
 // Parameters: 
-// *a - гѓЎгѓўгѓЄгѓјг‚’и§Јж”ѕгЃ™г‚‹гѓ€гѓЄгѓ йќўй…Ќе€—гЃёгЃ®гѓќг‚¤гѓіг‚ї
-// num - гѓЎгѓўгѓЄгѓјг‚’и§Јж”ѕгЃ™г‚‹гѓ€гѓЄгѓ йќўгЃ®ж•°
+// *a - ѓЃѓ‚ѓЉЃ[‚р‰р•ъ‚·‚йѓgѓЉѓЂ–К”z—с‚Ц‚Мѓ|ѓCѓ“ѓ^
+// num - ѓЃѓ‚ѓЉЃ[‚р‰р•ъ‚·‚йѓgѓЉѓЂ–К‚Мђ”
 void NURBS_Func::Free_TrmS_1DArray(TRMS *a,int num)
 {
 	for(int i=0;i<num;i++)
@@ -152,32 +293,41 @@ void NURBS_Func::Free_TrmS_1DArray(TRMS *a,int num)
 }
 
 // Function: Free_TrmS
-// гѓ€гѓЄгѓ йќўгЃ®гѓЎгѓўгѓЄгѓји§Јж”ѕ
+// ѓgѓЉѓЂ–К‚МѓЃѓ‚ѓЉЃ[‰р•ъ
 //
 // Parameters: 
-// *a - гѓЎгѓўгѓЄгѓјг‚’и§Јж”ѕгЃ™г‚‹гѓ€гѓЄгѓ йќўгЃёгЃ®гѓќг‚¤гѓіг‚ї
+// *a - ѓЃѓ‚ѓЉЃ[‚р‰р•ъ‚·‚йѓgѓЉѓЂ–К‚Ц‚Мѓ|ѓCѓ“ѓ^
 void NURBS_Func::Free_TrmS(TRMS *a)
 {
-	free(a->pTI);
+//	free(a->pTI);
+	if ( a->pTI ) {
+		delete[]	a->pTI;
+		a->pTI = NULL;
+	}
 }
 
 // Function: New_CompC
-// и¤‡еђ€ж›Із·љгЃ®гѓЎгѓўгѓЄгѓјзўєдїќ
+// •ЎЌ‡‹Иђь‚МѓЃѓ‚ѓЉЃ[Љm•Ы
 //
 // Parameters: 
-// *compc - гѓЎгѓўгѓЄгѓјзўєдїќгЃ™г‚‹и¤‡еђ€ж›Із·љгЃёгЃ®гѓќг‚¤гѓіг‚ї
-// num - гѓЎгѓўгѓЄгѓјзўєдїќгЃ™г‚‹и¤‡еђ€ж›Із·љгЃ®ж•°
+// *compc - ѓЃѓ‚ѓЉЃ[Љm•Ы‚·‚й•ЎЌ‡‹Иђь‚Ц‚Мѓ|ѓCѓ“ѓ^
+// num - ѓЃѓ‚ѓЉЃ[Љm•Ы‚·‚й•ЎЌ‡‹Иђь‚Мђ”
 //
 // return:
-// ж€ђеЉџпјљKOD_TRUE, е¤±ж•—пјљKOD_ERR
+// ђ¬ЊчЃFKOD_TRUE, Ћё”sЃFKOD_ERR
 int NURBS_Func::New_CompC(COMPC *compc,int num)
 {
-	if((compc->DEType = (int *)malloc(sizeof(int)*num)) == NULL){
+//	if((compc->DEType = (int *)malloc(sizeof(int)*num)) == NULL){
+	compc->DEType = new int[num];
+	if ( !compc->DEType ) {
 		return KOD_ERR;
 	}
 	
-	if((compc->pDE = (COMPELEM **)malloc(sizeof(COMPELEM *)*num)) == NULL){
-		free(compc->DEType);
+//	if((compc->pDE = (COMPELEM **)malloc(sizeof(COMPELEM *)*num)) == NULL){
+	compc->pDE = new COMPELEM[num];
+	if ( !compc->pDE ) {
+//		free(compc->DEType);
+		delete[]	compc->DEType;
 		return KOD_ERR;
 	}
 
@@ -187,11 +337,11 @@ int NURBS_Func::New_CompC(COMPC *compc,int num)
 }
 
 // Function: Free_CompC_1DArray
-// и¤‡еђ€ж›Із·љй…Ќе€—гЃ®гѓЎгѓўгѓЄгѓји§Јж”ѕ
+// •ЎЌ‡‹Иђь”z—с‚МѓЃѓ‚ѓЉЃ[‰р•ъ
 //
 // Parameters:
-// *a - гѓЎгѓўгѓЄгѓјг‚’и§Јж”ѕгЃ™г‚‹и¤‡еђ€ж›Із·љй…Ќе€—гЃёгЃ®гѓќг‚¤гѓіг‚ї
-// num - гѓЎгѓўгѓЄгѓјг‚’и§Јж”ѕгЃ™г‚‹и¤‡еђ€ж›Із·љгЃ®ж•°
+// *a - ѓЃѓ‚ѓЉЃ[‚р‰р•ъ‚·‚й•ЎЌ‡‹Иђь”z—с‚Ц‚Мѓ|ѓCѓ“ѓ^
+// num - ѓЃѓ‚ѓЉЃ[‚р‰р•ъ‚·‚й•ЎЌ‡‹Иђь‚Мђ”
 void NURBS_Func::Free_CompC_1DArray(COMPC *a,int num)
 {
 	for(int i=0;i<num;i++)
@@ -199,30 +349,38 @@ void NURBS_Func::Free_CompC_1DArray(COMPC *a,int num)
 }
 
 // Function: Free_CompC
-// и¤‡еђ€ж›Із·љгЃ®гѓЎгѓўгѓЄгѓји§Јж”ѕ
+// •ЎЌ‡‹Иђь‚МѓЃѓ‚ѓЉЃ[‰р•ъ
 //
 // Parameters:
-// *a - гѓЎгѓўгѓЄгѓјг‚’и§Јж”ѕгЃ™г‚‹и¤‡еђ€ж›Із·љгЃёгЃ®гѓќг‚¤гѓіг‚ї
+// *a - ѓЃѓ‚ѓЉЃ[‚р‰р•ъ‚·‚й•ЎЌ‡‹Иђь‚Ц‚Мѓ|ѓCѓ“ѓ^
 void NURBS_Func::Free_CompC(COMPC *a)
 {
-	free(a->DEType);
-	free(a->pDE);
+//	free(a->DEType);
+//	free(a->pDE);
+	if ( a->DEType ) {
+		delete[]	a->DEType;
+		a->DEType = NULL;
+	}
+	if ( a->pDE ) {
+		delete[]	a->pDE;
+		a->pDE = NULL;
+	}
 }
 
 // Function: GenNurbsC
-// 1гЃ¤гЃ®Nurbsж›Із·љг‚’з”џж€ђгЃ™г‚‹
+// 1‚В‚МNurbs‹Иђь‚рђ¶ђ¬‚·‚й
 //
 // Parameters:
-// *Nurbs - з”џж€ђгЃ™г‚‹NURBSж›Із·љгЃёгЃ®гѓќг‚¤гѓіг‚ї
-// K - г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ®ж•°
-// M - йљЋж•°
-// N - гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®ж•°
-// T[] - гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«е€—
-// W[] - г‚¦г‚§г‚¤гѓ€е€—
-// cp[] - г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€е€—
-// V[2] - гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®зЇ„е›І
-// prop[4] - гѓ—гѓ­гѓ‘гѓ†г‚Ј(BODY.hеЏ‚з…§)
-// euflag - гѓ‡г‚Јгѓ¬г‚Їгѓ€гѓЄйѓЁ Entity Use Flag гЃ®еЂ¤(0:е№ѕдЅ•и¦Ѓзґ  5:2Dгѓ‘гѓ©гѓЎгѓ€гѓЄгѓѓг‚Їи¦Ѓзґ )
+// *Nurbs - ђ¶ђ¬‚·‚йNURBS‹Иђь‚Ц‚Мѓ|ѓCѓ“ѓ^
+// K - ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Мђ”
+// M - ЉKђ”
+// N - ѓmѓbѓgѓxѓNѓgѓ‹‚Мђ”
+// T[] - ѓmѓbѓgѓxѓNѓgѓ‹—с
+// W[] - ѓEѓFѓCѓg—с
+// cp[] - ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg—с
+// V[2] - ѓmѓbѓgѓxѓNѓgѓ‹‚М”Н€Н
+// prop[4] - ѓvѓЌѓpѓeѓB(BODY.hЋQЏЖ)
+// euflag - ѓfѓBѓЊѓNѓgѓЉ•” Entity Use Flag ‚М’l(0:Љф‰Ѕ—v‘f 5:2Dѓpѓ‰ѓЃѓgѓЉѓbѓN—v‘f)
 // 
 // return:
 // KOD_TRUE
@@ -235,9 +393,15 @@ int NURBS_Func::GenNurbsC(NURBSC *Nurbs,int K,int M,int N,double T[],double W[],
 	Nurbs->N = N;
 	Nurbs->V[0] = V[0];
 	Nurbs->V[1] = V[1];
-	Nurbs->T = (double *)malloc(sizeof(double)*Nurbs->N);
-	Nurbs->W = (double *)malloc(sizeof(double)*Nurbs->K);
-	Nurbs->cp = (Coord *)malloc(sizeof(Coord)*Nurbs->K);
+//	Nurbs->T = (double *)malloc(sizeof(double)*Nurbs->N);
+//	Nurbs->W = (double *)malloc(sizeof(double)*Nurbs->K);
+//	Nurbs->cp = (Coord *)malloc(sizeof(Coord)*Nurbs->K);
+	Nurbs->T = new double[Nurbs->N];
+	Nurbs->W = new double[Nurbs->K];
+	Nurbs->cp = new Coord[Nurbs->K];
+//	Nurbs->T = boost::shared_array<double>( new double[Nurbs->N] );
+//	Nurbs->W = boost::shared_array<double>( new double[Nurbs->K] );
+//	Nurbs->cp = boost::shared_array<Coord>( new Coord[Nurbs->K] );
 	Nurbs->EntUseFlag = euflag;
 	
 	for(i=0;i<4;i++){
@@ -257,43 +421,50 @@ int NURBS_Func::GenNurbsC(NURBSC *Nurbs,int K,int M,int N,double T[],double W[],
 }
 
 // Function: GenNurbsC
-// 1гЃ¤гЃ®Nurbsж›Із·љг‚’з”џж€ђгЃ™г‚‹(NURBSж›Із·љгЃ®г‚ігѓ”гѓј)(г‚Єгѓјгѓђгѓјгѓ­гѓјгѓ‰)
+// 1‚В‚МNurbs‹Иђь‚рђ¶ђ¬‚·‚й(NURBS‹Иђь‚МѓRѓsЃ[)(ѓIЃ[ѓoЃ[ѓЌЃ[ѓh)
 //
 // Parameters:
-// *Nurbs - ж–°гЃџгЃ«з”џж€ђгЃ™г‚‹NURBSж›Із·љ
-// nurb - д»Је…Ґе…ѓ
+// *Nurbs - ђV‚Ѕ‚Йђ¶ђ¬‚·‚йNURBS‹Иђь
+// nurb - ‘г“ьЊі
 // 
 // return:
 // KOD_TRUE
-int NURBS_Func::GenNurbsC(NURBSC *Nurbs,NURBSC nurb)
+//int NURBS_Func::GenNurbsC(NURBSC *Nurbs,NURBSC nurb)
+int NURBS_Func::GenNurbsC(NURBSC *Nurbs,NURBSC* nurb)
 {
 	int i;
 
-	Nurbs->K = nurb.K;
-	Nurbs->M = nurb.M;
-	Nurbs->N = nurb.N;
-	Nurbs->V[0] = nurb.V[0];
-	Nurbs->V[1] = nurb.V[1];
+	Nurbs->K = nurb->K;
+	Nurbs->M = nurb->M;
+	Nurbs->N = nurb->N;
+	Nurbs->V[0] = nurb->V[0];
+	Nurbs->V[1] = nurb->V[1];
 	
-	Nurbs->T = (double *)malloc(sizeof(double)*Nurbs->N);
-	Nurbs->W = (double *)malloc(sizeof(double)*Nurbs->K);
-	Nurbs->cp = (Coord *)malloc(sizeof(Coord)*Nurbs->K);
-	for(i=0;i<nurb.N;i++){
-		Nurbs->T[i] = nurb.T[i];
+//	Nurbs->T = (double *)malloc(sizeof(double)*Nurbs->N);
+//	Nurbs->W = (double *)malloc(sizeof(double)*Nurbs->K);
+//	Nurbs->cp = (Coord *)malloc(sizeof(Coord)*Nurbs->K);
+	Nurbs->T = new double[Nurbs->N];
+	Nurbs->W = new double[Nurbs->K];
+	Nurbs->cp = new Coord[Nurbs->K];
+//	Nurbs->T = boost::shared_array<double>( new double[Nurbs->N] );
+//	Nurbs->W = boost::shared_array<double>( new double[Nurbs->K] );
+//	Nurbs->cp = boost::shared_array<Coord>( new Coord[Nurbs->K] );
+	for(i=0;i<nurb->N;i++){
+		Nurbs->T[i] = nurb->T[i];
 	}
-	for(i=0;i<nurb.K;i++){
-		Nurbs->W[i] = nurb.W[i];
-		Nurbs->cp[i] = SetCoord(nurb.cp[i]);
+	for(i=0;i<nurb->K;i++){
+		Nurbs->W[i] = nurb->W[i];
+		Nurbs->cp[i] = SetCoord(nurb->cp[i]);
 	}
 
 	return KOD_TRUE;
 }
 
 // Function: DelNurbsC
-// GenNurbsC()гЃ«г‚€гЃЈгЃ¦з”џж€ђгЃ•г‚ЊгЃџNURBSж›Із·љг‚’е‰Љй™¤гЃ™г‚‹
+// GenNurbsC()‚Й‚ж‚Б‚Дђ¶ђ¬‚і‚к‚ЅNURBS‹Иђь‚рЌнЏњ‚·‚й
 // 
 // Parameters:
-// *Nurbs - ж–°гЃџгЃ«з”џж€ђгЃ™г‚‹NURBSж›Із·љгЃёгЃ®гѓќг‚¤гѓіг‚ї
+// *Nurbs - ђV‚Ѕ‚Йђ¶ђ¬‚·‚йNURBS‹Иђь‚Ц‚Мѓ|ѓCѓ“ѓ^
 void NURBS_Func::DelNurbsC(NURBSC *Nurbs)
 {
 	NURBS_Func hbody;
@@ -301,18 +472,18 @@ void NURBS_Func::DelNurbsC(NURBSC *Nurbs)
 }
 
 // Function: GenNurbsS
-// 1гЃ¤гЃ®NURBSж›Ійќўг‚’з”џж€ђгЃ™г‚‹
+// 1‚В‚МNURBS‹И–К‚рђ¶ђ¬‚·‚й
 //
 // Parameters:
-// Mu,Mv - йљЋж•°
-// Ku,Kv - г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ®ж•°  
-// *S,*T - u,vж–№еђ‘гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«е€—
-// **W - г‚¦г‚Ёг‚¤гѓ€
-// **Cp - г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€  
-// U_s,U_e,V_s,V_e - uж–№еђ‘гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®й–‹е§‹еЂ¤,зµ‚дє†еЂ¤
+// Mu,Mv - ЉKђ”
+// Ku,Kv - ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Мђ”  
+// *S,*T - u,v•ыЊьѓmѓbѓgѓxѓNѓgѓ‹—с
+// **W - ѓEѓGѓCѓg
+// **Cp - ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg  
+// U_s,U_e,V_s,V_e - u•ыЊьѓmѓbѓgѓxѓNѓgѓ‹‚МЉJЋn’l,ЏI—№’l
 // 
 // return:
-// ж€ђеЉџпјљKOD_TRUE, е¤±ж•—пјљKOD_ERR
+// ђ¬ЊчЃFKOD_TRUE, Ћё”sЃFKOD_ERR
 int NURBS_Func::GenNurbsS(NURBSS *Nurbs,int Mu,int Mv,int Ku,int Kv,double *S,double *T,double **W,Coord **Cp,double U_s,double U_e,double V_s,double V_e)
 {
 	Nurbs->K[0] = Ku;
@@ -359,14 +530,14 @@ int NURBS_Func::GenNurbsS(NURBSS *Nurbs,int Mu,int Mv,int Ku,int Kv,double *S,do
 }
 
 // Function: GenNurbsS
-// 1гЃ¤гЃ®Nurbsж›Ійќўг‚’з”џж€ђгЃ™г‚‹(NURBSж›ІйќўгЃ®г‚ігѓ”гѓј)
+// 1‚В‚МNurbs‹И–К‚рђ¶ђ¬‚·‚й(NURBS‹И–К‚МѓRѓsЃ[)
 //
 // Parameters:
-// *Nurbs - ж–°гЃџгЃ«з”џж€ђгЃ™г‚‹NURBSж›ІйќўгЃёгЃ®гѓќг‚¤гѓіг‚ї
-// nurb - д»Је…Ґе…ѓ
+// *Nurbs - ђV‚Ѕ‚Йђ¶ђ¬‚·‚йNURBS‹И–К‚Ц‚Мѓ|ѓCѓ“ѓ^
+// nurb - ‘г“ьЊі
 // 
 // return:
-// ж€ђеЉџпјљKOD_TRUE, е¤±ж•—пјљKOD_ERR
+// ђ¬ЊчЃFKOD_TRUE, Ћё”sЃFKOD_ERR
 int NURBS_Func::GenNurbsS(NURBSS *Nurbs,NURBSS nurb)
 {
 	NURBS_Func hbody;
@@ -384,7 +555,7 @@ int NURBS_Func::GenNurbsS(NURBSS *Nurbs,NURBSS nurb)
 
 	Nurbs->Dstat = nurb.Dstat;
 
-	// гѓЎгѓўгѓЄгѓјзўєдїќ
+	// ѓЃѓ‚ѓЉЃ[Љm•Ы
 	if(hbody.New_NurbsS(Nurbs,Nurbs->K,Nurbs->N) == KOD_ERR){
         GuiIF.SetMessage("NURBS_Func KOD_ERROR:fail to allocate memory");
 		return KOD_ERR;
@@ -405,26 +576,27 @@ int NURBS_Func::GenNurbsS(NURBSS *Nurbs,NURBSS nurb)
 }
 
 // Function: GenRotNurbsS
-// NurbsCг‚’еЋџз‚№г‚’йЂљг‚‹Axisе›ћг‚ЉгЃ«degгЃ гЃ‘е›ћи»ўгЃ•гЃ›гЃџе›ћи»ўг‚µгѓјгѓ•г‚§г‚№NurbsSг‚’з”џж€ђгЃ™г‚‹
+// NurbsC‚рЊґ“_‚р’К‚йAxis‰с‚и‚Йdeg‚ѕ‚Ї‰с“]‚і‚№‚Ѕ‰с“]ѓTЃ[ѓtѓFѓXNurbsS‚рђ¶ђ¬‚·‚й
 //
 // Parameter:
-// *NurbsS - з”џж€ђгЃ•г‚Њг‚‹е›ћи»ўг‚µгѓјгѓ•г‚§г‚№(NURBSж›Ійќў)гЃёгЃ®гѓќг‚¤гѓіг‚ї
-// NurbsC - еџєз·љгЃЁгЃЄг‚‹NURBSж›Із·љ
-// Axis - е›ћи»ўи»ёгѓ™г‚Їгѓ€гѓ«
-// deg - е›ћи»ўи§’еє¦пј€deg)
+// *NurbsS - ђ¶ђ¬‚і‚к‚й‰с“]ѓTЃ[ѓtѓFѓX(NURBS‹И–К)‚Ц‚Мѓ|ѓCѓ“ѓ^
+// NurbsC - Љођь‚Ж‚И‚йNURBS‹Иђь
+// Axis - ‰с“]ЋІѓxѓNѓgѓ‹
+// deg - ‰с“]Љp“xЃideg)
 //
 // Return:
-// ж€ђеЉџпјљKOD_TRUE, е¤±ж•—пјљKOD_ERR
-int NURBS_Func::GenRotNurbsS(NURBSS *NurbsS,NURBSC NurbsC,Coord Axis,double deg)
+// ђ¬ЊчЃFKOD_TRUE, Ћё”sЃFKOD_ERR
+//int NURBS_Func::GenRotNurbsS(NURBSS *NurbsS,NURBSC NurbsC,Coord Axis,double deg)
+int NURBS_Func::GenRotNurbsS(NURBSS *NurbsS,const NURBSC& NurbsC,Coord Axis,double deg)
 {
-    Axis = NormalizeVec(Axis);		// ж­Ји¦ЏеЊ–
+    Axis = NormalizeVec(Axis);		// ђі‹K‰»
 
-    // е›ћи»ўи§’еє¦гЃ«г‚€гЃЈгЃ¦пјЊгЃ„гЃЏгЃ¤гЃ®г‚»г‚°гѓЎгѓігѓ€гЃ§е††еј§г‚’з”џж€ђгЃ™г‚‹гЃ‹е€¤ж–­гЃ™г‚‹
-    // е›ћи»ўи§’еє¦гЃЊ180еє¦жњЄжєЂгЃ®е ґеђ€пјЊ1г‚»г‚°гѓЎгѓігѓ€гЃ§е††еј§г‚’иЎЁзЏѕгЃ™г‚‹
+    // ‰с“]Љp“x‚Й‚ж‚Б‚ДЃC‚ў‚­‚В‚МѓZѓOѓЃѓ“ѓg‚Е‰~ЊК‚рђ¶ђ¬‚·‚й‚©”»’f‚·‚й
+    // ‰с“]Љp“x‚Є180“x–ў–ћ‚МЏкЌ‡ЃC1ѓZѓOѓЃѓ“ѓg‚Е‰~ЊК‚р•\Њ»‚·‚й
     if(fabs(deg) < 180 ){
-        double S[6] = {0,0,0,1,1,1};	// uж–№еђ‘гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«
-        double **W;	// г‚¦г‚Ёг‚¤гѓ€
-        Coord **Cp;	// г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€
+        double S[6] = {0,0,0,1,1,1};	// u•ыЊьѓmѓbѓgѓxѓNѓgѓ‹
+        double **W;	// ѓEѓGѓCѓg
+        Coord **Cp;	// ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg
         double rad = DegToRad(deg);
         if((W = NewMatrix(3,NurbsC.K)) == NULL){
             GuiIF.SetMessage("NURBS_Func KOD_ERROR:fail to allocate memory");
@@ -437,10 +609,10 @@ int NURBS_Func::GenRotNurbsS(NURBSS *NurbsS,NURBSC NurbsC,Coord Axis,double deg)
         }
         for(int i=0;i<3;i++){
             for(int j=0;j<NurbsC.K;j++){
-                Coord Q_ = CalcRotVec(NurbsC.cp[j],Axis,(double)i*rad/2);	// е…ѓгЂ…гЃ®NURBSж›Із·љдёЉгЃ®г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€г‚’Axisе‘Ёг‚ЉгЃ«0,deg/2,degеє¦е›ћи»ў
-                Coord P = CalcNormalLine(NurbsC.cp[j],SetCoord(0,0,0),Axis);	// AxisдёЉгЃ®е›ћи»ўдё­еїѓгЃ®еє§жЁ™
-                Coord PQ_ = SubCoord(Q_,P);	// PQ_гѓ™г‚Їгѓ€гѓ«г‚’з”џж€ђ
-                if(i%2 == 0){		// i=0,2гЃ®гЃЁгЃЌ
+                Coord Q_ = CalcRotVec(NurbsC.cp[j],Axis,(double)i*rad/2);	// ЊіЃX‚МNURBS‹ИђьЏг‚МѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚рAxisЋь‚и‚Й0,deg/2,deg“x‰с“]
+                Coord P = CalcNormalLine(NurbsC.cp[j],SetCoord(0,0,0),Axis);	// AxisЏг‚М‰с“]’†ђS‚МЌА•W
+                Coord PQ_ = SubCoord(Q_,P);	// PQ_ѓxѓNѓgѓ‹‚рђ¶ђ¬
+                if(i%2 == 0){		// i=0,2‚М‚Ж‚«
                     W[i][j] = NurbsC.W[j];
                     Cp[i][j] = SetCoord(Q_);
                 }
@@ -450,17 +622,18 @@ int NURBS_Func::GenRotNurbsS(NURBSS *NurbsS,NURBSC NurbsC,Coord Axis,double deg)
                 }
             }
         }
-        GenNurbsS(NurbsS,3,NurbsC.M,3,NurbsC.K,S,NurbsC.T,W,Cp,0,1,0,1);		// NURBSж›Ійќўз”џж€ђ
+		GenNurbsS(NurbsS,3,NurbsC.M,3,NurbsC.K,S,NurbsC.T,W,Cp,0,1,0,1);		// NURBS‹И–Кђ¶ђ¬
+//		GenNurbsS(NurbsS,3,NurbsC.M,3,NurbsC.K,S,NurbsC.T.get(),W,Cp,0,1,0,1);		// NURBS‹И–Кђ¶ђ¬
 
         FreeMatrix(W,3);
         FreeCoord2(Cp,3);
     }
 
-    // е›ћи»ўи§’еє¦гЃЊ270жњЄжєЂгЃ®е ґеђ€пјЊ2г‚»г‚°гѓЎгѓігѓ€гЃ§е††еј§г‚’иЎЁзЏѕгЃ™г‚‹
+    // ‰с“]Љp“x‚Є270–ў–ћ‚МЏкЌ‡ЃC2ѓZѓOѓЃѓ“ѓg‚Е‰~ЊК‚р•\Њ»‚·‚й
     else if(fabs(deg) < 270){
         double S[8] = {0,0,0,0.5,0.5,1,1,1};
-        double **W;	// г‚¦г‚Ёг‚¤гѓ€
-        Coord **Cp;	// г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€
+        double **W;	// ѓEѓGѓCѓg
+        Coord **Cp;	// ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg
         double rad = DegToRad(deg);
         if((W = NewMatrix(5,NurbsC.K)) == NULL){
             GuiIF.SetMessage("NURBS_Func KOD_ERROR:fail to allocate memory");
@@ -473,30 +646,31 @@ int NURBS_Func::GenRotNurbsS(NURBSS *NurbsS,NURBSC NurbsC,Coord Axis,double deg)
         }
         for(int i=0;i<5;i++){
             for(int j=0;j<NurbsC.K;j++){
-                Coord Q_ = CalcRotVec(NurbsC.cp[j],Axis,(double)i*rad/4);	// е…ѓгЂ…гЃ®NURBSж›Із·љдёЉгЃ®г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€г‚’Axisе‘Ёг‚ЉгЃ«0,deg/2,degеє¦е›ћи»ў
-                Coord P = CalcNormalLine(NurbsC.cp[j],SetCoord(0,0,0),Axis);	// AxisдёЉгЃ®е›ћи»ўдё­еїѓгЃ®еє§жЁ™
-                Coord PQ_ = SubCoord(Q_,P);	// PQ_гѓ™г‚Їгѓ€гѓ«г‚’з”џж€ђ
-                if(i%2 ==  1){	// i=1,3гЃ®гЃЁгЃЌ
+                Coord Q_ = CalcRotVec(NurbsC.cp[j],Axis,(double)i*rad/4);	// ЊіЃX‚МNURBS‹ИђьЏг‚МѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚рAxisЋь‚и‚Й0,deg/2,deg“x‰с“]
+                Coord P = CalcNormalLine(NurbsC.cp[j],SetCoord(0,0,0),Axis);	// AxisЏг‚М‰с“]’†ђS‚МЌА•W
+                Coord PQ_ = SubCoord(Q_,P);	// PQ_ѓxѓNѓgѓ‹‚рђ¶ђ¬
+                if(i%2 ==  1){	// i=1,3‚М‚Ж‚«
                     W[i][j] = NurbsC.W[j]*cos(rad/4);
                     Cp[i][j] = AddCoord(MulCoord(PQ_,1/cos(rad/4)),P);
                 }
-                else{		// i=0,2,4гЃ®гЃЁгЃЌ
+                else{		// i=0,2,4‚М‚Ж‚«
                     W[i][j] = NurbsC.W[j];
                     Cp[i][j] = SetCoord(Q_);
                 }
             }
         }
-        GenNurbsS(NurbsS,3,NurbsC.M,5,NurbsC.K,S,NurbsC.T,W,Cp,0,1,0,1);		// NURBSж›Ійќўз”џж€ђ
+		GenNurbsS(NurbsS,3,NurbsC.M,5,NurbsC.K,S,NurbsC.T,W,Cp,0,1,0,1);		// NURBS‹И–Кђ¶ђ¬
+//		GenNurbsS(NurbsS,3,NurbsC.M,5,NurbsC.K,S,NurbsC.T.get(),W,Cp,0,1,0,1);		// NURBS‹И–Кђ¶ђ¬
 
         FreeMatrix(W,5);
         FreeCoord2(Cp,5);
     }
 
-    // е›ћи»ўи§’еє¦гЃЊ360еє¦жњЄжєЂгЃ®е ґеђ€пјЊ3г‚»г‚°гѓЎгѓігѓ€гЃ§е††еј§г‚’иЎЁзЏѕгЃ™г‚‹
+    // ‰с“]Љp“x‚Є360“x–ў–ћ‚МЏкЌ‡ЃC3ѓZѓOѓЃѓ“ѓg‚Е‰~ЊК‚р•\Њ»‚·‚й
     else if(fabs(deg) < 360){
         double S[10] = {0,0,0,0.33,0.33,0.66,0.66,1,1,1};
-        double **W;	// г‚¦г‚Ёг‚¤гѓ€
-        Coord **Cp;	// г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€
+        double **W;	// ѓEѓGѓCѓg
+        Coord **Cp;	// ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg
         double rad = DegToRad(deg);
         if((W = NewMatrix(7,NurbsC.K)) == NULL){
             GuiIF.SetMessage("NURBS_Func KOD_ERROR:fail to allocate memory");
@@ -509,30 +683,33 @@ int NURBS_Func::GenRotNurbsS(NURBSS *NurbsS,NURBSC NurbsC,Coord Axis,double deg)
         }
         for(int i=0;i<7;i++){
             for(int j=0;j<NurbsC.K;j++){
-                Coord Q_ = CalcRotVec(NurbsC.cp[j],Axis,(double)i*rad/6);	// е…ѓгЂ…гЃ®NURBSж›Із·љдёЉгЃ®г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€г‚’Axisе‘Ёг‚ЉгЃ«0,deg/2,degеє¦е›ћи»ў
-                Coord P = CalcNormalLine(NurbsC.cp[j],SetCoord(0,0,0),Axis);	// AxisдёЉгЃ®е›ћи»ўдё­еїѓгЃ®еє§жЁ™
-                Coord PQ_ = SubCoord(Q_,P);	// PQ_гѓ™г‚Їгѓ€гѓ«г‚’з”џж€ђ
-                if(i%2 ==  0){	// i=0,2,4,6гЃ®гЃЁгЃЌ
+                Coord Q_ = CalcRotVec(NurbsC.cp[j],Axis,(double)i*rad/6);	// ЊіЃX‚МNURBS‹ИђьЏг‚МѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚рAxisЋь‚и‚Й0,deg/2,deg“x‰с“]
+                Coord P = CalcNormalLine(NurbsC.cp[j],SetCoord(0,0,0),Axis);	// AxisЏг‚М‰с“]’†ђS‚МЌА•W
+                Coord PQ_ = SubCoord(Q_,P);	// PQ_ѓxѓNѓgѓ‹‚рђ¶ђ¬
+                if(i%2 ==  0){	// i=0,2,4,6‚М‚Ж‚«
                     W[i][j] = NurbsC.W[j];
                     Cp[i][j] = SetCoord(Q_);
                 }
-                else{		// i=1,3,5гЃ®гЃЁгЃЌ
+                else{		// i=1,3,5‚М‚Ж‚«
                     W[i][j] = NurbsC.W[j]*cos(rad/6);
                     Cp[i][j] = AddCoord(MulCoord(PQ_,1/cos(rad/6)),P);
                 }
             }
         }
-        GenNurbsS(NurbsS,3,NurbsC.M,7,NurbsC.K,S,NurbsC.T,W,Cp,0,1,0,1);		// NURBSж›Ійќўз”џж€ђ
-        DebugForNurbsS(NurbsS);
+		GenNurbsS(NurbsS,3,NurbsC.M,7,NurbsC.K,S,NurbsC.T,W,Cp,0,1,0,1);		// NURBS‹И–Кђ¶ђ¬
+//		GenNurbsS(NurbsS,3,NurbsC.M,7,NurbsC.K,S,NurbsC.T.get(),W,Cp,0,1,0,1);		// NURBS‹И–Кђ¶ђ¬
+#ifdef _DEBUG
+		NurbsS->DebugForNurbsS();
+#endif
         FreeMatrix(W,7);
         FreeCoord2(Cp,7);
     }
-    // 360еє¦д»ҐдёЉ
+    // 360“x€ИЏг
     else{
-        // NurbsSг‚’з”џж€ђ
-        double S[12] = {0,0,0,0.25,0.25,0.5,0.5,0.75,0.75,1,1,1};		// uж–№еђ‘гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«
-        double **W;			// г‚¦г‚Ёг‚¤гѓ€
-        Coord  **Cp;		// г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€
+        // NurbsS‚рђ¶ђ¬
+        double S[12] = {0,0,0,0.25,0.25,0.5,0.5,0.75,0.75,1,1,1};		// u•ыЊьѓmѓbѓgѓxѓNѓgѓ‹
+        double **W;			// ѓEѓGѓCѓg
+        Coord  **Cp;		// ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg
         if((W = NewMatrix(9,NurbsC.K)) == NULL){
             GuiIF.SetMessage("NURBS_Func KOD_ERROR:fail to allocate memory");
             return KOD_ERR;
@@ -542,23 +719,24 @@ int NURBS_Func::GenRotNurbsS(NURBSS *NurbsS,NURBSC NurbsC,Coord Axis,double deg)
             FreeMatrix(W,9);
             return KOD_ERR;
         }
-        for(int i=0;i<9;i++){		// uж–№еђ‘
-            for(int j=0;j<NurbsC.K;j++){		// vж–№еђ‘
-                Coord Q_ = CalcRotVec(NurbsC.cp[j],Axis,(double)i*PI/4);		// е…ѓгЂ…гЃ®NURBSж›Із·љдёЉгЃ®г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€г‚’Axisе‘Ёг‚ЉгЃ«45еє¦е›ћи»ў
-                Coord P = CalcNormalLine(NurbsC.cp[j],SetCoord(0,0,0),Axis);	// AxisдёЉгЃ®е›ћи»ўдё­еїѓгЃ®еє§жЁ™
-                Coord PQ_ = SubCoord(Q_,P);										// PQ_гѓ™г‚Їгѓ€гѓ«г‚’з”џж€ђ
-                if(i%2 == 0){													// i=0,2,4,6гЃ®гЃЁгЃЌ
-                    W[i][j] = NurbsC.W[j];										// г‚¦г‚Ёг‚¤гѓ€
-                    Cp[i][j] = SetCoord(Q_);									// Q_гЃЊгЃќгЃ®гЃѕгЃѕг‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ«гЃЄг‚‹
+        for(int i=0;i<9;i++){		// u•ыЊь
+            for(int j=0;j<NurbsC.K;j++){		// v•ыЊь
+                Coord Q_ = CalcRotVec(NurbsC.cp[j],Axis,(double)i*PAI/4);		// ЊіЃX‚МNURBS‹ИђьЏг‚МѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚рAxisЋь‚и‚Й45“x‰с“]
+                Coord P = CalcNormalLine(NurbsC.cp[j],SetCoord(0,0,0),Axis);	// AxisЏг‚М‰с“]’†ђS‚МЌА•W
+                Coord PQ_ = SubCoord(Q_,P);										// PQ_ѓxѓNѓgѓ‹‚рђ¶ђ¬
+                if(i%2 == 0){													// i=0,2,4,6‚М‚Ж‚«
+                    W[i][j] = NurbsC.W[j];										// ѓEѓGѓCѓg
+                    Cp[i][j] = SetCoord(Q_);									// Q_‚Є‚»‚М‚Ь‚ЬѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Й‚И‚й
                 }
-                else{															// i=1,3,5,7гЃ®гЃЁгЃЌ
-                    W[i][j] = NurbsC.W[j]*cos(PI/4);							// г‚¦г‚Ёг‚¤гѓ€иЁ€з®—
-                    Cp[i][j] = AddCoord(MulCoord(PQ_,1/cos(PI/4)),P);			// г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€иЁ€з®—
+                else{															// i=1,3,5,7‚М‚Ж‚«
+                    W[i][j] = NurbsC.W[j]*cos(PAI/4);							// ѓEѓGѓCѓgЊvЋZ
+                    Cp[i][j] = AddCoord(MulCoord(PQ_,1/cos(PAI/4)),P);			// ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓgЊvЋZ
                 }
             }
         }
 
-        GenNurbsS(NurbsS,3,NurbsC.M,9,NurbsC.K,S,NurbsC.T,W,Cp,0,1,0,1);		// NURBSж›Ійќўз”џж€ђ
+		GenNurbsS(NurbsS,3,NurbsC.M,9,NurbsC.K,S,NurbsC.T,W,Cp,0,1,0,1);		// NURBS‹И–Кђ¶ђ¬
+//		GenNurbsS(NurbsS,3,NurbsC.M,9,NurbsC.K,S,NurbsC.T.get(),W,Cp,0,1,0,1);		// NURBS‹И–Кђ¶ђ¬
 
         FreeMatrix(W,9);
         FreeCoord2(Cp,9);
@@ -567,24 +745,25 @@ int NURBS_Func::GenRotNurbsS(NURBSS *NurbsS,NURBSC NurbsC,Coord Axis,double deg)
 }
 
 // Function: GenSweepNurbsS
-// 1гЃ¤гЃ®NURBSж›Із·љгЃ‹г‚‰гЃ‚г‚‹и»ёж–№еђ‘гЃ«гЃ‚г‚‹и·ќй›ўгЃ гЃ‘г‚№г‚¤гѓјгѓ—гЃ•гЃ›гЃџг‚№г‚¤гѓјгѓ—г‚µгѓјгѓ•г‚§г‚№г‚’з”џж€ђгЃ™г‚‹
+// 1‚В‚МNURBS‹Иђь‚©‚з‚ ‚йЋІ•ыЊь‚Й‚ ‚й‹——Ј‚ѕ‚ЇѓXѓCЃ[ѓv‚і‚№‚ЅѓXѓCЃ[ѓvѓTЃ[ѓtѓFѓX‚рђ¶ђ¬‚·‚й
 //
 // Parameters:
-// *NurbsS - з”џж€ђгЃ•г‚Њг‚‹г‚№г‚¤гѓјгѓ—г‚µгѓјгѓ•г‚§г‚№(NURBSж›Ійќў)гЃёгЃ®гѓќг‚¤гѓіг‚ї
-// NurbsC - еџєз·љгЃЁгЃЄг‚‹NURBSж›Із·љ
-// Axis - г‚№г‚¤гѓјгѓ—ж–№еђ‘гѓ™г‚Їгѓ€гѓ«
-// Len - г‚№г‚¤гѓјгѓ—и·ќй›ў
+// *NurbsS - ђ¶ђ¬‚і‚к‚йѓXѓCЃ[ѓvѓTЃ[ѓtѓFѓX(NURBS‹И–К)‚Ц‚Мѓ|ѓCѓ“ѓ^
+// NurbsC - Љођь‚Ж‚И‚йNURBS‹Иђь
+// Axis - ѓXѓCЃ[ѓv•ыЊьѓxѓNѓgѓ‹
+// Len - ѓXѓCЃ[ѓv‹——Ј
 //
 // Return:
-// ж€ђеЉџпјљKOD_TRUE, е¤±ж•—пјљKOD_ERR
-int NURBS_Func::GenSweepNurbsS(NURBSS *NurbsS,NURBSC NurbsC,Coord Axis,double Len)
+// ђ¬ЊчЃFKOD_TRUE, Ћё”sЃFKOD_ERR
+//int NURBS_Func::GenSweepNurbsS(NURBSS *NurbsS,NURBSC NurbsC,Coord Axis,double Len)
+int NURBS_Func::GenSweepNurbsS(NURBSS *NurbsS,const NURBSC& NurbsC,Coord Axis,double Len)
 {
-	Axis = NormalizeVec(Axis);		// ж­Ји¦ЏеЊ–
+	Axis = NormalizeVec(Axis);		// ђі‹K‰»
 
-	// NurbsSг‚’з”џж€ђ
-	double T[4] = {0,0,1,1};		// vж–№еђ‘гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«
-	double **W;			// г‚¦г‚Ёг‚¤гѓ€
-	Coord  **Cp;		// г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€
+	// NurbsS‚рђ¶ђ¬
+	double T[4] = {0,0,1,1};		// v•ыЊьѓmѓbѓgѓxѓNѓgѓ‹
+	double **W;			// ѓEѓGѓCѓg
+	Coord  **Cp;		// ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg
 	if((W = NewMatrix(NurbsC.K,2)) == NULL){
         GuiIF.SetMessage("NURBS_Func KOD_ERROR:fail to allocate memory");
 		return KOD_ERR;
@@ -597,15 +776,16 @@ int NURBS_Func::GenSweepNurbsS(NURBSS *NurbsS,NURBSC NurbsC,Coord Axis,double Le
 
 	for(int i=0;i<NurbsC.K;i++){
 		for(int j=0;j<2;j++){
-			W[i][j] = NurbsC.W[i];	// г‚¦г‚Ёг‚¤гѓ€иЁ€з®—
+			W[i][j] = NurbsC.W[i];	// ѓEѓGѓCѓgЊvЋZ
 			if(j==0)
-				Cp[i][j] = SetCoord(NurbsC.cp[i]);		// г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€иЁ€з®—
+				Cp[i][j] = SetCoord(NurbsC.cp[i]);		// ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓgЊvЋZ
 			else
-				Cp[i][j] = SetCoord(AddCoord(NurbsC.cp[i],MulCoord(Axis,Len)));		// г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€иЁ€з®—
+				Cp[i][j] = SetCoord(AddCoord(NurbsC.cp[i],MulCoord(Axis,Len)));		// ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓgЊvЋZ
 		}
 	}
 
-	GenNurbsS(NurbsS,NurbsC.M,2,NurbsC.K,2,NurbsC.T,T,W,Cp,0,1,NurbsC.V[0],NurbsC.V[1]);	// NURBSж›Ійќўз”џж€ђ
+	GenNurbsS(NurbsS,NurbsC.M,2,NurbsC.K,2,NurbsC.T,T,W,Cp,0,1,NurbsC.V[0],NurbsC.V[1]);	// NURBS‹И–Кђ¶ђ¬
+//	GenNurbsS(NurbsS,NurbsC.M,2,NurbsC.K,2,NurbsC.T.get(),T,W,Cp,0,1,NurbsC.V[0],NurbsC.V[1]);	// NURBS‹И–Кђ¶ђ¬
 
 	FreeMatrix(W,2);
 	FreeCoord2(Cp,2);
@@ -614,24 +794,24 @@ int NURBS_Func::GenSweepNurbsS(NURBSS *NurbsS,NURBSC NurbsC,Coord Axis,double Le
 }
 
 // Function: GenIsoparamCurveU
-// NURBSж›ІйќўдёЉгЃ®uж–№еђ‘гѓ‘гѓ©гѓЎгѓјг‚їеЂ¤г‚’е›єе®љгЃ—гЃџгЃЁгЃЌгЃ®г‚ўг‚¤г‚Ѕгѓ‘гѓ©гѓЎгѓ€гѓЄгѓѓг‚ЇNURBSж›Із·љг‚’з”џж€ђ
+// NURBS‹И–КЏг‚Мu•ыЊьѓpѓ‰ѓЃЃ[ѓ^’l‚рЊЕ’и‚µ‚Ѕ‚Ж‚«‚МѓAѓCѓ\ѓpѓ‰ѓЃѓgѓЉѓbѓNNURBS‹Иђь‚рђ¶ђ¬
 //
 // Parameters:
-// *P - г‚ўг‚¤г‚Ѕгѓ‘гѓ©гѓЎгѓ€гѓЄгѓѓг‚Їж›Із·љз”џж€ђе…ѓгЃ®NURBSж›Ійќў   
-// u - uж–№еђ‘гЃ®е›єе®љгѓ‘гѓ©гѓЎгѓјг‚ї   
-// *C - з”џж€ђгЃ•г‚ЊгЃџг‚ўг‚¤г‚Ѕгѓ‘гѓ©гѓЎгѓ€гѓЄгѓѓг‚Їж›Із·љ
+// *P - ѓAѓCѓ\ѓpѓ‰ѓЃѓgѓЉѓbѓN‹Иђьђ¶ђ¬Њі‚МNURBS‹И–К   
+// u - u•ыЊь‚МЊЕ’иѓpѓ‰ѓЃЃ[ѓ^   
+// *C - ђ¶ђ¬‚і‚к‚ЅѓAѓCѓ\ѓpѓ‰ѓЃѓgѓЉѓbѓN‹Иђь
 //
 // Return:
-// ж€ђеЉџпјљKOD_TRUE, е¤±ж•—пјљKOD_ERRпј€еј•ж•°uгЃЊ*PгЃ®uгѓ‘гѓ©гѓЎгѓјг‚їзЇ„е›Іе¤–пј‰
+// ђ¬ЊчЃFKOD_TRUE, Ћё”sЃFKOD_ERRЃi€шђ”u‚Є*P‚Мuѓpѓ‰ѓЃЃ[ѓ^”Н€НЉOЃj
 int NURBS_Func::GenIsoparamCurveU(NURBSS *P,double u,NURBSC *C)
 {
 	if(u < P->U[0] || u > P->U[1])	return KOD_ERR;
 
-	double V[2] = {P->V[0],P->V[1]};	// гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®зЇ„е›І
-	int prop[4] = {0,0,1,0};		// гѓ‘гѓ©гѓЎгѓјг‚ї
+	double V[2] = {P->V[0],P->V[1]};	// ѓmѓbѓgѓxѓNѓgѓ‹‚М”Н€Н
+	int prop[4] = {0,0,1,0};		// ѓpѓ‰ѓЃЃ[ѓ^
 
-	Coord *Q = NewCoord1(P->K[1]);	// г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€
-	double *W = NewVector(P->K[1]);	// г‚¦г‚§г‚¤гѓ€
+	Coord *Q = NewCoord1(P->K[1]);	// ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg
+	double *W = NewVector(P->K[1]);	// ѓEѓFѓCѓg
 
 	for(int i=0;i<P->K[1];i++){
 		InitCoord(&Q[i]);
@@ -652,24 +832,24 @@ int NURBS_Func::GenIsoparamCurveU(NURBSS *P,double u,NURBSC *C)
 }
 
 // Function: GenIsoparamCurveV
-// NURBSж›ІйќўдёЉгЃ®vж–№еђ‘гѓ‘гѓ©гѓЎгѓјг‚їеЂ¤г‚’е›єе®љгЃ—гЃџгЃЁгЃЌгЃ®г‚ўг‚¤г‚Ѕгѓ‘гѓ©гѓЎгѓ€гѓЄгѓѓг‚ЇNURBSж›Із·љг‚’з”џж€ђ
+// NURBS‹И–КЏг‚Мv•ыЊьѓpѓ‰ѓЃЃ[ѓ^’l‚рЊЕ’и‚µ‚Ѕ‚Ж‚«‚МѓAѓCѓ\ѓpѓ‰ѓЃѓgѓЉѓbѓNNURBS‹Иђь‚рђ¶ђ¬
 //
 // Parameters:
-// *S - г‚ўг‚¤г‚Ѕгѓ‘гѓ©гѓЎгѓ€гѓЄгѓѓг‚Їж›Із·љз”џж€ђе…ѓгЃ®NURBSж›Ійќў   
-// v - vж–№еђ‘гЃ®е›єе®љгѓ‘гѓ©гѓЎгѓјг‚ї   
-// *C - з”џж€ђгЃ•г‚ЊгЃџг‚ўг‚¤г‚Ѕгѓ‘гѓ©гѓЎгѓ€гѓЄгѓѓг‚Їж›Із·љ
+// *S - ѓAѓCѓ\ѓpѓ‰ѓЃѓgѓЉѓbѓN‹Иђьђ¶ђ¬Њі‚МNURBS‹И–К   
+// v - v•ыЊь‚МЊЕ’иѓpѓ‰ѓЃЃ[ѓ^   
+// *C - ђ¶ђ¬‚і‚к‚ЅѓAѓCѓ\ѓpѓ‰ѓЃѓgѓЉѓbѓN‹Иђь
 //
 // Return:
-// ж€ђеЉџпјљKOD_TRUE, е¤±ж•—пјљKOD_ERRпј€еј•ж•°vгЃЊ*PгЃ®uгѓ‘гѓ©гѓЎгѓјг‚їзЇ„е›Іе¤–пј‰
+// ђ¬ЊчЃFKOD_TRUE, Ћё”sЃFKOD_ERRЃi€шђ”v‚Є*P‚Мuѓpѓ‰ѓЃЃ[ѓ^”Н€НЉOЃj
 int NURBS_Func::GenIsoparamCurveV(NURBSS *P,double v,NURBSC *C)
 {
 	if(v < P->V[0] || v > P->V[1])	return KOD_ERR;
 
-	double V[2] = {P->U[0],P->U[1]};	// гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®зЇ„е›І
-	int prop[4] = {0,0,1,0};		// гѓ‘гѓ©гѓЎгѓјг‚ї
+	double V[2] = {P->U[0],P->U[1]};	// ѓmѓbѓgѓxѓNѓgѓ‹‚М”Н€Н
+	int prop[4] = {0,0,1,0};		// ѓpѓ‰ѓЃЃ[ѓ^
 
-	Coord *Q = NewCoord1(P->K[0]);	// г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€
-	double *W = NewVector(P->K[0]);	// г‚¦г‚§г‚¤гѓ€
+	Coord *Q = NewCoord1(P->K[0]);	// ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg
+	double *W = NewVector(P->K[0]);	// ѓEѓFѓCѓg
 
 	for(int i=0;i<P->K[0];i++){
 		InitCoord(&Q[i]);
@@ -690,10 +870,10 @@ int NURBS_Func::GenIsoparamCurveV(NURBSS *P,double v,NURBSC *C)
 }
 
 // Function: DelNurbsS
-// GenNurbsS()гЃ«г‚€гЃЈгЃ¦з”џж€ђгЃ•г‚ЊгЃџNURBSж›Ійќўг‚’е‰Љй™¤гЃ™г‚‹
+// GenNurbsS()‚Й‚ж‚Б‚Дђ¶ђ¬‚і‚к‚ЅNURBS‹И–К‚рЌнЏњ‚·‚й
 // 
 // Parameters:
-// *Nurbs - е‰Љй™¤гЃ™г‚‹NURBSж›ІйќўгЃёгЃ®гѓќг‚¤гѓіг‚ї
+// *Nurbs - ЌнЏњ‚·‚йNURBS‹И–К‚Ц‚Мѓ|ѓCѓ“ѓ^
 void NURBS_Func::DelNurbsS(NURBSS *Nurbs)
 {
 	NURBS_Func hbody;
@@ -701,11 +881,11 @@ void NURBS_Func::DelNurbsS(NURBSS *Nurbs)
 }
 
 // Function: GenTrimdNurbsS
-// гѓ€гѓЄгѓ йќўг‚’жњ‰гЃ™г‚‹NURBSж›Ійќўг‚’г‚ігѓ”гѓјгЃ™г‚‹
+// ѓgѓЉѓЂ–К‚р—L‚·‚йNURBS‹И–К‚рѓRѓsЃ[‚·‚й
 //
 // Parameters:
-// *TNurbs - з”џж€ђгЃ•г‚Њг‚‹гѓ€гѓЄгѓ йќўгЃёгЃ®гѓќг‚¤гѓіг‚ї
-// tnurb - г‚ігѓ”гѓје…ѓгЃ®гѓ€гѓЄгѓ йќў
+// *TNurbs - ђ¶ђ¬‚і‚к‚йѓgѓЉѓЂ–К‚Ц‚Мѓ|ѓCѓ“ѓ^
+// tnurb - ѓRѓsЃ[Њі‚МѓgѓЉѓЂ–К
 //
 // Return:
 // KOD_TRUE
@@ -717,57 +897,81 @@ int NURBS_Func::GenTrimdNurbsS(TRIMD_NURBSS *TNurbs,TRIMD_NURBSS  tnurb)
 	COMPC *compc_o,*compc_i;
 	int curve_num=0;
 
-	nurbsS = (NURBSS *)malloc(sizeof(NURBSS));		// NURBSж›ІйќўгЃ®гѓЎгѓўгѓЄгѓјзўєдїќ
-	conps_o = (CONPS *)malloc(sizeof(CONPS));		// е¤–еЃґгѓ€гѓЄгѓ г‚’ж§‹ж€ђгЃ™г‚‹йќўдёЉз·љгЃ®гѓЎгѓўгѓЄгѓјзўєдїќ
-	compc_o = (COMPC *)malloc(sizeof(COMPC));		// е¤–еЃґгѓ€гѓЄгѓ г‚’ж§‹ж€ђгЃ™г‚‹и¤‡еђ€ж›Із·љгЃ®гѓЎгѓўгѓЄгѓјзўєдїќ
+//	nurbsS = (NURBSS *)malloc(sizeof(NURBSS));		// NURBS‹И–К‚МѓЃѓ‚ѓЉЃ[Љm•Ы
+//	conps_o = (CONPS *)malloc(sizeof(CONPS));		// ЉO‘¤ѓgѓЉѓЂ‚рЌ\ђ¬‚·‚й–КЏгђь‚МѓЃѓ‚ѓЉЃ[Љm•Ы
+//	compc_o = (COMPC *)malloc(sizeof(COMPC));		// ЉO‘¤ѓgѓЉѓЂ‚рЌ\ђ¬‚·‚й•ЎЌ‡‹Иђь‚МѓЃѓ‚ѓЉЃ[Љm•Ы
+	nurbsS = new NURBSS[1];		// NURBS‹И–К‚МѓЃѓ‚ѓЉЃ[Љm•Ы
+	conps_o = new CONPS[1];		// ЉO‘¤ѓgѓЉѓЂ‚рЌ\ђ¬‚·‚й–КЏгђь‚МѓЃѓ‚ѓЉЃ[Љm•Ы
+	compc_o = new COMPC[1];		// ЉO‘¤ѓgѓЉѓЂ‚рЌ\ђ¬‚·‚й•ЎЌ‡‹Иђь‚МѓЃѓ‚ѓЉЃ[Љm•Ы
 
-	// гѓ€гѓЄгѓ йќўг‚’ж§‹ж€ђгЃ™г‚‹NURBSж›Із·љгЃ®з·Џж•°г‚’г‚«г‚¦гѓігѓ€
+	// ѓgѓЉѓЂ–К‚рЌ\ђ¬‚·‚йNURBS‹Иђь‚М‘Ќђ”‚рѓJѓEѓ“ѓg
 	for(int i=0;i<tnurb.n2;i++){
-		for(int j=0;j<tnurb.pTI[i]->pB->CompC.N;j++){
+//		for(int j=0;j<tnurb.pTI[i]->pB->CompC.N;j++){
+		for(int j=0;j<tnurb.pTI[i]->pB.CompC->N;j++){
 			curve_num++;
 		}
 	}
-	curve_num += tnurb.pTO->pB->CompC.N;
+//	curve_num += tnurb.pTO->pB->CompC.N;
+	curve_num += tnurb.pTO->pB.CompC->N;
 
-	nurbsC = (NURBSC *)malloc(sizeof(NURBSC)*curve_num);	// гѓ€гѓЄгѓ йќўг‚’ж§‹ж€ђгЃ™г‚‹NURBSж›Із·љгЃ®ж•°гЃ гЃ‘NURBSж›Із·љгЃ®гѓЎгѓўгѓЄгѓјг‚’зўєдїќ
+//	nurbsC = (NURBSC *)malloc(sizeof(NURBSC)*curve_num);	// ѓgѓЉѓЂ–К‚рЌ\ђ¬‚·‚йNURBS‹Иђь‚Мђ”‚ѕ‚ЇNURBS‹Иђь‚МѓЃѓ‚ѓЉЃ[‚рЉm•Ы
+	nurbsC = new NURBSC[curve_num];	// ѓgѓЉѓЂ–К‚рЌ\ђ¬‚·‚йNURBS‹Иђь‚Мђ”‚ѕ‚ЇNURBS‹Иђь‚МѓЃѓ‚ѓЉЃ[‚рЉm•Ы
 
-	GenNurbsS(nurbsS,*tnurb.pts);							// ж–°гЃџгЃЄNURBSж›Ійќўг‚’1гЃ¤еѕ—г‚‹
-	TNurbs->pts = nurbsS;									// NURBSж›Ійќўг‚’гѓ€гѓЄгѓ йќўгЃ«й–ўйЂЈд»гЃ‘г‚‹
+	GenNurbsS(nurbsS,*tnurb.pts);							// ђV‚Ѕ‚ИNURBS‹И–К‚р1‚В“ѕ‚й
+	TNurbs->pts = nurbsS;									// NURBS‹И–К‚рѓgѓЉѓЂ–К‚ЙЉЦA•t‚Ї‚й
 
-	New_TrmS(TNurbs,tnurb.n2);						// гѓ€гѓЄгѓ йќўгЃ®гѓЎгѓўгѓЄгѓјзўєдїќ
+	New_TrmS(TNurbs,tnurb.n2);						// ѓgѓЉѓЂ–К‚МѓЃѓ‚ѓЉЃ[Љm•Ы
 
-	conps_i = (CONPS *)malloc(sizeof(CONPS)*tnurb.n2);		// е†…еЃґг‚’ж§‹ж€ђгЃ™г‚‹йќўдёЉз·љгЃ®гѓЎгѓўгѓЄгѓјзўєдїќ
-	compc_i = (COMPC *)malloc(sizeof(COMPC)*tnurb.n2);		// е†…еЃґг‚’ж§‹ж€ђгЃ™г‚‹и¤‡еђ€ж›Із·љгЃ®гѓЎгѓўгѓЄгѓјзўєдїќ
+//	conps_i = (CONPS *)malloc(sizeof(CONPS)*tnurb.n2);		// “а‘¤‚рЌ\ђ¬‚·‚й–КЏгђь‚МѓЃѓ‚ѓЉЃ[Љm•Ы
+//	compc_i = (COMPC *)malloc(sizeof(COMPC)*tnurb.n2);		// “а‘¤‚рЌ\ђ¬‚·‚й•ЎЌ‡‹Иђь‚МѓЃѓ‚ѓЉЃ[Љm•Ы
+	conps_i = new CONPS[tnurb.n2];		// “а‘¤‚рЌ\ђ¬‚·‚й–КЏгђь‚МѓЃѓ‚ѓЉЃ[Љm•Ы
+	compc_i = new COMPC[tnurb.n2];		// “а‘¤‚рЌ\ђ¬‚·‚й•ЎЌ‡‹Иђь‚МѓЃѓ‚ѓЉЃ[Љm•Ы
 
-	// NURBSж›Із·љг‚’гѓ€гѓЄгѓ йѓЁе€†г‚’ж§‹ж€ђгЃ™г‚‹NURBSж›Із·љгЃ«й–ўйЂЈд»гЃ‘г‚‹
-	// е¤–е‘Ёгѓ€гѓЄгѓ 
+	// NURBS‹Иђь‚рѓgѓЉѓЂ•”•Є‚рЌ\ђ¬‚·‚йNURBS‹Иђь‚ЙЉЦA•t‚Ї‚й
+	// ЉOЋьѓgѓЉѓЂ
 	TNurbs->pTO = conps_o;
-	New_CompC(compc_o,tnurb.pTO->pB->CompC.N);
-	for(int i=0;i<tnurb.pTO->pB->CompC.N;i++){
-		GenNurbsC(&nurbsC[i],tnurb.pTO->pB->CompC.pDE[i]->NurbsC);
-		compc_o->pDE[i] = (COMPELEM *)(&nurbsC[i]);
-		compc_o->DEType[i] = tnurb.pTO->pB->CompC.DEType[i];
+//	New_CompC(compc_o,tnurb.pTO->pB->CompC.N);
+	New_CompC(compc_o,tnurb.pTO->pB.CompC->N);
+//	for(int i=0;i<tnurb.pTO->pB->CompC.N;i++){
+//		GenNurbsC(&nurbsC[i],tnurb.pTO->pB->CompC.pDE[i]->NurbsC);
+//		compc_o->pDE[i] = (COMPELEM *)(&nurbsC[i]);
+//		compc_o->DEType[i] = tnurb.pTO->pB->CompC.DEType[i];
+	for(int i=0;i<tnurb.pTO->pB.CompC->N;i++){
+		GenNurbsC(&nurbsC[i],tnurb.pTO->pB.CompC->pDE[i].NurbsC);
+		compc_o->pDE[i].NurbsC = &(nurbsC[i]);
+		compc_o->DEType[i] = tnurb.pTO->pB.CompC->DEType[i];
 	}
-	TNurbs->pTO->pB = (CURVE *)compc_o;
+//	TNurbs->pTO->pB = (CURVE *)compc_o;
+	TNurbs->pTO->pB.CompC = compc_o;
 	TNurbs->pTO->BType = tnurb.pTO->BType;
-	TNurbs->pTO->pB->CompC.DegeFlag = tnurb.pTO->pB->CompC.DegeFlag;
-	TNurbs->pTO->pB->CompC.DegeNurbs = tnurb.pTO->pB->CompC.DegeNurbs;
+//	TNurbs->pTO->pB->CompC.DegeFlag = tnurb.pTO->pB->CompC.DegeFlag;
+//	TNurbs->pTO->pB->CompC.DegeNurbs = tnurb.pTO->pB->CompC.DegeNurbs;
+	TNurbs->pTO->pB.CompC->DegeFlag = tnurb.pTO->pB.CompC->DegeFlag;
+	TNurbs->pTO->pB.CompC->DegeNurbs = tnurb.pTO->pB.CompC->DegeNurbs;
 
-	// е†…е‘Ёгѓ€гѓЄгѓ 
+	// “аЋьѓgѓЉѓЂ
 	curve_num = 0;
 	for(int i=0;i<tnurb.n2;i++){
 		TNurbs->pTI[i] = &(conps_i[i]);
-		New_CompC(&compc_i[i],tnurb.pTI[i]->pB->CompC.N);
-		for(int j=0;j<tnurb.pTI[i]->pB->CompC.N;j++){
-			GenNurbsC(&nurbsC[tnurb.pTO->pB->CompC.N+curve_num],tnurb.pTI[i]->pB->CompC.pDE[j]->NurbsC);
-			compc_i[i].pDE[j] = (COMPELEM *)(&nurbsC[tnurb.pTO->pB->CompC.N+curve_num]);
-			compc_i[i].DEType[j] = tnurb.pTI[i]->pB->CompC.DEType[j];
+//		New_CompC(&compc_i[i],tnurb.pTI[i]->pB->CompC.N);
+		New_CompC(&compc_i[i],tnurb.pTI[i]->pB.CompC->N);
+//		for(int j=0;j<tnurb.pTI[i]->pB->CompC.N;j++){
+//			GenNurbsC(&nurbsC[tnurb.pTO->pB->CompC.N+curve_num],tnurb.pTI[i]->pB->CompC.pDE[j]->NurbsC);
+//			compc_i[i].pDE[j] = (COMPELEM *)(&nurbsC[tnurb.pTO->pB->CompC.N+curve_num]);
+//			compc_i[i].DEType[j] = tnurb.pTI[i]->pB->CompC.DEType[j];
+		for(int j=0;j<tnurb.pTI[i]->pB.CompC->N;j++){
+			GenNurbsC(&nurbsC[tnurb.pTO->pB.CompC->N+curve_num],tnurb.pTI[i]->pB.CompC->pDE[j].NurbsC);
+			compc_i[i].pDE[j].NurbsC = &(nurbsC[tnurb.pTO->pB.CompC->N+curve_num]);
+			compc_i[i].DEType[j] = tnurb.pTI[i]->pB.CompC->DEType[j];
 			curve_num++;
 		}
-		TNurbs->pTI[i]->pB = (CURVE *)(&(compc_i[i]));
+//		TNurbs->pTI[i]->pB = (CURVE *)(&(compc_i[i]));
+		TNurbs->pTI[i]->pB.CompC = &(compc_i[i]);
 		TNurbs->pTI[i]->BType = tnurb.pTI[i]->BType;
-		TNurbs->pTI[i]->pB->CompC.DegeFlag = tnurb.pTI[i]->pB->CompC.DegeFlag;
-		TNurbs->pTI[i]->pB->CompC.DegeNurbs = tnurb.pTI[i]->pB->CompC.DegeNurbs;
+//		TNurbs->pTI[i]->pB->CompC.DegeFlag = tnurb.pTI[i]->pB->CompC.DegeFlag;
+//		TNurbs->pTI[i]->pB->CompC.DegeNurbs = tnurb.pTI[i]->pB->CompC.DegeNurbs;
+		TNurbs->pTI[i]->pB.CompC->DegeFlag = tnurb.pTI[i]->pB.CompC->DegeFlag;
+		TNurbs->pTI[i]->pB.CompC->DegeNurbs = tnurb.pTI[i]->pB.CompC->DegeNurbs;
 	}
 
 	TNurbs->n1 = tnurb.n1;
@@ -777,10 +981,10 @@ int NURBS_Func::GenTrimdNurbsS(TRIMD_NURBSS *TNurbs,TRIMD_NURBSS  tnurb)
 }
 
 // Function: DelTrimdNurbsS
-// GenTrimdNurbsS()гЃ«г‚€гЃЈгЃ¦з”џж€ђгЃ•г‚ЊгЃџгѓ€гѓЄгѓ йќўг‚’е‰Љй™¤гЃ™г‚‹
+// GenTrimdNurbsS()‚Й‚ж‚Б‚Дђ¶ђ¬‚і‚к‚ЅѓgѓЉѓЂ–К‚рЌнЏњ‚·‚й
 //
 // Parameters:
-// *TNurbs - е‰Љй™¤гЃ™г‚‹гѓ€гѓЄгѓ йќўгЃёгЃ®гѓќг‚¤гѓіг‚ї
+// *TNurbs - ЌнЏњ‚·‚йѓgѓЉѓЂ–К‚Ц‚Мѓ|ѓCѓ“ѓ^
 //
 // Return:
 // KOD_TRUE
@@ -789,44 +993,56 @@ int NURBS_Func::DelTrimdNurbsS(TRIMD_NURBSS *TNurbs)
 	NURBS_Func hbody;
 	int curve_num = 0;
 
-	// гѓ€гѓЄгѓ йќўг‚’ж§‹ж€ђгЃ™г‚‹е…ЁгЃ¦гЃ®NURBSж›Із·љгЃ®жњ¬ж•°г‚’иЄїгЃ№г‚‹
+	// ѓgѓЉѓЂ–К‚рЌ\ђ¬‚·‚й‘S‚Д‚МNURBS‹Иђь‚М–{ђ”‚р’І‚Ч‚й
 	for(int i=0;i<TNurbs->n2;i++){
-		for(int j=0;j<TNurbs->pTI[i]->pB->CompC.N;j++){
+//		for(int j=0;j<TNurbs->pTI[i]->pB->CompC.N;j++){
+		for(int j=0;j<TNurbs->pTI[i]->pB.CompC->N;j++){
 			curve_num++;
 		}
 	}
-	curve_num += TNurbs->pTO->pB->CompC.N;
+//	curve_num += TNurbs->pTO->pB->CompC.N;
+	curve_num += TNurbs->pTO->pB.CompC->N;
 
-	hbody.Free_NurbsC_1DArray((NURBSC *)TNurbs->pTO->pB->CompC.pDE[0],curve_num);		// гѓ€гѓЄгѓ йќўг‚’ж§‹ж€ђгЃ™г‚‹е…ЁгЃ¦гЃ®NURBSж›Із·љгѓ‘гѓ©гѓЎгѓјг‚їгЃ®гѓЎгѓўгѓЄгѓји§Јж”ѕ
+//	hbody.Free_NurbsC_1DArray((NURBSC *)TNurbs->pTO->pB->CompC.pDE[0],curve_num);		// ѓgѓЉѓЂ–К‚рЌ\ђ¬‚·‚й‘S‚Д‚МNURBS‹Иђьѓpѓ‰ѓЃЃ[ѓ^‚МѓЃѓ‚ѓЉЃ[‰р•ъ
+	hbody.Free_NurbsC_1DArray(TNurbs->pTO->pB.CompC->pDE[0].NurbsC,curve_num);		// ѓgѓЉѓЂ–К‚рЌ\ђ¬‚·‚й‘S‚Д‚МNURBS‹Иђьѓpѓ‰ѓЃЃ[ѓ^‚МѓЃѓ‚ѓЉЃ[‰р•ъ
 
-	hbody.Free_NurbsS(TNurbs->pts);						// гѓ€гѓЄгѓ йќўг‚’ж§‹ж€ђгЃ™г‚‹NURBSж›Ійќўгѓ‘гѓ©гѓЎгѓјг‚їгЃ®гѓЎгѓўгѓЄгѓји§Јж”ѕ
-	free(TNurbs->pts);								// гѓ€гѓЄгѓ йќўг‚’ж§‹ж€ђгЃ™г‚‹NURBSж›ІйќўгЃ®гѓЎгѓўгѓЄгѓји§Јж”ѕ
+	hbody.Free_NurbsS(TNurbs->pts);						// ѓgѓЉѓЂ–К‚рЌ\ђ¬‚·‚йNURBS‹И–Кѓpѓ‰ѓЃЃ[ѓ^‚МѓЃѓ‚ѓЉЃ[‰р•ъ
+//	free(TNurbs->pts);								// ѓgѓЉѓЂ–К‚рЌ\ђ¬‚·‚йNURBS‹И–К‚МѓЃѓ‚ѓЉЃ[‰р•ъ
+	delete[]	TNurbs->pts;								// ѓgѓЉѓЂ–К‚рЌ\ђ¬‚·‚йNURBS‹И–К‚МѓЃѓ‚ѓЉЃ[‰р•ъ
 
-	hbody.Free_NurbsC(&TNurbs->pTO->pB->CompC.DegeNurbs);	// гѓ€гѓЄгѓ йќўе¤–е‘Ёг‚’ж§‹ж€ђгЃ™г‚‹и¤‡еђ€ж›Із·љг‚’ж§‹ж€ђгЃ™г‚‹зё®йЂЂз”ЁNURBSж›Із·љгЃ®гѓЎгѓўгѓЄгѓји§Јж”ѕ
-	hbody.Free_CompC((COMPC *)TNurbs->pTO->pB);			// гѓ€гѓЄгѓ йќўе¤–е‘Ёг‚’ж§‹ж€ђгЃ™г‚‹и¤‡еђ€ж›Із·љг‚’ж§‹ж€ђгЃ™г‚‹NURBSж›Із·љгЃ®гѓЎгѓўгѓЄгѓји§Јж”ѕ
-	free(TNurbs->pTO->pB);							// гѓ€гѓЄгѓ йќўе¤–е‘Ёг‚’ж§‹ж€ђгЃ™г‚‹и¤‡еђ€ж›Із·љгЃ®гѓЎгѓўгѓЄгѓји§Јж”ѕ
-	free(TNurbs->pTO);								// гѓ€гѓЄгѓ йќўе¤–е‘Ёг‚’ж§‹ж€ђгЃ™г‚‹йќўдёЉз·љгЃ®гѓЎгѓўгѓЄгѓји§Јж”ѕ
+//	hbody.Free_NurbsC(&TNurbs->pTO->pB->CompC.DegeNurbs);	// ѓgѓЉѓЂ–КЉOЋь‚рЌ\ђ¬‚·‚й•ЎЌ‡‹Иђь‚рЌ\ђ¬‚·‚йЏk‘Ю—pNURBS‹Иђь‚МѓЃѓ‚ѓЉЃ[‰р•ъ
+//	hbody.Free_CompC((COMPC *)TNurbs->pTO->pB);			// ѓgѓЉѓЂ–КЉOЋь‚рЌ\ђ¬‚·‚й•ЎЌ‡‹Иђь‚рЌ\ђ¬‚·‚йNURBS‹Иђь‚МѓЃѓ‚ѓЉЃ[‰р•ъ
+//	free(TNurbs->pTO->pB);							// ѓgѓЉѓЂ–КЉOЋь‚рЌ\ђ¬‚·‚й•ЎЌ‡‹Иђь‚МѓЃѓ‚ѓЉЃ[‰р•ъ
+//	free(TNurbs->pTO);								// ѓgѓЉѓЂ–КЉOЋь‚рЌ\ђ¬‚·‚й–КЏгђь‚МѓЃѓ‚ѓЉЃ[‰р•ъ
+	hbody.Free_NurbsC(&TNurbs->pTO->pB.CompC->DegeNurbs);	// ѓgѓЉѓЂ–КЉOЋь‚рЌ\ђ¬‚·‚й•ЎЌ‡‹Иђь‚рЌ\ђ¬‚·‚йЏk‘Ю—pNURBS‹Иђь‚МѓЃѓ‚ѓЉЃ[‰р•ъ
+	hbody.Free_CompC(TNurbs->pTO->pB.CompC);			// ѓgѓЉѓЂ–КЉOЋь‚рЌ\ђ¬‚·‚й•ЎЌ‡‹Иђь‚рЌ\ђ¬‚·‚йNURBS‹Иђь‚МѓЃѓ‚ѓЉЃ[‰р•ъ
+	delete[]	TNurbs->pTO->pB.CompC;							// ѓgѓЉѓЂ–КЉOЋь‚рЌ\ђ¬‚·‚й•ЎЌ‡‹Иђь‚МѓЃѓ‚ѓЉЃ[‰р•ъ
+	delete[]	TNurbs->pTO;								// ѓgѓЉѓЂ–КЉOЋь‚рЌ\ђ¬‚·‚й–КЏгђь‚МѓЃѓ‚ѓЉЃ[‰р•ъ
 
 	for(int i=0;i<TNurbs->n2;i++){
-		hbody.Free_NurbsC(&TNurbs->pTI[i]->pB->CompC.DegeNurbs);	// гѓ€гѓЄгѓ йќўе†…е‘Ёг‚’ж§‹ж€ђгЃ™г‚‹и¤‡еђ€ж›Із·љг‚’ж§‹ж€ђгЃ™г‚‹зё®йЂЂз”ЁNURBSж›Із·љгЃ®гѓЎгѓўгѓЄгѓји§Јж”ѕ
-		hbody.Free_CompC((COMPC *)TNurbs->pTI[i]->pB);	// гѓ€гѓЄгѓ йќўе†…е‘Ёг‚’ж§‹ж€ђгЃ™г‚‹и¤‡еђ€ж›Із·љг‚’ж§‹ж€ђгЃ™г‚‹NURBSж›Із·љгЃ®гѓЎгѓўгѓЄгѓји§Јж”ѕ
-		free(TNurbs->pTI[i]->pB);					// гѓ€гѓЄгѓ йќўе†…е‘Ёг‚’ж§‹ж€ђгЃ™г‚‹и¤‡еђ€ж›Із·љгЃ®гѓЎгѓўгѓЄгѓји§Јж”ѕ
+//		hbody.Free_NurbsC(&TNurbs->pTI[i]->pB->CompC.DegeNurbs);	// ѓgѓЉѓЂ–К“аЋь‚рЌ\ђ¬‚·‚й•ЎЌ‡‹Иђь‚рЌ\ђ¬‚·‚йЏk‘Ю—pNURBS‹Иђь‚МѓЃѓ‚ѓЉЃ[‰р•ъ
+//		hbody.Free_CompC((COMPC *)TNurbs->pTI[i]->pB);	// ѓgѓЉѓЂ–К“аЋь‚рЌ\ђ¬‚·‚й•ЎЌ‡‹Иђь‚рЌ\ђ¬‚·‚йNURBS‹Иђь‚МѓЃѓ‚ѓЉЃ[‰р•ъ
+//		free(TNurbs->pTI[i]->pB);					// ѓgѓЉѓЂ–К“аЋь‚рЌ\ђ¬‚·‚й•ЎЌ‡‹Иђь‚МѓЃѓ‚ѓЉЃ[‰р•ъ
+		hbody.Free_NurbsC(&TNurbs->pTI[i]->pB.CompC->DegeNurbs);	// ѓgѓЉѓЂ–К“аЋь‚рЌ\ђ¬‚·‚й•ЎЌ‡‹Иђь‚рЌ\ђ¬‚·‚йЏk‘Ю—pNURBS‹Иђь‚МѓЃѓ‚ѓЉЃ[‰р•ъ
+		hbody.Free_CompC(TNurbs->pTI[i]->pB.CompC);	// ѓgѓЉѓЂ–К“аЋь‚рЌ\ђ¬‚·‚й•ЎЌ‡‹Иђь‚рЌ\ђ¬‚·‚йNURBS‹Иђь‚МѓЃѓ‚ѓЉЃ[‰р•ъ
+		delete[]	TNurbs->pTI[i]->pB.CompC;					// ѓgѓЉѓЂ–К“аЋь‚рЌ\ђ¬‚·‚й•ЎЌ‡‹Иђь‚МѓЃѓ‚ѓЉЃ[‰р•ъ
 	}
-	hbody.Free_TrmS(TNurbs);								// гѓ€гѓЄгѓ йќўгѓ‘гѓ©гѓЎгѓјг‚їгЃ®гѓЎгѓўгѓЄгѓји§Јж”ѕ
+	hbody.Free_TrmS(TNurbs);								// ѓgѓЉѓЂ–Кѓpѓ‰ѓЃЃ[ѓ^‚МѓЃѓ‚ѓЉЃ[‰р•ъ
 
 	return KOD_TRUE;
 }
 
 // Function: CalcNurbsCCoord
-// жЊ‡е®љгЃ—гЃџгѓЋгѓѓгѓ€tгЃ§гЃ®NURBSж›Із·љгЃ®еє§жЁ™еЂ¤г‚’ж±‚г‚Ѓг‚‹
+// Ћw’и‚µ‚Ѕѓmѓbѓgt‚Е‚МNURBS‹Иђь‚МЌА•W’l‚р‹Ѓ‚Я‚й
 //
 // Parameters:
-// *NurbsC - еЇѕи±ЎгЃЁгЃ™г‚‹NURBSж›Із·љгЃёгЃ®гѓќг‚¤гѓіг‚ї
-// t - гѓЋгѓѓгѓ€еЂ¤
+// *NurbsC - ‘ОЏЫ‚Ж‚·‚йNURBS‹Иђь‚Ц‚Мѓ|ѓCѓ“ѓ^
+// t - ѓmѓbѓg’l
 //
 // Return:
-// еє§жЁ™еЂ¤
-Coord NURBS_Func::CalcNurbsCCoord(NURBSC *NurbsC,double t)
+// ЌА•W’l
+//Coord NURBS_Func::CalcNurbsCCoord(NURBSC *NurbsC,double t)
+Coord NURBSC::CalcNurbsCCoord(double t)
 {
 	Coord p;
 	Coord bscpw;
@@ -834,59 +1050,62 @@ Coord NURBS_Func::CalcNurbsCCoord(NURBSC *NurbsC,double t)
 	double bs=0;
 	int i;
 
-	InitCoord(&bscpw);	// е€ќжњџеЊ–
+	InitCoord(&bscpw);	// Џ‰Љъ‰»
 
-	for(i=0;i<NurbsC->K;i++){
-		bs = CalcBSbasis(t,NurbsC->T,NurbsC->N,i,NurbsC->M);		// Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°г‚’ж±‚г‚Ѓг‚‹
-		bsw += bs*NurbsC->W[i];							// е€†жЇЌ
-		bscpw = AddCoord(bscpw,MulCoord(NurbsC->cp[i],bs*NurbsC->W[i]));	// е€†е­ђ
+	for(i=0;i<K;i++){
+		bs = CalcBSbasis(t,T,N,i,M);		// BѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”‚р‹Ѓ‚Я‚й
+//		bs = CalcBSbasis(t,T.get(),N,i,M);		// BѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”‚р‹Ѓ‚Я‚й
+		bsw += bs*W[i];							// •Є•к
+		bscpw = AddCoord(bscpw,MulCoord(cp[i],bs*W[i]));	// •ЄЋq
 	}
 	
-	p = DivCoord(bscpw,bsw);	// еє§жЁ™еЂ¤г‚’ж±‚г‚Ѓг‚‹
+	p = DivCoord(bscpw,bsw);	// ЌА•W’l‚р‹Ѓ‚Я‚й
 
 	return p;
 }
 
 // Function: CalcNurbsCCoords
-// жЊ‡е®љгЃ—гЃџгѓЋгѓѓгѓ€tзѕ¤гЃ§гЃ®NURBSж›Із·љгЃ®еє§жЁ™еЂ¤г‚’ж±‚г‚Ѓг‚‹
+// Ћw’и‚µ‚ЅѓmѓbѓgtЊQ‚Е‚МNURBS‹Иђь‚МЌА•W’l‚р‹Ѓ‚Я‚й
 //
 // Parameters:
-// *NurbsS - NURBSж›ІйќўгЃёгЃ®гѓќг‚¤гѓіг‚ї   
-// Ptnum - ж±‚г‚Ѓг‚‹з‚№зѕ¤гЃ®ж•°   
-// *T - tгѓ‘гѓ©гѓЎгѓјг‚їзѕ¤г‚’ж јзґЌгЃ—гЃџй…Ќе€—
-// *Pt - е®џеє§жЁ™еЂ¤г‚’ж јзґЌ
-void NURBS_Func::CalcNurbsCCoords(NURBSC *NurbsC,int Ptnum,double *T,Coord *Pt)
+// *NurbsS - NURBS‹И–К‚Ц‚Мѓ|ѓCѓ“ѓ^   
+// Ptnum - ‹Ѓ‚Я‚й“_ЊQ‚Мђ”   
+// *T - tѓpѓ‰ѓЃЃ[ѓ^ЊQ‚рЉi”[‚µ‚Ѕ”z—с
+// *Pt - ЋАЌА•W’l‚рЉi”[
+//void NURBS_Func::CalcNurbsCCoords(NURBSC *NurbsC,int Ptnum,double *T,Coord *Pt)
+void NURBSC::CalcNurbsCCoords(int Ptnum,double *T,Coord *Pt)
 {
 	for(int i=0;i<Ptnum;i++){
-		Pt[i] = CalcNurbsCCoord(NurbsC,T[i]);
+		Pt[i] = CalcNurbsCCoord(T[i]);
 	}
 }
 
 // Function: CalcNurbsSCoord
-// жЊ‡е®љгЃ—гЃџгѓЋгѓѓгѓ€u,vгЃ§гЃ®NURBSж›ІйќўгЃ®еє§жЁ™еЂ¤г‚’ж±‚г‚Ѓг‚‹
+// Ћw’и‚µ‚Ѕѓmѓbѓgu,v‚Е‚МNURBS‹И–К‚МЌА•W’l‚р‹Ѓ‚Я‚й
 //
 // Parameters:
-// *NurbsS - еЇѕи±ЎгЃЁгЃ™г‚‹NURBSж›ІйќўгЃёгЃ®гѓќг‚¤гѓіг‚ї
-// div_u - uж–№еђ‘гѓЋгѓѓгѓ€еЂ¤
-// div_v - vж–№еђ‘гѓЋгѓѓгѓ€еЂ¤
+// *NurbsS - ‘ОЏЫ‚Ж‚·‚йNURBS‹И–К‚Ц‚Мѓ|ѓCѓ“ѓ^
+// div_u - u•ыЊьѓmѓbѓg’l
+// div_v - v•ыЊьѓmѓbѓg’l
 //
 // Return:
-// еє§жЁ™еЂ¤
-Coord NURBS_Func::CalcNurbsSCoord(NURBSS *NurbsS,double div_u,double div_v)
+// ЌА•W’l
+//Coord NURBS_Func::CalcNurbsSCoord(NURBSS *NurbsS,double div_u,double div_v)
+Coord NURBSS::CalcNurbsSCoord(double div_u,double div_v)
 {
 	int i,j;
-	double bs_u,bs_v;		// u,vж–№еђ‘Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°
-	double bsw=0;			// е€†жЇЌ
-	Coord bscpw;			// е€†е­ђ
+	double bs_u,bs_v;		// u,v•ыЊьBѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”
+	double bsw=0;			// •Є•к
+	Coord bscpw;			// •ЄЋq
 
-	InitCoord(&bscpw);		// е€ќжњџеЊ–
+	InitCoord(&bscpw);		// Џ‰Љъ‰»
 
-	for(i=0;i<NurbsS->K[0];i++){
-		bs_u = CalcBSbasis(div_u,NurbsS->S,NurbsS->N[0],i,NurbsS->M[0]);			// uж–№еђ‘Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°г‚’ж±‚г‚Ѓг‚‹
-		for(j=0;j<NurbsS->K[1];j++){
-			bs_v = CalcBSbasis(div_v,NurbsS->T,NurbsS->N[1],j,NurbsS->M[1]);		// vж–№еђ‘Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°г‚’ж±‚г‚Ѓг‚‹
-			bsw += bs_u*bs_v*NurbsS->W[i][j];
-			bscpw = AddCoord(bscpw,MulCoord(NurbsS->cp[i][j],bs_u*bs_v*NurbsS->W[i][j]));
+	for(i=0;i<K[0];i++){
+		bs_u = CalcBSbasis(div_u,S,N[0],i,M[0]);			// u•ыЊьBѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”‚р‹Ѓ‚Я‚й
+		for(j=0;j<K[1];j++){
+			bs_v = CalcBSbasis(div_v,T,N[1],j,M[1]);		// v•ыЊьBѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”‚р‹Ѓ‚Я‚й
+			bsw += bs_u*bs_v*W[i][j];
+			bscpw = AddCoord(bscpw,MulCoord(cp[i][j],bs_u*bs_v*W[i][j]));
 		}
 	}
 	//if(fabs(bsw) < APPROX_ZERO)
@@ -896,38 +1115,40 @@ Coord NURBS_Func::CalcNurbsSCoord(NURBSS *NurbsS,double div_u,double div_v)
 }
 
 // Function: CalcNurbsSCoords
-// жЊ‡е®љгЃ—гЃџгѓЋгѓѓгѓ€u,vзѕ¤гЃ§гЃ®NURBSж›ІйќўгЃ®еє§жЁ™еЂ¤зѕ¤г‚’ж±‚г‚Ѓг‚‹
+// Ћw’и‚µ‚Ѕѓmѓbѓgu,vЊQ‚Е‚МNURBS‹И–К‚МЌА•W’lЊQ‚р‹Ѓ‚Я‚й
 //
 // Parameters:
-// *NurbsS - NURBSж›ІйќўгЃёгЃ®гѓќг‚¤гѓіг‚ї   
-// Ptnum - ж±‚г‚Ѓг‚‹з‚№зѕ¤гЃ®ж•°   
-// *UV - u,vгѓ‘гѓ©гѓЎгѓјг‚їзѕ¤г‚’ж јзґЌгЃ—гЃџCoordећ‹й…Ќе€—(UV[].xгЃ«uж–№еђ‘гЂЃUV[].пЅ™гЃ«Vж–№еђ‘гЃ®гѓ‘гѓ©гѓЎгѓјг‚їг‚’ж јзґЌгЃ—гЃ¦гЃЉгЃЏгЃ“гЃЁ)
-// *Pt - е®џеє§жЁ™еЂ¤г‚’ж јзґЌ
-void NURBS_Func::CalcNurbsSCoords(NURBSS *NurbsS,int Ptnum,Coord *UV,Coord *Pt)
+// *NurbsS - NURBS‹И–К‚Ц‚Мѓ|ѓCѓ“ѓ^   
+// Ptnum - ‹Ѓ‚Я‚й“_ЊQ‚Мђ”   
+// *UV - u,vѓpѓ‰ѓЃЃ[ѓ^ЊQ‚рЉi”[‚µ‚ЅCoordЊ^”z—с(UV[].x‚Йu•ыЊьЃAUV[].‚™‚ЙV•ыЊь‚Мѓpѓ‰ѓЃЃ[ѓ^‚рЉi”[‚µ‚Д‚Ё‚­‚±‚Ж)
+// *Pt - ЋАЌА•W’l‚рЉi”[
+//void NURBS_Func::CalcNurbsSCoords(NURBSS *NurbsS,int Ptnum,Coord *UV,Coord *Pt)
+void NURBSS::CalcNurbsSCoords(int Ptnum,Coord *UV,Coord *Pt)
 {
 	for(int i=0;i<Ptnum;i++){
-		Pt[i] = CalcNurbsSCoord(NurbsS,UV[i].x,UV[i].y);
+		Pt[i] = CalcNurbsSCoord(UV[i].x,UV[i].y);
 	}
 }
 
 // Function: CalcBSbasis
-// Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°г‚’иЁ€з®—гЃ—гЂЃиЁ€з®—зµђжћњг‚’иї”гЃ™
+// BѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”‚рЊvЋZ‚µЃAЊvЋZЊ‹‰К‚р•Ф‚·
 //
 // Parameters:
-// t - гѓЋгѓѓгѓ€гЂЂ
-// knot[] - гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«  
-// N - гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®ж•°  
-// I - Bsplеџєеє•й–ўж•°дё‹ж·»е­—гЃ®1гЃ¤з›®(0пЅћ)  
-// M - йљЋж•°(Bsplеџєеє•й–ўж•°дё‹ж·»е­—гЃ®2гЃ¤з›®)  
+// t - ѓmѓbѓgЃ@
+// knot[] - ѓmѓbѓgѓxѓNѓgѓ‹  
+// N - ѓmѓbѓgѓxѓNѓgѓ‹‚Мђ”  
+// I - BsplЉо’кЉЦђ”‰є“YЋљ‚М1‚В–Ъ(0Ѓ`)  
+// M - ЉKђ”(BsplЉо’кЉЦђ”‰є“YЋљ‚М2‚В–Ъ)  
 //
 // Return:
-// иЁ€з®—зµђжћњ
-double NURBS_Func::CalcBSbasis(double t, double knot[],int N,int I,int M)
+// ЊvЋZЊ‹‰К
+//double NURBS_Func::CalcBSbasis(double t, double knot[],int N,int I,int M)
+double CalcBSbasis(double t, double knot[],int N,int I,int M)
 {
-	// йљЋж•°(order)гЃЊ1гЃ®ж™‚
+	// ЉKђ”(order)‚Є1‚МЋћ
 	if(M == 1){
-		// жіЁз›®дё­гЃ®гѓЋгѓѓгѓ€гЃ®еЂ¤гЃЊгѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®зµ‚з«ЇеЂ¤гЃЁеђЊгЃе ґеђ€гЂЃеџєеє•й–ўж•°гЃЊ1г‚’еЏ–г‚ЉгЃ†г‚‹зЇ„е›Іг‚’knot[I+1]г‚‚еђ«г‚Ђг‚€гЃ†гЃ«гЃ™г‚‹
-		// гЃ“гЃ†гЃ—гЃЄгЃ„гЃЁгЂЃгЃ“гЃ®гЃЁгЃЌгЃ гЃ‘е…ЁгЃ¦гЃ®еџєеє•й–ўж•°еЂ¤гЃЊ0гЃ«гЃЄгЃЈгЃ¦гЃ—гЃѕгЃ†гЂ‚
+		// ’Ќ–Ъ’†‚Мѓmѓbѓg‚М’l‚ЄѓmѓbѓgѓxѓNѓgѓ‹‚МЏI’[’l‚Ж“Ї‚¶ЏкЌ‡ЃAЉо’кЉЦђ”‚Є1‚рЋж‚и‚¤‚й”Н€Н‚рknot[I+1]‚аЉЬ‚Ю‚ж‚¤‚Й‚·‚й
+		// ‚±‚¤‚µ‚И‚ў‚ЖЃA‚±‚М‚Ж‚«‚ѕ‚Ї‘S‚Д‚МЉо’кЉЦђ”’l‚Є0‚Й‚И‚Б‚Д‚µ‚Ь‚¤ЃB
 		if(t==knot[N-1]){
 			if(knot[I] <= t && t <= knot[I+1])	return 1.0;
 			else		return 0.0;
@@ -938,20 +1159,20 @@ double NURBS_Func::CalcBSbasis(double t, double knot[],int N,int I,int M)
 		}
 	}
 
-	// гЃќг‚Њд»Ґе¤–гЃ®ж™‚
+	// ‚»‚к€ИЉO‚МЋћ
 	else{
 		double n1=0.0;
 		double n2=0.0;
 		double denom;
 
-		denom = knot[I+M-1] - knot[I];	// е€†жЇЌ
+		denom = knot[I+M-1] - knot[I];	// •Є•к
 		if(denom > 0.0){
-			n1 = (t-knot[I])/denom * CalcBSbasis(t,knot,N,I,M-1);		// 1й …з›®
+			n1 = (t-knot[I])/denom * CalcBSbasis(t,knot,N,I,M-1);		// 1ЌЂ–Ъ
 		}
 
 		denom = knot[I+M] - knot[I+1];
 		if(denom > 0.0){
-			n2 = (knot[I+M]-t)/denom * CalcBSbasis(t,knot,N,I+1,M-1);	// 2й …з›®
+			n2 = (knot[I+M]-t)/denom * CalcBSbasis(t,knot,N,I+1,M-1);	// 2ЌЂ–Ъ
 		}
 
 		return(n1+n2);
@@ -959,18 +1180,19 @@ double NURBS_Func::CalcBSbasis(double t, double knot[],int N,int I,int M)
 }
 
 // Function: CalcDiffBSbasis
-// Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°гЃ®1йљЋеѕ®е€†дї‚ж•°г‚’ж±‚г‚Ѓг‚‹
+// BѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”‚М1ЉK”ч•ЄЊWђ”‚р‹Ѓ‚Я‚й
 //
 // Parameters:
-// t - гѓЋгѓѓгѓ€гЂЂ
-// knot[] - гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«  
-// N - гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®ж•°  
-// I - жіЁз›®дё­гЃ®г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€  
-// M - йљЋж•°
+// t - ѓmѓbѓgЃ@
+// knot[] - ѓmѓbѓgѓxѓNѓgѓ‹  
+// N - ѓmѓbѓgѓxѓNѓgѓ‹‚Мђ”  
+// I - ’Ќ–Ъ’†‚МѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg  
+// M - ЉKђ”
 //
 // Return:
-// иЁ€з®—зµђжћњ
-double NURBS_Func::CalcDiffBSbasis(double t,double knot[],int N,int I,int M)
+// ЊvЋZЊ‹‰К
+//double NURBS_Func::CalcDiffBSbasis(double t,double knot[],int N,int I,int M)
+double CalcDiffBSbasis(double t,double knot[],int N,int I,int M)
 {
 	double n1 = knot[I+M-1]-knot[I];
 	double n2 = knot[I+M]-knot[I+1];
@@ -983,19 +1205,20 @@ double NURBS_Func::CalcDiffBSbasis(double t,double knot[],int N,int I,int M)
 }
 
 // Function: CalcDiffBSbasisN
-// Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°гЃ®NйљЋеѕ®е€†дї‚ж•°г‚’ж±‚г‚Ѓг‚‹
+// BѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”‚МNЉK”ч•ЄЊWђ”‚р‹Ѓ‚Я‚й
 //
 // Parameters:
-// t - гѓЋгѓѓгѓ€гЂЂ
-// knot[] - гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«  
-// N - гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®ж•°  
-// I - жіЁз›®дё­гЃ®г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€  
-// M - йљЋж•°  
-// Dn - еѕ®е€†йљЋж•°
+// t - ѓmѓbѓgЃ@
+// knot[] - ѓmѓbѓgѓxѓNѓgѓ‹  
+// N - ѓmѓbѓgѓxѓNѓgѓ‹‚Мђ”  
+// I - ’Ќ–Ъ’†‚МѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg  
+// M - ЉKђ”  
+// Dn - ”ч•ЄЉKђ”
 //
 // Return:
-// иЁ€з®—зµђжћњ
-double NURBS_Func::CalcDiffBSbasisN(double t,double knot[],int N,int I,int M, int Dn)
+// ЊvЋZЊ‹‰К
+//double NURBS_Func::CalcDiffBSbasisN(double t,double knot[],int N,int I,int M, int Dn)
+double CalcDiffBSbasisN(double t,double knot[],int N,int I,int M, int Dn)
 {
 	double n1 = knot[I+M-1]-knot[I];
 	double n2 = knot[I+M]-knot[I+1];
@@ -1013,19 +1236,20 @@ double NURBS_Func::CalcDiffBSbasisN(double t,double knot[],int N,int I,int M, in
 }
 
 // Fucntion:CalcDiffNurbsC
-// NURBSж›Із·љгЃ®1йљЋеѕ®е€†дї‚ж•°г‚’ж±‚г‚Ѓг‚‹
+// NURBS‹Иђь‚М1ЉK”ч•ЄЊWђ”‚р‹Ѓ‚Я‚й
 // 
 // Paramters:
-// *NurbsC - NURBSж›Із·љгЃёгЃ®гѓќг‚¤гѓіг‚ї
-// t - гѓЋгѓѓгѓ€еЂ¤
+// *NurbsC - NURBS‹Иђь‚Ц‚Мѓ|ѓCѓ“ѓ^
+// t - ѓmѓbѓg’l
 //
 // Return:
-// иЁ€з®—зµђжћњ
-Coord NURBS_Func::CalcDiffNurbsC(NURBSC *NurbsC,double t)
+// ЊvЋZЊ‹‰К
+//Coord NURBS_Func::CalcDiffNurbsC(NURBSC *NurbsC,double t)
+Coord NURBSC::CalcDiffNurbsC(double t)
 {
-	Coord Ft,diff_Ft;		// NURBSж›Із·љгЃ®е€†е­ђ
-	double Gt,diff_Gt;		// NURBSж›Із·љгЃ®е€†жЇЌ
-	double bs,diff_bs;		// Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°
+	Coord Ft,diff_Ft;		// NURBS‹Иђь‚М•ЄЋq
+	double Gt,diff_Gt;		// NURBS‹Иђь‚М•Є•к
+	double bs,diff_bs;		// BѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”
 	Coord p;
 	int i;
 
@@ -1034,35 +1258,38 @@ Coord NURBS_Func::CalcDiffNurbsC(NURBSC *NurbsC,double t)
 	Gt = 0;
 	diff_Gt = 0;
 
-	// еђ„дї‚ж•°з®—е‡є
-	for(i=0;i<NurbsC->K;i++){
-		bs = CalcBSbasis(t,NurbsC->T,NurbsC->N,i,NurbsC->M);
-		diff_bs = CalcDiffBSbasis(t,NurbsC->T,NurbsC->N,i,NurbsC->M);
+	// ЉeЊWђ”ЋZЏo
+	for(i=0;i<K;i++){
+		bs = CalcBSbasis(t,T,N,i,M);
+		diff_bs = CalcDiffBSbasis(t,T,N,i,M);
+//		bs = CalcBSbasis(t,T.get(),N,i,M);
+//		diff_bs = CalcDiffBSbasis(t,T.get(),N,i,M);
 
-		Ft = AddCoord(Ft,MulCoord(NurbsC->cp[i],bs*NurbsC->W[i]));
-		diff_Ft = AddCoord(diff_Ft,MulCoord(NurbsC->cp[i],diff_bs*NurbsC->W[i]));
+		Ft = AddCoord(Ft,MulCoord(cp[i],bs*W[i]));
+		diff_Ft = AddCoord(diff_Ft,MulCoord(cp[i],diff_bs*W[i]));
 
-		Gt += bs*NurbsC->W[i];
-		diff_Gt += diff_bs*NurbsC->W[i];
+		Gt += bs*W[i];
+		diff_Gt += diff_bs*W[i];
 	}
 	if(fabs(Gt) < APPROX_ZERO)	return(SetCoord(0,0,0));
 
-	// 1йљЋеѕ®е€†г‚’ж±‚г‚Ѓг‚‹
+	// 1ЉK”ч•Є‚р‹Ѓ‚Я‚й
 	p = SubCoord(DivCoord(diff_Ft,Gt),DivCoord(MulCoord(Ft,diff_Gt),Gt*Gt));
 
 	return p;
 }
 
 // Function: CalcDiff2NurbsC
-// NURBSж›Із·љгЃ®2йљЋеѕ®е€†дї‚ж•°г‚’ж±‚г‚Ѓг‚‹
+// NURBS‹Иђь‚М2ЉK”ч•ЄЊWђ”‚р‹Ѓ‚Я‚й
 // 
 // Paramters:
-// *NurbsC - NURBSж›Із·љгЃёгЃ®гѓќг‚¤гѓіг‚ї
-// t - гѓЋгѓѓгѓ€еЂ¤
+// *NurbsC - NURBS‹Иђь‚Ц‚Мѓ|ѓCѓ“ѓ^
+// t - ѓmѓbѓg’l
 //
 // Return:
-// иЁ€з®—зµђжћњ
-Coord NURBS_Func::CalcDiff2NurbsC(NURBSC *NurbsC,double t)
+// ЊvЋZЊ‹‰К
+//Coord NURBS_Func::CalcDiff2NurbsC(NURBSC *NurbsC,double t)
+Coord NURBSC::CalcDiff2NurbsC(double t)
 {
 	double w0=0;
 	double w1=0;
@@ -1071,72 +1298,81 @@ Coord NURBS_Func::CalcDiff2NurbsC(NURBSC *NurbsC,double t)
 	Coord  P0=SetCoord(0,0,0);
 	Coord  P1=SetCoord(0,0,0);
 
-	P0 = CalcNurbsCCoord(NurbsC,t);
-	P1 = CalcDiffNurbsC(NurbsC,t);
+	P0 = CalcNurbsCCoord(t);
+	P1 = CalcDiffNurbsC(t);
 
-	for(int i=0;i<NurbsC->K;i++){
-		w0 += CalcBSbasis(t,NurbsC->T,NurbsC->N,i,NurbsC->M) * NurbsC->W[i];
-		w1 += CalcDiffBSbasis(t,NurbsC->T,NurbsC->N,i,NurbsC->M) * NurbsC->W[i];
-		w2 += CalcDiffBSbasisN(t,NurbsC->T,NurbsC->N,i,NurbsC->M,2) * NurbsC->W[i];
-		A2 = AddCoord(A2,MulCoord(NurbsC->cp[i],CalcDiffBSbasisN(t,NurbsC->T,NurbsC->N,i,NurbsC->M,2) * NurbsC->W[i]));
+	for(int i=0;i<K;i++){
+		w0 += CalcBSbasis(t,T,N,i,M) * W[i];
+		w1 += CalcDiffBSbasis(t,T,N,i,M) * W[i];
+		w2 += CalcDiffBSbasisN(t,T,N,i,M,2) * W[i];
+		A2 = AddCoord(A2,MulCoord(cp[i],CalcDiffBSbasisN(t,T,N,i,M,2) * W[i]));
+//		w0 += CalcBSbasis(t,T.get(),N,i,M) * W[i];
+//		w1 += CalcDiffBSbasis(t,T.get(),N,i,M) * W[i];
+//		w2 += CalcDiffBSbasisN(t,T.get(),N,i,M,2) * W[i];
+//		A2 = AddCoord(A2,MulCoord(cp[i],CalcDiffBSbasisN(t,T.get(),N,i,M,2) * W[i]));
 	}
 
 	return DivCoord(SubCoord(A2,AddCoord(MulCoord(P1,2*w1),MulCoord(P0,2*w2))),w0);
 }
 
 // Function: CalcDiffNNurbsC
-// NURBSж›Із·љгЃ®rйљЋеѕ®е€†дї‚ж•°г‚’ж±‚г‚Ѓг‚‹
+// NURBS‹Иђь‚МrЉK”ч•ЄЊWђ”‚р‹Ѓ‚Я‚й
 // 
 // Paramters:
-// *NurbsC - NURBSж›Із·љгЃёгЃ®гѓќг‚¤гѓіг‚ї
-// r - еѕ®е€†йљЋж•°
-// t - гѓЋгѓѓгѓ€еЂ¤
+// *NurbsC - NURBS‹Иђь‚Ц‚Мѓ|ѓCѓ“ѓ^
+// r - ”ч•ЄЉKђ”
+// t - ѓmѓbѓg’l
 //
 // Return:
-// иЁ€з®—зµђжћњ
-Coord NURBS_Func::CalcDiffNNurbsC(NURBSC *NurbsC,int r,double t)
+// ЊvЋZЊ‹‰К
+//Coord NURBS_Func::CalcDiffNNurbsC(NURBSC *NurbsC,int r,double t)
+Coord NURBSC::CalcDiffNNurbsC(int r,double t)
 {
 	if(!r)
-		return CalcNurbsCCoord(NurbsC,t);
+		return CalcNurbsCCoord(t);
 
 	Coord Ar = InitCoord();
 	double W = 0;
-	for(int i=0;i<NurbsC->K;i++){
-		double bsr = CalcDiffBSbasisN(t,NurbsC->T,NurbsC->N,i,NurbsC->M,r);
-		Ar = AddCoord(Ar,MulCoord(NurbsC->cp[i],bsr*NurbsC->W[i]));
-		W += NurbsC->W[i]*CalcBSbasis(t,NurbsC->T,NurbsC->N,i,NurbsC->M);
+	for(int i=0;i<K;i++){
+		double bsr = CalcDiffBSbasisN(t,T,N,i,M,r);
+//		double bsr = CalcDiffBSbasisN(t,T.get(),N,i,M,r);
+		Ar = AddCoord(Ar,MulCoord(cp[i],bsr*this->W[i]));
+		W += this->W[i]*CalcBSbasis(t,T,N,i,M);
+//		W += this->W[i]*CalcBSbasis(t,T.get(),N,i,M);
 	}
 
 	Coord Br = InitCoord();
 	for(int i=1;i<=r;i++){
 		double Wi = 0;
-		for(int j=0;j<NurbsC->K;j++){
-			double bsi = CalcDiffBSbasisN(t,NurbsC->T,NurbsC->N,j,NurbsC->M,i);
-			Wi += bsi*NurbsC->W[j];
+		for(int j=0;j<K;j++){
+			double bsi = CalcDiffBSbasisN(t,T,N,j,M,i);
+//			double bsi = CalcDiffBSbasisN(t,T.get(),N,j,M,i);
+			Wi += bsi*this->W[j];
 		}
 		if(Wi == 0.0)  return(InitCoord());
-		Br = AddCoord(Br,MulCoord(CalcDiffNNurbsC(NurbsC,r-i,t),(double)nCr(r,i)*Wi));	// е›ћеё°
+		Br = AddCoord(Br,MulCoord(CalcDiffNNurbsC(r-i,t),(double)nCr(r,i)*Wi));	// ‰с‹A
 	}
 
 	return (DivCoord(SubCoord(Ar,Br),W));
 }
 
 // Function: CalcDiffuNurbsS
-// NURBSж›ІйќўгЃ®uж–№еђ‘гЃ®1йљЋеѕ®е€†дї‚ж•°г‚’еѕ—г‚‹
+// NURBS‹И–К‚Мu•ыЊь‚М1ЉK”ч•ЄЊWђ”‚р“ѕ‚й
 //
 // Parameters:
-// *NurbsS - NURBSж›ІйќўгЃёгЃ®гѓќг‚¤гѓіг‚ї
-// div_u - uж–№еђ‘гѓЋгѓѓгѓ€еЂ¤
-// div_v - vж–№еђ‘гѓЋгѓѓгѓ€еЂ¤
+// *NurbsS - NURBS‹И–К‚Ц‚Мѓ|ѓCѓ“ѓ^
+// div_u - u•ыЊьѓmѓbѓg’l
+// div_v - v•ыЊьѓmѓbѓg’l
 // 
 // Return:
-// иЁ€з®—зµђжћњ
-Coord NURBS_Func::CalcDiffuNurbsS(NURBSS *NurbsS,double div_u,double div_v)
+// ЊvЋZЊ‹‰К
+//Coord NURBS_Func::CalcDiffuNurbsS(NURBSS *NurbsS,double div_u,double div_v)
+Coord NURBSS::CalcDiffuNurbsS(double div_u,double div_v)
 {
 	int i,j;
 	Coord Ft,diff_Ft;
 	double Gt,diff_Gt;
-	double bs_u,bs_v;		// u,vж–№еђ‘Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°
+	double bs_u,bs_v;		// u,v•ыЊьBѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”
 	double diff_bs_u;
 	Coord p;
 
@@ -1145,42 +1381,43 @@ Coord NURBS_Func::CalcDiffuNurbsS(NURBSS *NurbsS,double div_u,double div_v)
 	Gt = 0;
 	diff_Gt = 0;
 
-	for(i=0;i<NurbsS->K[0];i++){
-		bs_u = CalcBSbasis(div_u,NurbsS->S,NurbsS->N[0],i,NurbsS->M[0]);				// uж–№еђ‘Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°г‚’ж±‚г‚Ѓг‚‹
-		diff_bs_u = CalcDiffBSbasis(div_u,NurbsS->S,NurbsS->N[0],i,NurbsS->M[0]);	// uж–№еђ‘Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°гЃ®1йљЋеѕ®е€†г‚’ж±‚г‚Ѓг‚‹
-		for(j=0;j<NurbsS->K[1];j++){
-			bs_v = CalcBSbasis(div_v,NurbsS->T,NurbsS->N[1],j,NurbsS->M[1]);			// vж–№еђ‘Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°г‚’ж±‚г‚Ѓг‚‹
-			Ft = AddCoord(Ft,MulCoord(NurbsS->cp[i][j],bs_u*bs_v*NurbsS->W[i][j]));
-			diff_Ft = AddCoord(diff_Ft,MulCoord(NurbsS->cp[i][j],diff_bs_u*bs_v*NurbsS->W[i][j]));
-			Gt += bs_u*bs_v*NurbsS->W[i][j];
-			diff_Gt += diff_bs_u*bs_v*NurbsS->W[i][j];
+	for(i=0;i<K[0];i++){
+		bs_u = CalcBSbasis(div_u,S,N[0],i,M[0]);				// u•ыЊьBѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”‚р‹Ѓ‚Я‚й
+		diff_bs_u = CalcDiffBSbasis(div_u,S,N[0],i,M[0]);	// u•ыЊьBѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”‚М1ЉK”ч•Є‚р‹Ѓ‚Я‚й
+		for(j=0;j<K[1];j++){
+			bs_v = CalcBSbasis(div_v,T,N[1],j,M[1]);			// v•ыЊьBѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”‚р‹Ѓ‚Я‚й
+			Ft = AddCoord(Ft,MulCoord(cp[i][j],bs_u*bs_v*W[i][j]));
+			diff_Ft = AddCoord(diff_Ft,MulCoord(cp[i][j],diff_bs_u*bs_v*W[i][j]));
+			Gt += bs_u*bs_v*W[i][j];
+			diff_Gt += diff_bs_u*bs_v*W[i][j];
 		}
 	}
 
 	if(fabs(Gt) < APPROX_ZERO_H)	return(SetCoord(0,0,0));
 
-	// 1йљЋеѕ®е€†г‚’ж±‚г‚Ѓг‚‹
+	// 1ЉK”ч•Є‚р‹Ѓ‚Я‚й
 	p = SubCoord(DivCoord(diff_Ft,Gt),DivCoord(MulCoord(Ft,diff_Gt),Gt*Gt));
 
 	return p;
 }
 
 // Function: CalcDiffvNurbsS
-// NURBSж›ІйќўгЃ®vж–№еђ‘гЃ®1йљЋеѕ®е€†дї‚ж•°г‚’еѕ—г‚‹
+// NURBS‹И–К‚Мv•ыЊь‚М1ЉK”ч•ЄЊWђ”‚р“ѕ‚й
 //
 // Parameters:
-// *NurbsS - NURBSж›ІйќўгЃёгЃ®гѓќг‚¤гѓіг‚ї
-// div_u - uж–№еђ‘гѓЋгѓѓгѓ€еЂ¤
-// div_v - vж–№еђ‘гѓЋгѓѓгѓ€еЂ¤
+// *NurbsS - NURBS‹И–К‚Ц‚Мѓ|ѓCѓ“ѓ^
+// div_u - u•ыЊьѓmѓbѓg’l
+// div_v - v•ыЊьѓmѓbѓg’l
 // 
 // Return:
-// иЁ€з®—зµђжћњ
-Coord NURBS_Func::CalcDiffvNurbsS(NURBSS *NurbsS,double div_u,double div_v)
+// ЊvЋZЊ‹‰К
+//Coord NURBS_Func::CalcDiffvNurbsS(NURBSS *NurbsS,double div_u,double div_v)
+Coord NURBSS::CalcDiffvNurbsS(double div_u,double div_v)
 {
 	int i,j;
 	Coord Ft,diff_Ft;
 	double Gt,diff_Gt;
-	double bs_u,bs_v;		// u,vж–№еђ‘Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°
+	double bs_u,bs_v;		// u,v•ыЊьBѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”
 	double diff_bs_v;
 	Coord p;
 
@@ -1189,55 +1426,56 @@ Coord NURBS_Func::CalcDiffvNurbsS(NURBSS *NurbsS,double div_u,double div_v)
 	Gt = 0;
 	diff_Gt = 0;
 
-	for(i=0;i<NurbsS->K[0];i++){
-		bs_u = CalcBSbasis(div_u,NurbsS->S,NurbsS->N[0],i,NurbsS->M[0]);				// uж–№еђ‘Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°г‚’ж±‚г‚Ѓг‚‹
-		for(j=0;j<NurbsS->K[1];j++){
-			bs_v = CalcBSbasis(div_v,NurbsS->T,NurbsS->N[1],j,NurbsS->M[1]);				// vж–№еђ‘Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°г‚’ж±‚г‚Ѓг‚‹
-			diff_bs_v = CalcDiffBSbasis(div_v,NurbsS->T,NurbsS->N[1],j,NurbsS->M[1]);	// vж–№еђ‘Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°гЃ®1йљЋеѕ®е€†г‚’ж±‚г‚Ѓг‚‹
-			Ft = AddCoord(Ft,MulCoord(NurbsS->cp[i][j],bs_u*bs_v*NurbsS->W[i][j]));
-			diff_Ft = AddCoord(diff_Ft,MulCoord(NurbsS->cp[i][j],bs_u*diff_bs_v*NurbsS->W[i][j]));
-			Gt += bs_u*bs_v*NurbsS->W[i][j];
-			diff_Gt += bs_u*diff_bs_v*NurbsS->W[i][j];
+	for(i=0;i<K[0];i++){
+		bs_u = CalcBSbasis(div_u,S,N[0],i,M[0]);				// u•ыЊьBѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”‚р‹Ѓ‚Я‚й
+		for(j=0;j<K[1];j++){
+			bs_v = CalcBSbasis(div_v,T,N[1],j,M[1]);				// v•ыЊьBѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”‚р‹Ѓ‚Я‚й
+			diff_bs_v = CalcDiffBSbasis(div_v,T,N[1],j,M[1]);	// v•ыЊьBѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”‚М1ЉK”ч•Є‚р‹Ѓ‚Я‚й
+			Ft = AddCoord(Ft,MulCoord(cp[i][j],bs_u*bs_v*W[i][j]));
+			diff_Ft = AddCoord(diff_Ft,MulCoord(cp[i][j],bs_u*diff_bs_v*W[i][j]));
+			Gt += bs_u*bs_v*W[i][j];
+			diff_Gt += bs_u*diff_bs_v*W[i][j];
 		}
 	}
 
 	if(fabs(Gt) < APPROX_ZERO_H)	return(SetCoord(0,0,0));
 
-	// 1йљЋеѕ®е€†г‚’ж±‚г‚Ѓг‚‹
+	// 1ЉK”ч•Є‚р‹Ѓ‚Я‚й
 	p = SubCoord(DivCoord(diff_Ft,Gt),DivCoord(MulCoord(Ft,diff_Gt),Gt*Gt));
 
 	return p;
 }
 
 // Function: CalcDiffNNurbsS
-// NURBSж›ІйќўгЃ®еђ„ж–№еђ‘г‚’д»»ж„ЏйљЋеѕ®е€†гЃ—гЃџгЃЁгЃЌгЃ®еѕ®е€†дї‚ж•°г‚’ж±‚г‚Ѓг‚‹
+// NURBS‹И–К‚МЉe•ыЊь‚р”C€УЉK”ч•Є‚µ‚Ѕ‚Ж‚«‚М”ч•ЄЊWђ”‚р‹Ѓ‚Я‚й
 //
 // Parameters:
-// *S - NURBSж›ІйќўгЃёгЃ®гѓќг‚¤гѓіг‚ї   
-// k - uж–№еђ‘гЃ®еѕ®е€†йљЋж•°    
-// l - vж–№еђ‘гЃ®еѕ®е€†йљЋж•°   
-// u,v - uж–№еђ‘vж–№еђ‘гЃќг‚ЊгЃћг‚ЊгЃ®гѓ‘гѓ©гѓЎгѓјг‚ї
+// *S - NURBS‹И–К‚Ц‚Мѓ|ѓCѓ“ѓ^   
+// k - u•ыЊь‚М”ч•ЄЉKђ”    
+// l - v•ыЊь‚М”ч•ЄЉKђ”   
+// u,v - u•ыЊьv•ыЊь‚»‚к‚ј‚к‚Мѓpѓ‰ѓЃЃ[ѓ^
 // 
 // Return:
-// иЁ€з®—зµђжћњ
-Coord NURBS_Func::CalcDiffNNurbsS(NURBSS *S,int k,int l,double u,double v)
+// ЊvЋZЊ‹‰К
+//Coord NURBS_Func::CalcDiffNNurbsS(NURBSS *S,int k,int l,double u,double v)
+Coord NURBSS::CalcDiffNNurbsS(int k,int l,double u,double v)
 {
-	double w = CalcDiffNurbsSDenom(S,0,0,u,v);
-	Coord  A = CalcDiffNurbsSNumer(S,k,l,u,v);
+	double w = CalcDiffNurbsSDenom(0,0,u,v);
+	Coord  A = CalcDiffNurbsSNumer(k,l,u,v);
 	Coord  B = SetCoord(0,0,0);
 	Coord  C = SetCoord(0,0,0);
 	Coord  D = SetCoord(0,0,0);
 
 	if(!k && !l)
-		return(CalcNurbsSCoord(S,u,v));
+		return(CalcNurbsSCoord(u,v));
 		
 	for(int i=1;i<=k;i++)
-		B = AddCoord(B,MulCoord(CalcDiffNNurbsS(S,k-i,l,u,v),nCr(k,i)*CalcDiffNurbsSDenom(S,i,0,u,v)));
+		B = AddCoord(B,MulCoord(CalcDiffNNurbsS(k-i,l,u,v),nCr(k,i)*CalcDiffNurbsSDenom(i,0,u,v)));
 	for(int j=1;j<=l;j++)
-		C = AddCoord(C,MulCoord(CalcDiffNNurbsS(S,k,l-j,u,v),nCr(l,j)*CalcDiffNurbsSDenom(S,0,j,u,v)));
+		C = AddCoord(C,MulCoord(CalcDiffNNurbsS(k,l-j,u,v),nCr(l,j)*CalcDiffNurbsSDenom(0,j,u,v)));
 	for(int i=1;i<=k;i++){
 		for(int j=1;j<=l;j++){
-			D = AddCoord(D,MulCoord(CalcDiffNNurbsS(S,k-i,l-j,u,v),nCr(l,j)*CalcDiffNurbsSDenom(S,i,j,u,v)));
+			D = AddCoord(D,MulCoord(CalcDiffNNurbsS(k-i,l-j,u,v),nCr(l,j)*CalcDiffNurbsSDenom(i,j,u,v)));
 		}
 		D = MulCoord(D,nCr(k,i));
 	}
@@ -1246,327 +1484,345 @@ Coord NURBS_Func::CalcDiffNNurbsS(NURBSS *S,int k,int l,double u,double v)
 }
 
 // Function: CalcDiffNurbsSDenom
-// (private)NURBSж›Ійќўе€†жЇЌгЃ®еђ„ж–№еђ‘г‚’д»»ж„ЏйљЋеѕ®е€†гЃ—гЃџгЃЁгЃЌгЃ®еѕ®е€†дї‚ж•°г‚’ж±‚г‚Ѓг‚‹
+// (private)NURBS‹И–К•Є•к‚МЉe•ыЊь‚р”C€УЉK”ч•Є‚µ‚Ѕ‚Ж‚«‚М”ч•ЄЊWђ”‚р‹Ѓ‚Я‚й
 //
 // Parameters:
-// *S - NURBSж›ІйќўгЃёгЃ®гѓќг‚¤гѓіг‚ї   
-// k - uж–№еђ‘гЃ®еѕ®е€†йљЋж•°    
-// l - vж–№еђ‘гЃ®еѕ®е€†йљЋж•°   
-// u,v - uж–№еђ‘vж–№еђ‘гЃќг‚ЊгЃћг‚ЊгЃ®гѓ‘гѓ©гѓЎгѓјг‚ї
+// *S - NURBS‹И–К‚Ц‚Мѓ|ѓCѓ“ѓ^   
+// k - u•ыЊь‚М”ч•ЄЉKђ”    
+// l - v•ыЊь‚М”ч•ЄЉKђ”   
+// u,v - u•ыЊьv•ыЊь‚»‚к‚ј‚к‚Мѓpѓ‰ѓЃЃ[ѓ^
 // 
 // Return:
-// иЁ€з®—зµђжћњ
-double NURBS_Func::CalcDiffNurbsSDenom(NURBSS *S,int k,int l,double u,double v)
+// ЊvЋZЊ‹‰К
+//double NURBS_Func::CalcDiffNurbsSDenom(NURBSS *S,int k,int l,double u,double v)
+double NURBSS::CalcDiffNurbsSDenom(int k,int l,double u,double v)
 {
 	double w=0;
-	for(int i=0;i<S->K[0];i++){
-		double Nk = CalcDiffBSbasisN(u,S->S,S->N[0],i,S->M[0],k);		// uж–№еђ‘гЃ®kйљЋеѕ®е€†
-		for(int j=0;j<S->K[1];j++){
-			double Nl = CalcDiffBSbasisN(v,S->T,S->N[1],j,S->M[1],l);	// vж–№еђ‘гЃ®lйљЋеѕ®е€†
-			w += Nk*Nl*S->W[i][j];
+	for(int i=0;i<K[0];i++){
+		double Nk = CalcDiffBSbasisN(u,S,N[0],i,M[0],k);		// u•ыЊь‚МkЉK”ч•Є
+		for(int j=0;j<K[1];j++){
+			double Nl = CalcDiffBSbasisN(v,T,N[1],j,M[1],l);	// v•ыЊь‚МlЉK”ч•Є
+			w += Nk*Nl*W[i][j];
 		}
 	}
 	return w;
 }
 
 // Function: CalcDiffNurbsSNumer
-// (private)NURBSж›Ійќўе€†е­ђгЃ®еђ„ж–№еђ‘г‚’д»»ж„ЏйљЋеѕ®е€†гЃ—гЃџгЃЁгЃЌгЃ®еѕ®е€†дї‚ж•°г‚’ж±‚г‚Ѓг‚‹
+// (private)NURBS‹И–К•ЄЋq‚МЉe•ыЊь‚р”C€УЉK”ч•Є‚µ‚Ѕ‚Ж‚«‚М”ч•ЄЊWђ”‚р‹Ѓ‚Я‚й
 //
 // Parameters:
-// *S - NURBSж›ІйќўгЃёгЃ®гѓќг‚¤гѓіг‚ї   
-// k - uж–№еђ‘гЃ®еѕ®е€†йљЋж•°    
-// l - vж–№еђ‘гЃ®еѕ®е€†йљЋж•°   
-// u,v - uж–№еђ‘vж–№еђ‘гЃќг‚ЊгЃћг‚ЊгЃ®гѓ‘гѓ©гѓЎгѓјг‚ї
+// *S - NURBS‹И–К‚Ц‚Мѓ|ѓCѓ“ѓ^   
+// k - u•ыЊь‚М”ч•ЄЉKђ”    
+// l - v•ыЊь‚М”ч•ЄЉKђ”   
+// u,v - u•ыЊьv•ыЊь‚»‚к‚ј‚к‚Мѓpѓ‰ѓЃЃ[ѓ^
 // 
 // Return:
-// иЁ€з®—зµђжћњ
-Coord NURBS_Func::CalcDiffNurbsSNumer(NURBSS *S,int k,int l,double u,double v)
+// ЊvЋZЊ‹‰К
+//Coord NURBS_Func::CalcDiffNurbsSNumer(NURBSS *S,int k,int l,double u,double v)
+Coord NURBSS::CalcDiffNurbsSNumer(int k,int l,double u,double v)
 {
 	Coord A=SetCoord(0,0,0);
-	for(int i=0;i<S->K[0];i++){
-		double Nk = CalcDiffBSbasisN(u,S->S,S->N[0],i,S->M[0],k);		// uж–№еђ‘гЃ®kйљЋеѕ®е€†
-		for(int j=0;j<S->K[1];j++){
-			double Nl = CalcDiffBSbasisN(v,S->T,S->N[1],j,S->M[1],l);	// vж–№еђ‘гЃ®lйљЋеѕ®е€†
-			A = AddCoord(A,MulCoord(S->cp[i][j],Nk*Nl*S->W[i][j]));
+	for(int i=0;i<K[0];i++){
+		double Nk = CalcDiffBSbasisN(u,S,N[0],i,M[0],k);		// u•ыЊь‚МkЉK”ч•Є
+		for(int j=0;j<K[1];j++){
+			double Nl = CalcDiffBSbasisN(v,T,N[1],j,M[1],l);	// v•ыЊь‚МlЉK”ч•Є
+			A = AddCoord(A,MulCoord(cp[i][j],Nk*Nl*W[i][j]));
 		}
 	}
 	return A;
 }
 
 // Function: CalcNormVecOnNurbsS
-// NURBSж›ІйќўдёЉгЃ®(u,v)гЃ«гЃЉгЃ‘г‚‹жі•з·љгѓ™г‚Їгѓ€гѓ«г‚’г‚‚гЃЁг‚Ѓг‚‹
+// NURBS‹И–КЏг‚М(u,v)‚Й‚Ё‚Ї‚й–@ђьѓxѓNѓgѓ‹‚р‚а‚Ж‚Я‚й
 // 
 // Parameters:
-// *nurb - NURBSж›ІйќўгЃёгЃ®гѓќг‚¤гѓіг‚ї
-// u - uж–№еђ‘гѓЋгѓѓгѓ€еЂ¤
-// v - vж–№еђ‘гѓЋгѓѓгѓ€еЂ¤
+// *nurb - NURBS‹И–К‚Ц‚Мѓ|ѓCѓ“ѓ^
+// u - u•ыЊьѓmѓbѓg’l
+// v - v•ыЊьѓmѓbѓg’l
 //
 // Retrurn:
-// иЁ€з®—зµђжћњ
-Coord NURBS_Func::CalcNormVecOnNurbsS(NURBSS *nurb,double u,double v)
+// ЊvЋZЊ‹‰К
+//Coord NURBS_Func::CalcNormVecOnNurbsS(NURBSS *nurb,double u,double v)
+Coord NURBSS::CalcNormVecOnNurbsS(double u,double v)
 {
-	Coord a = CalcDiffuNurbsS(nurb,u,v);
-	Coord b = CalcDiffvNurbsS(nurb,u,v);
+	Coord a = CalcDiffuNurbsS(u,v);
+	Coord b = CalcDiffvNurbsS(u,v);
 
 	return(NormalizeVec(CalcOuterProduct(a,b)));
 }
 
 // Function: CalcTanVecOnNurbsC
-// NURBSж›Із·љдёЉгЃ®tгЃ«гЃЉгЃ‘г‚‹еЌдЅЌжЋҐгѓ™г‚Їгѓ€гѓ«г‚’г‚‚гЃЁг‚Ѓг‚‹
+// NURBS‹ИђьЏг‚Мt‚Й‚Ё‚Ї‚й’P€КђЪѓxѓNѓgѓ‹‚р‚а‚Ж‚Я‚й
 //
 // Parameters:
-// *C - NURBSж›Із·љгЃёгЃ®гѓќг‚¤гѓіг‚ї
-// t - гѓЋгѓѓгѓ€еЂ¤
+// *C - NURBS‹Иђь‚Ц‚Мѓ|ѓCѓ“ѓ^
+// t - ѓmѓbѓg’l
 //
 // Retrurn:
-// иЁ€з®—зµђжћњ
-Coord NURBS_Func::CalcTanVecOnNurbsC(NURBSC *C,double t)
+// ЊvЋZЊ‹‰К
+//Coord NURBS_Func::CalcTanVecOnNurbsC(NURBSC *C,double t)
+Coord NURBSC::CalcTanVecOnNurbsC(double t)
 {
-    return NormalizeVec(CalcDiffNurbsC(C,t));
+    return NormalizeVec(CalcDiffNurbsC(t));
 }
 
 // Function: CalcDiffuNormVecOnNurbsS
-// NURBSж›ІйќўдёЉгЃ®(u,v)гЃ«гЃЉгЃ‘г‚‹жі•з·љгѓ™г‚Їгѓ€гѓ«гЃ®uж–№еђ‘1йљЋеѕ®е€†г‚’г‚‚гЃЁг‚Ѓг‚‹
-// Nu = SuuГ—Sv + SuГ—Suv
+// NURBS‹И–КЏг‚М(u,v)‚Й‚Ё‚Ї‚й–@ђьѓxѓNѓgѓ‹‚Мu•ыЊь1ЉK”ч•Є‚р‚а‚Ж‚Я‚й
+// Nu = SuuЃ~Sv + SuЃ~Suv
 //
 // Parameters:
-// *nurb - NURBSж›ІйќўгЃёгЃ®гѓќг‚¤гѓіг‚ї
-// u - uж–№еђ‘гѓЋгѓѓгѓ€еЂ¤
-// v - vж–№еђ‘гѓЋгѓѓгѓ€еЂ¤
+// *nurb - NURBS‹И–К‚Ц‚Мѓ|ѓCѓ“ѓ^
+// u - u•ыЊьѓmѓbѓg’l
+// v - v•ыЊьѓmѓbѓg’l
 //
 // Retrurn:
-// иЁ€з®—зµђжћњ
-Coord NURBS_Func::CalcDiffuNormVecOnNurbsS(NURBSS *nurb,double u,double v)
+// ЊvЋZЊ‹‰К
+//Coord NURBS_Func::CalcDiffuNormVecOnNurbsS(NURBSS *nurb,double u,double v)
+Coord NURBSS::CalcDiffuNormVecOnNurbsS(double u,double v)
 {
-	Coord Suu = CalcDiffNNurbsS(nurb,2,0,u,v);
-	Coord Suv = CalcDiffNNurbsS(nurb,1,1,u,v);
-	Coord Su = CalcDiffuNurbsS(nurb,u,v);
-	Coord Sv = CalcDiffvNurbsS(nurb,u,v);
+	Coord Suu = CalcDiffNNurbsS(2,0,u,v);
+	Coord Suv = CalcDiffNNurbsS(1,1,u,v);
+	Coord Su = CalcDiffuNurbsS(u,v);
+	Coord Sv = CalcDiffvNurbsS(u,v);
 
 	return (NormalizeVec(AddCoord(CalcOuterProduct(Suu,Sv),CalcOuterProduct(Su,Suv))));
 }
 
 // Function: CalcDiffvNormVecOnNurbsS
-// NURBSж›ІйќўдёЉгЃ®(u,v)гЃ«гЃЉгЃ‘г‚‹жі•з·љгѓ™г‚Їгѓ€гѓ«гЃ®vж–№еђ‘1йљЋеѕ®е€†г‚’г‚‚гЃЁг‚Ѓг‚‹
-// Nv = SuvГ—Sv + SuГ—Svv
+// NURBS‹И–КЏг‚М(u,v)‚Й‚Ё‚Ї‚й–@ђьѓxѓNѓgѓ‹‚Мv•ыЊь1ЉK”ч•Є‚р‚а‚Ж‚Я‚й
+// Nv = SuvЃ~Sv + SuЃ~Svv
 // 
 // Parameters:
-// *nurb - NURBSж›ІйќўгЃёгЃ®гѓќг‚¤гѓіг‚ї
-// u - uж–№еђ‘гѓЋгѓѓгѓ€еЂ¤
-// v - vж–№еђ‘гѓЋгѓѓгѓ€еЂ¤
+// *nurb - NURBS‹И–К‚Ц‚Мѓ|ѓCѓ“ѓ^
+// u - u•ыЊьѓmѓbѓg’l
+// v - v•ыЊьѓmѓbѓg’l
 //
 // Retrurn:
-// иЁ€з®—зµђжћњ
-Coord NURBS_Func::CalcDiffvNormVecOnNurbsS(NURBSS *nurb,double u,double v)
+// ЊvЋZЊ‹‰К
+//Coord NURBS_Func::CalcDiffvNormVecOnNurbsS(NURBSS *nurb,double u,double v)
+Coord NURBSS::CalcDiffvNormVecOnNurbsS(double u,double v)
 {
-	Coord Suv = CalcDiffNNurbsS(nurb,1,1,u,v);
-	Coord Svv = CalcDiffNNurbsS(nurb,0,2,u,v);
-	Coord Su = CalcDiffuNurbsS(nurb,u,v);
-	Coord Sv = CalcDiffvNurbsS(nurb,u,v);
+	Coord Suv = CalcDiffNNurbsS(1,1,u,v);
+	Coord Svv = CalcDiffNNurbsS(0,2,u,v);
+	Coord Su = CalcDiffuNurbsS(u,v);
+	Coord Sv = CalcDiffvNurbsS(u,v);
 
 	return (NormalizeVec(AddCoord(CalcOuterProduct(Suv,Sv),CalcOuterProduct(Su,Svv))));
 }
 
 // Function: CalcMeanCurvature
-// NURBSж›ІйќўдёЉгЃ®(u,v)гЃ«гЃЉгЃ‘г‚‹е№іеќ‡ж›ІзЋ‡г‚’ж±‚г‚Ѓг‚‹
+// NURBS‹И–КЏг‚М(u,v)‚Й‚Ё‚Ї‚й•Ѕ‹П‹И—¦‚р‹Ѓ‚Я‚й
 // 
 // Parameters:
-// *nurb - NURBSж›ІйќўгЃёгЃ®гѓќг‚¤гѓіг‚ї
-// u - uж–№еђ‘гѓЋгѓѓгѓ€еЂ¤
-// v - vж–№еђ‘гѓЋгѓѓгѓ€еЂ¤
+// *nurb - NURBS‹И–К‚Ц‚Мѓ|ѓCѓ“ѓ^
+// u - u•ыЊьѓmѓbѓg’l
+// v - v•ыЊьѓmѓbѓg’l
 //
 // Retrurn:
-// иЁ€з®—зµђжћњ
-double NURBS_Func::CalcMeanCurvature(NURBSS *nurb,double u,double v)
+// ЊvЋZЊ‹‰К
+//double NURBS_Func::CalcMeanCurvature(NURBSS *nurb,double u,double v)
+double NURBSS::CalcMeanCurvature(double u,double v)
 {
-	Coord du = CalcDiffuNurbsS(nurb,u,v);			// uж–№еђ‘1йљЋеѕ®е€†
-	Coord dv = CalcDiffvNurbsS(nurb,u,v);			// vж–№еђ‘1йљЋеѕ®е€†
-	double E = CalcInnerProduct(du,du);				// з¬¬1еџєжњ¬й‡Џ
-	double F = CalcInnerProduct(du,dv);				// з¬¬1еџєжњ¬й‡Џ
-	double G = CalcInnerProduct(dv,dv);				// з¬¬1еџєжњ¬й‡Џ
-	Coord duu = CalcDiffNNurbsS(nurb,2,0,u,v);		// uж–№еђ‘2йљЋеѕ®е€†
-	Coord dvv = CalcDiffNNurbsS(nurb,0,2,u,v);		// vж–№еђ‘2йљЋеѕ®е€†
-	Coord duv = CalcDiffNNurbsS(nurb,1,1,u,v);		// u,vж–№еђ‘еђ„1йљЋеѕ®е€†
-	Coord n = CalcNormVecOnNurbsS(nurb,u,v);		// жі•з·љгѓ™г‚Їгѓ€гѓ«
-	double L = CalcInnerProduct(duu,n);				// з¬¬2еџєжњ¬й‡Џ
-	double M = CalcInnerProduct(duv,n);				// з¬¬2еџєжњ¬й‡Џ
-	double N = CalcInnerProduct(dvv,n);				// з¬¬2еџєжњ¬й‡Џ
-	double H = -(G*L+E*N-2*F*M)/(E*G-F*F)/2;		// е№іеќ‡ж›ІзЋ‡
+	Coord du = CalcDiffuNurbsS(u,v);			// u•ыЊь1ЉK”ч•Є
+	Coord dv = CalcDiffvNurbsS(u,v);			// v•ыЊь1ЉK”ч•Є
+	double E = CalcInnerProduct(du,du);				// ‘ж1Љо–{—К
+	double F = CalcInnerProduct(du,dv);				// ‘ж1Љо–{—К
+	double G = CalcInnerProduct(dv,dv);				// ‘ж1Љо–{—К
+	Coord duu = CalcDiffNNurbsS(2,0,u,v);		// u•ыЊь2ЉK”ч•Є
+	Coord dvv = CalcDiffNNurbsS(0,2,u,v);		// v•ыЊь2ЉK”ч•Є
+	Coord duv = CalcDiffNNurbsS(1,1,u,v);		// u,v•ыЊьЉe1ЉK”ч•Є
+	Coord n = CalcNormVecOnNurbsS(u,v);		// –@ђьѓxѓNѓgѓ‹
+	double L = CalcInnerProduct(duu,n);				// ‘ж2Љо–{—К
+	double M = CalcInnerProduct(duv,n);				// ‘ж2Љо–{—К
+	double N = CalcInnerProduct(dvv,n);				// ‘ж2Љо–{—К
+	double H = -(G*L+E*N-2*F*M)/(E*G-F*F)/2;		// •Ѕ‹П‹И—¦
 
 	return H;
 }
-
+/*	-- Move to SFQuant.cpp
 // Function: CalcMeanCurvature
-// NURBSж›ІйќўдёЉгЃ®(u,v)гЃ«гЃЉгЃ‘г‚‹е№іеќ‡ж›ІзЋ‡г‚’ж±‚г‚Ѓг‚‹пј€г‚Єгѓјгѓђгѓјгѓ­гѓјгѓ‰пј‰
+// NURBS‹И–КЏг‚М(u,v)‚Й‚Ё‚Ї‚й•Ѕ‹П‹И—¦‚р‹Ѓ‚Я‚йЃiѓIЃ[ѓoЃ[ѓЌЃ[ѓhЃj
 // 
 // Parameters:
-// q - ж›ІйќўгЃ®еџєжњ¬й‡Џг‚’г‚»гѓѓгѓ€гЃ«гЃ—гЃџж§‹йЂ дЅ“
+// q - ‹И–К‚МЉо–{—К‚рѓZѓbѓg‚Й‚µ‚ЅЌ\‘ў‘М
 //
 // Retrurn:
-// иЁ€з®—зµђжћњ
+// ЊvЋZЊ‹‰К
 double NURBS_Func::CalcMeanCurvature(SFQuant q)
 {
-	return -(q.G*q.L+q.E*q.N-2*q.F*q.M)/(q.E*q.G-q.F*q.F)/2;		// е№іеќ‡ж›ІзЋ‡
+	return -(q.G*q.L+q.E*q.N-2*q.F*q.M)/(q.E*q.G-q.F*q.F)/2;		// •Ѕ‹П‹И—¦
 }
-
+*/
 // Function: CalcMeanCurvatureNormVec
-// NURBSж›ІйќўдёЉгЃ®(u,v)гЃ«гЃЉгЃ‘г‚‹е№іеќ‡ж›ІзЋ‡жі•з·љгѓ™г‚Їгѓ€гѓ«г‚’г‚‚гЃЁг‚Ѓг‚‹
+// NURBS‹И–КЏг‚М(u,v)‚Й‚Ё‚Ї‚й•Ѕ‹П‹И—¦–@ђьѓxѓNѓgѓ‹‚р‚а‚Ж‚Я‚й
 //
 // Parameters:
-// *nurb - NURBSж›ІйќўгЃёгЃ®гѓќг‚¤гѓіг‚ї
-// u - uж–№еђ‘гѓЋгѓѓгѓ€еЂ¤
-// v - vж–№еђ‘гѓЋгѓѓгѓ€еЂ¤
+// *nurb - NURBS‹И–К‚Ц‚Мѓ|ѓCѓ“ѓ^
+// u - u•ыЊьѓmѓbѓg’l
+// v - v•ыЊьѓmѓbѓg’l
 //
 // Retrurn:
-// иЁ€з®—зµђжћњ
-Coord NURBS_Func::CalcMeanCurvatureNormVec(NURBSS *nurb,double u,double v)
+// ЊvЋZЊ‹‰К
+//Coord NURBS_Func::CalcMeanCurvatureNormVec(NURBSS *nurb,double u,double v)
+Coord NURBSS::CalcMeanCurvatureNormVec(double u,double v)
 {
-	Coord n = CalcNormVecOnNurbsS(nurb,u,v);				// жі•з·љгѓ™г‚Їгѓ€гѓ«
-	Coord Hn = MulCoord(n,CalcMeanCurvature(nurb,u,v));		// е№іеќ‡ж›ІзЋ‡жі•з·љгѓ™г‚Їгѓ€гѓ«
+	Coord n = CalcNormVecOnNurbsS(u,v);				// –@ђьѓxѓNѓgѓ‹
+	Coord Hn = MulCoord(n,CalcMeanCurvature(u,v));		// •Ѕ‹П‹И—¦–@ђьѓxѓNѓgѓ‹
 
 	return Hn;
 }
 
 // Function: CalcGaussCurvature
-// NURBSж›ІйќўдёЉгЃ®(u,v)гЃ«гЃЉгЃ‘г‚‹г‚¬г‚¦г‚№ж›ІзЋ‡г‚’ж±‚г‚Ѓг‚‹
+// NURBS‹И–КЏг‚М(u,v)‚Й‚Ё‚Ї‚йѓKѓEѓX‹И—¦‚р‹Ѓ‚Я‚й
 //
 // Parameters:
-// *nurb - NURBSж›ІйќўгЃёгЃ®гѓќг‚¤гѓіг‚ї
-// u - uж–№еђ‘гѓЋгѓѓгѓ€еЂ¤
-// v - vж–№еђ‘гѓЋгѓѓгѓ€еЂ¤
+// *nurb - NURBS‹И–К‚Ц‚Мѓ|ѓCѓ“ѓ^
+// u - u•ыЊьѓmѓbѓg’l
+// v - v•ыЊьѓmѓbѓg’l
 //
 // Retrurn:
-// иЁ€з®—зµђжћњ
-double NURBS_Func::CalcGaussCurvature(NURBSS *nurb,double u,double v)
+// ЊvЋZЊ‹‰К
+//double NURBS_Func::CalcGaussCurvature(NURBSS *nurb,double u,double v)
+double NURBSS::CalcGaussCurvature(double u,double v)
 {
-	Coord du = CalcDiffuNurbsS(nurb,u,v);			// uж–№еђ‘1йљЋеѕ®е€†
-	Coord dv = CalcDiffvNurbsS(nurb,u,v);			// vж–№еђ‘1йљЋеѕ®е€†
-	double E = CalcInnerProduct(du,du);				// з¬¬1еџєжњ¬й‡Џ
-	double F = CalcInnerProduct(du,dv);				// з¬¬1еџєжњ¬й‡Џ
-	double G = CalcInnerProduct(dv,dv);				// з¬¬1еџєжњ¬й‡Џ
-	Coord duu = CalcDiffNNurbsS(nurb,2,0,u,v);		// uж–№еђ‘2йљЋеѕ®е€†
-	Coord dvv = CalcDiffNNurbsS(nurb,0,2,u,v);		// vж–№еђ‘2йљЋеѕ®е€†
-	Coord duv = CalcDiffNNurbsS(nurb,1,1,u,v);		// u,vж–№еђ‘еђ„1йљЋеѕ®е€†
-	Coord n = CalcNormVecOnNurbsS(nurb,u,v);		// жі•з·љгѓ™г‚Їгѓ€гѓ«
-	double L = CalcInnerProduct(duu,n);				// з¬¬2еџєжњ¬й‡Џ
-	double M = CalcInnerProduct(duv,n);				// з¬¬2еџєжњ¬й‡Џ
-	double N = CalcInnerProduct(dvv,n);				// з¬¬2еџєжњ¬й‡Џ
-	double K = (L*N-M*M)/(E*G-F*F);					// г‚¬г‚¦г‚№ж›ІзЋ‡
+	Coord du = CalcDiffuNurbsS(u,v);			// u•ыЊь1ЉK”ч•Є
+	Coord dv = CalcDiffvNurbsS(u,v);			// v•ыЊь1ЉK”ч•Є
+	double E = CalcInnerProduct(du,du);				// ‘ж1Љо–{—К
+	double F = CalcInnerProduct(du,dv);				// ‘ж1Љо–{—К
+	double G = CalcInnerProduct(dv,dv);				// ‘ж1Љо–{—К
+	Coord duu = CalcDiffNNurbsS(2,0,u,v);		// u•ыЊь2ЉK”ч•Є
+	Coord dvv = CalcDiffNNurbsS(0,2,u,v);		// v•ыЊь2ЉK”ч•Є
+	Coord duv = CalcDiffNNurbsS(1,1,u,v);		// u,v•ыЊьЉe1ЉK”ч•Є
+	Coord n = CalcNormVecOnNurbsS(u,v);		// –@ђьѓxѓNѓgѓ‹
+	double L = CalcInnerProduct(duu,n);				// ‘ж2Љо–{—К
+	double M = CalcInnerProduct(duv,n);				// ‘ж2Љо–{—К
+	double N = CalcInnerProduct(dvv,n);				// ‘ж2Љо–{—К
+	double K = (L*N-M*M)/(E*G-F*F);					// ѓKѓEѓX‹И—¦
 
 	return K;
 }
-
+/*	-- Move to SFQuant.cpp
 // Function: CalcGaussCurvature
-// NURBSж›ІйќўдёЉгЃ®(u,v)гЃ«гЃЉгЃ‘г‚‹г‚¬г‚¦г‚№ж›ІзЋ‡г‚’ж±‚г‚Ѓг‚‹пј€г‚Єгѓјгѓђгѓјгѓ­гѓјгѓ‰пј‰
+// NURBS‹И–КЏг‚М(u,v)‚Й‚Ё‚Ї‚йѓKѓEѓX‹И—¦‚р‹Ѓ‚Я‚йЃiѓIЃ[ѓoЃ[ѓЌЃ[ѓhЃj
 //
 // Parameters:
-// q - ж›ІйќўгЃ®еџєжњ¬й‡Џг‚’г‚»гѓѓгѓ€гЃ«гЃ—гЃџж§‹йЂ дЅ“
+// q - ‹И–К‚МЉо–{—К‚рѓZѓbѓg‚Й‚µ‚ЅЌ\‘ў‘М
 //
 // Retrurn:
-// иЁ€з®—зµђжћњ
+// ЊvЋZЊ‹‰К
 double NURBS_Func::CalcGaussCurvature(SFQuant q)
 {
-	return (q.L*q.N-q.M*q.M)/(q.E*q.G-q.F*q.F);					// г‚¬г‚¦г‚№ж›ІзЋ‡
+	return (q.L*q.N-q.M*q.M)/(q.E*q.G-q.F*q.F);					// ѓKѓEѓX‹И—¦
 }
-
+*/
 // Function: CalcGaussCurvatureNormVec
-// NURBSж›ІйќўдёЉгЃ®(u,v)гЃ«гЃЉгЃ‘г‚‹г‚¬г‚¦г‚№ж›ІзЋ‡жі•з·љгѓ™г‚Їгѓ€гѓ«г‚’г‚‚гЃЁг‚Ѓг‚‹
+// NURBS‹И–КЏг‚М(u,v)‚Й‚Ё‚Ї‚йѓKѓEѓX‹И—¦–@ђьѓxѓNѓgѓ‹‚р‚а‚Ж‚Я‚й
 //
 // Parameters:
-// *nurb - NURBSж›ІйќўгЃёгЃ®гѓќг‚¤гѓіг‚ї
-// u - uж–№еђ‘гѓЋгѓѓгѓ€еЂ¤
-// v - vж–№еђ‘гѓЋгѓѓгѓ€еЂ¤
+// *nurb - NURBS‹И–К‚Ц‚Мѓ|ѓCѓ“ѓ^
+// u - u•ыЊьѓmѓbѓg’l
+// v - v•ыЊьѓmѓbѓg’l
 //
 // Retrurn:
-// иЁ€з®—зµђжћњ
-Coord NURBS_Func::CalcGaussCurvatureNormVec(NURBSS *nurb,double u,double v)
+// ЊvЋZЊ‹‰К
+//Coord NURBS_Func::CalcGaussCurvatureNormVec(NURBSS *nurb,double u,double v)
+Coord NURBSS::CalcGaussCurvatureNormVec(double u,double v)
 {
-	SFQuant q(nurb,u,v);
-	return MulCoord(q.n,CalcGaussCurvature(q));	// г‚¬г‚¦г‚№ж›ІзЋ‡жі•з·љгѓ™г‚Їгѓ€гѓ«
+	SFQuant q(this,u,v);
+//	return MulCoord(q.n,CalcGaussCurvature(q));	// ѓKѓEѓX‹И—¦–@ђьѓxѓNѓgѓ‹
+	return MulCoord(q.n,q.CalcGaussCurvature());	// ѓKѓEѓX‹И—¦–@ђьѓxѓNѓgѓ‹
 }
 
 // Function: CalcCurvatureNurbsC
-// NURBSж›Із·љгЃ®ж›ІзЋ‡г‚’ж±‚г‚Ѓг‚‹
+// NURBS‹Иђь‚М‹И—¦‚р‹Ѓ‚Я‚й
 //
 // Parameters:
-// *C - NURBSж›Із·љгЃёгЃ®гѓќг‚¤гѓіг‚ї
-// t - гѓЋгѓѓгѓ€еЂ¤
+// *C - NURBS‹Иђь‚Ц‚Мѓ|ѓCѓ“ѓ^
+// t - ѓmѓbѓg’l
 //
 // Retrurn:
-// иЁ€з®—зµђжћњ
-double NURBS_Func::CalcCurvatureNurbsC(NURBSC *C,double t)
+// ЊvЋZЊ‹‰К
+//double NURBS_Func::CalcCurvatureNurbsC(NURBSC *C,double t)
+double NURBSC::CalcCurvatureNurbsC(double t)
 {
-	Coord p_ = CalcDiffNurbsC(C,t);
-	Coord p__ = CalcDiff2NurbsC(C,t);
+	Coord p_ = CalcDiffNurbsC(t);
+	Coord p__ = CalcDiff2NurbsC(t);
 
 	return(CalcEuclid(CalcOuterProduct(p_,p__))/pow(CalcEuclid(p_),3));
 }
 
 // Function: DetectInterfereNurbsS
-// NURBSж›ІйќўS(u,v)гЃЁNURBSж›ІйќўR(w,t)гЃ®е№Іжё‰г‚’ж¤ње‡єгЃ™г‚‹(гѓ€гѓЄгѓ з„Ў)
+// NURBS‹И–КS(u,v)‚ЖNURBS‹И–КR(w,t)‚МЉ±ЏВ‚рЊџЏo‚·‚й(ѓgѓЉѓЂ–і)
 // 
 // Parameters:
-// *nurbS - NURBSж›ІйќўS(u,v) 
-// *nurbR - NURBSж›ІйќўR(w,t) 
-// divnum - гѓ‘гѓ©гѓЎгѓјг‚їе€†е‰Іж•°(е€ќжњџз‚№гЃ®ж•°)
+// *nurbS - NURBS‹И–КS(u,v) 
+// *nurbR - NURBS‹И–КR(w,t) 
+// divnum - ѓpѓ‰ѓЃЃ[ѓ^•ЄЉ„ђ”(Џ‰Љъ“_‚Мђ”)
 // 
 // Return:
-// е№Іжё‰жњ‰:KOD_TRUE, е№Іжё‰з„Ў:KOD_FALSE
+// Љ±ЏВ—L:KOD_TRUE, Љ±ЏВ–і:KOD_FALSE
 int NURBS_Func::DetectInterfereNurbsS(NURBSS *nurbR,NURBSS *nurbS,int divnum)
 {
-	// еђ„ж›Ійќўг‚’жЊ‡е®љгЃ®е€†е‰Іж•°гЃ§uvе€†е‰ІгЃ—гЂЃгЃќг‚Њг‚‰гЃ®з‚№гЃ«гЃЉгЃ‘г‚‹иЈњеЉ©е№ійќўг‚’з”џж€ђгЃ—гЃ¦дє¤з·љдёЉгЃ®д»»ж„ЏгЃ®1з‚№гЃ«еЏЋжќџгЃ•гЃ›г‚‹
+	// Љe‹И–К‚рЋw’и‚М•ЄЉ„ђ”‚Еuv•ЄЉ„‚µЃA‚»‚к‚з‚М“_‚Й‚Ё‚Ї‚й•вЏ••Ѕ–К‚рђ¶ђ¬‚µ‚ДЊрђьЏг‚М”C€У‚М1“_‚ЙЋы‘©‚і‚№‚й
 	for(int w=0;w<divnum;w++){
 		for(int t=0;t<divnum;t++){
 			for(int u=0;u<divnum;u++){
 				for(int v=0;v<divnum;v++){
-					// еђ„ж›ІйќўгЃ«е€†е‰Із‚№г‚’з”џж€ђгЃ™г‚‹
+					// Љe‹И–К‚Й•ЄЉ„“_‚рђ¶ђ¬‚·‚й
 					double w0 = nurbR->U[0] + (nurbR->U[1] - nurbR->U[0])*(double)w/(double)divnum;
 					double t0 = nurbR->V[0] + (nurbR->V[1] - nurbR->V[0])*(double)t/(double)divnum;
 					double u0 = nurbS->U[0] + (nurbS->U[1] - nurbS->U[0])*(double)u/(double)divnum;
 					double v0 = nurbS->V[0] + (nurbS->V[1] - nurbS->V[0])*(double)v/(double)divnum;
 					for(int i=0;i<10;i++){
-						// еђ„зЁ®гѓ‘гѓ©гѓЎгѓјг‚їг‚’з®—е‡єгЃ™г‚‹
-						Coord p0 = CalcNurbsSCoord(nurbR,w0,t0);					// R(w0,t0)гЃЁгЃЄг‚‹з‚№(е€ќжњџз‚№)гЃ®еє§жЁ™
-						Coord q0 = CalcNurbsSCoord(nurbS,u0,v0);					// S(u0,v0)гЃЁгЃЄг‚‹з‚№(е€ќжњџз‚№)гЃ®еє§жЁ™
-						Coord rw = CalcDiffuNurbsS(nurbR,w0,t0);					// з‚№R(w0,t0)гЃ®uеЃЏеѕ®е€†(еџєжњ¬гѓ™г‚Їгѓ€гѓ«)
-						Coord rt = CalcDiffvNurbsS(nurbR,w0,t0);					// з‚№R(w0,t0)гЃ®vеЃЏеѕ®е€†(еџєжњ¬гѓ™г‚Їгѓ€гѓ«)
+						// ЉeЋнѓpѓ‰ѓЃЃ[ѓ^‚рЋZЏo‚·‚й
+//						Coord p0 = CalcNurbsSCoord(nurbR,w0,t0);					// R(w0,t0)‚Ж‚И‚й“_(Џ‰Љъ“_)‚МЌА•W
+//						Coord q0 = CalcNurbsSCoord(nurbS,u0,v0);					// S(u0,v0)‚Ж‚И‚й“_(Џ‰Љъ“_)‚МЌА•W
+//						Coord rw = CalcDiffuNurbsS(nurbR,w0,t0);					// “_R(w0,t0)‚Мu•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+//						Coord rt = CalcDiffvNurbsS(nurbR,w0,t0);					// “_R(w0,t0)‚Мv•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+						Coord p0 = nurbR->CalcNurbsSCoord(w0,t0);					// R(w0,t0)‚Ж‚И‚й“_(Џ‰Љъ“_)‚МЌА•W
+						Coord q0 = nurbS->CalcNurbsSCoord(u0,v0);					// S(u0,v0)‚Ж‚И‚й“_(Џ‰Љъ“_)‚МЌА•W
+						Coord rw = nurbR->CalcDiffuNurbsS(w0,t0);					// “_R(w0,t0)‚Мu•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+						Coord rt = nurbR->CalcDiffvNurbsS(w0,t0);					// “_R(w0,t0)‚Мv•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
 						double rwt = CalcEuclid(CalcOuterProduct(rw,rt));
 						if(rwt==0.0) break;
-						Coord np = DivCoord(CalcOuterProduct(rw,rt),rwt);			// з‚№R(w0,t0)гЃ®еЌдЅЌжі•з·љгѓ™г‚Їгѓ€гѓ«
-						Coord su = CalcDiffuNurbsS(nurbS,u0,v0);					// з‚№S(u0,v0)гЃ®uеЃЏеѕ®е€†(еџєжњ¬гѓ™г‚Їгѓ€гѓ«)
-						Coord sv = CalcDiffvNurbsS(nurbS,u0,v0);					// з‚№S(u0,v0)гЃ®vеЃЏеѕ®е€†(еџєжњ¬гѓ™г‚Їгѓ€гѓ«)
+						Coord np = DivCoord(CalcOuterProduct(rw,rt),rwt);			// “_R(w0,t0)‚М’P€К–@ђьѓxѓNѓgѓ‹
+//						Coord su = CalcDiffuNurbsS(nurbS,u0,v0);					// “_S(u0,v0)‚Мu•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+//						Coord sv = CalcDiffvNurbsS(nurbS,u0,v0);					// “_S(u0,v0)‚Мv•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+						Coord su = nurbS->CalcDiffuNurbsS(u0,v0);					// “_S(u0,v0)‚Мu•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+						Coord sv = nurbS->CalcDiffvNurbsS(u0,v0);					// “_S(u0,v0)‚Мv•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
 						double suv = CalcEuclid(CalcOuterProduct(su,sv));
 						if(suv==0.0) break;
-						Coord nq = DivCoord(CalcOuterProduct(su,sv),CalcEuclid(CalcOuterProduct(su,sv)));	// з‚№S(u0,v0)гЃ®еЌдЅЌжі•з·љгѓ™г‚Їгѓ€гѓ«
+						Coord nq = DivCoord(CalcOuterProduct(su,sv),CalcEuclid(CalcOuterProduct(su,sv)));	// “_S(u0,v0)‚М’P€К–@ђьѓxѓNѓgѓ‹
 						double npq = CalcEuclid(CalcOuterProduct(np,nq));
 						if(npq==0.0) break;
-						Coord nn = DivCoord(CalcOuterProduct(np,nq),CalcEuclid(CalcOuterProduct(np,nq)));	// е№ійќўFpгЃЁе№ійќўFqгЃ«з›ґдє¤гЃ™г‚‹е№ійќўFnгЃ®еЌдЅЌжі•з·љгѓ™г‚Їгѓ€гѓ«
-						double dp = CalcInnerProduct(p0,np);						// еЋџз‚№гЃ‹г‚‰е№ійќўFpгЃѕгЃ§гЃ®и·ќй›ў
-						double dq = CalcInnerProduct(q0,nq);						// еЋџз‚№гЃ‹г‚‰е№ійќўFqгЃѕгЃ§гЃ®и·ќй›ў
-						double dn = CalcInnerProduct(p0,nn);						// еЋџз‚№гЃ‹г‚‰е№ійќўFnгЃѕгЃ§гЃ®и·ќй›ў
-						Coord cross_nqn = CalcOuterProduct(nq,nn);					// еЌдЅЌжі•з·љгѓ™г‚Їгѓ€гѓ«nq,nnгЃ®гѓ™г‚Їгѓ€гѓ«з©Ќ
-						Coord cross_nnp = CalcOuterProduct(nn,np);					// еЌдЅЌжі•з·љгѓ™г‚Їгѓ€гѓ«nn,npгЃ®гѓ™г‚Їгѓ€гѓ«з©Ќ
-						Coord cross_npq = CalcOuterProduct(np,nq);					// еЌдЅЌжі•з·љгѓ™г‚Їгѓ€гѓ«np,nqгЃ®гѓ™г‚Їгѓ€гѓ«з©Ќ
-						Coord nume_p_sub =  AddCoord(MulCoord(cross_nqn,dp),MulCoord(cross_nnp,dq));	// 3е№ійќўFp,Fq,FnгЃ®дє¤з‚№pгЃ®е€†е­ђгЃ®жњЂе€ќгЃ®2й …г‚’иЁ€з®—
-						Coord nume_p = AddCoord(nume_p_sub,MulCoord(cross_npq,dn));			// pгЃ®е€†е­ђг‚’з®—е‡є
-						double denom_p = CalcScalarTriProduct(np,nq,nn);				// pгЃ®е€†жЇЌг‚’з®—е‡є
-						Coord p = DivCoord(nume_p,denom_p);						// pг‚’з®—е‡є
-						Coord deltap0 = SubCoord(p,p0);							// з‚№pгЃЁз‚№p0гЃ®е·®гѓ™г‚Їгѓ€гѓ«г‚’з®—е‡є
-						Coord deltaq0 = SubCoord(p,q0);							// з‚№pгЃЁз‚№q0гЃ®е·®гѓ™г‚Їгѓ€гѓ«г‚’з®—е‡є
-						Coord rw_sub = CalcOuterProduct(rw,np);						// еџєжњ¬гѓ™г‚Їгѓ€гѓ«rwгЃЁжі•з·љгѓ™г‚Їгѓ€гѓ«npгЃ«з›ґдє¤гЃ™г‚‹гѓ™г‚Їгѓ€гѓ«
-						Coord rt_sub = CalcOuterProduct(rt,np);						// еџєжњ¬гѓ™г‚Їгѓ€гѓ«rtгЃЁжі•з·љгѓ™г‚Їгѓ€гѓ«npгЃ«з›ґдє¤гЃ™г‚‹гѓ™г‚Їгѓ€гѓ«
-						Coord su_sub = CalcOuterProduct(su,nq);						// еџєжњ¬гѓ™г‚Їгѓ€гѓ«suгЃЁжі•з·љгѓ™г‚Їгѓ€гѓ«nqгЃ«з›ґдє¤гЃ™г‚‹гѓ™г‚Їгѓ€гѓ«
-						Coord sv_sub = CalcOuterProduct(sv,nq);						// еџєжњ¬гѓ™г‚Їгѓ€гѓ«svгЃЁжі•з·љгѓ™г‚Їгѓ€гѓ«nqгЃ«з›ґдє¤гЃ™г‚‹гѓ™г‚Їгѓ€гѓ«
-						double dw = CalcInnerProduct(rt_sub,deltap0)/CalcInnerProduct(rt_sub,rw);	// ж–°гЃ—гЃ„з‚№r(w0+dw,t0+dt)г‚’дёЋгЃ€г‚‹гЃџг‚ЃгЃ®dwг‚’з®—е‡є
-						double dt = CalcInnerProduct(rw_sub,deltap0)/CalcInnerProduct(rw_sub,rt);	// ж–°гЃ—гЃ„з‚№r(w0+dw,t0+dt)г‚’дёЋгЃ€г‚‹гЃџг‚ЃгЃ®dtг‚’з®—е‡є
-						double du = CalcInnerProduct(sv_sub,deltaq0)/CalcInnerProduct(sv_sub,su);	// ж–°гЃ—гЃ„з‚№r(w0+dw,t0+dt)г‚’дёЋгЃ€г‚‹гЃџг‚ЃгЃ®dwг‚’з®—е‡є
-						double dv = CalcInnerProduct(su_sub,deltaq0)/CalcInnerProduct(su_sub,sv);	// ж–°гЃ—гЃ„з‚№r(w0+dw,t0+dt)г‚’дёЋгЃ€г‚‹гЃџг‚ЃгЃ®dtг‚’з®—е‡є
-						w0 += dw;									// ж–°гЃ—гЃ„з‚№гЃ®wгѓ‘гѓ©гѓЎгѓјг‚їг‚’еѕ—г‚‹
-						t0 += dt;									// ж–°гЃ—гЃ„з‚№гЃ®tгѓ‘гѓ©гѓЎгѓјг‚їг‚’еѕ—г‚‹
-						u0 += du;									// ж–°гЃ—гЃ„з‚№гЃ®uгѓ‘гѓ©гѓЎгѓјг‚їг‚’еѕ—г‚‹
-						v0 += dv;									// ж–°гЃ—гЃ„з‚№гЃ®vгѓ‘гѓ©гѓЎгѓјг‚їг‚’еѕ—г‚‹
+						Coord nn = DivCoord(CalcOuterProduct(np,nq),CalcEuclid(CalcOuterProduct(np,nq)));	// •Ѕ–КFp‚Ж•Ѕ–КFq‚Й’јЊр‚·‚й•Ѕ–КFn‚М’P€К–@ђьѓxѓNѓgѓ‹
+						double dp = CalcInnerProduct(p0,np);						// Њґ“_‚©‚з•Ѕ–КFp‚Ь‚Е‚М‹——Ј
+						double dq = CalcInnerProduct(q0,nq);						// Њґ“_‚©‚з•Ѕ–КFq‚Ь‚Е‚М‹——Ј
+						double dn = CalcInnerProduct(p0,nn);						// Њґ“_‚©‚з•Ѕ–КFn‚Ь‚Е‚М‹——Ј
+						Coord cross_nqn = CalcOuterProduct(nq,nn);					// ’P€К–@ђьѓxѓNѓgѓ‹nq,nn‚МѓxѓNѓgѓ‹ђП
+						Coord cross_nnp = CalcOuterProduct(nn,np);					// ’P€К–@ђьѓxѓNѓgѓ‹nn,np‚МѓxѓNѓgѓ‹ђП
+						Coord cross_npq = CalcOuterProduct(np,nq);					// ’P€К–@ђьѓxѓNѓgѓ‹np,nq‚МѓxѓNѓgѓ‹ђП
+						Coord nume_p_sub =  AddCoord(MulCoord(cross_nqn,dp),MulCoord(cross_nnp,dq));	// 3•Ѕ–КFp,Fq,Fn‚МЊр“_p‚М•ЄЋq‚МЌЕЏ‰‚М2ЌЂ‚рЊvЋZ
+						Coord nume_p = AddCoord(nume_p_sub,MulCoord(cross_npq,dn));			// p‚М•ЄЋq‚рЋZЏo
+						double denom_p = CalcScalarTriProduct(np,nq,nn);				// p‚М•Є•к‚рЋZЏo
+						Coord p = DivCoord(nume_p,denom_p);						// p‚рЋZЏo
+						Coord deltap0 = SubCoord(p,p0);							// “_p‚Ж“_p0‚МЌ·ѓxѓNѓgѓ‹‚рЋZЏo
+						Coord deltaq0 = SubCoord(p,q0);							// “_p‚Ж“_q0‚МЌ·ѓxѓNѓgѓ‹‚рЋZЏo
+						Coord rw_sub = CalcOuterProduct(rw,np);						// Љо–{ѓxѓNѓgѓ‹rw‚Ж–@ђьѓxѓNѓgѓ‹np‚Й’јЊр‚·‚йѓxѓNѓgѓ‹
+						Coord rt_sub = CalcOuterProduct(rt,np);						// Љо–{ѓxѓNѓgѓ‹rt‚Ж–@ђьѓxѓNѓgѓ‹np‚Й’јЊр‚·‚йѓxѓNѓgѓ‹
+						Coord su_sub = CalcOuterProduct(su,nq);						// Љо–{ѓxѓNѓgѓ‹su‚Ж–@ђьѓxѓNѓgѓ‹nq‚Й’јЊр‚·‚йѓxѓNѓgѓ‹
+						Coord sv_sub = CalcOuterProduct(sv,nq);						// Љо–{ѓxѓNѓgѓ‹sv‚Ж–@ђьѓxѓNѓgѓ‹nq‚Й’јЊр‚·‚йѓxѓNѓgѓ‹
+						double dw = CalcInnerProduct(rt_sub,deltap0)/CalcInnerProduct(rt_sub,rw);	// ђV‚µ‚ў“_r(w0+dw,t0+dt)‚р—^‚¦‚й‚Ѕ‚Я‚Мdw‚рЋZЏo
+						double dt = CalcInnerProduct(rw_sub,deltap0)/CalcInnerProduct(rw_sub,rt);	// ђV‚µ‚ў“_r(w0+dw,t0+dt)‚р—^‚¦‚й‚Ѕ‚Я‚Мdt‚рЋZЏo
+						double du = CalcInnerProduct(sv_sub,deltaq0)/CalcInnerProduct(sv_sub,su);	// ђV‚µ‚ў“_r(w0+dw,t0+dt)‚р—^‚¦‚й‚Ѕ‚Я‚Мdw‚рЋZЏo
+						double dv = CalcInnerProduct(su_sub,deltaq0)/CalcInnerProduct(su_sub,sv);	// ђV‚µ‚ў“_r(w0+dw,t0+dt)‚р—^‚¦‚й‚Ѕ‚Я‚Мdt‚рЋZЏo
+						w0 += dw;									// ђV‚µ‚ў“_‚Мwѓpѓ‰ѓЃЃ[ѓ^‚р“ѕ‚й
+						t0 += dt;									// ђV‚µ‚ў“_‚Мtѓpѓ‰ѓЃЃ[ѓ^‚р“ѕ‚й
+						u0 += du;									// ђV‚µ‚ў“_‚Мuѓpѓ‰ѓЃЃ[ѓ^‚р“ѕ‚й
+						v0 += dv;									// ђV‚µ‚ў“_‚Мvѓpѓ‰ѓЃЃ[ѓ^‚р“ѕ‚й
 						
-						// ж›ІйќўгЃ®зЇ„е›Іе¤–гЃ«е‡єгЃ¦гЃ—гЃѕгЃЈгЃџг‚‰гѓ«гѓјгѓ—г‚’жЉњгЃ‘г‚‹
+						// ‹И–К‚М”Н€НЉO‚ЙЏo‚Д‚µ‚Ь‚Б‚Ѕ‚зѓ‹Ѓ[ѓv‚р”І‚Ї‚й
 						if(!CheckRange(nurbR->U[0],nurbR->U[1],w0,1) || !CheckRange(nurbR->V[0],nurbR->V[1],t0,1)){
 							break;
 						}
@@ -1574,10 +1830,10 @@ int NURBS_Func::DetectInterfereNurbsS(NURBSS *nurbR,NURBSS *nurbS,int divnum)
 							break;
 						}
 						
-						Coord deltapq = SubCoord(p0,q0);						// з‚№p0гЃЁз‚№q0гЃ®е·®гѓ™г‚Їгѓ€гѓ«г‚’з®—е‡є
-						double deltapq_dis = CalcEuclid(deltapq);					// |p0-q0|гЃ®и·ќй›ўг‚’з®—е‡є
+						Coord deltapq = SubCoord(p0,q0);						// “_p0‚Ж“_q0‚МЌ·ѓxѓNѓgѓ‹‚рЋZЏo
+						double deltapq_dis = CalcEuclid(deltapq);					// |p0-q0|‚М‹——Ј‚рЋZЏo
 											
-						// еЌЃе€†еЏЋжќџгЃ—гЃџг‚‰дє¤з‚№гЃЊе­ењЁгЃ™г‚‹гЃџг‚Ѓе№Іжё‰жњ‰
+						// Џ\•ЄЋы‘©‚µ‚Ѕ‚зЊр“_‚Є‘¶ЌЭ‚·‚й‚Ѕ‚ЯЉ±ЏВ—L
 						if(deltapq_dis < CONVERG_GAP){
                             //GuiIF.SetMessage("Interference with the NURBS surface was detected");
 							return KOD_TRUE;
@@ -1593,72 +1849,78 @@ int NURBS_Func::DetectInterfereNurbsS(NURBSS *nurbR,NURBSS *nurbS,int divnum)
 }
 
 // Function: DetectInterfereTrmS
-// NURBSж›ІйќўS(u,v)гЃЁNURBSж›ІйќўR(w,t)гЃ®е№Іжё‰г‚’ж¤ње‡єгЃ™г‚‹(гѓ€гѓЄгѓ жњ‰)
+// NURBS‹И–КS(u,v)‚ЖNURBS‹И–КR(w,t)‚МЉ±ЏВ‚рЊџЏo‚·‚й(ѓgѓЉѓЂ—L)
 // 
 // Parameters:
-// *tNurbS - NURBSж›ІйќўS(u,v)(гѓ€гѓЄгѓ жњ‰) 
-// *tNurbR - NURBSж›ІйќўR(w,t)(гѓ€гѓЄгѓ жњ‰) 
-// divnum - гѓ‘гѓ©гѓЎгѓјг‚їе€†е‰Іж•°(е€ќжњџз‚№гЃ®ж•°)
+// *tNurbS - NURBS‹И–КS(u,v)(ѓgѓЉѓЂ—L) 
+// *tNurbR - NURBS‹И–КR(w,t)(ѓgѓЉѓЂ—L) 
+// divnum - ѓpѓ‰ѓЃЃ[ѓ^•ЄЉ„ђ”(Џ‰Љъ“_‚Мђ”)
 //
 // Return:
-// е№Іжё‰жњ‰:KOD_TRUE, е№Іжё‰з„Ў:KOD_FALSE
+// Љ±ЏВ—L:KOD_TRUE, Љ±ЏВ–і:KOD_FALSE
 int NURBS_Func::DetectInterfereTrmS(TRIMD_NURBSS *tNurbR,TRIMD_NURBSS *tNurbS,int divnum)
 {
 	int count=0;
 
-	// еђ„ж›Ійќўг‚’жЊ‡е®љгЃ®е€†е‰Іж•°гЃ§uvе€†е‰ІгЃ—гЂЃгЃќг‚Њг‚‰гЃ®з‚№гЃ«гЃЉгЃ‘г‚‹иЈњеЉ©е№ійќўг‚’з”џж€ђгЃ—гЃ¦дє¤з·љдёЉгЃ®д»»ж„ЏгЃ®1з‚№гЃ«еЏЋжќџгЃ•гЃ›г‚‹
+	// Љe‹И–К‚рЋw’и‚М•ЄЉ„ђ”‚Еuv•ЄЉ„‚µЃA‚»‚к‚з‚М“_‚Й‚Ё‚Ї‚й•вЏ••Ѕ–К‚рђ¶ђ¬‚µ‚ДЊрђьЏг‚М”C€У‚М1“_‚ЙЋы‘©‚і‚№‚й
 	for(int w=0;w<divnum;w++){
 		for(int t=0;t<divnum;t++){
 			for(int u=0;u<divnum;u++){
 				for(int v=0;v<divnum;v++){
-					// еђ„ж›ІйќўгЃ«е€†е‰Із‚№г‚’з”џж€ђгЃ™г‚‹
+					// Љe‹И–К‚Й•ЄЉ„“_‚рђ¶ђ¬‚·‚й
 					double w0 = tNurbR->pts->U[0] + (tNurbR->pts->U[1] - tNurbR->pts->U[0])*(double)w/(double)divnum;
 					double t0 = tNurbR->pts->V[0] + (tNurbR->pts->V[1] - tNurbR->pts->V[0])*(double)t/(double)divnum;
 					double u0 = tNurbS->pts->U[0] + (tNurbS->pts->U[1] - tNurbS->pts->U[0])*(double)u/(double)divnum;
 					double v0 = tNurbS->pts->V[0] + (tNurbS->pts->V[1] - tNurbS->pts->V[0])*(double)v/(double)divnum;
 					for(int i=0;i<10;i++){
-						// еђ„зЁ®гѓ‘гѓ©гѓЎгѓјг‚їг‚’з®—е‡єгЃ™г‚‹
-						Coord p0 = CalcNurbsSCoord(tNurbR->pts,w0,t0);					// R(w0,t0)гЃЁгЃЄг‚‹з‚№(е€ќжњџз‚№)гЃ®еє§жЁ™
-						Coord q0 = CalcNurbsSCoord(tNurbS->pts,u0,v0);					// S(u0,v0)гЃЁгЃЄг‚‹з‚№(е€ќжњџз‚№)гЃ®еє§жЁ™
-						Coord rw = CalcDiffuNurbsS(tNurbR->pts,w0,t0);					// з‚№R(w0,t0)гЃ®uеЃЏеѕ®е€†(еџєжњ¬гѓ™г‚Їгѓ€гѓ«)
-						Coord rt = CalcDiffvNurbsS(tNurbR->pts,w0,t0);					// з‚№R(w0,t0)гЃ®vеЃЏеѕ®е€†(еџєжњ¬гѓ™г‚Їгѓ€гѓ«)
+						// ЉeЋнѓpѓ‰ѓЃЃ[ѓ^‚рЋZЏo‚·‚й
+//						Coord p0 = CalcNurbsSCoord(tNurbR->pts,w0,t0);					// R(w0,t0)‚Ж‚И‚й“_(Џ‰Љъ“_)‚МЌА•W
+//						Coord q0 = CalcNurbsSCoord(tNurbS->pts,u0,v0);					// S(u0,v0)‚Ж‚И‚й“_(Џ‰Љъ“_)‚МЌА•W
+//						Coord rw = CalcDiffuNurbsS(tNurbR->pts,w0,t0);					// “_R(w0,t0)‚Мu•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+//						Coord rt = CalcDiffvNurbsS(tNurbR->pts,w0,t0);					// “_R(w0,t0)‚Мv•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+						Coord p0 = tNurbR->pts->CalcNurbsSCoord(w0,t0);					// R(w0,t0)‚Ж‚И‚й“_(Џ‰Љъ“_)‚МЌА•W
+						Coord q0 = tNurbS->pts->CalcNurbsSCoord(u0,v0);					// S(u0,v0)‚Ж‚И‚й“_(Џ‰Љъ“_)‚МЌА•W
+						Coord rw = tNurbR->pts->CalcDiffuNurbsS(w0,t0);					// “_R(w0,t0)‚Мu•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+						Coord rt = tNurbR->pts->CalcDiffvNurbsS(w0,t0);					// “_R(w0,t0)‚Мv•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
 						double rwt = CalcEuclid(CalcOuterProduct(rw,rt));
 						if(rwt==0.0) break;
-						Coord np = DivCoord(CalcOuterProduct(rw,rt),rwt);				// з‚№R(w0,t0)гЃ®еЌдЅЌжі•з·љгѓ™г‚Їгѓ€гѓ«
-						Coord su = CalcDiffuNurbsS(tNurbS->pts,u0,v0);					// з‚№S(u0,v0)гЃ®uеЃЏеѕ®е€†(еџєжњ¬гѓ™г‚Їгѓ€гѓ«)
-						Coord sv = CalcDiffvNurbsS(tNurbS->pts,u0,v0);					// з‚№S(u0,v0)гЃ®vеЃЏеѕ®е€†(еџєжњ¬гѓ™г‚Їгѓ€гѓ«)
+						Coord np = DivCoord(CalcOuterProduct(rw,rt),rwt);				// “_R(w0,t0)‚М’P€К–@ђьѓxѓNѓgѓ‹
+//						Coord su = CalcDiffuNurbsS(tNurbS->pts,u0,v0);					// “_S(u0,v0)‚Мu•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+//						Coord sv = CalcDiffvNurbsS(tNurbS->pts,u0,v0);					// “_S(u0,v0)‚Мv•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+						Coord su = tNurbS->pts->CalcDiffuNurbsS(u0,v0);					// “_S(u0,v0)‚Мu•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+						Coord sv = tNurbS->pts->CalcDiffvNurbsS(u0,v0);					// “_S(u0,v0)‚Мv•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
 						double suv = CalcEuclid(CalcOuterProduct(su,sv));
 						if(suv==0.0) break;
-						Coord nq = DivCoord(CalcOuterProduct(su,sv),suv);	// з‚№S(u0,v0)гЃ®еЌдЅЌжі•з·љгѓ™г‚Їгѓ€гѓ«
+						Coord nq = DivCoord(CalcOuterProduct(su,sv),suv);	// “_S(u0,v0)‚М’P€К–@ђьѓxѓNѓgѓ‹
 						double npq = CalcEuclid(CalcOuterProduct(np,nq));
 						if(npq==0.0) break;
-						Coord nn = DivCoord(CalcOuterProduct(np,nq),CalcEuclid(CalcOuterProduct(np,nq)));	// е№ійќўFpгЃЁе№ійќўFqгЃ«з›ґдє¤гЃ™г‚‹е№ійќўFnгЃ®еЌдЅЌжі•з·љгѓ™г‚Їгѓ€гѓ«
-						double dp = CalcInnerProduct(p0,np);						// еЋџз‚№гЃ‹г‚‰е№ійќўFpгЃѕгЃ§гЃ®и·ќй›ў
-						double dq = CalcInnerProduct(q0,nq);						// еЋџз‚№гЃ‹г‚‰е№ійќўFqгЃѕгЃ§гЃ®и·ќй›ў
-						double dn = CalcInnerProduct(p0,nn);						// еЋџз‚№гЃ‹г‚‰е№ійќўFnгЃѕгЃ§гЃ®и·ќй›ў
-						Coord cross_nqn = CalcOuterProduct(nq,nn);					// еЌдЅЌжі•з·љгѓ™г‚Їгѓ€гѓ«nq,nnгЃ®гѓ™г‚Їгѓ€гѓ«з©Ќ
-						Coord cross_nnp = CalcOuterProduct(nn,np);					// еЌдЅЌжі•з·љгѓ™г‚Їгѓ€гѓ«nn,npгЃ®гѓ™г‚Їгѓ€гѓ«з©Ќ
-						Coord cross_npq = CalcOuterProduct(np,nq);					// еЌдЅЌжі•з·љгѓ™г‚Їгѓ€гѓ«np,nqгЃ®гѓ™г‚Їгѓ€гѓ«з©Ќ
-						Coord nume_p_sub =  AddCoord(MulCoord(cross_nqn,dp),MulCoord(cross_nnp,dq));	// 3е№ійќўFp,Fq,FnгЃ®дє¤з‚№pгЃ®е€†е­ђгЃ®жњЂе€ќгЃ®2й …г‚’иЁ€з®—
-						Coord nume_p = AddCoord(nume_p_sub,MulCoord(cross_npq,dn));			// pгЃ®е€†е­ђг‚’з®—е‡є
-						double denom_p = CalcScalarTriProduct(np,nq,nn);				// pгЃ®е€†жЇЌг‚’з®—е‡є
-						Coord p = DivCoord(nume_p,denom_p);						// pг‚’з®—е‡є
-						Coord deltap0 = SubCoord(p,p0);							// з‚№pгЃЁз‚№p0гЃ®е·®гѓ™г‚Їгѓ€гѓ«г‚’з®—е‡є
-						Coord deltaq0 = SubCoord(p,q0);							// з‚№pгЃЁз‚№q0гЃ®е·®гѓ™г‚Їгѓ€гѓ«г‚’з®—е‡є
-						Coord rw_sub = CalcOuterProduct(rw,np);						// еџєжњ¬гѓ™г‚Їгѓ€гѓ«rwгЃЁжі•з·љгѓ™г‚Їгѓ€гѓ«npгЃ«з›ґдє¤гЃ™г‚‹гѓ™г‚Їгѓ€гѓ«
-						Coord rt_sub = CalcOuterProduct(rt,np);						// еџєжњ¬гѓ™г‚Їгѓ€гѓ«rtгЃЁжі•з·љгѓ™г‚Їгѓ€гѓ«npгЃ«з›ґдє¤гЃ™г‚‹гѓ™г‚Їгѓ€гѓ«
-						Coord su_sub = CalcOuterProduct(su,nq);						// еџєжњ¬гѓ™г‚Їгѓ€гѓ«suгЃЁжі•з·љгѓ™г‚Їгѓ€гѓ«nqгЃ«з›ґдє¤гЃ™г‚‹гѓ™г‚Їгѓ€гѓ«
-						Coord sv_sub = CalcOuterProduct(sv,nq);						// еџєжњ¬гѓ™г‚Їгѓ€гѓ«svгЃЁжі•з·љгѓ™г‚Їгѓ€гѓ«nqгЃ«з›ґдє¤гЃ™г‚‹гѓ™г‚Їгѓ€гѓ«
-						double dw = CalcInnerProduct(rt_sub,deltap0)/CalcInnerProduct(rt_sub,rw);	// ж–°гЃ—гЃ„з‚№r(w0+dw,t0+dt)г‚’дёЋгЃ€г‚‹гЃџг‚ЃгЃ®dwг‚’з®—е‡є
-						double dt = CalcInnerProduct(rw_sub,deltap0)/CalcInnerProduct(rw_sub,rt);	// ж–°гЃ—гЃ„з‚№r(w0+dw,t0+dt)г‚’дёЋгЃ€г‚‹гЃџг‚ЃгЃ®dtг‚’з®—е‡є
-						double du = CalcInnerProduct(sv_sub,deltaq0)/CalcInnerProduct(sv_sub,su);	// ж–°гЃ—гЃ„з‚№r(w0+dw,t0+dt)г‚’дёЋгЃ€г‚‹гЃџг‚ЃгЃ®dwг‚’з®—е‡є
-						double dv = CalcInnerProduct(su_sub,deltaq0)/CalcInnerProduct(su_sub,sv);	// ж–°гЃ—гЃ„з‚№r(w0+dw,t0+dt)г‚’дёЋгЃ€г‚‹гЃџг‚ЃгЃ®dtг‚’з®—е‡є
-						w0 += dw;									// ж–°гЃ—гЃ„з‚№гЃ®wгѓ‘гѓ©гѓЎгѓјг‚їг‚’еѕ—г‚‹
-						t0 += dt;									// ж–°гЃ—гЃ„з‚№гЃ®tгѓ‘гѓ©гѓЎгѓјг‚їг‚’еѕ—г‚‹
-						u0 += du;									// ж–°гЃ—гЃ„з‚№гЃ®uгѓ‘гѓ©гѓЎгѓјг‚їг‚’еѕ—г‚‹
-						v0 += dv;									// ж–°гЃ—гЃ„з‚№гЃ®vгѓ‘гѓ©гѓЎгѓјг‚їг‚’еѕ—г‚‹
+						Coord nn = DivCoord(CalcOuterProduct(np,nq),CalcEuclid(CalcOuterProduct(np,nq)));	// •Ѕ–КFp‚Ж•Ѕ–КFq‚Й’јЊр‚·‚й•Ѕ–КFn‚М’P€К–@ђьѓxѓNѓgѓ‹
+						double dp = CalcInnerProduct(p0,np);						// Њґ“_‚©‚з•Ѕ–КFp‚Ь‚Е‚М‹——Ј
+						double dq = CalcInnerProduct(q0,nq);						// Њґ“_‚©‚з•Ѕ–КFq‚Ь‚Е‚М‹——Ј
+						double dn = CalcInnerProduct(p0,nn);						// Њґ“_‚©‚з•Ѕ–КFn‚Ь‚Е‚М‹——Ј
+						Coord cross_nqn = CalcOuterProduct(nq,nn);					// ’P€К–@ђьѓxѓNѓgѓ‹nq,nn‚МѓxѓNѓgѓ‹ђП
+						Coord cross_nnp = CalcOuterProduct(nn,np);					// ’P€К–@ђьѓxѓNѓgѓ‹nn,np‚МѓxѓNѓgѓ‹ђП
+						Coord cross_npq = CalcOuterProduct(np,nq);					// ’P€К–@ђьѓxѓNѓgѓ‹np,nq‚МѓxѓNѓgѓ‹ђП
+						Coord nume_p_sub =  AddCoord(MulCoord(cross_nqn,dp),MulCoord(cross_nnp,dq));	// 3•Ѕ–КFp,Fq,Fn‚МЊр“_p‚М•ЄЋq‚МЌЕЏ‰‚М2ЌЂ‚рЊvЋZ
+						Coord nume_p = AddCoord(nume_p_sub,MulCoord(cross_npq,dn));			// p‚М•ЄЋq‚рЋZЏo
+						double denom_p = CalcScalarTriProduct(np,nq,nn);				// p‚М•Є•к‚рЋZЏo
+						Coord p = DivCoord(nume_p,denom_p);						// p‚рЋZЏo
+						Coord deltap0 = SubCoord(p,p0);							// “_p‚Ж“_p0‚МЌ·ѓxѓNѓgѓ‹‚рЋZЏo
+						Coord deltaq0 = SubCoord(p,q0);							// “_p‚Ж“_q0‚МЌ·ѓxѓNѓgѓ‹‚рЋZЏo
+						Coord rw_sub = CalcOuterProduct(rw,np);						// Љо–{ѓxѓNѓgѓ‹rw‚Ж–@ђьѓxѓNѓgѓ‹np‚Й’јЊр‚·‚йѓxѓNѓgѓ‹
+						Coord rt_sub = CalcOuterProduct(rt,np);						// Љо–{ѓxѓNѓgѓ‹rt‚Ж–@ђьѓxѓNѓgѓ‹np‚Й’јЊр‚·‚йѓxѓNѓgѓ‹
+						Coord su_sub = CalcOuterProduct(su,nq);						// Љо–{ѓxѓNѓgѓ‹su‚Ж–@ђьѓxѓNѓgѓ‹nq‚Й’јЊр‚·‚йѓxѓNѓgѓ‹
+						Coord sv_sub = CalcOuterProduct(sv,nq);						// Љо–{ѓxѓNѓgѓ‹sv‚Ж–@ђьѓxѓNѓgѓ‹nq‚Й’јЊр‚·‚йѓxѓNѓgѓ‹
+						double dw = CalcInnerProduct(rt_sub,deltap0)/CalcInnerProduct(rt_sub,rw);	// ђV‚µ‚ў“_r(w0+dw,t0+dt)‚р—^‚¦‚й‚Ѕ‚Я‚Мdw‚рЋZЏo
+						double dt = CalcInnerProduct(rw_sub,deltap0)/CalcInnerProduct(rw_sub,rt);	// ђV‚µ‚ў“_r(w0+dw,t0+dt)‚р—^‚¦‚й‚Ѕ‚Я‚Мdt‚рЋZЏo
+						double du = CalcInnerProduct(sv_sub,deltaq0)/CalcInnerProduct(sv_sub,su);	// ђV‚µ‚ў“_r(w0+dw,t0+dt)‚р—^‚¦‚й‚Ѕ‚Я‚Мdw‚рЋZЏo
+						double dv = CalcInnerProduct(su_sub,deltaq0)/CalcInnerProduct(su_sub,sv);	// ђV‚µ‚ў“_r(w0+dw,t0+dt)‚р—^‚¦‚й‚Ѕ‚Я‚Мdt‚рЋZЏo
+						w0 += dw;									// ђV‚µ‚ў“_‚Мwѓpѓ‰ѓЃЃ[ѓ^‚р“ѕ‚й
+						t0 += dt;									// ђV‚µ‚ў“_‚Мtѓpѓ‰ѓЃЃ[ѓ^‚р“ѕ‚й
+						u0 += du;									// ђV‚µ‚ў“_‚Мuѓpѓ‰ѓЃЃ[ѓ^‚р“ѕ‚й
+						v0 += dv;									// ђV‚µ‚ў“_‚Мvѓpѓ‰ѓЃЃ[ѓ^‚р“ѕ‚й
 						
-						// ж›ІйќўгЃ®зЇ„е›Іе¤–гЃ«е‡єгЃ¦гЃ—гЃѕгЃЈгЃџг‚‰гѓ«гѓјгѓ—г‚’жЉњгЃ‘г‚‹
+						// ‹И–К‚М”Н€НЉO‚ЙЏo‚Д‚µ‚Ь‚Б‚Ѕ‚зѓ‹Ѓ[ѓv‚р”І‚Ї‚й
 						if(!CheckRange(tNurbR->pts->U[0],tNurbR->pts->U[1],w0,1) || !CheckRange(tNurbR->pts->V[0],tNurbR->pts->V[1],t0,1)){
 							break;
 						}
@@ -1666,12 +1928,12 @@ int NURBS_Func::DetectInterfereTrmS(TRIMD_NURBSS *tNurbR,TRIMD_NURBSS *tNurbS,in
 							break;
 						}
 						
-						Coord deltapq = SubCoord(p0,q0);						// з‚№p0гЃЁз‚№q0гЃ®е·®гѓ™г‚Їгѓ€гѓ«г‚’з®—е‡є
-						double deltapq_dis = CalcEuclid(deltapq);					// |p0-q0|гЃ®и·ќй›ўг‚’з®—е‡є
+						Coord deltapq = SubCoord(p0,q0);						// “_p0‚Ж“_q0‚МЌ·ѓxѓNѓgѓ‹‚рЋZЏo
+						double deltapq_dis = CalcEuclid(deltapq);					// |p0-q0|‚М‹——Ј‚рЋZЏo
 										
-						// еЌЃе€†еЏЋжќџгЃ—гЃџг‚‰дє¤з‚№гЃЊе­ењЁгЃ™г‚‹гЃџг‚Ѓе№Іжё‰жњ‰
+						// Џ\•ЄЋы‘©‚µ‚Ѕ‚зЊр“_‚Є‘¶ЌЭ‚·‚й‚Ѕ‚ЯЉ±ЏВ—L
 						if(deltapq_dis < CONVERG_GAP){
-							if(DetermPtOnTRMSurf(tNurbR,w0,t0) >= KOD_TRUE && DetermPtOnTRMSurf(tNurbS,u0,v0) >= KOD_TRUE){	// гѓ€гѓЄгѓ гЃ•г‚ЊгЃЄгЃ‘г‚ЊгЃ°
+							if(DetermPtOnTRMSurf(tNurbR,w0,t0) >= KOD_TRUE && DetermPtOnTRMSurf(tNurbS,u0,v0) >= KOD_TRUE){	// ѓgѓЉѓЂ‚і‚к‚И‚Ї‚к‚О
                                 //GuiIF.SetMessage("Interference with the trimmed NURBS surface was detected");
 								return KOD_TRUE;
 							}
@@ -1687,22 +1949,23 @@ int NURBS_Func::DetectInterfereTrmS(TRIMD_NURBSS *tNurbR,TRIMD_NURBSS *tNurbS,in
 }
 
 // Function: CalcIntersecPtsPlaneV3
-// 3ж¬Ўд»Ґдё‹гЃ®NURBSж›ІйќўгЃЁе№ійќўгЃЁгЃ®дє¤з‚№зѕ¤г‚’д»Јж•°и§Јжі•гЃ«гЃ¦ж±‚г‚Ѓг‚‹(vгѓ‘гѓ©гѓЎгѓјг‚їе€†е‰І)
+// 3Ћџ€И‰є‚МNURBS‹И–К‚Ж•Ѕ–К‚Ж‚МЊр“_ЊQ‚р‘гђ”‰р–@‚Й‚Д‹Ѓ‚Я‚й(vѓpѓ‰ѓЃЃ[ѓ^•ЄЉ„)
 // 
 // Parameters:
-// *nurb - NURBSж›Ійќў  
-// pt - е№ійќўдёЉгЃ®дёЂз‚№  
-// nvec - е№ійќўгЃ®жі•з·љгѓ™г‚Їгѓ€гѓ«  
-// v_divnum - vгѓ‘гѓ©гѓЎгѓјг‚їе€†е‰Іж•°
-// *ans - з®—е‡єгЃ•г‚ЊгЃџдє¤з‚№гЃ®u,vгѓ‘гѓ©гѓЎгѓјг‚їеЂ¤г‚’гЃќг‚ЊгЃћг‚Њans.x,ans.yгЃ«ж јзґЌ
-// ans_size - ansгЃ®й…Ќе€—й•·
+// *nurb - NURBS‹И–К  
+// pt - •Ѕ–КЏг‚М€к“_  
+// nvec - •Ѕ–К‚М–@ђьѓxѓNѓgѓ‹  
+// v_divnum - vѓpѓ‰ѓЃЃ[ѓ^•ЄЉ„ђ”
+// *ans - ЋZЏo‚і‚к‚ЅЊр“_‚Мu,vѓpѓ‰ѓЃЃ[ѓ^’l‚р‚»‚к‚ј‚кans.x,ans.y‚ЙЉi”[
+// ans_size - ans‚М”z—с’·
 //
 // Return:
-// дє¤з‚№гЃ®еЂ‹ж•°(дє¤з‚№гЃ®ж•°гЃЊans_sizeг‚’и¶…гЃ€гЃџе ґеђ€пјљKOD_ERR)
-int NURBS_Func::CalcIntersecPtsPlaneV3(NURBSS *nurb,Coord pt,Coord nvec,int v_divnum,Coord *ans,int ans_size)
+// Њр“_‚МЊВђ”(Њр“_‚Мђ”‚Єans_size‚р’ґ‚¦‚ЅЏкЌ‡ЃFKOD_ERR)
+//int NURBS_Func::CalcIntersecPtsPlaneV3(NURBSS *nurb,Coord pt,Coord nvec,int v_divnum,Coord *ans,int ans_size)
+int NURBSS::CalcIntersecPtsPlaneV3(Coord pt,Coord nvec,int v_divnum,Coord *ans,int ans_size)
 {
-	double v_const;			// е®љж•°гЃЁзЅ®гЃ„гЃџгЃЁгЃЌгЃ®vгѓ‘гѓ©гѓЎгѓјг‚ї
-	double *N;				// Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°гЃ®иЁ€з®—еЂ¤г‚’ж јзґЌ
+	double v_const;			// ’иђ”‚Ж’u‚ў‚Ѕ‚Ж‚«‚Мvѓpѓ‰ѓЃЃ[ѓ^
+	double *N;				// BѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”‚МЊvЋZ’l‚рЉi”[
 	double *A;
 	Coord  *B;
 	double **coef;
@@ -1713,51 +1976,54 @@ int NURBS_Func::CalcIntersecPtsPlaneV3(NURBSS *nurb,Coord pt,Coord nvec,int v_di
 	int ansnum;
 	int allansnum=0;
 
-	N = (double *)malloc(sizeof(double)*nurb->K[1]);
-	A = (double *)malloc(sizeof(double)*nurb->K[0]);
-	B = (Coord *)malloc(sizeof(Coord)*nurb->K[0]);
-	coef = NewMatrix(nurb->M[0],nurb->M[0]);
+//	N = (double *)malloc(sizeof(double)*nurb->K[1]);
+//	A = (double *)malloc(sizeof(double)*nurb->K[0]);
+//	B = (Coord *)malloc(sizeof(Coord)*nurb->K[0]);
+	N = new double[K[1]];
+	A = new double[K[0]];
+	B = new Coord[K[0]];
+	coef = NewMatrix(M[0],M[0]);
 
-	// vгѓ‘гѓ©гѓЎгѓјг‚їг‚’еЊєй–“е†…гЃ§е€†е‰ІгЃ—гЂЃеђ„vгѓ‘гѓ©гѓЎгѓјг‚їдёЉгЃ®NURBSж›Із·љC(u)гЃЁе№ійќў(pt,nvec)гЃЁгЃ®дє¤з‚№г‚’ж±‚г‚Ѓг‚‹
+	// vѓpѓ‰ѓЃЃ[ѓ^‚р‹жЉФ“а‚Е•ЄЉ„‚µЃAЉevѓpѓ‰ѓЃЃ[ѓ^Џг‚МNURBS‹ИђьC(u)‚Ж•Ѕ–К(pt,nvec)‚Ж‚МЊр“_‚р‹Ѓ‚Я‚й
 	for(int v=0;v<=v_divnum;v++){
-		v_const = (nurb->V[1] - nurb->V[0])*(double)v/(double)v_divnum;		// йЃ©еЅ“гЃЄvж–№еђ‘гѓ‘гѓ©гѓЎгѓјг‚їг‚’иЁ­е®љ
-		for(int i=0;i<nurb->K[1];i++){
-			N[i] = CalcBSbasis(v_const,nurb->T,nurb->N[0],i,nurb->M[1]);		// v_constж™‚гЃ®Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°г‚’ж±‚г‚Ѓг‚‹
+		v_const = (V[1] - V[0])*(double)v/(double)v_divnum;		// “K“–‚Иv•ыЊьѓpѓ‰ѓЃЃ[ѓ^‚рђЭ’и
+		for(int i=0;i<K[1];i++){
+			N[i] = CalcBSbasis(v_const,T,N[0],i,M[1]);		// v_constЋћ‚МBѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”‚р‹Ѓ‚Я‚й
 		}
-		for(int i=0;i<nurb->K[0];i++){
+		for(int i=0;i<K[0];i++){
 			A[i] = 0;
 			InitCoord(&B[i]);
-			for(int j=0;j<nurb->K[1];j++){
-				A[i] += N[j]*nurb->W[i][j];			// v_constдёЉгЃ®NURBSж›Із·љC(u)гЃ®е€†жЇЌгЃ®дї‚ж•°
-				B[i] = AddCoord(B[i],MulCoord(nurb->cp[i][j],N[j]*nurb->W[i][j]));		// v_constдёЉгЃ®NURBSж›Із·љC(u)гЃ®е€†е­ђгЃ®дї‚ж•°
+			for(int j=0;j<K[1];j++){
+				A[i] += N[j]*W[i][j];			// v_constЏг‚МNURBS‹ИђьC(u)‚М•Є•к‚МЊWђ”
+				B[i] = AddCoord(B[i],MulCoord(cp[i][j],N[j]*W[i][j]));		// v_constЏг‚МNURBS‹ИђьC(u)‚М•ЄЋq‚МЊWђ”
 			}
 		}
-		for(int i=0;i<nurb->K[0]-nurb->M[0]+1;i++){						// iз•Єз›®гЃ®ж›Із·љгЃ«еЇѕгЃ—гЃ¦
-			InitMatrix(coef,nurb->M[0],nurb->M[0]);
+		for(int i=0;i<K[0]-M[0]+1;i++){						// i”Ф–Ъ‚М‹Иђь‚Й‘О‚µ‚Д
+			InitMatrix(coef,M[0],M[0]);
 			InitVector(a,4);
 			InitCoord(P,4);
 			InitVector(Q,4);
 			InitVector(t,3);
-			if(nurb->M[0]-1 == 3){										// 3ж¬Ў
-				GetBSplCoef3(nurb->M[0],nurb->K[0],i,nurb->S,coef);		// 3ж¬ЎгЃ®Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°гЃ®дї‚ж•°г‚’ж±‚г‚Ѓг‚‹
+			if(M[0]-1 == 3){										// 3Ћџ
+				GetBSplCoef3(M[0],K[0],i,S,coef);		// 3Ћџ‚МBѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”‚МЊWђ”‚р‹Ѓ‚Я‚й
 			}
-			else if(nurb->M[0]-1 == 2){									// 2ж¬Ў
-				GetBSplCoef2(nurb->M[0],nurb->K[0],i,nurb->S,coef);		// 2ж¬ЎгЃ®Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°гЃ®дї‚ж•°г‚’ж±‚г‚Ѓг‚‹
+			else if(M[0]-1 == 2){									// 2Ћџ
+				GetBSplCoef2(M[0],K[0],i,S,coef);		// 2Ћџ‚МBѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”‚МЊWђ”‚р‹Ѓ‚Я‚й
 			}
-			else if(nurb->M[0]-1 == 1){									// 1ж¬Ў
-				GetBSplCoef1(nurb->M[0],nurb->K[0],i,nurb->S,coef);		// 1ж¬ЎгЃ®Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°гЃ®дї‚ж•°г‚’ж±‚г‚Ѓг‚‹
+			else if(M[0]-1 == 1){									// 1Ћџ
+				GetBSplCoef1(M[0],K[0],i,S,coef);		// 1Ћџ‚МBѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”‚МЊWђ”‚р‹Ѓ‚Я‚й
 			}
-			GetNurbsSCoef(nurb->M[0],coef,A,B,i,P,Q);					// е›єе®љгЃ•г‚ЊгЃџvгѓ‘гѓ©гѓЎгѓјг‚їдёЉгЃ®NURBSж›Із·љC(u)гЃ®дї‚ж•°г‚’ж±‚г‚Ѓг‚‹
-			GetIntersecEquation(nurb->M[0],P,Q,pt,nvec,a);				// ж–№зЁ‹ејЏг‚’е°Ће‡є
-			ansnum = CalcEquation(a,t,nurb->M[0]-1);					// ж–№зЁ‹ејЏг‚’и§ЈгЃЏ
-			int hitnum = 0;						// жќЎд»¶гЃ«йЃ©еђ€гЃ™г‚‹и§ЈгЃ®ж•°г‚’г‚«г‚¦гѓігѓ€гЃ™г‚‹
-			for(int j=0;j<ansnum;j++){			// 3гЃ¤гЃ®и§ЈгЃќг‚ЊгЃћг‚ЊгЃ«еЇѕгЃ—гЃ¦
-				if(t[j] >= nurb->S[i+nurb->M[0]-1] && t[j] <= nurb->S[i+nurb->M[0]]){	// жіЁз›®дё­гЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®зЇ„е›Іе†…гЃЄг‚‰
-					ans[allansnum+hitnum] = SetCoord(t[j],v_const,0);		// и§ЈгЃЁгЃ—гЃ¦з™»йЊІ
+			GetNurbsSCoef(M[0],coef,A,B,i,P,Q);					// ЊЕ’и‚і‚к‚Ѕvѓpѓ‰ѓЃЃ[ѓ^Џг‚МNURBS‹ИђьC(u)‚МЊWђ”‚р‹Ѓ‚Я‚й
+			GetIntersecEquation(M[0],P,Q,pt,nvec,a);				// •ы’цЋ®‚р“±Џo
+			ansnum = CalcEquation(a,t,M[0]-1);					// •ы’цЋ®‚р‰р‚­
+			int hitnum = 0;						// ЏрЊЏ‚Й“KЌ‡‚·‚й‰р‚Мђ”‚рѓJѓEѓ“ѓg‚·‚й
+			for(int j=0;j<ansnum;j++){			// 3‚В‚М‰р‚»‚к‚ј‚к‚Й‘О‚µ‚Д
+				if(t[j] >= S[i+M[0]-1] && t[j] <= S[i+M[0]]){	// ’Ќ–Ъ’†‚МѓmѓbѓgѓxѓNѓgѓ‹‚М”Н€Н“а‚И‚з
+					ans[allansnum+hitnum] = SetCoord(t[j],v_const,0);		// ‰р‚Ж‚µ‚Д“o^
 					hitnum++;
 				}
 			}
-			allansnum += hitnum;				// жќЎд»¶йЃ©еђ€и§ЈгЃ®ж•°гЃ гЃ‘з·Џи§Јж•°г‚’г‚«г‚¦гѓігѓ€г‚ўгѓѓгѓ—
+			allansnum += hitnum;				// ЏрЊЏ“KЌ‡‰р‚Мђ”‚ѕ‚Ї‘Ќ‰рђ”‚рѓJѓEѓ“ѓgѓAѓbѓv
 			if(allansnum >= ans_size){
                 GuiIF.SetMessage("NURBS KOD_ERR:Intersection points exceeded the allocated array length");
 				allansnum = KOD_ERR;
@@ -1767,31 +2033,35 @@ int NURBS_Func::CalcIntersecPtsPlaneV3(NURBSS *nurb,Coord pt,Coord nvec,int v_di
 	}
 
 EXIT:
-	free(N);
-	free(A);
-	free(B);
-	FreeMatrix(coef,nurb->M[0]);
+//	free(N);
+//	free(A);
+//	free(B);
+	delete[]	N;
+	delete[]	A;
+	delete[]	B;
+	FreeMatrix(coef,M[0]);
 
 	return allansnum;
 }
 
 // Function: CalcIntersecPtsPlaneU3
-// 3ж¬Ўд»Ґдё‹гЃ®NURBSж›ІйќўгЃЁе№ійќўгЃЁгЃ®дє¤з‚№зѕ¤г‚’д»Јж•°и§Јжі•гЃ«гЃ¦ж±‚г‚Ѓг‚‹(uгѓ‘гѓ©гѓЎгѓјг‚їе€†е‰І)
+// 3Ћџ€И‰є‚МNURBS‹И–К‚Ж•Ѕ–К‚Ж‚МЊр“_ЊQ‚р‘гђ”‰р–@‚Й‚Д‹Ѓ‚Я‚й(uѓpѓ‰ѓЃЃ[ѓ^•ЄЉ„)
 //
 // Parameters:
-// *nurb - NURBSж›Ійќў  
-// pt - е№ійќўдёЉгЃ®дёЂз‚№  
-// nvec - е№ійќўгЃ®жі•з·љгѓ™г‚Їгѓ€гѓ«  
-// u_divnum - uгѓ‘гѓ©гѓЎгѓјг‚їе€†е‰Іж•°
-// *ans - з®—е‡єгЃ•г‚ЊгЃџдє¤з‚№гЃ®u,vгѓ‘гѓ©гѓЎгѓјг‚їеЂ¤г‚’г‚’гЃќг‚ЊгЃћг‚Њans.x,ans.yгЃ«ж јзґЌ
-// ans_size - ansгЃ®й…Ќе€—й•·
+// *nurb - NURBS‹И–К  
+// pt - •Ѕ–КЏг‚М€к“_  
+// nvec - •Ѕ–К‚М–@ђьѓxѓNѓgѓ‹  
+// u_divnum - uѓpѓ‰ѓЃЃ[ѓ^•ЄЉ„ђ”
+// *ans - ЋZЏo‚і‚к‚ЅЊр“_‚Мu,vѓpѓ‰ѓЃЃ[ѓ^’l‚р‚р‚»‚к‚ј‚кans.x,ans.y‚ЙЉi”[
+// ans_size - ans‚М”z—с’·
 //
 // Return:
-// дє¤з‚№гЃ®еЂ‹ж•°(дє¤з‚№гЃ®ж•°гЃЊans_sizeг‚’и¶…гЃ€гЃџпјљKOD_ERR)
-int NURBS_Func::CalcIntersecPtsPlaneU3(NURBSS *nurb,Coord pt,Coord nvec,int u_divnum,Coord *ans,int ans_size)
+// Њр“_‚МЊВђ”(Њр“_‚Мђ”‚Єans_size‚р’ґ‚¦‚ЅЃFKOD_ERR)
+//int NURBS_Func::CalcIntersecPtsPlaneU3(NURBSS *nurb,Coord pt,Coord nvec,int u_divnum,Coord *ans,int ans_size)
+int NURBSS::CalcIntersecPtsPlaneU3(Coord pt,Coord nvec,int u_divnum,Coord *ans,int ans_size)
 {
-	double u_const;			// е®љж•°гЃЁзЅ®гЃ„гЃџгЃЁгЃЌгЃ®vгѓ‘гѓ©гѓЎгѓјг‚ї
-	double *N;				// Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°гЃ®иЁ€з®—еЂ¤г‚’ж јзґЌ
+	double u_const;			// ’иђ”‚Ж’u‚ў‚Ѕ‚Ж‚«‚Мvѓpѓ‰ѓЃЃ[ѓ^
+	double *N;				// BѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”‚МЊvЋZ’l‚рЉi”[
 	double *A;
 	Coord  *B;
 	double **coef;
@@ -1802,47 +2072,50 @@ int NURBS_Func::CalcIntersecPtsPlaneU3(NURBSS *nurb,Coord pt,Coord nvec,int u_di
 	int ansnum;
 	int allansnum=0;
 
-	N = (double *)malloc(sizeof(double)*nurb->K[0]);
-	A = (double *)malloc(sizeof(double)*nurb->K[1]);
-	B = (Coord *)malloc(sizeof(Coord)*nurb->K[1]);
-	coef = NewMatrix(nurb->M[1],nurb->M[1]);
+//	N = (double *)malloc(sizeof(double)*nurb->K[0]);
+//	A = (double *)malloc(sizeof(double)*nurb->K[1]);
+//	B = (Coord *)malloc(sizeof(Coord)*nurb->K[1]);
+	N = new double[K[0]];
+	A = new double[K[1]];
+	B = new Coord[K[1]];
+	coef = NewMatrix(M[1],M[1]);
 
-	// uгѓ‘гѓ©гѓЎгѓјг‚їг‚’еЊєй–“е†…гЃ§е€†е‰ІгЃ—гЂЃеђ„uгѓ‘гѓ©гѓЎгѓјг‚їдёЉгЃ®NURBSж›Із·љC(v)гЃЁе№ійќў(pt,nvec)гЃЁгЃ®дє¤з‚№г‚’ж±‚г‚Ѓг‚‹
+	// uѓpѓ‰ѓЃЃ[ѓ^‚р‹жЉФ“а‚Е•ЄЉ„‚µЃAЉeuѓpѓ‰ѓЃЃ[ѓ^Џг‚МNURBS‹ИђьC(v)‚Ж•Ѕ–К(pt,nvec)‚Ж‚МЊр“_‚р‹Ѓ‚Я‚й
 	for(int u=0;u<=u_divnum;u++){
-		u_const = (nurb->U[1] - nurb->U[0])*(double)u/(double)u_divnum;		// йЃ©еЅ“гЃЄuж–№еђ‘гѓ‘гѓ©гѓЎгѓјг‚їг‚’иЁ­е®љ
-		for(int i=0;i<nurb->K[0];i++){
-			N[i] = CalcBSbasis(u_const,nurb->S,nurb->N[0],i,nurb->M[0]);		// u_constж™‚гЃ®Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°г‚’ж±‚г‚Ѓг‚‹
+		u_const = (U[1] - U[0])*(double)u/(double)u_divnum;		// “K“–‚Иu•ыЊьѓpѓ‰ѓЃЃ[ѓ^‚рђЭ’и
+		for(int i=0;i<K[0];i++){
+			N[i] = CalcBSbasis(u_const,S,N[0],i,M[0]);		// u_constЋћ‚МBѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”‚р‹Ѓ‚Я‚й
 		}
-		for(int j=0;j<nurb->K[1];j++){
+		for(int j=0;j<K[1];j++){
 			A[j] = 0;
 			InitCoord(&B[j]);
-			for(int i=0;i<nurb->K[0];i++){
-				A[j] += N[i]*nurb->W[i][j];			// u_constдёЉгЃ®NURBSж›Із·љC(v)гЃ®е€†жЇЌгЃ®дї‚ж•°
-				B[j] = AddCoord(B[j],MulCoord(nurb->cp[i][j],N[i]*nurb->W[i][j]));		// u_constдёЉгЃ®NURBSж›Із·љC(v)гЃ®е€†е­ђгЃ®дї‚ж•°
+			for(int i=0;i<K[0];i++){
+				A[j] += N[i]*W[i][j];			// u_constЏг‚МNURBS‹ИђьC(v)‚М•Є•к‚МЊWђ”
+				B[j] = AddCoord(B[j],MulCoord(cp[i][j],N[i]*W[i][j]));		// u_constЏг‚МNURBS‹ИђьC(v)‚М•ЄЋq‚МЊWђ”
 			}
 		}
-		for(int i=0;i<nurb->K[1]-nurb->M[1]+1;i++){						// iз•Єз›®гЃ®ж›Із·љгЃ«еЇѕгЃ—гЃ¦
-			if(nurb->M[1]-1 == 3){										// 3ж¬Ў
-				GetBSplCoef3(nurb->M[1],nurb->K[1],i,nurb->T,coef);		// 3ж¬ЎгЃ®Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°гЃ®дї‚ж•°г‚’ж±‚г‚Ѓг‚‹
+		for(int i=0;i<K[1]-M[1]+1;i++){						// i”Ф–Ъ‚М‹Иђь‚Й‘О‚µ‚Д
+			if(M[1]-1 == 3){										// 3Ћџ
+				GetBSplCoef3(M[1],K[1],i,T,coef);		// 3Ћџ‚МBѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”‚МЊWђ”‚р‹Ѓ‚Я‚й
 			}
-			else if(nurb->M[1]-1 == 2){									// 2ж¬Ў
-				GetBSplCoef2(nurb->M[1],nurb->K[1],i,nurb->T,coef);		// 2ж¬ЎгЃ®Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°гЃ®дї‚ж•°г‚’ж±‚г‚Ѓг‚‹
+			else if(M[1]-1 == 2){									// 2Ћџ
+				GetBSplCoef2(M[1],K[1],i,T,coef);		// 2Ћџ‚МBѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”‚МЊWђ”‚р‹Ѓ‚Я‚й
 			}
-			else if(nurb->M[1]-1 == 1){									// 1ж¬Ў
-				GetBSplCoef1(nurb->M[1],nurb->K[1],i,nurb->T,coef);		// 1ж¬ЎгЃ®Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°гЃ®дї‚ж•°г‚’ж±‚г‚Ѓг‚‹
+			else if(M[1]-1 == 1){									// 1Ћџ
+				GetBSplCoef1(M[1],K[1],i,T,coef);		// 1Ћџ‚МBѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”‚МЊWђ”‚р‹Ѓ‚Я‚й
 			}
-			GetNurbsSCoef(nurb->M[1],coef,A,B,i,P,Q);					// е›єе®љгЃ•г‚ЊгЃџuгѓ‘гѓ©гѓЎгѓјг‚їдёЉгЃ®NURBSж›Із·љC(v)гЃ®дї‚ж•°г‚’ж±‚г‚Ѓг‚‹
-			GetIntersecEquation(nurb->M[1],P,Q,pt,nvec,a);				// ж–№зЁ‹ејЏг‚’е°Ће‡є
-			ansnum = CalcEquation(a,t,nurb->M[1]-1);					// ж–№зЁ‹ејЏг‚’и§ЈгЃЏ
+			GetNurbsSCoef(M[1],coef,A,B,i,P,Q);					// ЊЕ’и‚і‚к‚Ѕuѓpѓ‰ѓЃЃ[ѓ^Џг‚МNURBS‹ИђьC(v)‚МЊWђ”‚р‹Ѓ‚Я‚й
+			GetIntersecEquation(M[1],P,Q,pt,nvec,a);				// •ы’цЋ®‚р“±Џo
+			ansnum = CalcEquation(a,t,M[1]-1);					// •ы’цЋ®‚р‰р‚­
 
-			int hitnum = 0;						// жќЎд»¶гЃ«йЃ©еђ€гЃ™г‚‹и§ЈгЃ®ж•°г‚’г‚«г‚¦гѓігѓ€гЃ™г‚‹
-			for(int j=0;j<ansnum;j++){			// 3гЃ¤гЃ®и§ЈгЃќг‚ЊгЃћг‚ЊгЃ«еЇѕгЃ—гЃ¦
-				if(t[j] >= nurb->T[i+nurb->M[1]-1] && t[j] <= nurb->T[i+nurb->M[1]]){	// жіЁз›®дё­гЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®зЇ„е›Іе†…гЃЄг‚‰
-					ans[allansnum+hitnum] = SetCoord(u_const,t[j],0);		// и§ЈгЃЁгЃ—гЃ¦з™»йЊІ
+			int hitnum = 0;						// ЏрЊЏ‚Й“KЌ‡‚·‚й‰р‚Мђ”‚рѓJѓEѓ“ѓg‚·‚й
+			for(int j=0;j<ansnum;j++){			// 3‚В‚М‰р‚»‚к‚ј‚к‚Й‘О‚µ‚Д
+				if(t[j] >= T[i+M[1]-1] && t[j] <= T[i+M[1]]){	// ’Ќ–Ъ’†‚МѓmѓbѓgѓxѓNѓgѓ‹‚М”Н€Н“а‚И‚з
+					ans[allansnum+hitnum] = SetCoord(u_const,t[j],0);		// ‰р‚Ж‚µ‚Д“o^
 					hitnum++;
 				}
 			}
-			allansnum += hitnum;				// жќЎд»¶йЃ©еђ€и§ЈгЃ®ж•°гЃ гЃ‘з·Џи§Јж•°г‚’г‚«г‚¦гѓігѓ€г‚ўгѓѓгѓ—
+			allansnum += hitnum;				// ЏрЊЏ“KЌ‡‰р‚Мђ”‚ѕ‚Ї‘Ќ‰рђ”‚рѓJѓEѓ“ѓgѓAѓbѓv
 			if(allansnum >= ans_size){
                 GuiIF.SetMessage("NURBS KOD_ERR:Intersection points exceeded the allocated array length");
 				allansnum = KOD_ERR;
@@ -1852,46 +2125,52 @@ int NURBS_Func::CalcIntersecPtsPlaneU3(NURBSS *nurb,Coord pt,Coord nvec,int u_di
 	}
 
 EXIT:
-	free(N);
-	free(A);
-	free(B);
-	FreeMatrix(coef,nurb->M[1]);
+//	free(N);
+//	free(A);
+//	free(B);
+	delete[]	N;
+	delete[]	A;
+	delete[]	B;
+	FreeMatrix(coef,M[1]);
 
 	return allansnum;
 }
 
 // Function: CalcIntersecPtsPlaneV
-// Vж–№еђ‘гЃ®г‚ўг‚¤г‚Ѕгѓ‘гѓ©ж›Із·љг‚’жЊ‡е®љгЃ—гЃџе€†е‰Іж•°гЃ§з”џж€ђгЃ—пјЊеђ„ж›Із·љгЃЁNURBSж›ІйќўгЃЁгЃ®дє¤з‚№г‚’з®—е‡єгЃ™г‚‹
+// V•ыЊь‚МѓAѓCѓ\ѓpѓ‰‹Иђь‚рЋw’и‚µ‚Ѕ•ЄЉ„ђ”‚Еђ¶ђ¬‚µЃCЉe‹Иђь‚ЖNURBS‹И–К‚Ж‚МЊр“_‚рЋZЏo‚·‚й
 //
 // Parameters:
-// *nurb - NURBSж›Ійќў  
-// pt - е№ійќўдёЉгЃ®дёЂз‚№  
-// nvec - е№ійќўгЃ®жі•з·љгѓ™г‚Їгѓ€гѓ«  
-// v_divnum - vгѓ‘гѓ©гѓЎгѓјг‚їе€†е‰Іж•°
-// *ans - з®—е‡єгЃ•г‚ЊгЃџдє¤з‚№гЃ®u,vгѓ‘гѓ©гѓЎгѓјг‚їеЂ¤г‚’гЃќг‚ЊгЃћг‚Њans.x,ans.yгЃ«ж јзґЌ
-// ans_size - ansгЃ®й…Ќе€—й•·
+// *nurb - NURBS‹И–К  
+// pt - •Ѕ–КЏг‚М€к“_  
+// nvec - •Ѕ–К‚М–@ђьѓxѓNѓgѓ‹  
+// v_divnum - vѓpѓ‰ѓЃЃ[ѓ^•ЄЉ„ђ”
+// *ans - ЋZЏo‚і‚к‚ЅЊр“_‚Мu,vѓpѓ‰ѓЃЃ[ѓ^’l‚р‚»‚к‚ј‚кans.x,ans.y‚ЙЉi”[
+// ans_size - ans‚М”z—с’·
 //
 // Return:
-// дє¤з‚№гЃ®еЂ‹ж•°(дє¤з‚№гЃ®ж•°гЃЊans_sizeг‚’и¶…гЃ€гЃџпјљKOD_ERR)
-int NURBS_Func::CalcIntersecPtsPlaneV(NURBSS *nurbss,Coord pt,Coord nvec,int v_divnum,Coord *ans,int ans_size)
+// Њр“_‚МЊВђ”(Њр“_‚Мђ”‚Єans_size‚р’ґ‚¦‚ЅЃFKOD_ERR)
+//int NURBS_Func::CalcIntersecPtsPlaneV(NURBSS *nurbss,Coord pt,Coord nvec,int v_divnum,Coord *ans,int ans_size)
+int NURBSS::CalcIntersecPtsPlaneV(Coord pt,Coord nvec,int v_divnum,Coord *ans,int ans_size)
 {
-	double v_const;			// е®љж•°гЃЁзЅ®гЃ„гЃџгЃЁгЃЌгЃ®vгѓ‘гѓ©гѓЎгѓјг‚ї
-	int ansnum;				// 1гЃ¤гЃ®г‚ўг‚¤г‚Ѕгѓ‘гѓ©ж›Із·љгЃЁж›ІйќўгЃ®дє¤з‚№зѕ¤гЃ®ж•°
-	int allansnum=0;		// е…Ёдє¤з‚№ж•°г‚’г‚«г‚¦гѓігѓ€
-	int ansbufsize = 2*(nurbss->M[0]-1)*((nurbss->K[0]>nurbss->K[1]?nurbss->K[0]:nurbss->K[1])-nurbss->M[0]+1);	// 1гЃ¤гЃ®г‚ўг‚¤г‚Ѕгѓ‘гѓ©ж›Із·љгЃЁж›ІйќўгЃ®дє¤з‚№зѕ¤г‚’ж јзґЌгЃ™г‚‹й…Ќе€—гЃ®й…Ќе€—й•·
-	double *ansbuf;			// 1гЃ¤гЃ®г‚ўг‚¤г‚Ѕгѓ‘гѓ©ж›Із·љгЃЁж›ІйќўгЃ®дє¤з‚№зѕ¤г‚’ж јзґЌгЃ™г‚‹й…Ќе€—
-	NURBSC nurbsc;			// 1гЃ¤гЃ®г‚ўг‚¤г‚Ѕгѓ‘гѓ©ж›Із·љ
+	double v_const;			// ’иђ”‚Ж’u‚ў‚Ѕ‚Ж‚«‚Мvѓpѓ‰ѓЃЃ[ѓ^
+	int ansnum;				// 1‚В‚МѓAѓCѓ\ѓpѓ‰‹Иђь‚Ж‹И–К‚МЊр“_ЊQ‚Мђ”
+	int allansnum=0;		// ‘SЊр“_ђ”‚рѓJѓEѓ“ѓg
+	int ansbufsize = 2*(M[0]-1)*((K[0]>K[1]?K[0]:K[1])-M[0]+1);	// 1‚В‚МѓAѓCѓ\ѓpѓ‰‹Иђь‚Ж‹И–К‚МЊр“_ЊQ‚рЉi”[‚·‚й”z—с‚М”z—с’·
+	double *ansbuf;			// 1‚В‚МѓAѓCѓ\ѓpѓ‰‹Иђь‚Ж‹И–К‚МЊр“_ЊQ‚рЉi”[‚·‚й”z—с
+	NURBSC nurbsc;			// 1‚В‚МѓAѓCѓ\ѓpѓ‰‹Иђь
 
 	ansbuf = NewVector(ansbufsize);
 
-	// vгѓ‘гѓ©гѓЎгѓјг‚їг‚’еЊєй–“е†…гЃ§е€†е‰ІгЃ—гЂЃеђ„vгѓ‘гѓ©гѓЎгѓјг‚їдёЉгЃ®NURBSж›Із·љC(u)гЃЁе№ійќў(pt,nvec)гЃЁгЃ®дє¤з‚№г‚’ж±‚г‚Ѓг‚‹
+	// vѓpѓ‰ѓЃЃ[ѓ^‚р‹жЉФ“а‚Е•ЄЉ„‚µЃAЉevѓpѓ‰ѓЃЃ[ѓ^Џг‚МNURBS‹ИђьC(u)‚Ж•Ѕ–К(pt,nvec)‚Ж‚МЊр“_‚р‹Ѓ‚Я‚й
 	for(int v=0;v<=v_divnum;v++){
-		v_const = (nurbss->V[1] - nurbss->V[0])*(double)v/(double)v_divnum;			// йЃ©еЅ“гЃЄvж–№еђ‘гѓ‘гѓ©гѓЎгѓјг‚їг‚’иЁ­е®љ
-		ansnum = CalcIntersecIsparaCurveU(nurbss,v_const,pt,nvec,v_divnum,ansbuf,ansbufsize);		// г‚ўг‚¤г‚Ѕгѓ‘гѓ©ж›Із·љгЃЁж›ІйќўгЃ®дє¤з‚№зѕ¤г‚’з®—е‡є
+		v_const = (V[1] - V[0])*(double)v/(double)v_divnum;			// “K“–‚Иv•ыЊьѓpѓ‰ѓЃЃ[ѓ^‚рђЭ’и
+//		ansnum = CalcIntersecIsparaCurveU(nurbss,v_const,pt,nvec,v_divnum,ansbuf,ansbufsize);		// ѓAѓCѓ\ѓpѓ‰‹Иђь‚Ж‹И–К‚МЊр“_ЊQ‚рЋZЏo
+		ansnum = CalcIntersecIsparaCurveU(v_const,pt,nvec,v_divnum,ansbuf,ansbufsize);		// ѓAѓCѓ\ѓpѓ‰‹Иђь‚Ж‹И–К‚МЊр“_ЊQ‚рЋZЏo
 		if(ansnum == KOD_ERR)	goto EXIT;
 		for(int i=0;i<ansnum;i++){
-			Coord a = CalcNurbsSCoord(nurbss,ansbuf[i],v_const);
-			ans[allansnum+i] = SetCoord(ansbuf[i],v_const,0);					// и§Јг‚’з™»йЊІ
+//			Coord a = CalcNurbsSCoord(nurbss,ansbuf[i],v_const);
+			Coord a = CalcNurbsSCoord(ansbuf[i],v_const);
+			ans[allansnum+i] = SetCoord(ansbuf[i],v_const,0);					// ‰р‚р“o^
 		}
 		allansnum += ansnum;
 	}
@@ -1902,36 +2181,38 @@ EXIT:
 }
 
 // Function: CalcIntersecPtsPlaneU
-// Uж–№еђ‘гЃ®г‚ўг‚¤г‚Ѕгѓ‘гѓ©ж›Із·љг‚’жЊ‡е®љгЃ—гЃџе€†е‰Іж•°гЃ§з”џж€ђгЃ—пјЊеђ„ж›Із·љгЃЁNURBSж›ІйќўгЃЁгЃ®дє¤з‚№г‚’з®—е‡єгЃ™г‚‹
+// U•ыЊь‚МѓAѓCѓ\ѓpѓ‰‹Иђь‚рЋw’и‚µ‚Ѕ•ЄЉ„ђ”‚Еђ¶ђ¬‚µЃCЉe‹Иђь‚ЖNURBS‹И–К‚Ж‚МЊр“_‚рЋZЏo‚·‚й
 //
 // Parameters:
-// *nurb - NURBSж›Ійќў  
-// pt - е№ійќўдёЉгЃ®дёЂз‚№  
-// nvec - е№ійќўгЃ®жі•з·љгѓ™г‚Їгѓ€гѓ«  
-// u_divnum - uгѓ‘гѓ©гѓЎгѓјг‚їе€†е‰Іж•°
-// *ans - з®—е‡єгЃ•г‚ЊгЃџдє¤з‚№гЃ®u,vгѓ‘гѓ©гѓЎгѓјг‚їеЂ¤г‚’гЃќг‚ЊгЃћг‚Њans.x,ans.yгЃ«ж јзґЌ
-// ans_size - ansгЃ®й…Ќе€—й•·
+// *nurb - NURBS‹И–К  
+// pt - •Ѕ–КЏг‚М€к“_  
+// nvec - •Ѕ–К‚М–@ђьѓxѓNѓgѓ‹  
+// u_divnum - uѓpѓ‰ѓЃЃ[ѓ^•ЄЉ„ђ”
+// *ans - ЋZЏo‚і‚к‚ЅЊр“_‚Мu,vѓpѓ‰ѓЃЃ[ѓ^’l‚р‚»‚к‚ј‚кans.x,ans.y‚ЙЉi”[
+// ans_size - ans‚М”z—с’·
 //
 // Return:
-// дє¤з‚№гЃ®еЂ‹ж•°(дє¤з‚№гЃ®ж•°гЃЊans_sizeг‚’и¶…гЃ€гЃџпјљKOD_ERR)
-int NURBS_Func::CalcIntersecPtsPlaneU(NURBSS *nurbss,Coord pt,Coord nvec,int u_divnum,Coord *ans,int ans_size)
+// Њр“_‚МЊВђ”(Њр“_‚Мђ”‚Єans_size‚р’ґ‚¦‚ЅЃFKOD_ERR)
+//int NURBS_Func::CalcIntersecPtsPlaneU(NURBSS *nurbss,Coord pt,Coord nvec,int u_divnum,Coord *ans,int ans_size)
+int NURBSS::CalcIntersecPtsPlaneU(Coord pt,Coord nvec,int u_divnum,Coord *ans,int ans_size)
 {
-	double u_const;			// е®љж•°гЃЁзЅ®гЃ„гЃџгЃЁгЃЌгЃ®vгѓ‘гѓ©гѓЎгѓјг‚ї
-	int ansnum;				// 1гЃ¤гЃ®г‚ўг‚¤г‚Ѕгѓ‘гѓ©ж›Із·љгЃЁж›ІйќўгЃ®дє¤з‚№зѕ¤гЃ®ж•°
-	int allansnum=0;		// е…Ёдє¤з‚№ж•°г‚’г‚«г‚¦гѓігѓ€
-	int ansbufsize = 2*(nurbss->M[0]-1)*((nurbss->K[0]>nurbss->K[1]?nurbss->K[0]:nurbss->K[1])-nurbss->M[0]+1);	// 1гЃ¤гЃ®г‚ўг‚¤г‚Ѕгѓ‘гѓ©ж›Із·љгЃЁж›ІйќўгЃ®дє¤з‚№зѕ¤г‚’ж јзґЌгЃ™г‚‹й…Ќе€—гЃ®й…Ќе€—й•·
-	double *ansbuf;			// 1гЃ¤гЃ®г‚ўг‚¤г‚Ѕгѓ‘гѓ©ж›Із·љгЃЁж›ІйќўгЃ®дє¤з‚№зѕ¤г‚’ж јзґЌгЃ™г‚‹й…Ќе€—
-	NURBSC nurbsc;			// 1гЃ¤гЃ®г‚ўг‚¤г‚Ѕгѓ‘гѓ©ж›Із·љ
+	double u_const;			// ’иђ”‚Ж’u‚ў‚Ѕ‚Ж‚«‚Мvѓpѓ‰ѓЃЃ[ѓ^
+	int ansnum;				// 1‚В‚МѓAѓCѓ\ѓpѓ‰‹Иђь‚Ж‹И–К‚МЊр“_ЊQ‚Мђ”
+	int allansnum=0;		// ‘SЊр“_ђ”‚рѓJѓEѓ“ѓg
+	int ansbufsize = 2*(M[0]-1)*((K[0]>K[1]?K[0]:K[1])-M[0]+1);	// 1‚В‚МѓAѓCѓ\ѓpѓ‰‹Иђь‚Ж‹И–К‚МЊр“_ЊQ‚рЉi”[‚·‚й”z—с‚М”z—с’·
+	double *ansbuf;			// 1‚В‚МѓAѓCѓ\ѓpѓ‰‹Иђь‚Ж‹И–К‚МЊр“_ЊQ‚рЉi”[‚·‚й”z—с
+	NURBSC nurbsc;			// 1‚В‚МѓAѓCѓ\ѓpѓ‰‹Иђь
 
 	ansbuf = NewVector(ansbufsize);
 
-	// uгѓ‘гѓ©гѓЎгѓјг‚їг‚’еЊєй–“е†…гЃ§е€†е‰ІгЃ—гЂЃеђ„uгѓ‘гѓ©гѓЎгѓјг‚їдёЉгЃ®г‚ўг‚¤г‚Ѕгѓ‘гѓ©ж›Із·љC(v)гЃЁе№ійќў(pt,nvec)гЃЁгЃ®дє¤з‚№г‚’ж±‚г‚Ѓг‚‹
+	// uѓpѓ‰ѓЃЃ[ѓ^‚р‹жЉФ“а‚Е•ЄЉ„‚µЃAЉeuѓpѓ‰ѓЃЃ[ѓ^Џг‚МѓAѓCѓ\ѓpѓ‰‹ИђьC(v)‚Ж•Ѕ–К(pt,nvec)‚Ж‚МЊр“_‚р‹Ѓ‚Я‚й
 	for(int u=0;u<=u_divnum;u++){
-		u_const = (nurbss->U[1] - nurbss->U[0])*(double)u/(double)u_divnum;			// йЃ©еЅ“гЃЄuж–№еђ‘гѓ‘гѓ©гѓЎгѓјг‚їг‚’иЁ­е®љ
-		ansnum = CalcIntersecIsparaCurveV(nurbss,u_const,pt,nvec,u_divnum,ansbuf,ansbufsize);		// г‚ўг‚¤г‚Ѕгѓ‘гѓ©ж›Із·љгЃЁж›ІйќўгЃ®дє¤з‚№зѕ¤г‚’з®—е‡є
+		u_const = (U[1] - U[0])*(double)u/(double)u_divnum;			// “K“–‚Иu•ыЊьѓpѓ‰ѓЃЃ[ѓ^‚рђЭ’и
+//		ansnum = CalcIntersecIsparaCurveV(nurbss,u_const,pt,nvec,u_divnum,ansbuf,ansbufsize);		// ѓAѓCѓ\ѓpѓ‰‹Иђь‚Ж‹И–К‚МЊр“_ЊQ‚рЋZЏo
+		ansnum = CalcIntersecIsparaCurveV(u_const,pt,nvec,u_divnum,ansbuf,ansbufsize);		// ѓAѓCѓ\ѓpѓ‰‹Иђь‚Ж‹И–К‚МЊр“_ЊQ‚рЋZЏo
 		if(ansnum == KOD_ERR)	goto EXIT;
 		for(int i=0;i<ansnum;i++){
-			ans[allansnum+i] = SetCoord(u_const,ansbuf[i],0);					// и§Јг‚’з™»йЊІ
+			ans[allansnum+i] = SetCoord(u_const,ansbuf[i],0);					// ‰р‚р“o^
 		}
 		allansnum += ansnum;
 	}
@@ -1942,64 +2223,68 @@ EXIT:
 }
 
 // Function:
-// NURBSж›ІйќўгЃЁе№ійќўгЃЁгЃ®дє¤з‚№зѕ¤г‚’е№ѕдЅ•е­¦зљ„гЃ«ж±‚г‚Ѓг‚‹(иЈњеЉ©е№ійќўг‚’з”ЁгЃ„гЃџи§Јжі•)
+// NURBS‹И–К‚Ж•Ѕ–К‚Ж‚МЊр“_ЊQ‚рЉф‰ЅЉw“I‚Й‹Ѓ‚Я‚й(•вЏ••Ѕ–К‚р—p‚ў‚Ѕ‰р–@)
 //
 // Parameters:
-// *nurb - NURBSж›Ійќў  
-// pt - е№ійќўдёЉгЃ®дёЂз‚№  
-// nf - е№ійќўгЃ®жі•з·љгѓ™г‚Їгѓ€гѓ«гЂЂ
-// u_divnum - uгѓ‘гѓ©гѓЎгѓјг‚їе€†е‰Іж•°гЂЂ
-// v_divnum - vгѓ‘гѓ©гѓЎгѓјг‚їе€†е‰Іж•°
-// *ans - з®—е‡єгЃ•г‚ЊгЃџдє¤з‚№гЃ®u,vгѓ‘гѓ©гѓЎгѓјг‚їеЂ¤г‚’гЃќг‚ЊгЃћг‚Њans.x,ans.yгЃ«ж јзґЌ
-// ans_size - ansгЃ®й…Ќе€—й•·
+// *nurb - NURBS‹И–К  
+// pt - •Ѕ–КЏг‚М€к“_  
+// nf - •Ѕ–К‚М–@ђьѓxѓNѓgѓ‹Ѓ@
+// u_divnum - uѓpѓ‰ѓЃЃ[ѓ^•ЄЉ„ђ”Ѓ@
+// v_divnum - vѓpѓ‰ѓЃЃ[ѓ^•ЄЉ„ђ”
+// *ans - ЋZЏo‚і‚к‚ЅЊр“_‚Мu,vѓpѓ‰ѓЃЃ[ѓ^’l‚р‚»‚к‚ј‚кans.x,ans.y‚ЙЉi”[
+// ans_size - ans‚М”z—с’·
 //
 // Return:
-// дє¤з‚№гЃ®еЂ‹ж•°(дє¤з‚№гЃ®ж•°гЃЊans_sizeг‚’и¶…гЃ€гЃџпјљERR)
-int NURBS_Func::CalcIntersecPtsPlaneGeom(NURBSS *nurb,Coord pt,Coord nf,int u_divnum,int v_divnum,Coord *ans,int ans_size)
+// Њр“_‚МЊВђ”(Њр“_‚Мђ”‚Єans_size‚р’ґ‚¦‚ЅЃFERR)
+//int NURBS_Func::CalcIntersecPtsPlaneGeom(NURBSS *nurb,Coord pt,Coord nf,int u_divnum,int v_divnum,Coord *ans,int ans_size)
+int NURBSS::CalcIntersecPtsPlaneGeom(Coord pt,Coord nf,int u_divnum,int v_divnum,Coord *ans,int ans_size)
 {
-	Coord init_pt;
+//	Coord init_pt;
 	int ansnum=0;
 
 	for(int u=0;u<=u_divnum;u++){
 		for(int v=0;v<=v_divnum;v++){
-			double u0 = nurb->U[0] + (nurb->U[1] - nurb->U[0])*(double)u/(double)u_divnum;
-			double v0 = nurb->V[0] + (nurb->V[1] - nurb->V[0])*(double)v/(double)v_divnum;
+			double u0 = U[0] + (U[1] - U[0])*(double)u/(double)u_divnum;
+			double v0 = V[0] + (V[1] - V[0])*(double)v/(double)v_divnum;
 			for(int i=0;i<LOOPCOUNTMAX;i++){
-				Coord p0 = CalcNurbsSCoord(nurb,u0,v0);						// S(u0,v0)гЃЁгЃЄг‚‹з‚№(е€ќжњџз‚№)гЃ®еє§жЁ™
-				Coord su = CalcDiffuNurbsS(nurb,u0,v0);						// з‚№S(u0,v0)гЃ®uеЃЏеѕ®е€†(еџєжњ¬гѓ™г‚Їгѓ€гѓ«)
-				Coord sv = CalcDiffvNurbsS(nurb,u0,v0);						// з‚№S(u0,v0)гЃ®vеЃЏеѕ®е€†(еџєжњ¬гѓ™г‚Їгѓ€гѓ«)
+//				Coord p0 = CalcNurbsSCoord(nurb,u0,v0);						// S(u0,v0)‚Ж‚И‚й“_(Џ‰Љъ“_)‚МЌА•W
+//				Coord su = CalcDiffuNurbsS(nurb,u0,v0);						// “_S(u0,v0)‚Мu•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+//				Coord sv = CalcDiffvNurbsS(nurb,u0,v0);						// “_S(u0,v0)‚Мv•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+				Coord p0 = CalcNurbsSCoord(u0,v0);						// S(u0,v0)‚Ж‚И‚й“_(Џ‰Љъ“_)‚МЌА•W
+				Coord su = CalcDiffuNurbsS(u0,v0);						// “_S(u0,v0)‚Мu•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+				Coord sv = CalcDiffvNurbsS(u0,v0);						// “_S(u0,v0)‚Мv•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
 				if(ZoroCoord(su) == KOD_FALSE || ZoroCoord(sv) == KOD_FALSE) break;
-				Coord nt = DivCoord(CalcOuterProduct(su,sv),CalcEuclid(CalcOuterProduct(su,sv)));	// з‚№S(u0,v0)гЃ®еЌдЅЌжі•з·љгѓ™г‚Їгѓ€гѓ«
-				Coord nn = DivCoord(CalcOuterProduct(nf,nt),CalcEuclid(CalcOuterProduct(nf,nt)));	// е№ійќўFгЃЁе№ійќўFtгЃ«з›ґдє¤гЃ™г‚‹е№ійќўFnгЃ®еЌдЅЌжі•з·љгѓ™г‚Їгѓ€гѓ«
+				Coord nt = DivCoord(CalcOuterProduct(su,sv),CalcEuclid(CalcOuterProduct(su,sv)));	// “_S(u0,v0)‚М’P€К–@ђьѓxѓNѓgѓ‹
+				Coord nn = DivCoord(CalcOuterProduct(nf,nt),CalcEuclid(CalcOuterProduct(nf,nt)));	// •Ѕ–КF‚Ж•Ѕ–КFt‚Й’јЊр‚·‚й•Ѕ–КFn‚М’P€К–@ђьѓxѓNѓgѓ‹
 				if(ZoroCoord(nt) == KOD_FALSE || ZoroCoord(nn) == KOD_FALSE) break;
-				double df = CalcInnerProduct(pt,nf);						// еЋџз‚№гЃ‹г‚‰е№ійќўFгЃѕгЃ§гЃ®и·ќй›ў
-				double dt = CalcInnerProduct(p0,nt);						// еЋџз‚№гЃ‹г‚‰е№ійќўFtгЃѕгЃ§гЃ®и·ќй›ў
-				double dn = CalcInnerProduct(p0,nn);						// еЋџз‚№гЃ‹г‚‰е№ійќўFnгЃѕгЃ§гЃ®и·ќй›ў
-				Coord cross_ntn = CalcOuterProduct(nt,nn);					// еЌдЅЌжі•з·љгѓ™г‚Їгѓ€гѓ«nt,nnгЃ®гѓ™г‚Їгѓ€гѓ«з©Ќ
-				Coord cross_nnf = CalcOuterProduct(nn,nf);					// еЌдЅЌжі•з·љгѓ™г‚Їгѓ€гѓ«nn,nfгЃ®гѓ™г‚Їгѓ€гѓ«з©Ќ
-				Coord cross_nft = CalcOuterProduct(nf,nt);					// еЌдЅЌжі•з·љгѓ™г‚Їгѓ€гѓ«nf,ntгЃ®гѓ™г‚Їгѓ€гѓ«з©Ќ
-				Coord nume_p1_sub =  AddCoord(MulCoord(cross_ntn,df),MulCoord(cross_nnf,dt));	// 3е№ійќўF,Ft,FnгЃ®дє¤з‚№p1гЃ®е€†е­ђгЃ®жњЂе€ќгЃ®2й …г‚’иЁ€з®—
-				Coord nume_p1 = AddCoord(nume_p1_sub,MulCoord(cross_nft,dn));					// p1гЃ®е€†е­ђг‚’з®—е‡є
-				double denom_p1 = CalcScalarTriProduct(nf,nt,nn);			// p1гЃ®е€†жЇЌг‚’з®—е‡є
-				Coord p1 = DivCoord(nume_p1,denom_p1);						// p1г‚’з®—е‡є
-				Coord deltap = SubCoord(p1,p0);								// з‚№p1гЃЁз‚№p0гЃ®и·ќй›ўг‚’з®—е‡є
-				double deltap_dis = CalcEuclid(deltap);						// О”pгЃ®и·ќй›ўг‚’з®—е‡є
+				double df = CalcInnerProduct(pt,nf);						// Њґ“_‚©‚з•Ѕ–КF‚Ь‚Е‚М‹——Ј
+				double dt = CalcInnerProduct(p0,nt);						// Њґ“_‚©‚з•Ѕ–КFt‚Ь‚Е‚М‹——Ј
+				double dn = CalcInnerProduct(p0,nn);						// Њґ“_‚©‚з•Ѕ–КFn‚Ь‚Е‚М‹——Ј
+				Coord cross_ntn = CalcOuterProduct(nt,nn);					// ’P€К–@ђьѓxѓNѓgѓ‹nt,nn‚МѓxѓNѓgѓ‹ђП
+				Coord cross_nnf = CalcOuterProduct(nn,nf);					// ’P€К–@ђьѓxѓNѓgѓ‹nn,nf‚МѓxѓNѓgѓ‹ђП
+				Coord cross_nft = CalcOuterProduct(nf,nt);					// ’P€К–@ђьѓxѓNѓgѓ‹nf,nt‚МѓxѓNѓgѓ‹ђП
+				Coord nume_p1_sub =  AddCoord(MulCoord(cross_ntn,df),MulCoord(cross_nnf,dt));	// 3•Ѕ–КF,Ft,Fn‚МЊр“_p1‚М•ЄЋq‚МЌЕЏ‰‚М2ЌЂ‚рЊvЋZ
+				Coord nume_p1 = AddCoord(nume_p1_sub,MulCoord(cross_nft,dn));					// p1‚М•ЄЋq‚рЋZЏo
+				double denom_p1 = CalcScalarTriProduct(nf,nt,nn);			// p1‚М•Є•к‚рЋZЏo
+				Coord p1 = DivCoord(nume_p1,denom_p1);						// p1‚рЋZЏo
+				Coord deltap = SubCoord(p1,p0);								// “_p1‚Ж“_p0‚М‹——Ј‚рЋZЏo
+				double deltap_dis = CalcEuclid(deltap);						// ѓўp‚М‹——Ј‚рЋZЏo
 				double tri_su = CalcScalarTriProduct(su,sv,nf);
 				double tri_sv = CalcScalarTriProduct(su,sv,nf);
 				if(CheckZero(tri_sv,HIGH_ACCURACY) || CheckZero(tri_su,HIGH_ACCURACY)) break;
-				double du = CalcScalarTriProduct(deltap,sv,nf)/CalcScalarTriProduct(su,sv,nf);	// ж–°гЃ—гЃ„з‚№s(u0+du,v0+dv)г‚’дёЋгЃ€г‚‹гЃџг‚ЃгЃ®duг‚’з®—е‡є
-				double dv = -CalcScalarTriProduct(deltap,su,nf)/CalcScalarTriProduct(su,sv,nf);	// ж–°гЃ—гЃ„з‚№s(u0+du,v0+dv)г‚’дёЋгЃ€г‚‹гЃџг‚ЃгЃ®dvг‚’з®—е‡є
-				u0 += du;													// ж–°гЃ—гЃ„з‚№гЃ®uгѓ‘гѓ©гѓЎгѓјг‚їг‚’еѕ—г‚‹
-				v0 += dv;													// ж–°гЃ—гЃ„з‚№гЃ®vгѓ‘гѓ©гѓЎгѓјг‚їг‚’еѕ—г‚‹
-				if(u0 < nurb->U[0] || u0 > nurb->U[1] || v0 < nurb->V[0] || v0 > nurb->V[1]){	// иїЅи·Ўз‚№гЃЊгѓ‘гѓ©гѓЎгѓјг‚їй еџџе¤–гЃ«е‡єгЃџ
-				//	fprintf(stderr,"NURBS ERROR:ж›ІйќўRгЃ®гѓ‘гѓ©гѓЎгѓјг‚їгЃЊй еџџе¤–гЃ«е‡єгЃѕгЃ—гЃџ\n");
+				double du = CalcScalarTriProduct(deltap,sv,nf)/CalcScalarTriProduct(su,sv,nf);	// ђV‚µ‚ў“_s(u0+du,v0+dv)‚р—^‚¦‚й‚Ѕ‚Я‚Мdu‚рЋZЏo
+				double dv = -CalcScalarTriProduct(deltap,su,nf)/CalcScalarTriProduct(su,sv,nf);	// ђV‚µ‚ў“_s(u0+du,v0+dv)‚р—^‚¦‚й‚Ѕ‚Я‚Мdv‚рЋZЏo
+				u0 += du;													// ђV‚µ‚ў“_‚Мuѓpѓ‰ѓЃЃ[ѓ^‚р“ѕ‚й
+				v0 += dv;													// ђV‚µ‚ў“_‚Мvѓpѓ‰ѓЃЃ[ѓ^‚р“ѕ‚й
+				if(u0 < U[0] || u0 > U[1] || v0 < V[0] || v0 > V[1]){	// ’ЗђХ“_‚Єѓpѓ‰ѓЃЃ[ѓ^—М€жЉO‚ЙЏo‚Ѕ
+				//	fprintf(stderr,"NURBS ERROR:‹И–КR‚Мѓpѓ‰ѓЃЃ[ѓ^‚Є—М€жЉO‚ЙЏo‚Ь‚µ‚Ѕ\n");
 					break;
 				}
-				if(deltap_dis < APPROX_ZERO_H){//CONVERG_GAP){								// О”pгЃЊеЏЋжќџгЃ—гЃџг‚‰
+				if(deltap_dis < APPROX_ZERO_H){//CONVERG_GAP){								// ѓўp‚ЄЋы‘©‚µ‚Ѕ‚з
 					// fprintf(stderr,"   %d:%lf,%lf\n",ansnum,u0,v0);		// debug
-					ans[ansnum] = SetCoord(u0,v0,0);						// и§ЈгЃЁгЃ—гЃ¦з™»йЊІ
-					ansnum++;												// и§Јг‚’г‚«г‚¦гѓігѓ€
-					//if(ansnum == ans_size)								// и§ЈгЃ®ж•°гЃЊе€¶й™ђг‚’и¶ЉгЃ€гЃџ
+					ans[ansnum] = SetCoord(u0,v0,0);						// ‰р‚Ж‚µ‚Д“o^
+					ansnum++;												// ‰р‚рѓJѓEѓ“ѓg
+					//if(ansnum == ans_size)								// ‰р‚Мђ”‚Єђ§ЊА‚р‰z‚¦‚Ѕ
 						//return ansnum;
 					break;
 				}
@@ -2011,53 +2296,60 @@ int NURBS_Func::CalcIntersecPtsPlaneGeom(NURBSS *nurb,Coord pt,Coord nf,int u_di
 }
 
 // Function: CalcIntersecPtsOffsetPlaneSearch
-// г‚Єгѓ•г‚»гѓѓгѓ€NURBSж›ІйќўгЃЁе№ійќўгЃЁгЃ®дє¤з‚№зѕ¤г‚’дє¤з‚№иїЅи·Ўжі•гЃ«гЃ¦ж±‚г‚Ѓг‚‹
+// ѓIѓtѓZѓbѓgNURBS‹И–К‚Ж•Ѕ–К‚Ж‚МЊр“_ЊQ‚рЊр“_’ЗђХ–@‚Й‚Д‹Ѓ‚Я‚й
 //
 // Parameters:
-// *nurb - NURBSж›Ійќў  
-// os - г‚Єгѓ•г‚»гѓѓгѓ€й‡Џ  
-// pt - е№ійќўдёЉгЃ®1з‚№  
-// nvec - е№ійќўгЃ®жі•з·љгѓ™г‚Їгѓ€гѓ«  
-// ds - дє¤з·љ(дє¤з‚№зѕ¤)гЃ®зІ—гЃ•(еЇ†0.1пЅћ2з–Ћ)  
-// initdivnum - е€ќжњџз‚№жЋўзґўгЃ®иЌ’гЃ•(еЇ†10пЅћ1з–Ћ)
-// *ans - и§Јж јзґЌз”Ёй…Ќе€—  
-// ans_size - и§ЈгЃ®ж•°(ansгЃ®й…Ќе€—й•·)
+// *nurb - NURBS‹И–К  
+// os - ѓIѓtѓZѓbѓg—К  
+// pt - •Ѕ–КЏг‚М1“_  
+// nvec - •Ѕ–К‚М–@ђьѓxѓNѓgѓ‹  
+// ds - Њрђь(Њр“_ЊQ)‚М‘e‚і(–§0.1Ѓ`2‘a)  
+// initdivnum - Џ‰Љъ“_’TЌх‚МЌr‚і(–§10Ѓ`1‘a)
+// *ans - ‰рЉi”[—p”z—с  
+// ans_size - ‰р‚Мђ”(ans‚М”z—с’·)
 //
 // Return:
-// KOD_FALSE:NURBSж›ІйќўгЃЁе№ійќўгЃЊдє¤е·®гЃ—гЃ¦гЃ„гЃЄгЃ„гЂЂKOD_ERR:з‰№з•°з‚№гЃѕгЃџгЃЇз™єж•ЈгЃ«г‚€г‚Ље‡¦зђ†г‚’дё­ж–­
-int NURBS_Func::CalcIntersecPtsOffsetPlaneSearch(NURBSS *nurb,double os,Coord pt,Coord nvec,double ds,int initdivnum,Coord *ans,int ans_size)
+// KOD_FALSE:NURBS‹И–К‚Ж•Ѕ–К‚ЄЊрЌ·‚µ‚Д‚ў‚И‚ўЃ@KOD_ERR:“Б€Щ“_‚Ь‚Ѕ‚Н”­ЋU‚Й‚ж‚иЏ€—ќ‚р’†’f
+//int NURBS_Func::CalcIntersecPtsOffsetPlaneSearch(NURBSS *nurb,double os,Coord pt,Coord nvec,double ds,int initdivnum,Coord *ans,int ans_size)
+int NURBSS::CalcIntersecPtsOffsetPlaneSearch(double os,Coord pt,Coord nvec,double ds,int initdivnum,Coord *ans,int ans_size)
 {
 	pt.dmy = os;
-	return CalcIntersecPtsPlaneSearch(nurb,pt,nvec,ds,initdivnum,ans,ans_size,CALC_OFFSET);
+//	return CalcIntersecPtsPlaneSearch(nurb,pt,nvec,ds,initdivnum,ans,ans_size,CALC_OFFSET);
+	return CalcIntersecPtsPlaneSearch(pt,nvec,ds,initdivnum,ans,ans_size,CALC_OFFSET);
 }
 
-// е№ійќўгЃЁг‚Єгѓ•г‚»гѓѓгѓ€NURBSж›ІйќўгЃЁгЃ®дє¤з‚№г‚’иЈњеЉ©е№ійќўг‚’з”ЁгЃ„гЃ¦ж•°з‚№ж±‚г‚Ѓг‚‹
-int NURBS_Func::CalcIntersecPtsOffsetPlaneGeom(NURBSS *S,double d,Coord pt,Coord nf,int divnum,Coord *ans,int ans_size)
+// •Ѕ–К‚ЖѓIѓtѓZѓbѓgNURBS‹И–К‚Ж‚МЊр“_‚р•вЏ••Ѕ–К‚р—p‚ў‚Дђ”“_‹Ѓ‚Я‚й
+//int NURBS_Func::CalcIntersecPtsOffsetPlaneGeom(NURBSS *S,double d,Coord pt,Coord nf,int divnum,Coord *ans,int ans_size)
+int NURBSS::CalcIntersecPtsOffsetPlaneGeom(double d,Coord pt,Coord nf,int divnum,Coord *ans,int ans_size)
 {
 	int ansnum = 0;
 
 	for(int u=0;u<=divnum;u++){
 		for(int v=0;v<=divnum;v++){
-			double u0 = S->U[0] + (S->U[1] - S->U[0])*(double)u/(double)divnum;
-			double v0 = S->V[0] + (S->V[1] - S->V[0])*(double)v/(double)divnum;
+			double u0 = U[0] + (U[1] - U[0])*(double)u/(double)divnum;
+			double v0 = V[0] + (V[1] - V[0])*(double)v/(double)divnum;
 			for(int i=0;i<LOOPCOUNTMAX;i++){
-				Coord Su = CalcDiffuNurbsS(S,u0,v0);
-				Coord Sv = CalcDiffvNurbsS(S,u0,v0);
-				SFQuant sfq(S,u0,v0);					// S(u0,v0)дёЉгЃ®ж›Ійќўеџєжњ¬й‡Џг‚’еѕ—г‚‹
+//				Coord Su = CalcDiffuNurbsS(S,u0,v0);
+//				Coord Sv = CalcDiffvNurbsS(S,u0,v0);
+				Coord Su = CalcDiffuNurbsS(u0,v0);
+				Coord Sv = CalcDiffvNurbsS(u0,v0);
+				SFQuant sfq(this,u0,v0);					// S(u0,v0)Џг‚М‹И–КЉо–{—К‚р“ѕ‚й
 				double H = sfq.E*sfq.G-sfq.F*sfq.F;
 				double H2 = H*H;
-				if(CheckZero(H,HIGH_ACCURACY) == KOD_TRUE){		// 0е‰Іг‚Љз¦Ѓж­ў
+				if(CheckZero(H,HIGH_ACCURACY) == KOD_TRUE){		// 0Љ„‚и‹ЦЋ~
                     //GuiIF.SetMessage("NURBS KOD_ERROR:The process is stoped by detecting singular point.");
 					//return KOD_ERR;		
 					break;
 				}
-				Coord nu = AddCoord(MulCoord(Su,(sfq.M*sfq.F-sfq.L*sfq.G)/H2),MulCoord(Sv,(sfq.L*sfq.F-sfq.M*sfq.E)/H2));	// SгЃ®жі•з·љгѓ™г‚Їгѓ€гѓ«пЅЋгЃ®uж–№еђ‘еѕ®е€†
-				Coord nv = AddCoord(MulCoord(Su,(sfq.N*sfq.F-sfq.M*sfq.G)/H2),MulCoord(Sv,(sfq.M*sfq.F-sfq.N*sfq.E)/H2));	// SгЃ®жі•з·љгѓ™г‚Їгѓ€гѓ«пЅЋгЃ®vж–№еђ‘еѕ®е€†
-				Coord Su_ = AddCoord(Su,MulCoord(nu,d));	// SгЃ®г‚Єгѓ•г‚»гѓѓгѓ€ж›ІйќўS_гЃ®uж–№еђ‘еѕ®е€†
-				Coord Sv_ = AddCoord(Sv,MulCoord(nv,d));	// SгЃ®г‚Єгѓ•г‚»гѓѓгѓ€ж›ІйќўS_гЃ®vж–№еђ‘еѕ®е€†
-				Coord nt = CalcNormVecOnNurbsS(S,u0,v0);
-				Coord nn = DivCoord(CalcOuterProduct(nf,nt),CalcEuclid(CalcOuterProduct(nf,nt)));	// е№ійќўFгЃЁе№ійќўFtгЃ«з›ґдє¤гЃ™г‚‹е№ійќўFnгЃ®еЌдЅЌжі•з·љгѓ™г‚Їгѓ€гѓ«
-				Coord p0 = AddCoord(CalcNurbsSCoord(S,u0,v0),MulCoord(nt,d));						// S(u0,v0)гЃ®еє§жЁ™еЂ¤
+				Coord nu = AddCoord(MulCoord(Su,(sfq.M*sfq.F-sfq.L*sfq.G)/H2),MulCoord(Sv,(sfq.L*sfq.F-sfq.M*sfq.E)/H2));	// S‚М–@ђьѓxѓNѓgѓ‹‚Ћ‚Мu•ыЊь”ч•Є
+				Coord nv = AddCoord(MulCoord(Su,(sfq.N*sfq.F-sfq.M*sfq.G)/H2),MulCoord(Sv,(sfq.M*sfq.F-sfq.N*sfq.E)/H2));	// S‚М–@ђьѓxѓNѓgѓ‹‚Ћ‚Мv•ыЊь”ч•Є
+				Coord Su_ = AddCoord(Su,MulCoord(nu,d));	// S‚МѓIѓtѓZѓbѓg‹И–КS_‚Мu•ыЊь”ч•Є
+				Coord Sv_ = AddCoord(Sv,MulCoord(nv,d));	// S‚МѓIѓtѓZѓbѓg‹И–КS_‚Мv•ыЊь”ч•Є
+//				Coord nt = CalcNormVecOnNurbsS(S,u0,v0);
+				Coord nt = CalcNormVecOnNurbsS(u0,v0);
+				Coord nn = DivCoord(CalcOuterProduct(nf,nt),CalcEuclid(CalcOuterProduct(nf,nt)));	// •Ѕ–КF‚Ж•Ѕ–КFt‚Й’јЊр‚·‚й•Ѕ–КFn‚М’P€К–@ђьѓxѓNѓgѓ‹
+//				Coord p0 = AddCoord(CalcNurbsSCoord(S,u0,v0),MulCoord(nt,d));						// S(u0,v0)‚МЌА•W’l
+				Coord p0 = AddCoord(CalcNurbsSCoord(u0,v0),MulCoord(nt,d));						// S(u0,v0)‚МЌА•W’l
 				double d = nf&pt;
 				double dt = nt&p0;
 				double dn = nn&p0;
@@ -2082,78 +2374,86 @@ int NURBS_Func::CalcIntersecPtsOffsetPlaneGeom(NURBSS *S,double d,Coord pt,Coord
 }
 
 // Function: CalcIntersecPtsPlaneSearch
-// NURBSж›ІйќўгЃЁе№ійќўгЃЁгЃ®дє¤з‚№зѕ¤г‚’дє¤з‚№иїЅи·Ўжі•гЃ«гЃ¦ж±‚г‚Ѓг‚‹
+// NURBS‹И–К‚Ж•Ѕ–К‚Ж‚МЊр“_ЊQ‚рЊр“_’ЗђХ–@‚Й‚Д‹Ѓ‚Я‚й
 //
 // Parameters:
-// *nurb - NURBSж›Ійќў  
-// pt - е№ійќўдёЉгЃ®1з‚№  
-// nvec - е№ійќўгЃ®жі•з·љгѓ™г‚Їгѓ€гѓ«  
-// ds - дє¤з·љ(дє¤з‚№зѕ¤)гЃ®зІ—гЃ•(еЇ†0.1пЅћ2з–Ћ)  
-// initdivnum - е€ќжњџз‚№жЋўзґўгЃ®иЌ’гЃ•(еЇ†10пЅћ1з–Ћ)
-// *ans - и§Јж јзґЌз”Ёй…Ќе€—  
-// ans_size - и§ЈгЃ®ж•°(ansгЃ®й…Ќе€—й•·)
-// method:дє¤з‚№з®—е‡єж™‚гЃ®ж•°еЂ¤и§Јжћђжі•гЃ®йЃёжЉћ(RUNGE_KUTTA or BULIRSH_STOER)
+// *nurb - NURBS‹И–К  
+// pt - •Ѕ–КЏг‚М1“_  
+// nvec - •Ѕ–К‚М–@ђьѓxѓNѓgѓ‹  
+// ds - Њрђь(Њр“_ЊQ)‚М‘e‚і(–§0.1Ѓ`2‘a)  
+// initdivnum - Џ‰Љъ“_’TЌх‚МЌr‚і(–§10Ѓ`1‘a)
+// *ans - ‰рЉi”[—p”z—с  
+// ans_size - ‰р‚Мђ”(ans‚М”z—с’·)
+// method:Њр“_ЋZЏoЋћ‚Мђ”’l‰рђН–@‚М‘I‘р(RUNGE_KUTTA or BULIRSH_STOER)
 //
 // Return:
-// иї”еЂ¤гЂЂKOD_FALSE:NURBSж›ІйќўгЃЁе№ійќўгЃЊдє¤е·®гЃ—гЃ¦гЃ„гЃЄгЃ„гЂЂKOD_ERR:з‰№з•°з‚№гЃѕгЃџгЃЇз™єж•ЈгЃ«г‚€г‚Ље‡¦зђ†г‚’дё­ж–­
-int NURBS_Func::CalcIntersecPtsPlaneSearch(NURBSS *nurb,Coord pt,Coord nvec,double ds,int initdivnum,Coord *ans,int ans_size,int method)
+// •Ф’lЃ@KOD_FALSE:NURBS‹И–К‚Ж•Ѕ–К‚ЄЊрЌ·‚µ‚Д‚ў‚И‚ўЃ@KOD_ERR:“Б€Щ“_‚Ь‚Ѕ‚Н”­ЋU‚Й‚ж‚иЏ€—ќ‚р’†’f
+//int NURBS_Func::CalcIntersecPtsPlaneSearch(NURBSS *nurb,Coord pt,Coord nvec,double ds,int initdivnum,Coord *ans,int ans_size,int method)
+int NURBSS::CalcIntersecPtsPlaneSearch(Coord pt,Coord nvec,double ds,int initdivnum,Coord *ans,int ans_size,int method)
 {
-	int loop_count=0;		// еЏЋжќџиЁ€з®—гЃ®гѓ«гѓјгѓ—ж•°
+	int loop_count=0;		// Ћы‘©ЊvЋZ‚Мѓ‹Ѓ[ѓvђ”
 	int pcount=0;
 	int anscount=0;
 	Coord oldp;
 	Coord newp;
-	Coord init_pt[INTERSECPTNUMMAX];		// е€ќжњџз‚№(u,vгѓ‘гѓ©гѓЎгѓјг‚їеЂ¤)
-	Coord init_pt_buf[INTERSECPTNUMMAX];	// е€ќжњџз‚№д»®зЅ®гЃЌгѓђгѓѓгѓ•г‚Ў(u,vгѓ‘гѓ©гѓЎгѓјг‚їеЂ¤)
-	Coord init_pt_Coord[INTERSECPTNUMMAX];	// е€ќжњџз‚№(x,y,zеє§жЁ™еЂ¤)
-	bool  init_pt_flag[INTERSECPTNUMMAX];	// еђ„е€ќжњџз‚№г‚’йЂљг‚Љзµ‚гЃ€гЃџгЃ‹г‚’е€¤е€ҐгЃ™г‚‹гѓ•гѓ©г‚°
-	bool  init_allpt_flag=KOD_FALSE;			// е€ќжњџз‚№г‚’е…ЁгЃ¦йЂљг‚Љзµ‚гЃ€гЃџгЃ‹г‚’е€¤е€ҐгЃ™г‚‹гѓ•гѓ©г‚°
-	int   init_pt_num=0;						// е€ќжњџз‚№гЃ®ж•°
+	Coord init_pt[INTERSECPTNUMMAX];		// Џ‰Љъ“_(u,vѓpѓ‰ѓЃЃ[ѓ^’l)
+	Coord init_pt_buf[INTERSECPTNUMMAX];	// Џ‰Љъ“_‰ј’u‚«ѓoѓbѓtѓ@(u,vѓpѓ‰ѓЃЃ[ѓ^’l)
+	Coord init_pt_Coord[INTERSECPTNUMMAX];	// Џ‰Љъ“_(x,y,zЌА•W’l)
+	bool  init_pt_flag[INTERSECPTNUMMAX];	// ЉeЏ‰Љъ“_‚р’К‚иЏI‚¦‚Ѕ‚©‚р”»•К‚·‚йѓtѓ‰ѓO
+	bool  init_allpt_flag=KOD_FALSE;			// Џ‰Љъ“_‚р‘S‚Д’К‚иЏI‚¦‚Ѕ‚©‚р”»•К‚·‚йѓtѓ‰ѓO
+	int   init_pt_num=0;						// Џ‰Љъ“_‚Мђ”
 	int   init_pt_flag_count=0;
-	double u,v;								// дє¤з·љиїЅи·Ўдё­гЃ®u,vгѓ‘гѓ©гѓЎгѓјг‚їдё­й–“еЂ¤
-	double dist;							// гѓ«гѓјгѓ—и„±е‡єз”ЁгЃ«иїЅи·Ўз‚№й–“и·ќй›ўг‚’й–ѕеЂ¤гЃЁгЃ™г‚‹
-	int loopbreak_flag = KOD_FALSE;				// е€ќжњџз‚№дёЂи‡ґгѓ•гѓ©г‚°
-	int  search_flag = KOD_TRUE;				// дє¤з·љиїЅи·Ўж–№еђ‘гѓ•гѓ©г‚°(KOD_TRUE:й †ж–№еђ‘,KOD_FALSE:йЂ†ж–№еђ‘)
-	int  inverse_flag = KOD_FALSE;				// дє¤з·љиїЅи·Ўж–№еђ‘йЂ†и»ўгѓ•гѓ©г‚°
+	double u,v;								// Њрђь’ЗђХ’†‚Мu,vѓpѓ‰ѓЃЃ[ѓ^’†ЉФ’l
+//	double dist;							// ѓ‹Ѓ[ѓv’EЏo—p‚Й’ЗђХ“_ЉФ‹——Ј‚ри‡’l‚Ж‚·‚й
+	int loopbreak_flag = KOD_FALSE;				// Џ‰Љъ“_€к’vѓtѓ‰ѓO
+	int  search_flag = KOD_TRUE;				// Њрђь’ЗђХ•ыЊьѓtѓ‰ѓO(KOD_TRUE:Џ‡•ыЊь,KOD_FALSE:‹t•ыЊь)
+	int  inverse_flag = KOD_FALSE;				// Њрђь’ЗђХ•ыЊь‹t“]ѓtѓ‰ѓO
 	double color[3] = {0,1,1};
-	double *hdid,*hnext;
+//	double *hdid,*hnext;
 
 	//FILE *fp = fopen("debug.csv","w");
 
-	// е€ќжњџз‚№йЂљйЃЋе€¤е€Ґгѓ•гѓ©г‚°г‚’е€ќжњџеЊ–
+	// Џ‰Љъ“_’К‰Я”»•Кѓtѓ‰ѓO‚рЏ‰Љъ‰»
 	for(int i=0;i<INTERSECPTNUMMAX;i++){
 		init_pt_flag[i] = KOD_FALSE;
 	}
 	init_pt_flag[0] = KOD_TRUE;
 
-	// гЃѕгЃљдє¤з·љиїЅи·Ўжі•гЃ®е€ќжњџз‚№гЃЁгЃ—гЃ¦дє¤з‚№г‚’гЃ„гЃЏгЃ¤гЃ‹ж±‚г‚Ѓг‚‹
-	if(method == CALC_OFFSET)
-		init_pt_num = CalcIntersecPtsOffsetPlaneGeom(nurb,pt.dmy,pt,nvec,initdivnum,init_pt,INTERSECPTNUMMAX);
-	else{
-		// е€ќжњџз‚№г‚’2ж–№еђ‘гЃ§г‚µгѓјгѓЃ
-		init_pt_num = CalcIntersecPtsPlaneU(nurb,pt,nvec,initdivnum,init_pt,INTERSECPTNUMMAX);
-		int num = CalcIntersecPtsPlaneV(nurb,pt,nvec,initdivnum,init_pt_buf,INTERSECPTNUMMAX);
-		init_pt_num = CatCoord(init_pt,init_pt_buf,INTERSECPTNUMMAX,init_pt_num,num);
-		if(!init_pt_num)
-			init_pt_num = CalcIntersecPtsPlaneGeom(nurb,pt,nvec,initdivnum,initdivnum,init_pt,INTERSECPTNUMMAX);	// и§ЈгЃЊеѕ—г‚‰г‚ЊгЃЄгЃ‹гЃЈгЃџг‚‰пјЊг‚µгѓјгѓЃжі•г‚’е¤‰гЃ€е†Ќгѓ€гѓ©г‚¤
+	// ‚Ь‚ёЊрђь’ЗђХ–@‚МЏ‰Љъ“_‚Ж‚µ‚ДЊр“_‚р‚ў‚­‚В‚©‹Ѓ‚Я‚й
+	if(method == CALC_OFFSET) {
+//		init_pt_num = CalcIntersecPtsOffsetPlaneGeom(nurb,pt.dmy,pt,nvec,initdivnum,init_pt,INTERSECPTNUMMAX);
+		init_pt_num = CalcIntersecPtsOffsetPlaneGeom(pt.dmy,pt,nvec,initdivnum,init_pt,INTERSECPTNUMMAX);
 	}
-	init_pt_num = CheckTheSamePoints(init_pt,init_pt_num);		// еђЊдёЂз‚№гЃЇй™¤еЋ»гЃ™г‚‹
-	if(!init_pt_num){		// и¦‹гЃ¤гЃ‹г‚‰гЃЄгЃ„е ґеђ€гЃЇгЂЃдє¤е·®гЃ—гЃ¦гЃ„гЃЄгЃ„гЃЁгЃїгЃЄгЃ™
+	else{
+		// Џ‰Љъ“_‚р2•ыЊь‚ЕѓTЃ[ѓ`
+//		init_pt_num = CalcIntersecPtsPlaneU(nurb,pt,nvec,initdivnum,init_pt,INTERSECPTNUMMAX);
+//		int num = CalcIntersecPtsPlaneV(nurb,pt,nvec,initdivnum,init_pt_buf,INTERSECPTNUMMAX);
+		init_pt_num = CalcIntersecPtsPlaneU(pt,nvec,initdivnum,init_pt,INTERSECPTNUMMAX);
+		int num = CalcIntersecPtsPlaneV(pt,nvec,initdivnum,init_pt_buf,INTERSECPTNUMMAX);
+		init_pt_num = CatCoord(init_pt,init_pt_buf,INTERSECPTNUMMAX,init_pt_num,num);
+		if(!init_pt_num) {
+//			init_pt_num = CalcIntersecPtsPlaneGeom(nurb,pt,nvec,initdivnum,initdivnum,init_pt,INTERSECPTNUMMAX);	// ‰р‚Є“ѕ‚з‚к‚И‚©‚Б‚Ѕ‚зЃCѓTЃ[ѓ`–@‚р•П‚¦ЌДѓgѓ‰ѓC
+			init_pt_num = CalcIntersecPtsPlaneGeom(pt,nvec,initdivnum,initdivnum,init_pt,INTERSECPTNUMMAX);	// ‰р‚Є“ѕ‚з‚к‚И‚©‚Б‚Ѕ‚зЃCѓTЃ[ѓ`–@‚р•П‚¦ЌДѓgѓ‰ѓC
+		}
+	}
+	init_pt_num = CheckTheSamePoints(init_pt,init_pt_num);		// “Ї€к“_‚НЏњ‹Ћ‚·‚й
+	if(!init_pt_num){		// Њ©‚В‚©‚з‚И‚ўЏкЌ‡‚НЃAЊрЌ·‚µ‚Д‚ў‚И‚ў‚Ж‚Э‚И‚·
         GuiIF.SetMessage("NURBS KOD_ERROR:Init intersection point is noexistence");
 		return KOD_FALSE;					
 	}
-	else if(init_pt_num == KOD_ERR) return KOD_ERR;			// init_pt_numгЃЊinit_ptгЃ®й…Ќе€—й•·г‚’и¶…гЃ€гЃџ
+	else if(init_pt_num == KOD_ERR) return KOD_ERR;			// init_pt_num‚Єinit_pt‚М”z—с’·‚р’ґ‚¦‚Ѕ
 
 	for(int i=0;i<init_pt_num;i++){
-		init_pt_Coord[i] = CalcNurbsSCoord(nurb,init_pt[i].x,init_pt[i].y);		// дє¤з‚№гЃ®uvгѓ‘гѓ©гѓЎгѓјг‚їг‚’xyzеє§жЁ™еЂ¤гЃ«е¤‰жЏ›гЃ—гЃџг‚‚гЃ®г‚’дїќжЊЃгЃ—гЃ¦гЃЉгЃЏ
+//		init_pt_Coord[i] = CalcNurbsSCoord(nurb,init_pt[i].x,init_pt[i].y);		// Њр“_‚Мuvѓpѓ‰ѓЃЃ[ѓ^‚рxyzЌА•W’l‚Й•ПЉ·‚µ‚Ѕ‚а‚М‚р•ЫЋќ‚µ‚Д‚Ё‚­
+		init_pt_Coord[i] = CalcNurbsSCoord(init_pt[i].x,init_pt[i].y);		// Њр“_‚Мuvѓpѓ‰ѓЃЃ[ѓ^‚рxyzЌА•W’l‚Й•ПЉ·‚µ‚Ѕ‚а‚М‚р•ЫЋќ‚µ‚Д‚Ё‚­
 		//fprintf(stderr,"%d,%lf,%lf,%lf,%lf,%lf\n",i,init_pt[i].x,init_pt[i].y,init_pt_Coord[i].x,init_pt_Coord[i].y,init_pt_Coord[i].z);	// debug
 		//DrawPoint(init_pt_Coord[i],1,3,color);	// debug
 	}
 
-	// е€ќжњџз‚№г‚’е…ЁгЃ¦йЂљйЃЋгЃ™г‚‹гЃѕгЃ§дє¤з·љиїЅи·Ўжі•г‚’з№°г‚Љиї”гЃ™
+	// Џ‰Љъ“_‚р‘S‚Д’К‰Я‚·‚й‚Ь‚ЕЊрђь’ЗђХ–@‚рЊJ‚и•Ф‚·
 	while(init_allpt_flag == KOD_FALSE){
 		//fprintf(stderr,"Init%d,%lf,%lf,%lf,%lf,%lf\n",pcount+1,init_pt[pcount].x,init_pt[pcount].y,init_pt_Coord[pcount].x,init_pt_Coord[pcount].y,init_pt_Coord[pcount].z);		// debug
-		// дє¤з·љиїЅи·ЎгЃ®гЃџг‚ЃгЃ®е§‹з‚№(u,v)г‚’г‚»гѓѓгѓ€
+		// Њрђь’ЗђХ‚М‚Ѕ‚Я‚МЋn“_(u,v)‚рѓZѓbѓg
 		u = oldp.x = init_pt[pcount].x;
 		v = oldp.y = init_pt[pcount].y;
 		ans[anscount] = SetCoord(init_pt[pcount]);
@@ -2162,32 +2462,38 @@ int NURBS_Func::CalcIntersecPtsPlaneSearch(NURBSS *nurb,Coord pt,Coord nvec,doub
 		init_pt_flag_count++;
 		//if(init_pt_flag_count == init_pt_num && init_pt_num > 1)	break;
 
-		if(inverse_flag == KOD_TRUE){	// йЂ†ж–№еђ‘гЃёгЃ®дє¤з·љиїЅи·Ўг‚‚зµ‚дє†гЃ—гЃ¦гЃ„гЃџг‚‰
-			inverse_flag = KOD_FALSE;	// дє¤з·љиїЅи·Ўж–№еђ‘г‚’й †ж–№еђ‘гЃ«ж€»гЃ™
+		if(inverse_flag == KOD_TRUE){	// ‹t•ыЊь‚Ц‚МЊрђь’ЗђХ‚аЏI—№‚µ‚Д‚ў‚Ѕ‚з
+			inverse_flag = KOD_FALSE;	// Њрђь’ЗђХ•ыЊь‚рЏ‡•ыЊь‚Й–Я‚·
 		}
 
-		// дє¤з·љиїЅи·Ўй–‹е§‹
+		// Њрђь’ЗђХЉJЋn
 		loop_count = 0;
 		while(loop_count < ans_size){
-			// й †ж–№еђ‘гЃ«дє¤з·љиїЅи·Ў
+			// Џ‡•ыЊь‚ЙЊрђь’ЗђХ
 			if(inverse_flag == KOD_FALSE){
-				if(method == RUNGE_KUTTA)	search_flag = SearchIntersectPt_RKM(nurb,pt,nvec,ds,&u,&v,FORWARD);	// й †ж–№еђ‘гЃ®дє¤з‚№з®—е‡є
-				else if(method == BULIRSH_STOER)	search_flag = SearchIntersectPt_BS(nurb,pt,nvec,ds,&u,&v,FORWARD);
-				else search_flag = SearchIntersectPt_OS(nurb,pt,nvec,ds,&u,&v,FORWARD);
-				if(search_flag == KOD_ERR){							// й †ж–№еђ‘иїЅи·ЎгЃ«е¤±ж•—гЃ—гЃџе ґеђ€гЃЇ
-					inverse_flag = KOD_TRUE;						// йЂ†ж–№еђ‘иїЅи·Ўгѓ•гѓ©г‚°г‚’ON
+//				if(method == RUNGE_KUTTA)	search_flag = SearchIntersectPt_RKM(nurb,pt,nvec,ds,&u,&v,FORWARD);	// Џ‡•ыЊь‚МЊр“_ЋZЏo
+//				else if(method == BULIRSH_STOER)	search_flag = SearchIntersectPt_BS(nurb,pt,nvec,ds,&u,&v,FORWARD);
+//				else search_flag = SearchIntersectPt_OS(nurb,pt,nvec,ds,&u,&v,FORWARD);
+				if(method == RUNGE_KUTTA)	search_flag = SearchIntersectPt_RKM(pt,nvec,ds,&u,&v,FORWARD);	// Џ‡•ыЊь‚МЊр“_ЋZЏo
+				else if(method == BULIRSH_STOER)	search_flag = SearchIntersectPt_BS(pt,nvec,ds,&u,&v,FORWARD);
+				else search_flag = SearchIntersectPt_OS(pt,nvec,ds,&u,&v,FORWARD);
+				if(search_flag == KOD_ERR){							// Џ‡•ыЊь’ЗђХ‚ЙЋё”s‚µ‚ЅЏкЌ‡‚Н
+					inverse_flag = KOD_TRUE;						// ‹t•ыЊь’ЗђХѓtѓ‰ѓO‚рON
 					//fprintf(stderr,"a,%d,%d,%lf,%lf\n",search_flag,inverse_flag,u,v);	// for debug	
-					u = init_pt[pcount].x;							// дє¤з‚№иїЅи·ЎгЃ®е€ќжњџз‚№г‚’г‚»гѓѓгѓ€гЃ—гЃЄгЃЉгЃ™
+					u = init_pt[pcount].x;							// Њр“_’ЗђХ‚МЏ‰Љъ“_‚рѓZѓbѓg‚µ‚И‚Ё‚·
 					v = init_pt[pcount].y;
 				}
 				//fprintf(stderr,"e,%d,%d,%lf,%lf\n",search_flag,inverse_flag,u,v);	// for debug
 			}
-			// йЂ†ж–№еђ‘иїЅи·Ўгѓ•гѓ©г‚°гЃЊONгЃЄг‚‰
+			// ‹t•ыЊь’ЗђХѓtѓ‰ѓO‚ЄON‚И‚з
 			if(inverse_flag == KOD_TRUE){
-				if(method == RUNGE_KUTTA)	search_flag = SearchIntersectPt_RKM(nurb,pt,nvec,ds,&u,&v,INVERSE);	// йЂ†ж–№еђ‘гЃ®дє¤з‚№з®—е‡є
-				else if(method == BULIRSH_STOER)	search_flag = SearchIntersectPt_BS(nurb,pt,nvec,ds,&u,&v,INVERSE);
-				else search_flag = SearchIntersectPt_OS(nurb,pt,nvec,ds,&u,&v,INVERSE);
-				if(search_flag == KOD_ERR){					// з‰№з•°з‚№ж¤ње‡єгЃ«г‚€г‚Ље‡¦зђ†г‚’з¶™з¶љгЃ§гЃЌгЃЄгЃ„е ґеђ€
+//				if(method == RUNGE_KUTTA)	search_flag = SearchIntersectPt_RKM(nurb,pt,nvec,ds,&u,&v,INVERSE);	// ‹t•ыЊь‚МЊр“_ЋZЏo
+//				else if(method == BULIRSH_STOER)	search_flag = SearchIntersectPt_BS(nurb,pt,nvec,ds,&u,&v,INVERSE);
+//				else search_flag = SearchIntersectPt_OS(nurb,pt,nvec,ds,&u,&v,INVERSE);
+				if(method == RUNGE_KUTTA)	search_flag = SearchIntersectPt_RKM(pt,nvec,ds,&u,&v,INVERSE);	// ‹t•ыЊь‚МЊр“_ЋZЏo
+				else if(method == BULIRSH_STOER)	search_flag = SearchIntersectPt_BS(pt,nvec,ds,&u,&v,INVERSE);
+				else search_flag = SearchIntersectPt_OS(pt,nvec,ds,&u,&v,INVERSE);
+				if(search_flag == KOD_ERR){					// “Б€Щ“_ЊџЏo‚Й‚ж‚иЏ€—ќ‚рЊp‘±‚Е‚«‚И‚ўЏкЌ‡
 					//fprintf(stderr,"b,%d,%d,%lf,%lf\n",search_flag,inverse_flag,u,v);	// for debug
 					GuiIF.SetMessage("NURBS_FUNC CAUTION: Singler point was ditected.");
 					break;
@@ -2195,79 +2501,81 @@ int NURBS_Func::CalcIntersecPtsPlaneSearch(NURBSS *nurb,Coord pt,Coord nvec,doub
 				//fprintf(stderr,"f,%d,%d,%lf,%lf\n",search_flag,inverse_flag,u,v);	// for debug
 			}
 
-			// гѓ‘гѓ©гѓЎгѓјг‚їзЇ„е›Іе¤–гЃ®е ґеђ€
+			// ѓpѓ‰ѓЃЃ[ѓ^”Н€НЉO‚МЏкЌ‡
 			if(search_flag == KOD_FALSE){
-				newp = CalcIntersecPtsPlaneSearch_Sub(nurb,u,v,pt,nvec);		// йќўгЃ‹г‚‰йЈ›гЃіе‡єгЃ—гЃџ(u,v)г‚’еЏ‚иЂѓгЃ«йќўгЃ®г‚Ёгѓѓг‚ёйѓЁ(new_u,new_v)г‚’еѕ—г‚‹
+//				newp = CalcIntersecPtsPlaneSearch_Sub(nurb,u,v,pt,nvec);		// –К‚©‚з”т‚СЏo‚µ‚Ѕ(u,v)‚рЋQЌl‚Й–К‚МѓGѓbѓW•”(new_u,new_v)‚р“ѕ‚й
+				newp = CalcIntersecPtsPlaneSearch_Sub(u,v,pt,nvec);		// –К‚©‚з”т‚СЏo‚µ‚Ѕ(u,v)‚рЋQЌl‚Й–К‚МѓGѓbѓW•”(new_u,new_v)‚р“ѕ‚й
 				//fprintf(stderr,"c,%d,%d,%.12lf,%.12lf\n",search_flag,inverse_flag,newp.x,newp.y);	// for debug
-				ans[anscount] = SetCoord(newp);		// еѕ—г‚‰г‚ЊгЃџu,vг‚’дє¤з·љ(дє¤з‚№зѕ¤)гЃЁгЃ—гЃ¦з™»йЊІ
-				anscount++;							// дє¤з‚№зѕ¤гЃ®ж•°г‚’г‚¤гѓіг‚ЇгѓЄгѓЎгѓігѓ€
-				// е€ќжњџз‚№гЃЊдє¤з·љиїЅи·Ўжі•гЃ«г‚€гЃЈгЃ¦е…ЁгЃ¦йЂљйЃЋгЃ—гЃџгЃ‹иЄїгЃ№г‚‹
+				ans[anscount] = SetCoord(newp);		// “ѕ‚з‚к‚Ѕu,v‚рЊрђь(Њр“_ЊQ)‚Ж‚µ‚Д“o^
+				anscount++;							// Њр“_ЊQ‚Мђ”‚рѓCѓ“ѓNѓЉѓЃѓ“ѓg
+				// Џ‰Љъ“_‚ЄЊрђь’ЗђХ–@‚Й‚ж‚Б‚Д‘S‚Д’К‰Я‚µ‚Ѕ‚©’І‚Ч‚й
 				for(int i=0;i<init_pt_num;i++){
-					if(CheckClossedPoints(oldp,newp,init_pt[i]) == KOD_TRUE){ // ж–°гЃџгЃ«з®—е‡єгЃ•г‚ЊгЃџдє¤з‚№гЃЁ1гЃ¤е‰ЌгЃ®дє¤з‚№г‚’еЇѕи§’гЃЁгЃ™г‚‹з«‹ж–№дЅ“гЃ®дё­гЃ«е€ќжњџз‚№гЃЊеђ«гЃѕг‚ЊгЃ¦гЃ„гЃџг‚‰
-						if(init_pt_flag[i] == KOD_FALSE){		// гЃѕгЃ йЂљйЃЋгЃ—гЃ¦гЃ„гЃЄгЃ„е€ќжњџз‚№гЃ§дє¤з‚№г‚‚u,vзЇ„е›Іе†…гЃ гЃЈгЃџг‚‰
-							init_pt_flag[i] = KOD_TRUE;			// йЂљйЃЋгЃ—гЃџгЃ“гЃЁгЃЁгЃ—гЃ¦з™»йЊІ
-							init_pt_flag_count++;				// йЂљйЃЋжё€гЃїе€ќжњџз‚№ж•°г‚’г‚«г‚¦гѓігѓ€г‚ўгѓѓгѓ—
+					if(CheckClossedPoints(oldp,newp,init_pt[i]) == KOD_TRUE){ // ђV‚Ѕ‚ЙЋZЏo‚і‚к‚ЅЊр“_‚Ж1‚В‘O‚МЊр“_‚р‘ОЉp‚Ж‚·‚й—§•ы‘М‚М’†‚ЙЏ‰Љъ“_‚ЄЉЬ‚Ь‚к‚Д‚ў‚Ѕ‚з
+						if(init_pt_flag[i] == KOD_FALSE){		// ‚Ь‚ѕ’К‰Я‚µ‚Д‚ў‚И‚ўЏ‰Љъ“_‚ЕЊр“_‚аu,v”Н€Н“а‚ѕ‚Б‚Ѕ‚з
+							init_pt_flag[i] = KOD_TRUE;			// ’К‰Я‚µ‚Ѕ‚±‚Ж‚Ж‚µ‚Д“o^
+							init_pt_flag_count++;				// ’К‰ЯЌП‚ЭЏ‰Љъ“_ђ”‚рѓJѓEѓ“ѓgѓAѓbѓv
 							//fprintf(stderr,"%d OK!\n",i);			// debug
 						}
 					}
 				}
-				if(inverse_flag == KOD_FALSE){		// д»ЉгЃЊй †ж–№еђ‘гЃЄг‚‰
-					inverse_flag = KOD_TRUE;		// ж¬ЎгЃ®г‚µгѓјгѓЃгЃЇйЂ†ж–№еђ‘гЃ«гЃ™г‚‹
-					u = init_pt[pcount].x;			// дє¤з‚№иїЅи·ЎгЃ®е€ќжњџз‚№г‚’г‚»гѓѓгѓ€гЃ—гЃЄгЃЉгЃ™
+				if(inverse_flag == KOD_FALSE){		// ЌЎ‚ЄЏ‡•ыЊь‚И‚з
+					inverse_flag = KOD_TRUE;		// Ћџ‚МѓTЃ[ѓ`‚Н‹t•ыЊь‚Й‚·‚й
+					u = init_pt[pcount].x;			// Њр“_’ЗђХ‚МЏ‰Љъ“_‚рѓZѓbѓg‚µ‚И‚Ё‚·
 					v = init_pt[pcount].y;
 					oldp = SetCoord(init_pt[pcount]);
-					continue;						// йЂ†ж–№еђ‘гѓ«гѓјгѓ—гЃё
+					continue;						// ‹t•ыЊьѓ‹Ѓ[ѓv‚Ц
 				}
-				break;								// д»ЉгЃЊйЂ†ж–№еђ‘гЃЄг‚‰гѓ«гѓјгѓ—зµ‚г‚Џг‚Љ
+				break;								// ЌЎ‚Є‹t•ыЊь‚И‚зѓ‹Ѓ[ѓvЏI‚н‚и
 			}
 
-			// дѕ‹е¤–гЃЄгЃ—гЃ§и§ЈгЃЊеѕ—г‚‰г‚ЊгЃџ
+			// —бЉO‚И‚µ‚Е‰р‚Є“ѕ‚з‚к‚Ѕ
 			else{
-				Coord cd = CalcNurbsSCoord(nurb,u,v);
+//				Coord cd = CalcNurbsSCoord(nurb,u,v);
+				Coord cd = CalcNurbsSCoord(u,v);
 				//fprintf(stderr,"d,%d,%d,%.12lf,%.12lf,%lf,%lf,%lf,%d\n",search_flag,inverse_flag,u,v,cd.x,cd.y,cd.z,anscount);			// for debug
 				newp.x = u;					
 				newp.y = v;
 			}
 
-			// е€ќжњџз‚№гЃЊдє¤з·љиїЅи·Ўжі•гЃ«г‚€гЃЈгЃ¦е…ЁгЃ¦йЂљйЃЋгЃ—гЃџгЃ‹иЄїгЃ№г‚‹
+			// Џ‰Љъ“_‚ЄЊрђь’ЗђХ–@‚Й‚ж‚Б‚Д‘S‚Д’К‰Я‚µ‚Ѕ‚©’І‚Ч‚й
 			for(int i=0;i<init_pt_num;i++){
-				// ж–°гЃџгЃ«з®—е‡єгЃ•г‚ЊгЃџдє¤з‚№гЃЁ1гЃ¤е‰ЌгЃ®дє¤з‚№г‚’еЇѕи§’гЃЁгЃ™г‚‹з«‹ж–№дЅ“гЃ®дё­гЃ«е€ќжњџз‚№гЃЊеђ«гЃѕг‚ЊгЃ¦гЃ„гЃџг‚‰
+				// ђV‚Ѕ‚ЙЋZЏo‚і‚к‚ЅЊр“_‚Ж1‚В‘O‚МЊр“_‚р‘ОЉp‚Ж‚·‚й—§•ы‘М‚М’†‚ЙЏ‰Љъ“_‚ЄЉЬ‚Ь‚к‚Д‚ў‚Ѕ‚з
 				if(int asdf = CheckClossedPoints(oldp,newp,init_pt[i]) == KOD_TRUE){
-					if(loop_count && i==pcount && inverse_flag == KOD_FALSE){	// й–‰гѓ«гѓјгѓ—гЃ«еЇѕгЃ—гЃ¦дёЂе‘ЁгЃ—гЃ¦ж€»гЃЈгЃ¦гЃЌгЃџе ґеђ€гЃЇгѓ«гѓјгѓ—г‚’жЉњгЃ‘г‚‹
+					if(loop_count && i==pcount && inverse_flag == KOD_FALSE){	// •Вѓ‹Ѓ[ѓv‚Й‘О‚µ‚Д€кЋь‚µ‚Д–Я‚Б‚Д‚«‚ЅЏкЌ‡‚Нѓ‹Ѓ[ѓv‚р”І‚Ї‚й
 						loopbreak_flag = KOD_TRUE;	
 						//fprintf(fp,"%d loop break OK\n",i);		// debug
 						break;					
 					}
-					if(init_pt_flag[i] == KOD_FALSE && search_flag == KOD_TRUE){		// гЃѕгЃ йЂљйЃЋгЃ—гЃ¦гЃ„гЃЄгЃ„е€ќжњџз‚№гЃ§дє¤з‚№г‚‚u,vзЇ„е›Іе†…гЃ гЃЈгЃџг‚‰
-						init_pt_flag[i] = KOD_TRUE;					// йЂљйЃЋгЃ—гЃџгЃ“гЃЁгЃЁгЃ—гЃ¦з™»йЊІ
-						init_pt_flag_count++;						// йЂљйЃЋжё€гЃїе€ќжњџз‚№ж•°г‚’г‚«г‚¦гѓігѓ€г‚ўгѓѓгѓ—
+					if(init_pt_flag[i] == KOD_FALSE && search_flag == KOD_TRUE){		// ‚Ь‚ѕ’К‰Я‚µ‚Д‚ў‚И‚ўЏ‰Љъ“_‚ЕЊр“_‚аu,v”Н€Н“а‚ѕ‚Б‚Ѕ‚з
+						init_pt_flag[i] = KOD_TRUE;					// ’К‰Я‚µ‚Ѕ‚±‚Ж‚Ж‚µ‚Д“o^
+						init_pt_flag_count++;						// ’К‰ЯЌП‚ЭЏ‰Љъ“_ђ”‚рѓJѓEѓ“ѓgѓAѓbѓv
 						//fprintf(fp,"%d OK\n",i);				// debug
 					}
 				}
 			}
 
-			// й–‰гѓ«гѓјгѓ—гЃ«еЇѕгЃ—гЃ¦дёЂе‘ЁгЃ—гЃ¦гЃЌгЃџе ґеђ€гЃЇгѓ«гѓјгѓ—г‚’жЉњгЃ‘г‚‹
+			// •Вѓ‹Ѓ[ѓv‚Й‘О‚µ‚Д€кЋь‚µ‚Д‚«‚ЅЏкЌ‡‚Нѓ‹Ѓ[ѓv‚р”І‚Ї‚й
 			if(loopbreak_flag == KOD_TRUE){
 				loopbreak_flag = KOD_FALSE;
 				break;
 			}
 
-			ans[anscount] = SetCoord(newp);	// еѕ—г‚‰г‚ЊгЃџu,vг‚’дє¤з·љ(дє¤з‚№зѕ¤)гЃЁгЃ—гЃ¦з™»йЊІ
-			anscount++;				// дє¤з‚№зѕ¤гЃ®ж•°г‚’г‚¤гѓіг‚ЇгѓЄгѓЎгѓігѓ€
+			ans[anscount] = SetCoord(newp);	// “ѕ‚з‚к‚Ѕu,v‚рЊрђь(Њр“_ЊQ)‚Ж‚µ‚Д“o^
+			anscount++;				// Њр“_ЊQ‚Мђ”‚рѓCѓ“ѓNѓЉѓЃѓ“ѓg
 
-			// дє¤з‚№гЃ®ж•°гЃЊжЊ‡е®љг‚µг‚¤г‚єг‚’и¶…гЃ€гЃџе ґеђ€гЃЇгЃќгЃ“гЃѕгЃ§гЃ§еј·е€¶гѓЄг‚їгѓјгѓі
+			// Њр“_‚Мђ”‚ЄЋw’иѓTѓCѓY‚р’ґ‚¦‚ЅЏкЌ‡‚Н‚»‚±‚Ь‚Е‚Е‹­ђ§ѓЉѓ^Ѓ[ѓ“
 			if(anscount >= ans_size){
                 GuiIF.SetMessage("NURBS KOD_ERROR:Intersection points exceeded the allocated array length");
                 GuiIF.SetMessage("There is a possibility that you set large ds.");
 				return anscount;
 			}
 
-			oldp = SetCoord(newp);	// гЃ“гЃ®гѓ«гѓјгѓ—гЃ§з®—е‡єгЃ•г‚ЊгЃџдє¤з‚№гЃЇж¬ЎгЃ®гѓ«гѓјгѓ—гЃ§гЃЇ1еЂ‹е‰ЌгЃ®дє¤з‚№гЃЁгЃЄг‚‹
+			oldp = SetCoord(newp);	// ‚±‚Мѓ‹Ѓ[ѓv‚ЕЋZЏo‚і‚к‚ЅЊр“_‚НЋџ‚Мѓ‹Ѓ[ѓv‚Е‚Н1ЊВ‘O‚МЊр“_‚Ж‚И‚й
 
-			loop_count++;		// гѓ«гѓјгѓ—е›ћж•°г‚’г‚¤гѓіг‚ЇгѓЄгѓЎгѓігѓ€
-		}// дє¤з·љиїЅи·ЎгЃ“гЃ“гЃѕгЃ§
+			loop_count++;		// ѓ‹Ѓ[ѓv‰сђ”‚рѓCѓ“ѓNѓЉѓЃѓ“ѓg
+		}// Њрђь’ЗђХ‚±‚±‚Ь‚Е
 
-		// ж®‹гЃЈгЃџз‚№гЃЊгЃ‚г‚ЊгЃ°гЂЃе€ҐгЃ®дє¤з·љгЃЊгЃ‚г‚‹гЃ®гЃ§гЂЃгЃќгЃ®з‚№г‚’е§‹з‚№гЃЁгЃ—гЃ¦е†Ќеє¦дє¤з·љиїЅи·Ўг‚’иЎЊгЃ†
+		// Ћc‚Б‚Ѕ“_‚Є‚ ‚к‚ОЃA•К‚МЊрђь‚Є‚ ‚й‚М‚ЕЃA‚»‚М“_‚рЋn“_‚Ж‚µ‚ДЌД“xЊрђь’ЗђХ‚рЌs‚¤
 		init_allpt_flag = KOD_TRUE;
 		for(int i=0;i<init_pt_num;i++){
 			//fprintf(fp,"%d,",i);			// debug
@@ -2279,7 +2587,8 @@ int NURBS_Func::CalcIntersecPtsPlaneSearch(NURBSS *nurb,Coord pt,Coord nvec,doub
 		}
 		//fprintf(stderr,"%d:loop count:%d\n",init_allpt_flag,loop_count);	// debug
 	}
-	anscount = RemoveTheSamePoints(nurb,ans,anscount);
+//	anscount = RemoveTheSamePoints(nurb,ans,anscount);
+	anscount = RemoveTheSamePoints(ans,anscount);
 	//anscount = CheckTheSamePoints(ans,anscount);
 
 	//fclose(fp);
@@ -2288,16 +2597,17 @@ int NURBS_Func::CalcIntersecPtsPlaneSearch(NURBSS *nurb,Coord pt,Coord nvec,doub
 }
 
 // Function: CheckClossedPoints
-// (private)жЊ‡е®љгЃ—гЃџз‚№гЃЊд»–гЃ®2з‚№г‚’еЇѕи§’гЃЁгЃ™г‚‹з«‹ж–№дЅ“гЃ®дё­гЃ«е­ењЁгЃ™г‚‹гЃ‹г‚’иЄїгЃ№г‚‹
+// (private)Ћw’и‚µ‚Ѕ“_‚Є‘ј‚М2“_‚р‘ОЉp‚Ж‚·‚й—§•ы‘М‚М’†‚Й‘¶ЌЭ‚·‚й‚©‚р’І‚Ч‚й
 // 
 // Parameters:
-// A - еЇѕи§’дёЉгЃ®1з‚№
-// B - еЇѕи§’дёЉгЃ®1з‚№
-// P - жЊ‡е®љз‚№
+// A - ‘ОЉpЏг‚М1“_
+// B - ‘ОЉpЏг‚М1“_
+// P - Ћw’и“_
 // 
 // Return:
-// е­ењЁгЃ™г‚‹пјљKOD_TRUE,  е­ењЁгЃ—гЃЄгЃ„пјљKOD_FALSE
-int NURBS_Func::CheckClossedPoints(Coord A,Coord B,Coord P)
+// ‘¶ЌЭ‚·‚йЃFKOD_TRUE,  ‘¶ЌЭ‚µ‚И‚ўЃFKOD_FALSE
+//int NURBS_Func::CheckClossedPoints(Coord A,Coord B,Coord P)
+int CheckClossedPoints(Coord A,Coord B,Coord P)
 {
 	int ap = LOW_LOW_ACCURACY;
 
@@ -2322,18 +2632,19 @@ int NURBS_Func::CheckClossedPoints(Coord A,Coord B,Coord P)
 }
 
 // Function: CalcIntersecPtsPlaneSearch_Sub
-// (private)е№ійќўгЃЁNURBSж›ІйќўгЃЁгЃ®дє¤з‚№зѕ¤г‚’ж±‚г‚Ѓг‚‹й–ўж•°CalcIntersecPtsPlaneSearch()гЃ®г‚µгѓ–й–ўж•°пјЋ
-// йќўгЃ‹г‚‰йЈ›гЃіе‡єгЃ—гЃџ(u,v)г‚’еЏ‚иЂѓгЃ«йќўгЃ®г‚Ёгѓѓг‚ёйѓЁгЃ«гЃЉгЃ‘г‚‹дє¤з‚№(new_u,new_v)г‚’еѕ—г‚‹
+// (private)•Ѕ–К‚ЖNURBS‹И–К‚Ж‚МЊр“_ЊQ‚р‹Ѓ‚Я‚йЉЦђ”CalcIntersecPtsPlaneSearch()‚МѓTѓuЉЦђ”ЃD
+// –К‚©‚з”т‚СЏo‚µ‚Ѕ(u,v)‚рЋQЌl‚Й–К‚МѓGѓbѓW•”‚Й‚Ё‚Ї‚йЊр“_(new_u,new_v)‚р“ѕ‚й
 //
 // Parameters:
-// *nurb - NURBSж›ІйќўгЃёгЃ®гѓќг‚¤гѓіг‚ї
-// u,v - ж›Ійќўе­ењЁй еџџе¤–гЃ®(u, v)еЂ¤ 
-// pt - е№ійќўдёЉгЃ®1з‚№
-// nvec - е№ійќўгЃ®жі•з·љгѓ™г‚Їгѓ€гѓ«
+// *nurb - NURBS‹И–К‚Ц‚Мѓ|ѓCѓ“ѓ^
+// u,v - ‹И–К‘¶ЌЭ—М€жЉO‚М(u, v)’l 
+// pt - •Ѕ–КЏг‚М1“_
+// nvec - •Ѕ–К‚М–@ђьѓxѓNѓgѓ‹
 // 
 // Return:
-// г‚Ёгѓѓг‚ёйѓЁдёЉгЃ®дє¤з‚№гЃ®(u, v)еє§жЁ™еЂ¤пј€Coord.xгЃ«uпјЊCoord.yгЃ«vгЃЊгЃќг‚ЊгЃћг‚Њж јзґЌгЃ•г‚Њг‚‹пј‰
-Coord NURBS_Func::CalcIntersecPtsPlaneSearch_Sub(NURBSS *nurb,double u, double v,Coord pt,Coord nvec)
+// ѓGѓbѓW•”Џг‚МЊр“_‚М(u, v)ЌА•W’lЃiCoord.x‚ЙuЃCCoord.y‚Йv‚Є‚»‚к‚ј‚кЉi”[‚і‚к‚йЃj
+//Coord NURBS_Func::CalcIntersecPtsPlaneSearch_Sub(NURBSS *nurb,double u, double v,Coord pt,Coord nvec)
+Coord NURBSS::CalcIntersecPtsPlaneSearch_Sub(double u, double v,Coord pt,Coord nvec)
 {
 	Coord old = SetCoord(u,v,0);
 	Coord min;
@@ -2343,44 +2654,48 @@ Coord NURBS_Func::CalcIntersecPtsPlaneSearch_Sub(NURBSS *nurb,double u, double v
 	bool uflag = false;
 	bool vflag = false;
 
-	// гЃ©гЃ“г‚’йЈ›гЃіе‡єгЃ—гЃџгЃ‹иЄїгЃ№г‚‹
-	if(u < nurb->U[0]){
+	// ‚З‚±‚р”т‚СЏo‚µ‚Ѕ‚©’І‚Ч‚й
+	if(u < U[0]){
 		uflag = true;
-		u = nurb->U[0];			// г‚Ёгѓѓг‚ёг‚’uгЃЁгЃ™г‚‹
+		u = U[0];			// ѓGѓbѓW‚рu‚Ж‚·‚й
 	}
-	else if(u > nurb->U[1]){
+	else if(u > U[1]){
 		uflag = true;
-		u = nurb->U[1];
+		u = U[1];
 	}
 
-	if(v < nurb->V[0]){
+	if(v < V[0]){
 		vflag = true;
-		v = nurb->V[0];
+		v = V[0];
 	}
-	else if(v > nurb->V[1]){
+	else if(v > V[1]){
 		vflag = true;
-		v = nurb->V[1];
+		v = V[1];
 		//fprintf(stderr,"a\n");
 	}
 
 	if(uflag == true && vflag == false){
-		n = CalcIntersecIsparaCurveV(nurb,u,pt,nvec,5,a,INTERSECPTNUMMAX);	// uг‚’е›єе®љгЃ—гЃџг‚ўг‚¤г‚Ѕгѓ‘гѓ©ж›Із·љгЃ«еЇѕгЃ—гЃ¦е№ійќўгЃЁгЃ®дє¤з‚№г‚’еѕ—г‚‹
+//		n = CalcIntersecIsparaCurveV(nurb,u,pt,nvec,5,a,INTERSECPTNUMMAX);	// u‚рЊЕ’и‚µ‚ЅѓAѓCѓ\ѓpѓ‰‹Иђь‚Й‘О‚µ‚Д•Ѕ–К‚Ж‚МЊр“_‚р“ѕ‚й
+		n = CalcIntersecIsparaCurveV(u,pt,nvec,5,a,INTERSECPTNUMMAX);	// u‚рЊЕ’и‚µ‚ЅѓAѓCѓ\ѓpѓ‰‹Иђь‚Й‘О‚µ‚Д•Ѕ–К‚Ж‚МЊр“_‚р“ѕ‚й
 		for(int i=0;i<n;i++)
 			cod_a[i] = SetCoord(u,a[i],0);
 	}
 	else if(uflag == false && vflag == true){
-		n = CalcIntersecIsparaCurveU(nurb,v,pt,nvec,5,a,INTERSECPTNUMMAX);	// vг‚’е›єе®љгЃ—гЃџг‚ўг‚¤г‚Ѕгѓ‘гѓ©ж›Із·љгЃ«еЇѕгЃ—гЃ¦е№ійќўгЃЁгЃ®дє¤з‚№г‚’еѕ—г‚‹
+//		n = CalcIntersecIsparaCurveU(nurb,v,pt,nvec,5,a,INTERSECPTNUMMAX);	// v‚рЊЕ’и‚µ‚ЅѓAѓCѓ\ѓpѓ‰‹Иђь‚Й‘О‚µ‚Д•Ѕ–К‚Ж‚МЊр“_‚р“ѕ‚й
+		n = CalcIntersecIsparaCurveU(v,pt,nvec,5,a,INTERSECPTNUMMAX);	// v‚рЊЕ’и‚µ‚ЅѓAѓCѓ\ѓpѓ‰‹Иђь‚Й‘О‚µ‚Д•Ѕ–К‚Ж‚МЊр“_‚р“ѕ‚й
 		for(int i=0;i<n;i++)
 			cod_a[i] = SetCoord(a[i],v,0);
 	}
 	else if(uflag == true && vflag == true){
-		n = CalcIntersecIsparaCurveV(nurb,u,pt,nvec,5,a,INTERSECPTNUMMAX);		// uг‚’е›єе®љгЃ—гЃџг‚ўг‚¤г‚Ѕгѓ‘гѓ©ж›Із·љгЃ«еЇѕгЃ—гЃ¦е№ійќўгЃЁгЃ®дє¤з‚№г‚’еѕ—г‚‹
+//		n = CalcIntersecIsparaCurveV(nurb,u,pt,nvec,5,a,INTERSECPTNUMMAX);		// u‚рЊЕ’и‚µ‚ЅѓAѓCѓ\ѓpѓ‰‹Иђь‚Й‘О‚µ‚Д•Ѕ–К‚Ж‚МЊр“_‚р“ѕ‚й
+		n = CalcIntersecIsparaCurveV(u,pt,nvec,5,a,INTERSECPTNUMMAX);		// u‚рЊЕ’и‚µ‚ЅѓAѓCѓ\ѓpѓ‰‹Иђь‚Й‘О‚µ‚Д•Ѕ–К‚Ж‚МЊр“_‚р“ѕ‚й
 		if(n > 0){
 			for(int i=0;i<n;i++)
 				cod_a[i] = SetCoord(u,a[i],0);
 		}
 		if(n <= 0){
-			n = CalcIntersecIsparaCurveU(nurb,v,pt,nvec,5,a,INTERSECPTNUMMAX);	// vг‚’е›єе®љгЃ—гЃџг‚ўг‚¤г‚Ѕгѓ‘гѓ©ж›Із·љгЃ«еЇѕгЃ—гЃ¦е№ійќўгЃЁгЃ®дє¤з‚№г‚’еѕ—г‚‹
+//			n = CalcIntersecIsparaCurveU(nurb,v,pt,nvec,5,a,INTERSECPTNUMMAX);	// v‚рЊЕ’и‚µ‚ЅѓAѓCѓ\ѓpѓ‰‹Иђь‚Й‘О‚µ‚Д•Ѕ–К‚Ж‚МЊр“_‚р“ѕ‚й
+			n = CalcIntersecIsparaCurveU(v,pt,nvec,5,a,INTERSECPTNUMMAX);	// v‚рЊЕ’и‚µ‚ЅѓAѓCѓ\ѓpѓ‰‹Иђь‚Й‘О‚µ‚Д•Ѕ–К‚Ж‚МЊр“_‚р“ѕ‚й
 			for(int i=0;i<n;i++)
 				cod_a[i] = SetCoord(a[i],v,0);
 		}
@@ -2392,60 +2707,61 @@ Coord NURBS_Func::CalcIntersecPtsPlaneSearch_Sub(NURBSS *nurb,double u, double v
 }
 
 // Function: SearchIntersectPt_BS
-// (private)Bulirsch-Stoerжі•гЃ«г‚€г‚Љдє¤з‚№г‚’еЏЋжќџгЃ•гЃ›г‚‹(NURBSж›ІйќўгЃЁе№ійќў)
+// (private)Bulirsch-Stoer–@‚Й‚ж‚иЊр“_‚рЋы‘©‚і‚№‚й(NURBS‹И–К‚Ж•Ѕ–К)
 // 
 // Parameters:
-// *S - 1гЃ¤з›®гЃ®еЇѕи±ЎгЃЁгЃЄг‚‹NURBSж›Ійќў
-// pt - е№ійќўдёЉгЃ®1з‚№
-// nvec - е№ійќўгЃ®жі•з·љгѓ™г‚Їгѓ€гѓ«
-// H - BSжі•гЃ®гѓ‡гѓ•г‚©гѓ«гѓ€гЃ®е€»гЃїе№…
-// *u0 - еѕ—г‚‰г‚ЊгЃџдє¤з‚№гЃ®uгѓ‘гѓ©гѓЎгѓјг‚ї
-// *v0 - еѕ—г‚‰г‚ЊгЃџдє¤з‚№гЃ®vгѓ‘гѓ©гѓЎгѓјг‚ї
-// direction - иїЅи·Ўж–№еђ‘г‚’иЎЁгЃ™гѓ•гѓ©г‚°пј€FORWARD or INVERSE)
+// *S - 1‚В–Ъ‚М‘ОЏЫ‚Ж‚И‚йNURBS‹И–К
+// pt - •Ѕ–КЏг‚М1“_
+// nvec - •Ѕ–К‚М–@ђьѓxѓNѓgѓ‹
+// H - BS–@‚МѓfѓtѓHѓ‹ѓg‚МЌЏ‚Э•ќ
+// *u0 - “ѕ‚з‚к‚ЅЊр“_‚Мuѓpѓ‰ѓЃЃ[ѓ^
+// *v0 - “ѕ‚з‚к‚ЅЊр“_‚Мvѓpѓ‰ѓЃЃ[ѓ^
+// direction - ’ЗђХ•ыЊь‚р•\‚·ѓtѓ‰ѓOЃiFORWARD or INVERSE)
 // 
 // Return:
-// еЏЋжќџгЃ—гЃџпјљKOD_TRUE, гѓ‘гѓ©гѓЎгѓјг‚їзЇ„е›Іе¤–пјљKOD_FALSEпјЊе¤±ж•—пјљKOD_ERR
-int NURBS_Func::SearchIntersectPt_BS(NURBSS *S,Coord pt,Coord nvec,double H,double *u0,double *v0,int direction)
+// Ћы‘©‚µ‚ЅЃFKOD_TRUE, ѓpѓ‰ѓЃЃ[ѓ^”Н€НЉOЃFKOD_FALSEЃCЋё”sЃFKOD_ERR
+//int NURBS_Func::SearchIntersectPt_BS(NURBSS *S,Coord pt,Coord nvec,double H,double *u0,double *v0,int direction)
+int NURBSS::SearchIntersectPt_BS(Coord pt,Coord nvec,double H,double *u0,double *v0,int direction)
 {
-	// еј•ж•°жЊ‡е®љгѓџг‚№
+	// €шђ”Ћw’иѓ~ѓX
 	if(direction != FORWARD && direction != INVERSE){
 		GuiIF.SetMessage("NURBS ERROR: selected wrong direction");
 		return KOD_ERR;
 	}
 
-	int    n[BS_DIV] = {2,4,6,8,12,16,24,32,48,64,96};	// B-Sжі•гЃ®е€†е‰Іж•°зѕ¤г‚’жЊ‡е®љ
-	Coord  z[97];										// дї®ж­Јдё­з‚№жі•гЃ®дё­й–“еЂ¤г‚’ж јзґЌ(z.x = u, z.y = v)
+	int    n[BS_DIV] = {2,4,6,8,12,16,24,32,48,64,96};	// B-S–@‚М•ЄЉ„ђ”ЊQ‚рЋw’и
+	Coord  z[97];										// ЏCђі’†“_–@‚М’†ЉФ’l‚рЉi”[(z.x = u, z.y = v)
 	Coord  f;											// f.x = fu(u,v), f.y = fv(u,v)
-	Coord  D[BS_DIV][BS_DIV],C[BS_DIV][BS_DIV];			// B-Sжі•гЃ®дё­й–“гѓ‘гѓ©гѓЎгѓјг‚ї
-	double h[BS_DIV];									// B-Sжі•гЃ®е€»гЃїе№…
-	Coord wek,wek_;										// h=0гЃ®е¤–жЊїеЂ¤
+	Coord  D[BS_DIV][BS_DIV],C[BS_DIV][BS_DIV];			// B-S–@‚М’†ЉФѓpѓ‰ѓЃЃ[ѓ^
+	double h[BS_DIV];									// B-S–@‚МЌЏ‚Э•ќ
+	Coord wek,wek_;										// h=0‚МЉO‘}’l
 
 	for(int lpnum=0;lpnum<4;lpnum++){
 
-		// еђ„е€†е‰Іж•°гЃ«гЃЉгЃ‘г‚‹е€»гЃїе№…г‚’ж±‚г‚ЃгЃ¦гЃЉгЃЏ
+		// Љe•ЄЉ„ђ”‚Й‚Ё‚Ї‚йЌЏ‚Э•ќ‚р‹Ѓ‚Я‚Д‚Ё‚­
 		for(int i=0;i<BS_DIV;i++)
 			h[i] = H/n[i];
 
-		// е€»гЃїе№…г‚’е°ЏгЃ•гЃ„ж–№гЃ‹г‚‰й †гЃ«е¤‰ж›ґгЃ—гЃЄгЃЊг‚‰гЂЃB-Sжі•гЃ«г‚€г‚‹е¤–жЊїеЂ¤г‚’иЁ€з®—гЃ—гЃ¦гЃ„гЃЏ
+		// ЌЏ‚Э•ќ‚рЏ¬‚і‚ў•ы‚©‚зЏ‡‚Й•ПЌX‚µ‚И‚Є‚зЃAB-S–@‚Й‚ж‚йЉO‘}’l‚рЊvЋZ‚µ‚Д‚ў‚­
 		for(int i=0;i<BS_DIV;i++){
-			bool  divzero_flag = false;							// г‚јгѓ­е‰Із›Ји¦–гѓ•гѓ©г‚°
+			bool  divzero_flag = false;							// ѓ[ѓЌЉ„ЉДЋ‹ѓtѓ‰ѓO
 
-			// гЃѕгЃљгЂЃu(s+H), v(s+H)гЃ®еЂ¤г‚’дї®ж­Јдё­з‚№жі•гЃ«г‚€г‚ЉиЁ€з®—гЃ™г‚‹
-			z[0] = SetCoord(*u0,*v0,1);										// z0гЃЁz1гЃ®з®—е‡єгЃЇе€Ґе‡¦зђ†
-			if(GetSIPParam1(S,*u0,*v0,pt,nvec,direction,&f) == KOD_ERR){	// z0гЃ§гЃ®еѕ®е€†ж–№зЁ‹ејЏгЃ®еЏіиѕєг‚’иЁ€з®—
+			// ‚Ь‚ёЃAu(s+H), v(s+H)‚М’l‚рЏCђі’†“_–@‚Й‚ж‚иЊvЋZ‚·‚й
+			z[0] = SetCoord(*u0,*v0,1);										// z0‚Жz1‚МЋZЏo‚Н•КЏ€—ќ
+			if(GetSIPParam1(*u0,*v0,pt,nvec,direction,&f) == KOD_ERR){	// z0‚Е‚М”ч•Є•ы’цЋ®‚М‰E•У‚рЊvЋZ
 				break;
 			}
-			z[1] = AddCoord2D(z[0],MulCoord2D(f,h[i]));							// z0гЃЁz1гЃ®з®—е‡єгЃЇе€Ґе‡¦зђ†
+			z[1] = AddCoord2D(z[0],MulCoord2D(f,h[i]));							// z0‚Жz1‚МЋZЏo‚Н•КЏ€—ќ
 			for(int j=1;j<n[i];j++){
-				if(GetSIPParam1(S,z[j].x,z[j].y,pt,nvec,direction,&f) == KOD_ERR){	// zjгЃ§гЃ®еѕ®е€†ж–№зЁ‹ејЏгЃ®еЏіиѕєг‚’иЁ€з®—
+				if(GetSIPParam1(z[j].x,z[j].y,pt,nvec,direction,&f) == KOD_ERR){	// zj‚Е‚М”ч•Є•ы’цЋ®‚М‰E•У‚рЊvЋZ
 					wek = SetCoord(z[j]);
 					divzero_flag = true;
 					break;
 				}
-				z[j+1] = AddCoord2D(z[j-1],MulCoord2D(f,2*h[i]));				// z2пЅћznгЃѕгЃ§г‚’з®—е‡є
+				z[j+1] = AddCoord2D(z[j-1],MulCoord2D(f,2*h[i]));				// z2Ѓ`zn‚Ь‚Е‚рЋZЏo
 			}
-			if(divzero_flag == true)	break;						// г‚јгѓ­е‰ІгЃ«гЃЄг‚‹е ґеђ€гЃЇbreakгЃ—пјЊж¬ЎгЃ®г‚№гѓ†гѓѓгѓ—е№…гЃё
-			if(GetSIPParam1(S,z[n[i]].x,z[n[i]].y,pt,nvec,direction,&f) == KOD_ERR){	// znгЃ§гЃ®еѕ®е€†ж–№зЁ‹ејЏгЃ®еЏіиѕєг‚’иЁ€з®—
+			if(divzero_flag == true)	break;						// ѓ[ѓЌЉ„‚Й‚И‚йЏкЌ‡‚Нbreak‚µЃCЋџ‚МѓXѓeѓbѓv•ќ‚Ц
+			if(GetSIPParam1(z[n[i]].x,z[n[i]].y,pt,nvec,direction,&f) == KOD_ERR){	// zn‚Е‚М”ч•Є•ы’цЋ®‚М‰E•У‚рЊvЋZ
 				wek = SetCoord(z[n[i]]);
 				break;
 			}
@@ -2456,7 +2772,7 @@ int NURBS_Func::SearchIntersectPt_BS(NURBSS *S,Coord pt,Coord nvec,double H,doub
 				continue;
 			}
 
-			// B-Sжі•гЃ®е·®е€†иЎЁг‚’й †ж¬Ўж±‚г‚ЃгЃ¦гЃ„гЃЏ
+			// B-S–@‚МЌ·•Є•\‚рЏ‡Ћџ‹Ѓ‚Я‚Д‚ў‚­
 			wek = SetCoord(D[i][0]);
 			for(int k=1;k<=i;k++){
 				double xa = h[i-k]*h[i-k];
@@ -2477,7 +2793,7 @@ int NURBS_Func::SearchIntersectPt_BS(NURBSS *S,Coord pt,Coord nvec,double H,doub
 			wek_ = SetCoord(wek);
 		}
 	
-		// гЃ“гЃ“гЃѕгЃ§жќҐгЃџе ґеђ€пјЊе€»гЃїе№…Hг‚’1/4гЃЁгЃ—е†Ќгѓ€гѓ©г‚¤
+		// ‚±‚±‚Ь‚Е—€‚ЅЏкЌ‡ЃCЌЏ‚Э•ќH‚р1/4‚Ж‚µЌДѓgѓ‰ѓC
 		H *= 0.25;
 		
 		if(lpnum==3){
@@ -2486,42 +2802,45 @@ int NURBS_Func::SearchIntersectPt_BS(NURBSS *S,Coord pt,Coord nvec,double H,doub
 		}
 	}
 
-	// гЃ“гЃ“гЃѕгЃ§жќҐгЃџе ґеђ€пјЊжњЂеѕЊгЃ«з®—е‡єгЃ•г‚ЊгЃџ(*u0,*v0)гЃЊзЇ„е›Іе¤–гЃЄг‚‰KOD_FALSEг‚’гѓЄг‚їгѓјгѓі
-	if(*u0 < S->U[0] || *u0 > S->U[1] || *v0 < S->V[0] || *v0 > S->V[1]){
+	// ‚±‚±‚Ь‚Е—€‚ЅЏкЌ‡ЃCЌЕЊг‚ЙЋZЏo‚і‚к‚Ѕ(*u0,*v0)‚Є”Н€НЉO‚И‚зKOD_FALSE‚рѓЉѓ^Ѓ[ѓ“
+	if(*u0 < U[0] || *u0 > U[1] || *v0 < V[0] || *v0 > V[1]){
 		return KOD_FALSE;
 	}
-	// гЃќг‚Њд»Ґе¤–гЃЇз‰№з•°з‚№гЃЁгЃ—гЃ¦KOD_ERRг‚’гѓЄг‚їгѓјгѓі
+	// ‚»‚к€ИЉO‚Н“Б€Щ“_‚Ж‚µ‚ДKOD_ERR‚рѓЉѓ^Ѓ[ѓ“
 	return KOD_ERR;
 }
 
 // Function: GetSIPParam1
-// (private)SearchIntersectPt_BS()гЃ®г‚µгѓ–й–ўж•°пјЋж›ІйќўгЃЁе№ійќўгЃ®дє¤з‚№г‚’иЎЁгЃ™еѕ®е€†ж–№зЁ‹ејЏгЃ®еЏіиѕєгЃ®еЂ¤г‚’еѕ—г‚‹
+// (private)SearchIntersectPt_BS()‚МѓTѓuЉЦђ”ЃD‹И–К‚Ж•Ѕ–К‚МЊр“_‚р•\‚·”ч•Є•ы’цЋ®‚М‰E•У‚М’l‚р“ѕ‚й
 //
 // Parameters:
-// *S - NURBSж›ІйќўгЃёгЃ®гѓќг‚¤гѓіг‚ї
-// u,v - жіЁз›®дё­гЃ®NURBSж›Ійќўгѓ‘гѓ©гѓЎгѓјг‚ї 
-// pt - е№ійќўдёЉгЃ®дёЂз‚№
-// nvec - е№ійќўгЃ®жі•з·љгѓ™г‚Їгѓ€гѓ«
-// direction - иїЅи·Ўж–№еђ‘г‚’иЎЁгЃ™гѓ•гѓ©г‚°пј€FORWARD or INVERSE)
-// *f - иЁ€з®—зµђжћњ 
+// *S - NURBS‹И–К‚Ц‚Мѓ|ѓCѓ“ѓ^
+// u,v - ’Ќ–Ъ’†‚МNURBS‹И–Кѓpѓ‰ѓЃЃ[ѓ^ 
+// pt - •Ѕ–КЏг‚М€к“_
+// nvec - •Ѕ–К‚М–@ђьѓxѓNѓgѓ‹
+// direction - ’ЗђХ•ыЊь‚р•\‚·ѓtѓ‰ѓOЃiFORWARD or INVERSE)
+// *f - ЊvЋZЊ‹‰К 
 //
 // Return:
-// ж€ђеЉџпјљKOD_TRUE, е¤±ж•—пјљKOD_ERR
-int NURBS_Func::GetSIPParam1(NURBSS *S,double u,double v,Coord pt,Coord nvec,int direction,Coord *f)
+// ђ¬ЊчЃFKOD_TRUE, Ћё”sЃFKOD_ERR
+//int NURBS_Func::GetSIPParam1(NURBSS *S,double u,double v,Coord pt,Coord nvec,int direction,Coord *f)
+int NURBSS::GetSIPParam1(double u,double v,Coord pt,Coord nvec,int direction,Coord *f)
 {
-	NURBS_Func NFunc;
+//	NURBS_Func NFunc;
 
-	Coord Su = CalcDiffuNurbsS(S,u,v);
-	Coord Sv = CalcDiffvNurbsS(S,u,v);
-	double fu = CalcInnerProduct(nvec,Su);	// nfгѓ»Su
-	double fv = CalcInnerProduct(nvec,Sv);	// nfгѓ»Sv
-	if(CheckZero(fu,HIGH_ACCURACY) == KOD_TRUE && CheckZero(fv,HIGH_ACCURACY) == KOD_TRUE){			// з‰№з•°з‚№
+//	Coord Su = CalcDiffuNurbsS(S,u,v);
+//	Coord Sv = CalcDiffvNurbsS(S,u,v);
+	Coord Su = CalcDiffuNurbsS(u,v);
+	Coord Sv = CalcDiffvNurbsS(u,v);
+	double fu = CalcInnerProduct(nvec,Su);	// nfЃESu
+	double fv = CalcInnerProduct(nvec,Sv);	// nfЃESv
+	if(CheckZero(fu,HIGH_ACCURACY) == KOD_TRUE && CheckZero(fv,HIGH_ACCURACY) == KOD_TRUE){			// “Б€Щ“_
 		//GuiIF.SetMessage("NURBS KOD_ERROR:The process is stoped by detected singular point.");
 		return KOD_ERR;				
 	}
-	double E = CalcInnerProduct(Su,Su);		// 1ж¬Ўи¦Џж јй‡Џ
-	double F = CalcInnerProduct(Su,Sv);		// 1ж¬Ўи¦Џж јй‡Џ
-	double G = CalcInnerProduct(Sv,Sv);		// 1ж¬Ўи¦Џж јй‡Џ
+	double E = CalcInnerProduct(Su,Su);		// 1Ћџ‹KЉi—К
+	double F = CalcInnerProduct(Su,Sv);		// 1Ћџ‹KЉi—К
+	double G = CalcInnerProduct(Sv,Sv);		// 1Ћџ‹KЉi—К
 	double f_ = 1/sqrt(E*fv*fv - 2*F*fu*fv + G*fu*fu);
 	*f = SetCoord(f_*fv*(double)direction, -f_*fu*(double)direction, 0);
 
@@ -2529,7 +2848,7 @@ int NURBS_Func::GetSIPParam1(NURBSS *S,double u,double v,Coord pt,Coord nvec,int
 }
 
 // Function: SearchIntersectPt_RKM
-// (private)4ж¬ЎгЃ®гѓ«гѓіг‚Іг‚Їгѓѓг‚їжі•гЃ«г‚€г‚Љдє¤з‚№г‚’е°Ће‡є(NURBSж›ІйќўгЃЁе№ійќў)
+// (private)4Ћџ‚Мѓ‹ѓ“ѓQѓNѓbѓ^–@‚Й‚ж‚иЊр“_‚р“±Џo(NURBS‹И–К‚Ж•Ѕ–К)
 // >du(s)/ds = g(u,v),   dv(s)/ds = h(u,v)
 // >u(s+delta) = u(s) + (p1+2p2+2p3+p4)/6
 // >v(s+delta) = v(s) + (q1+2q2+2q3+q4)/6
@@ -2539,16 +2858,17 @@ int NURBS_Func::GetSIPParam1(NURBSS *S,double u,double v,Coord pt,Coord nvec,int
 // >p4 = delta*g(u+p3,v+q3),   q4 = delta*h(u+p3,v+q3)
 // 
 // Parameters:
-// *S - NURBSж›ІйќўгЃёгЃ®гѓќг‚¤гѓіг‚ї
-// pt - е№ійќўдёЉгЃ®дёЂз‚№
-// n - е№ійќўгЃ®жі•з·љгѓ™г‚Їгѓ€гѓ«
-// delta - и§ЈиїЅи·ЎгЃ®е€»гЃїе№…
-// *u,*v - и§Ј
-// direction - иїЅи·Ўж–№еђ‘г‚’иЎЁгЃ™гѓ•гѓ©г‚°пј€FORWARD or INVERSE)
+// *S - NURBS‹И–К‚Ц‚Мѓ|ѓCѓ“ѓ^
+// pt - •Ѕ–КЏг‚М€к“_
+// n - •Ѕ–К‚М–@ђьѓxѓNѓgѓ‹
+// delta - ‰р’ЗђХ‚МЌЏ‚Э•ќ
+// *u,*v - ‰р
+// direction - ’ЗђХ•ыЊь‚р•\‚·ѓtѓ‰ѓOЃiFORWARD or INVERSE)
 // 
 // Return:
-// ж€ђеЉџпјљKOD_TRUE, е¤±ж•—пјљKOD_ERR
-int NURBS_Func::SearchIntersectPt_RKM(NURBSS *S,Coord pt,Coord n,double delta,double *u,double *v,int direction)
+// ђ¬ЊчЃFKOD_TRUE, Ћё”sЃFKOD_ERR
+//int NURBS_Func::SearchIntersectPt_RKM(NURBSS *S,Coord pt,Coord n,double delta,double *u,double *v,int direction)
+int NURBSS::SearchIntersectPt_RKM(Coord pt,Coord n,double delta,double *u,double *v,int direction)
 {
 	double u0 = *u;
 	double v0 = *v;
@@ -2564,25 +2884,27 @@ int NURBS_Func::SearchIntersectPt_RKM(NURBSS *S,Coord pt,Coord n,double delta,do
 			*u = u0 + p[i-1];
 			*v = v0 + q[i-1];
 		}
-		if(*u < S->U[0] || *u > S->U[1] || *v < S->V[0] || *v > S->V[1])	// гѓ‘гѓ©гѓЎгѓјг‚їзЇ„е›Іе¤–
+		if(*u < U[0] || *u > U[1] || *v < V[0] || *v > V[1])	// ѓpѓ‰ѓЃЃ[ѓ^”Н€НЉO
 			return KOD_FALSE;
 
-		Coord Su = CalcDiffuNurbsS(S,*u,*v);
-		Coord Sv = CalcDiffvNurbsS(S,*u,*v);
+//		Coord Su = CalcDiffuNurbsS(S,*u,*v);
+//		Coord Sv = CalcDiffvNurbsS(S,*u,*v);
+		Coord Su = CalcDiffuNurbsS(*u,*v);
+		Coord Sv = CalcDiffvNurbsS(*u,*v);
 		double fu = CalcInnerProduct(n,Su);
 		double fv = CalcInnerProduct(n,Sv);
 		double fuu = fu*fu;
 		double fuv = fu*fv;
 		double fvv = fv*fv;
-		if(CheckZero(fu,LOW_ACCURACY) == KOD_TRUE && CheckZero(fv,LOW_ACCURACY) == KOD_TRUE){			// з‰№з•°з‚№
+		if(CheckZero(fu,LOW_ACCURACY) == KOD_TRUE && CheckZero(fv,LOW_ACCURACY) == KOD_TRUE){			// “Б€Щ“_
             //GuiIF.SetMessage("NURBS KOD_ERROR:The process is stoped by detected singular point.");
 			return KOD_ERR;				
 		}
-		double E = CalcInnerProduct(Su,Su);		// 1ж¬Ўи¦Џж јй‡Џ
-		double F = CalcInnerProduct(Su,Sv);		// 1ж¬Ўи¦Џж јй‡Џ
-		double G = CalcInnerProduct(Sv,Sv);		// 1ж¬Ўи¦Џж јй‡Џ
+		double E = CalcInnerProduct(Su,Su);		// 1Ћџ‹KЉi—К
+		double F = CalcInnerProduct(Su,Sv);		// 1Ћџ‹KЉi—К
+		double G = CalcInnerProduct(Sv,Sv);		// 1Ћџ‹KЉi—К
 		double denom = sqrt(E*fvv - 2*F*fuv + G*fuu);
-		if(CheckZero(denom,LOW_ACCURACY) == KOD_TRUE)	return KOD_ERR;		// з‰№з•°з‚№
+		if(CheckZero(denom,LOW_ACCURACY) == KOD_TRUE)	return KOD_ERR;		// “Б€Щ“_
 		double f_ = 1/denom;
 		p[i] = -delta*fv*f_*(double)direction;
 		q[i] = delta*fu*f_*(double)direction;
@@ -2590,14 +2912,14 @@ int NURBS_Func::SearchIntersectPt_RKM(NURBSS *S,Coord pt,Coord n,double delta,do
 	*u = u0+(p[0]+2*p[1]+2*p[2]+p[3])/6;
 	*v = v0+(q[0]+2*q[1]+2*q[2]+q[3])/6;
 
-	if(*u < S->U[0] || *u > S->U[1] || *v < S->V[0] || *v > S->V[1])	// гѓ‘гѓ©гѓЎгѓјг‚їзЇ„е›Іе¤–
+	if(*u < U[0] || *u > U[1] || *v < V[0] || *v > V[1])	// ѓpѓ‰ѓЃЃ[ѓ^”Н€НЉO
 		return KOD_FALSE;
 
 	return KOD_TRUE;
 }
 
 // Function: SearchIntersectPt_OS
-// (private)4ж¬ЎгЃ®гѓ«гѓіг‚Іг‚Їгѓѓг‚їжі•гЃ«г‚€г‚Љдє¤з‚№г‚’е°Ће‡є(г‚Єгѓ•г‚»гѓѓгѓ€NURBSж›ІйќўгЃЁе№ійќў)
+// (private)4Ћџ‚Мѓ‹ѓ“ѓQѓNѓbѓ^–@‚Й‚ж‚иЊр“_‚р“±Џo(ѓIѓtѓZѓbѓgNURBS‹И–К‚Ж•Ѕ–К)
 // >du(s)/ds = g(u,v),   dv(s)/ds = h(u,v)
 // >u(s+delta) = u(s) + (p1+2p2+2p3+p4)/6
 // >v(s+delta) = v(s) + (q1+2q2+2q3+q4)/6
@@ -2607,16 +2929,17 @@ int NURBS_Func::SearchIntersectPt_RKM(NURBSS *S,Coord pt,Coord n,double delta,do
 // >p4 = delta*g(u+p3,v+q3),   q4 = delta*h(u+p3,v+q3)
 // 
 // Parameters:
-// *S - NURBSж›ІйќўгЃёгЃ®гѓќг‚¤гѓіг‚ї
-// pt - е№ійќўдёЉгЃ®дёЂз‚№
-// n - е№ійќўгЃ®жі•з·љгѓ™г‚Їгѓ€гѓ«
-// delta - и§ЈиїЅи·ЎгЃ®е€»гЃїе№…
-// *u,*v - и§Ј
-// direction - иїЅи·Ўж–№еђ‘г‚’иЎЁгЃ™гѓ•гѓ©г‚°пј€FORWARD or INVERSE)
+// *S - NURBS‹И–К‚Ц‚Мѓ|ѓCѓ“ѓ^
+// pt - •Ѕ–КЏг‚М€к“_
+// n - •Ѕ–К‚М–@ђьѓxѓNѓgѓ‹
+// delta - ‰р’ЗђХ‚МЌЏ‚Э•ќ
+// *u,*v - ‰р
+// direction - ’ЗђХ•ыЊь‚р•\‚·ѓtѓ‰ѓOЃiFORWARD or INVERSE)
 // 
 // Return:
-// ж€ђеЉџпјљKOD_TRUE, гѓ‘гѓ©гѓЎгѓјг‚їзЇ„е›Іе¤–пјљKOD_FALSE, е¤±ж•—пјљKOD_ERR
-int NURBS_Func::SearchIntersectPt_OS(NURBSS *S,Coord pt,Coord n,double delta,double *u,double *v,int direction)
+// ђ¬ЊчЃFKOD_TRUE, ѓpѓ‰ѓЃЃ[ѓ^”Н€НЉOЃFKOD_FALSE, Ћё”sЃFKOD_ERR
+//int NURBS_Func::SearchIntersectPt_OS(NURBSS *S,Coord pt,Coord n,double delta,double *u,double *v,int direction)
+int NURBSS::SearchIntersectPt_OS(Coord pt,Coord n,double delta,double *u,double *v,int direction)
 {
 	double u0 = *u;
 	double v0 = *v;
@@ -2634,12 +2957,14 @@ int NURBS_Func::SearchIntersectPt_OS(NURBSS *S,Coord pt,Coord n,double delta,dou
 			*v = v0 + q[i-1];
 		}
 
-		Coord Su = CalcDiffuNurbsS(S,*u,*v);
-		Coord Sv = CalcDiffvNurbsS(S,*u,*v);
+//		Coord Su = CalcDiffuNurbsS(S,*u,*v);
+//		Coord Sv = CalcDiffvNurbsS(S,*u,*v);
+		Coord Su = CalcDiffuNurbsS(*u,*v);
+		Coord Sv = CalcDiffvNurbsS(*u,*v);
 
-		SFQuant sfq(S,*u,*v);
+		SFQuant sfq(this,*u,*v);
 		double H = sfq.E*sfq.G-sfq.F*sfq.F;
-		if(CheckZero(H,HIGH_ACCURACY) == KOD_TRUE){			// з‰№з•°з‚№
+		if(CheckZero(H,HIGH_ACCURACY) == KOD_TRUE){			// “Б€Щ“_
 			//GuiIF.SetMessage("NURBS KOD_ERROR:The process is stoped by detected singular point.");
 			return KOD_ERR;				
 		}
@@ -2652,18 +2977,20 @@ int NURBS_Func::SearchIntersectPt_OS(NURBSS *S,Coord pt,Coord n,double delta,dou
 		double fuut = fut*fut;
 		double fuvt = fut*fvt;
 		double fvvt = fvt*fvt;
-		if(CheckZero(fut,HIGH_ACCURACY) == KOD_TRUE && CheckZero(fvt,HIGH_ACCURACY) == KOD_TRUE){			// з‰№з•°з‚№
+		if(CheckZero(fut,HIGH_ACCURACY) == KOD_TRUE && CheckZero(fvt,HIGH_ACCURACY) == KOD_TRUE){			// “Б€Щ“_
 			//GuiIF.SetMessage("NURBS KOD_ERROR:The process is stoped by detected singular point.");
 			return KOD_ERR;				
 		}
-		double Kg = CalcGaussCurvature(sfq);
-		double Km = CalcMeanCurvature(sfq);
+//		double Kg = CalcGaussCurvature(sfq);
+//		double Km = CalcMeanCurvature(sfq);
+		double Kg = sfq.CalcGaussCurvature();
+		double Km = sfq.CalcMeanCurvature();
 		double nunu = -Kg*sfq.E+2*Km*sfq.L;
 		double nunv = -Kg*sfq.G+2*Km*sfq.N;
 		double nvnv = -Kg*sfq.F+2*Km*sfq.M;
-		double Et = sfq.E-2*sfq.L*d+nunu*d*d;		// 1ж¬Ўи¦Џж јй‡Џ
-		double Ft = sfq.F-2*sfq.M*d+nunv*d*d;		// 1ж¬Ўи¦Џж јй‡Џ
-		double Gt = sfq.G-2*sfq.N*d+nvnv*d*d;		// 1ж¬Ўи¦Џж јй‡Џ
+		double Et = sfq.E-2*sfq.L*d+nunu*d*d;		// 1Ћџ‹KЉi—К
+		double Ft = sfq.F-2*sfq.M*d+nunv*d*d;		// 1Ћџ‹KЉi—К
+		double Gt = sfq.G-2*sfq.N*d+nvnv*d*d;		// 1Ћџ‹KЉi—К
 		double denom = Et*fvvt - 2*Ft*fuvt + Gt*fuut;
 		if(denom <= 0)
 			return KOD_ERR;
@@ -2674,33 +3001,37 @@ int NURBS_Func::SearchIntersectPt_OS(NURBSS *S,Coord pt,Coord n,double delta,dou
 	*u = u0+(p[0]+2*p[1]+2*p[2]+p[3])/6;
 	*v = v0+(q[0]+2*q[1]+2*q[2]+q[3])/6;
 	
-	if(*u < S->U[0] || *u > S->U[1] || *v < S->V[0] || *v > S->V[1])	// гѓ‘гѓ©гѓЎгѓјг‚їзЇ„е›Іе¤–
+	if(*u < U[0] || *u > U[1] || *v < V[0] || *v > V[1])	// ѓpѓ‰ѓЃЃ[ѓ^”Н€НЉO
 		return KOD_FALSE;
 
 	return KOD_TRUE;
 }
 
 // Function: SearchIntersectPt
-// (private)гѓ‹гѓҐгѓјгѓ€гѓіжі•гЃ«г‚€г‚Љдє¤з‚№г‚’зњџеЂ¤гЃ«еЏЋжќџгЃ•гЃ›г‚‹(NURBSж›ІйќўгЃЁе№ійќў)
+// (private)ѓjѓ…Ѓ[ѓgѓ“–@‚Й‚ж‚иЊр“_‚рђ^’l‚ЙЋы‘©‚і‚№‚й(NURBS‹И–К‚Ж•Ѕ–К)
 // 
 // Parameters:
-// *nurb - NURBSж›ІйќўгЃёгЃ®гѓќг‚¤гѓіг‚ї
-// pt - е№ійќўдёЉгЃ®дёЂз‚№
-// nvec - е№ійќўгЃ®жі•з·љгѓ™г‚Їгѓ€гѓ«
-// ds - и§ЈиїЅи·ЎгЃ®е€»гЃїе№…
-// *u,*v - и§Ј
-// direction - иїЅи·Ўж–№еђ‘г‚’иЎЁгЃ™гѓ•гѓ©г‚°пј€FORWARD or INVERSE)
+// *nurb - NURBS‹И–К‚Ц‚Мѓ|ѓCѓ“ѓ^
+// pt - •Ѕ–КЏг‚М€к“_
+// nvec - •Ѕ–К‚М–@ђьѓxѓNѓgѓ‹
+// ds - ‰р’ЗђХ‚МЌЏ‚Э•ќ
+// *u,*v - ‰р
+// direction - ’ЗђХ•ыЊь‚р•\‚·ѓtѓ‰ѓOЃiFORWARD or INVERSE)
 //
 // Return:
-// ж€ђеЉџпјљKOD_TURE, гѓ‘гѓ©гѓЎгѓјг‚їзЇ„е›Іе¤–пјљKOD_FALSE, е¤±ж•—(з‰№з•°з‚№гЃ«гЃ¤гЃЌг‚јгѓ­е‰І)пјљKOD_ERR
-int NURBS_Func::SearchIntersectPt(NURBSS *nurb,Coord pt,Coord nvec,double ds,double *u,double *v,int direction)
+// ђ¬ЊчЃFKOD_TURE, ѓpѓ‰ѓЃЃ[ѓ^”Н€НЉOЃFKOD_FALSE, Ћё”s(“Б€Щ“_‚Й‚В‚«ѓ[ѓЌЉ„)ЃFKOD_ERR
+//int NURBS_Func::SearchIntersectPt(NURBSS *nurb,Coord pt,Coord nvec,double ds,double *u,double *v,int direction)
+int NURBSS::SearchIntersectPt(Coord pt,Coord nvec,double ds,double *u,double *v,int direction)
 {
-	double d = CalcInnerProduct(pt,nvec);	// еЋџз‚№гЃ‹г‚‰е№ійќўгЃѕгЃ§гЃ®и·ќй›ў
+	double d = CalcInnerProduct(pt,nvec);	// Њґ“_‚©‚з•Ѕ–К‚Ь‚Е‚М‹——Ј
 
-	// гЃѕгЃље€ќжњџеЂ¤гЃЁгЃ—гЃ¦гЃ®du,dvг‚’ж±‚г‚Ѓг‚‹
-	Coord pu = CalcDiffuNurbsS(nurb,*u,*v);
-	Coord pv = CalcDiffvNurbsS(nurb,*u,*v);
-	double phi = CalcInnerProduct(nvec,CalcNurbsSCoord(nurb,*u,*v));
+	// ‚Ь‚ёЏ‰Љъ’l‚Ж‚µ‚Д‚Мdu,dv‚р‹Ѓ‚Я‚й
+//	Coord pu = CalcDiffuNurbsS(nurb,*u,*v);
+//	Coord pv = CalcDiffvNurbsS(nurb,*u,*v);
+//	double phi = CalcInnerProduct(nvec,CalcNurbsSCoord(nurb,*u,*v));
+	Coord pu = CalcDiffuNurbsS(*u,*v);
+	Coord pv = CalcDiffvNurbsS(*u,*v);
+	double phi = CalcInnerProduct(nvec,CalcNurbsSCoord(*u,*v));
 	double phi_u = CalcInnerProduct(nvec,pu);
 	double phi_v = CalcInnerProduct(nvec,pv);
 	double E = CalcInnerProduct(pu,pu);
@@ -2708,132 +3039,142 @@ int NURBS_Func::SearchIntersectPt(NURBSS *nurb,Coord pt,Coord nvec,double ds,dou
 	double G = CalcInnerProduct(pv,pv);
 	double f = sqrt(E*phi_v*phi_v - 2*F*phi_u*phi_v + G*phi_u*phi_u); 
 	//fprintf(stderr,"%lf , %lf\n",phi_u,phi_v);
-	if(CheckZero(phi_u,MID_ACCURACY) == KOD_TRUE && CheckZero(phi_v,MID_ACCURACY) == KOD_TRUE){			// з‰№з•°з‚№
+	if(CheckZero(phi_u,MID_ACCURACY) == KOD_TRUE && CheckZero(phi_v,MID_ACCURACY) == KOD_TRUE){			// “Б€Щ“_
         //GuiIF.SetMessage("NURBS KOD_ERROR:The process is stoped by detected singular point.");
 		return KOD_ERR;				
 	}
 
-	// дє¤з·љиїЅи·Ўй †ж–№еђ‘гЃ®е ґеђ€
+	// Њрђь’ЗђХЏ‡•ыЊь‚МЏкЌ‡
 	if(direction == FORWARD){
 		f = 1/f;
 	}
-	// дє¤з·љиїЅи·ЎйЂ†ж–№еђ‘гЃ®е ґеђ€
+	// Њрђь’ЗђХ‹t•ыЊь‚МЏкЌ‡
 	else if(direction == INVERSE){
 		f = -1/f;
 	}
 
-	double du = -f*phi_v*ds;		// е€ќжњџеЂ¤
-	double dv = f*phi_u*ds;			// е€ќжњџеЂ¤
+	double du = -f*phi_v*ds;		// Џ‰Љъ’l
+	double dv = f*phi_u*ds;			// Џ‰Љъ’l
 
-	// гѓ‹гѓҐгѓјгѓ€гѓіжі•г‚’з”ЁгЃ„гЃ¦u,vг‚’зњџеЂ¤гЃ«еЏЋжќџгЃ•гЃ›г‚‹
+	// ѓjѓ…Ѓ[ѓgѓ“–@‚р—p‚ў‚Дu,v‚рђ^’l‚ЙЋы‘©‚і‚№‚й
 	int k=0;
-	if(fabs(dv) > fabs(du)){				// dv>duгЃ®е ґеђ€гЃЇdvг‚’е®љж•°гЃЁгЃ—гЃ¦е›єе®љгЃ™г‚‹
-		while(!CheckZero(du,MID_ACCURACY)){		// duгЃЊеЏЋжќџгЃ™г‚‹гЃѕгЃ§з№°г‚Љиї”гЃ—иЁ€з®—
-			phi = CalcInnerProduct(nvec,CalcNurbsSCoord(nurb,*u,*v));
-			phi_u = CalcInnerProduct(nvec,CalcDiffuNurbsS(nurb,*u,*v));
-			phi_v = CalcInnerProduct(nvec,CalcDiffvNurbsS(nurb,*u,*v));
+	if(fabs(dv) > fabs(du)){				// dv>du‚МЏкЌ‡‚Нdv‚р’иђ”‚Ж‚µ‚ДЊЕ’и‚·‚й
+		while(!CheckZero(du,MID_ACCURACY)){		// du‚ЄЋы‘©‚·‚й‚Ь‚ЕЊJ‚и•Ф‚µЊvЋZ
+//			phi = CalcInnerProduct(nvec,CalcNurbsSCoord(nurb,*u,*v));
+//			phi_u = CalcInnerProduct(nvec,CalcDiffuNurbsS(nurb,*u,*v));
+//			phi_v = CalcInnerProduct(nvec,CalcDiffvNurbsS(nurb,*u,*v));
+			phi = CalcInnerProduct(nvec,CalcNurbsSCoord(*u,*v));
+			phi_u = CalcInnerProduct(nvec,CalcDiffuNurbsS(*u,*v));
+			phi_v = CalcInnerProduct(nvec,CalcDiffvNurbsS(*u,*v));
 			du = (d-phi-phi_v*dv)/phi_u;
 			*u += du;
-			if(!CheckRange(nurb->U[0],nurb->U[1],*u,0) || k > LOOPCOUNTMAX){
+			if(!CheckRange(U[0],U[1],*u,0) || k > LOOPCOUNTMAX){
                 //GuiIF.SetMessage("NURBS KOD_ERROR:fail to calculate convergence");
 				return KOD_FALSE;
 			}
 			k++;
 		}
 		*v += dv;
-		if(!CheckRange(nurb->V[0],nurb->V[1],*v,0)){
+		if(!CheckRange(V[0],V[1],*v,0)){
 			return KOD_FALSE;
 		}
 	}
-	else{									// dv<duгЃ®е ґеђ€гЃЇduг‚’е®љж•°гЃЁгЃ—гЃ¦е›єе®љгЃ™г‚‹
-		while(!CheckZero(dv,MID_ACCURACY)){		// dvгЃЊеЏЋжќџгЃ™г‚‹гЃѕгЃ§з№°г‚Љиї”гЃ—иЁ€з®—
-			phi = CalcInnerProduct(nvec,CalcNurbsSCoord(nurb,*u,*v));
-			phi_u = CalcInnerProduct(nvec,CalcDiffuNurbsS(nurb,*u,*v));
-			phi_v = CalcInnerProduct(nvec,CalcDiffvNurbsS(nurb,*u,*v));
+	else{									// dv<du‚МЏкЌ‡‚Нdu‚р’иђ”‚Ж‚µ‚ДЊЕ’и‚·‚й
+		while(!CheckZero(dv,MID_ACCURACY)){		// dv‚ЄЋы‘©‚·‚й‚Ь‚ЕЊJ‚и•Ф‚µЊvЋZ
+//			phi = CalcInnerProduct(nvec,CalcNurbsSCoord(nurb,*u,*v));
+//			phi_u = CalcInnerProduct(nvec,CalcDiffuNurbsS(nurb,*u,*v));
+//			phi_v = CalcInnerProduct(nvec,CalcDiffvNurbsS(nurb,*u,*v));
+			phi = CalcInnerProduct(nvec,CalcNurbsSCoord(*u,*v));
+			phi_u = CalcInnerProduct(nvec,CalcDiffuNurbsS(*u,*v));
+			phi_v = CalcInnerProduct(nvec,CalcDiffvNurbsS(*u,*v));
 			dv = (d-phi-phi_u*du)/phi_v;
 			*v += dv;
-			if(!CheckRange(nurb->V[0],nurb->V[1],*v,0) || k>LOOPCOUNTMAX){
+			if(!CheckRange(V[0],V[1],*v,0) || k>LOOPCOUNTMAX){
                 //GuiIF.SetMessage("NURBS KOD_ERROR:fail to calculate convergence");
 				return KOD_FALSE;
 			}
 			k++;
 		}
 		*u += du;
-		if(!CheckRange(nurb->U[0],nurb->U[1],*u,0))
+		if(!CheckRange(U[0],U[1],*u,0))
 			return KOD_FALSE;
 	}
 	return KOD_TRUE;
 }
 
 // Function: CalcIntersecPtsNurbsSNurbsC
-// NURBSж›ІйќўгЃЁNURBSж›Із·љгЃЁгЃ®дє¤з‚№зѕ¤г‚’дє¤з·љиїЅи·Ўжі•гЃ§ж±‚г‚Ѓг‚‹
+// NURBS‹И–К‚ЖNURBS‹Иђь‚Ж‚МЊр“_ЊQ‚рЊрђь’ЗђХ–@‚Е‹Ѓ‚Я‚й
 //
 // Parameters:
-// *NurbsS, *NurbsC - NURBSж›ІйќўгЃЁNURBSж›Із·љгЃёгЃ®гѓќг‚¤гѓіг‚ї   
-// Divnum - е€ќжњџз‚№г‚µгѓјгѓЃж™‚гЃ®ж›Із·ље€†е‰Іж•°   
-// *ans - и§Ј  
-// ans_size - ansй…Ќе€—гЃ®й…Ќе€—й•·
+// *NurbsS, *NurbsC - NURBS‹И–К‚ЖNURBS‹Иђь‚Ц‚Мѓ|ѓCѓ“ѓ^   
+// Divnum - Џ‰Љъ“_ѓTЃ[ѓ`Ћћ‚М‹Иђь•ЄЉ„ђ”   
+// *ans - ‰р  
+// ans_size - ans”z—с‚М”z—с’·
 //
 // Return:
-// дє¤з‚№гЃ®ж•°пј€и§ЈгЃ®ж•°гЃЊansгЃ®г‚µг‚¤г‚єг‚’и¶…гЃ€гЃџе ґеђ€пјљKOD_ERRпј‰
+// Њр“_‚Мђ”Ѓi‰р‚Мђ”‚Єans‚МѓTѓCѓY‚р’ґ‚¦‚ЅЏкЌ‡ЃFKOD_ERRЃj
 int NURBS_Func::CalcIntersecPtsNurbsSNurbsC(NURBSS *NurbsS,NURBSC *NurbsC,int Divnum,Coord *ans,int ans_size)
 {
-	Coord d = SetCoord(100,100,100);		// NURBSж›Із·љS(u,v)гЃ®еѕ®е°Џе¤‰еЊ–й‡Џ(du,dv)гЂЃз›ґз·љN(t)гЃ®еѕ®е°Џе¤‰еЊ–й‡Џdtг‚’ж јзґЌ
+	Coord d = SetCoord(100,100,100);		// NURBS‹ИђьS(u,v)‚М”чЏ¬•П‰»—К(du,dv)ЃA’јђьN(t)‚М”чЏ¬•П‰»—Кdt‚рЉi”[
 	Coord F,Fu,Fv,Ft;						// F(u,v,t) = S(u,v) - N(t)    Fu = dF/du     Fv = dF/dv     Ft = dF/dt
-	double u = NurbsS->U[0];				// NURBSж›ІйќўS(u,v)гЃ®uгѓ‘гѓ©гѓЎгѓјг‚їгЃ®зЏѕењЁеЂ¤
-	double v = NurbsS->V[0];				// NURBSж›ІйќўS(u,v)гЃ®vгѓ‘гѓ©гѓЎгѓјг‚їгЃ®зЏѕењЁеЂ¤
-	double t = NurbsC->V[0];				// NURBSж›Із·љC(t)гЃ®tгѓ‘гѓ©гѓЎгѓјг‚ї
-	Matrix A = NewMatrix(3,3);				// Fu,Fv,Ftг‚’ж§‹ж€ђгЃ™г‚‹3x3иЎЊе€—
-	Matrix A_ = NewMatrix(3,3);				// AгЃ®йЂ†иЎЊе€—г‚’ж јзґЌ
-	bool flag = false;						// еЏЋжќџгѓ•гѓ©г‚°
-	double dt = (NurbsC->V[1] - NurbsC->V[0])/(double)Divnum;	// еЏЋжќџжј”з®—з”ЁгЃ®tгѓ‘гѓ©гѓЎгѓјг‚їгЃ®г‚¤гѓіг‚їгѓјгѓђгѓ«еЂ¤
-	int loopcount = 0;						// еЏЋжќџиЁ€з®—е›ћж•°
-	int anscount = 0;						// з®—е‡єгЃ•г‚ЊгЃџдє¤з‚№гЃ®ж•°
+	double u = NurbsS->U[0];				// NURBS‹И–КS(u,v)‚Мuѓpѓ‰ѓЃЃ[ѓ^‚МЊ»ЌЭ’l
+	double v = NurbsS->V[0];				// NURBS‹И–КS(u,v)‚Мvѓpѓ‰ѓЃЃ[ѓ^‚МЊ»ЌЭ’l
+	double t = NurbsC->V[0];				// NURBS‹ИђьC(t)‚Мtѓpѓ‰ѓЃЃ[ѓ^
+	Matrix A = NewMatrix(3,3);				// Fu,Fv,Ft‚рЌ\ђ¬‚·‚й3x3Ќs—с
+	Matrix A_ = NewMatrix(3,3);				// A‚М‹tЌs—с‚рЉi”[
+	bool flag = false;						// Ћы‘©ѓtѓ‰ѓO
+	double dt = (NurbsC->V[1] - NurbsC->V[0])/(double)Divnum;	// Ћы‘©‰‰ЋZ—p‚Мtѓpѓ‰ѓЃЃ[ѓ^‚МѓCѓ“ѓ^Ѓ[ѓoѓ‹’l
+	int loopcount = 0;						// Ћы‘©ЊvЋZ‰сђ”
+	int anscount = 0;						// ЋZЏo‚і‚к‚ЅЊр“_‚Мђ”
 
 	// t loop
 	for(int i=0;i<Divnum;i++){
-		t = NurbsC->V[0] + (double)i*dt;	// г‚№гѓ†гѓѓгѓ—гѓ‘гѓ©гѓЎгѓјг‚їtгЃ®е€ќжњџеЂ¤г‚’г‚»гѓѓгѓ€
-		u = NurbsS->U[0];					// г‚№гѓ†гѓѓгѓ—гѓ‘гѓ©гѓЎгѓјг‚їuгЃ®е€ќжњџеЂ¤г‚’г‚»гѓѓгѓ€
-		v = NurbsS->V[0];					// г‚№гѓ†гѓѓгѓ—гѓ‘гѓ©гѓЎгѓјг‚їvгЃ®е€ќжњџеЂ¤г‚’г‚»гѓѓгѓ€
-		flag = false;						// еЏЋжќџгѓ•гѓ©г‚°г‚’OFF
-		loopcount = 0;						// гѓ«гѓјгѓ—г‚«г‚¦гѓігѓ€е€ќжњџеЊ–
-		// з›ґз·љгЃ®еѕ®е°Џе¤‰еЊ–й‡Џdt(=d.z)гЃЊAPPROX_ZEROг‚’дё‹е›ћг‚‹гЃѕгЃ§гѓ‹гѓҐгѓјгѓ€гѓіжі•гЃ«г‚€г‚‹еЏЋжќџиЁ€з®—г‚’иЎЊгЃ†
+		t = NurbsC->V[0] + (double)i*dt;	// ѓXѓeѓbѓvѓpѓ‰ѓЃЃ[ѓ^t‚МЏ‰Љъ’l‚рѓZѓbѓg
+		u = NurbsS->U[0];					// ѓXѓeѓbѓvѓpѓ‰ѓЃЃ[ѓ^u‚МЏ‰Љъ’l‚рѓZѓbѓg
+		v = NurbsS->V[0];					// ѓXѓeѓbѓvѓpѓ‰ѓЃЃ[ѓ^v‚МЏ‰Љъ’l‚рѓZѓbѓg
+		flag = false;						// Ћы‘©ѓtѓ‰ѓO‚рOFF
+		loopcount = 0;						// ѓ‹Ѓ[ѓvѓJѓEѓ“ѓgЏ‰Љъ‰»
+		// ’јђь‚М”чЏ¬•П‰»—Кdt(=d.z)‚ЄAPPROX_ZERO‚р‰є‰с‚й‚Ь‚Еѓjѓ…Ѓ[ѓgѓ“–@‚Й‚ж‚йЋы‘©ЊvЋZ‚рЌs‚¤
 		while(loopcount < LOOPCOUNTMAX){
-			F = SubCoord(CalcNurbsSCoord(NurbsS,u,v),CalcNurbsCCoord(NurbsC,t));	// F(u,v,t) = S(u,v) - C(t)
-			Fu = CalcDiffuNurbsS(NurbsS,u,v);			// Fu = dF/du = dS/du
-			Fv = CalcDiffvNurbsS(NurbsS,u,v);			// Fv = dF/dv = dS/dv
-			Ft = CalcDiffNurbsC(NurbsC,t);				// Ft = dF/dt = dC/dt
-			A[0][0] = Fu.x;				// Fu,Fv,Ftг‚’3x3иЎЊе€—AгЃ«д»Је…Ґ
+//			F = SubCoord(CalcNurbsSCoord(NurbsS,u,v),CalcNurbsCCoord(NurbsC,t));	// F(u,v,t) = S(u,v) - C(t)
+//			Fu = CalcDiffuNurbsS(NurbsS,u,v);			// Fu = dF/du = dS/du
+//			Fv = CalcDiffvNurbsS(NurbsS,u,v);			// Fv = dF/dv = dS/dv
+//			Ft = CalcDiffNurbsC(NurbsC,t);				// Ft = dF/dt = dC/dt
+			F = SubCoord(NurbsS->CalcNurbsSCoord(u,v),NurbsC->CalcNurbsCCoord(t));	// F(u,v,t) = S(u,v) - C(t)
+			Fu = NurbsS->CalcDiffuNurbsS(u,v);			// Fu = dF/du = dS/du
+			Fv = NurbsS->CalcDiffvNurbsS(u,v);			// Fv = dF/dv = dS/dv
+			Ft = NurbsC->CalcDiffNurbsC(t);				// Ft = dF/dt = dC/dt
+			A[0][0] = Fu.x;				// Fu,Fv,Ft‚р3x3Ќs—сA‚Й‘г“ь
 			A[0][1] = Fv.x;				//     |Fu.x Fv.x Ft.x|       |du|       |F.x|
 			A[0][2] = Ft.x;				// A = |Fu.y Fv.y Ft.y| , d = |dv| , F = |F.y|
 			A[1][0] = Fu.y;				//     |Fu.z Fv.z Ft.z|       |dt|       |F.z|
 			A[1][1] = Fv.y;
-			A[1][2] = Ft.y;				// Aгѓ»d = F   --->   d = A_гѓ»F
+			A[1][2] = Ft.y;				// AЃEd = F   --->   d = A_ЃEF
 			A[2][0] = Fu.z;
 			A[2][1] = Fv.z;
 			A[2][2] = Ft.z;	
-			if(MatInv3(A,A_) == KOD_FALSE)	break;		// йЂ†иЎЊе€—г‚’ж±‚г‚Ѓг‚‹
-			d = MulCoord(MulMxCoord(A_,F),-1);			// dг‚’з®—е‡є
+			if(MatInv3(A,A_) == KOD_FALSE)	break;		// ‹tЌs—с‚р‹Ѓ‚Я‚й
+			d = MulCoord(MulMxCoord(A_,F),-1);			// d‚рЋZЏo
 
-			if(fabs(d.x) <= APPROX_ZERO && fabs(d.y) <= APPROX_ZERO && fabs(d.z) <= APPROX_ZERO){	// зњџеЂ¤гЃ«еЏЋжќџгЃ—гЃџг‚‰loopг‚’жЉњгЃ‘г‚‹
-				flag = true;		// еЏЋжќџгѓ•гѓ©г‚°true
+			if(fabs(d.x) <= APPROX_ZERO && fabs(d.y) <= APPROX_ZERO && fabs(d.z) <= APPROX_ZERO){	// ђ^’l‚ЙЋы‘©‚µ‚Ѕ‚зloop‚р”І‚Ї‚й
+				flag = true;		// Ћы‘©ѓtѓ‰ѓOtrue
 				break;
 			}
 
-			// зњџеЂ¤гЃ«йЃ”гЃ—гЃ¦гЃ„гЃЄгЃ‹гЃЈгЃџг‚‰u,v,tг‚’ж›ґж–°
+			// ђ^’l‚Й’B‚µ‚Д‚ў‚И‚©‚Б‚Ѕ‚зu,v,t‚рЌXђV
 			u += d.x;
 			v += d.y;
 			t += d.z;
 
-			if(u < NurbsS->U[0] || u > NurbsS->U[1] || v < NurbsS->V[0] || v > NurbsS->V[1] || t < NurbsC->V[0] || t > NurbsC->V[1]){	// u,vгЃ®гЃ©гЃЎг‚‰гЃ‹гЃЊз™єж•ЈгЃ—гЃџг‚‰loopг‚’жЉњгЃ‘г‚‹
-				flag = false;		// еЏЋжќџгѓ•гѓ©г‚°false
+			if(u < NurbsS->U[0] || u > NurbsS->U[1] || v < NurbsS->V[0] || v > NurbsS->V[1] || t < NurbsC->V[0] || t > NurbsC->V[1]){	// u,v‚М‚З‚ї‚з‚©‚Є”­ЋU‚µ‚Ѕ‚зloop‚р”І‚Ї‚й
+				flag = false;		// Ћы‘©ѓtѓ‰ѓOfalse
 				break;
 			}
 
 			loopcount++;
 		}// end of while
 
-		// еЏЋжќџгЃ—гЃ¦гЃ„гЃџг‚‰и§ЈгЃЁгЃ—гЃ¦з™»йЊІ
+		// Ћы‘©‚µ‚Д‚ў‚Ѕ‚з‰р‚Ж‚µ‚Д“o^
 		if(flag == true){
 			ans[anscount] = SetCoord(u,v,t);
 			anscount++;
@@ -2847,53 +3188,53 @@ int NURBS_Func::CalcIntersecPtsNurbsSNurbsC(NURBSS *NurbsS,NURBSC *NurbsC,int Di
 	FreeMatrix(A,3);
 	FreeMatrix(A_,3);
 
-	anscount = CheckTheSamePoints(ans,anscount);		// еђЊдёЂз‚№гЃЇй™¤еЋ»гЃ™г‚‹
+	anscount = CheckTheSamePoints(ans,anscount);		// “Ї€к“_‚НЏњ‹Ћ‚·‚й
 
 	return anscount;
 }
 
 // Function: CalcIntersecPtsNurbsSSearch
-// NURBSж›ІйќўS(u,v)гЃЁNURBSж›ІйќўR(w,t)гЃ®дє¤з·љ(дє¤з‚№зѕ¤)г‚’дє¤з‚№иїЅи·Ўжі•гЃ«гЃ¦ж±‚г‚Ѓг‚‹
+// NURBS‹И–КS(u,v)‚ЖNURBS‹И–КR(w,t)‚МЊрђь(Њр“_ЊQ)‚рЊр“_’ЗђХ–@‚Й‚Д‹Ѓ‚Я‚й
 // 
 // Parameters:
-// nurbsS - NURBSж›ІйќўS(u,v) 
-// nurbsR - NURBSж›ІйќўR(w,t) 
-// div - е€ќжњџз‚№г‚µгѓјгѓЃж™‚гЃ®ж›Ійќўе€†е‰Іж•°  
-// ds - дє¤з·љ(дє¤з‚№зѕ¤)гЃ®зІ—гЃ•(еЇ†0.1пЅћ2з–Ћ)  
-// ans - и§Ј  
-// ans_size - ansй…Ќе€—гЃ®й…Ќе€—й•·
+// nurbsS - NURBS‹И–КS(u,v) 
+// nurbsR - NURBS‹И–КR(w,t) 
+// div - Џ‰Љъ“_ѓTЃ[ѓ`Ћћ‚М‹И–К•ЄЉ„ђ”  
+// ds - Њрђь(Њр“_ЊQ)‚М‘e‚і(–§0.1Ѓ`2‘a)  
+// ans - ‰р  
+// ans_size - ans”z—с‚М”z—с’·
 //
 // Return:
-// дє¤з‚№гЃ®ж•°пј€NURBSж›ІйќўеђЊеЈ«гЃЊдє¤е·®гЃ—гЃ¦гЃ„гЃЄгЃ„пјљKOD_FALSEпјЊз‰№з•°з‚№гЃѕгЃџгЃЇз™єж•ЈгЃ«г‚€г‚Ље‡¦зђ†г‚’дё­ж–­пјљKOD_ERRпј‰
+// Њр“_‚Мђ”ЃiNURBS‹И–К“ЇЋm‚ЄЊрЌ·‚µ‚Д‚ў‚И‚ўЃFKOD_FALSEЃC“Б€Щ“_‚Ь‚Ѕ‚Н”­ЋU‚Й‚ж‚иЏ€—ќ‚р’†’fЃFKOD_ERRЃj
 int NURBS_Func::CalcIntersecPtsNurbsSSearch(NURBSS *nurbR,NURBSS *nurbS,int div,double ds,Coord *ansR,Coord *ansS,int ans_size)
 {
-	int ans_count=0;		// иїЅи·Ўз‚№гЃ®з·Џж•°
-	int loop_count=0;		// еЏЋжќџиЁ€з®—гЃ®гѓ«гѓјгѓ—ж•°
+	int ans_count=0;		// ’ЗђХ“_‚М‘Ќђ”
+	int loop_count=0;		// Ћы‘©ЊvЋZ‚Мѓ‹Ѓ[ѓvђ”
 	int pnow=0;
-	Coord init_pt_R[INTERSECPTNUMMAX];		// е€ќжњџз‚№(u,vгѓ‘гѓ©гѓЎгѓјг‚їеЂ¤)
-	Coord init_pt_S[INTERSECPTNUMMAX];		// е€ќжњџз‚№(u,vгѓ‘гѓ©гѓЎгѓјг‚їеЂ¤)
-	Coord init_pt_Coord_R[INTERSECPTNUMMAX];	// е€ќжњџз‚№(x,y,zеє§жЁ™еЂ¤)
+	Coord init_pt_R[INTERSECPTNUMMAX];		// Џ‰Љъ“_(u,vѓpѓ‰ѓЃЃ[ѓ^’l)
+	Coord init_pt_S[INTERSECPTNUMMAX];		// Џ‰Љъ“_(u,vѓpѓ‰ѓЃЃ[ѓ^’l)
+	Coord init_pt_Coord_R[INTERSECPTNUMMAX];	// Џ‰Љъ“_(x,y,zЌА•W’l)
 	Coord init_pt_Coord_S[INTERSECPTNUMMAX];
-	int  init_pt_flag[INTERSECPTNUMMAX];		// еђ„е€ќжњџз‚№г‚’йЂљг‚Љзµ‚гЃ€гЃџгЃ‹г‚’е€¤е€ҐгЃ™г‚‹гѓ•гѓ©г‚°
-	int  init_allpt_flag=KOD_FALSE;			// е€ќжњџз‚№г‚’е…ЁгЃ¦йЂљг‚Љзµ‚гЃ€гЃџгЃ‹г‚’е€¤е€ҐгЃ™г‚‹гѓ•гѓ©г‚°
-	int   init_pt_num = 0;				// е€ќжњџз‚№гЃ®ж•°
-	int  conform_flag = KOD_FALSE;			// е€ќжњџз‚№дёЂи‡ґгѓ•гѓ©г‚°
-	int  search_flag = KOD_TRUE;			// дє¤з·љиїЅи·Ўж–№еђ‘гѓ•гѓ©г‚°(KOD_TRUE:й †ж–№еђ‘,KOD_FALSE:йЂ†ж–№еђ‘)
-	int  inverse_flag = KOD_FALSE;			// дє¤з·љиїЅи·Ўж–№еђ‘йЂ†и»ўгѓ•гѓ©г‚°
-	double u,v,w,t;					// дє¤з·љиїЅи·Ўдё­гЃ®u,vгѓ‘гѓ©гѓЎгѓјг‚їдё­й–“еЂ¤
+	int  init_pt_flag[INTERSECPTNUMMAX];		// ЉeЏ‰Љъ“_‚р’К‚иЏI‚¦‚Ѕ‚©‚р”»•К‚·‚йѓtѓ‰ѓO
+	int  init_allpt_flag=KOD_FALSE;			// Џ‰Љъ“_‚р‘S‚Д’К‚иЏI‚¦‚Ѕ‚©‚р”»•К‚·‚йѓtѓ‰ѓO
+	int   init_pt_num = 0;				// Џ‰Љъ“_‚Мђ”
+	int  conform_flag = KOD_FALSE;			// Џ‰Љъ“_€к’vѓtѓ‰ѓO
+	int  search_flag = KOD_TRUE;			// Њрђь’ЗђХ•ыЊьѓtѓ‰ѓO(KOD_TRUE:Џ‡•ыЊь,KOD_FALSE:‹t•ыЊь)
+	int  inverse_flag = KOD_FALSE;			// Њрђь’ЗђХ•ыЊь‹t“]ѓtѓ‰ѓO
+	double u,v,w,t;					// Њрђь’ЗђХ’†‚Мu,vѓpѓ‰ѓЃЃ[ѓ^’†ЉФ’l
 //	FILE *fp=fopen("debug.csv","w");
 //	double color[3] = {0,1,1};
 	
-	// е€ќжњџз‚№йЂљйЃЋе€¤е€Ґгѓ•гѓ©г‚°г‚’е€ќжњџеЊ–
+	// Џ‰Љъ“_’К‰Я”»•Кѓtѓ‰ѓO‚рЏ‰Љъ‰»
 //	init_pt_flag[0] = KOD_TRUE;
 	for(int i=0;i<INTERSECPTNUMMAX;i++){
 		init_pt_flag[i] = KOD_FALSE;
 	}
 	init_pt_flag[0] = KOD_TRUE;
 
-	// дє¤з·љиїЅи·ЎгЃ™г‚‹гЃџг‚ЃгЃ®е€ќжњџз‚№гЃЁгЃЄг‚‹з‚№г‚’гЃ„гЃЏгЃ¤гЃ‹жЋўгЃ™
-	// вЂ»жіЁж„Џ:гЂЂи¤‡ж•°гЃ®дє¤з·љгѓ«гѓјгѓ—гЃЊгЃ‚г‚‹е ґеђ€гЂЃе…ЁгЃ¦гЃ®дє¤з·љгѓ«гѓјгѓ—дёЉгЃ®е€ќжњџз‚№г‚’и¦‹гЃ¤гЃ‘гЃЄгЃ‘г‚ЊгЃ°гЃЄг‚‰гЃЄгЃ„
-	//гЂЂгЂЂгЂЂгЂЂгЂЂгЃќгЃ®гЃџг‚ЃгЂЃгЃ‚гЃѕг‚Ље€†е‰Іж•°гЃЊе°‘гЃЄгЃ„гЃЁдёЂйѓЁгЃ®дє¤з·љгѓ«гѓјгѓ—дёЉгЃ«дє¤з·љ(дє¤з‚№зѕ¤)гЃЊз”џж€ђгЃ•г‚ЊгЃЄгЃЏгЃЄг‚‹е ґеђ€гЃЊгЃ‚г‚‹
+	// Њрђь’ЗђХ‚·‚й‚Ѕ‚Я‚МЏ‰Љъ“_‚Ж‚И‚й“_‚р‚ў‚­‚В‚©’T‚·
+	// Ѓ¦’Ќ€У:Ѓ@•Ўђ”‚МЊрђьѓ‹Ѓ[ѓv‚Є‚ ‚йЏкЌ‡ЃA‘S‚Д‚МЊрђьѓ‹Ѓ[ѓvЏг‚МЏ‰Љъ“_‚рЊ©‚В‚Ї‚И‚Ї‚к‚О‚И‚з‚И‚ў
+	//Ѓ@Ѓ@Ѓ@Ѓ@Ѓ@‚»‚М‚Ѕ‚ЯЃA‚ ‚Ь‚и•ЄЉ„ђ”‚ЄЏ­‚И‚ў‚Ж€к•”‚МЊрђьѓ‹Ѓ[ѓvЏг‚ЙЊрђь(Њр“_ЊQ)‚Єђ¶ђ¬‚і‚к‚И‚­‚И‚йЏкЌ‡‚Є‚ ‚й
 	init_pt_num = CalcIntersecPtsNurbsSGeom(nurbR,nurbS,div,div,init_pt_R,init_pt_S,INTERSECPTNUMMAX);
 	//if(!init_pt_num){
 	//	init_pt_num = CalcIntersecPtsNurbsSGeom(nurbR,nurbS,5,5,init_pt_R,init_pt_S,INTERSECPTNUMMAX);
@@ -2904,64 +3245,68 @@ int NURBS_Func::CalcIntersecPtsNurbsSSearch(NURBSS *nurbR,NURBSS *nurbS,int div,
 	//if(!init_pt_num){
 	//	init_pt_num = CalcIntersecPtsNurbsSGeom(nurbR,nurbS,10,10,init_pt_R,init_pt_S,INTERSECPTNUMMAX);
 	//}
-	if(!init_pt_num){		// гЃќг‚ЊгЃ§г‚‚и¦‹гЃ¤гЃ‹г‚‰гЃЄгЃ„е ґеђ€гЃЇгЂЃдє¤е·®гЃ—гЃ¦гЃ„гЃЄгЃ„гЃЁгЃїгЃЄгЃ™
+	if(!init_pt_num){		// ‚»‚к‚Е‚аЊ©‚В‚©‚з‚И‚ўЏкЌ‡‚НЃAЊрЌ·‚µ‚Д‚ў‚И‚ў‚Ж‚Э‚И‚·
 		return KOD_FALSE;					
 	}
 	
 	for(int i=0;i<init_pt_num;i++){
-		init_pt_Coord_R[i] = CalcNurbsSCoord(nurbR,init_pt_R[i].x,init_pt_R[i].y);		// дє¤з‚№гЃ®uvгѓ‘гѓ©гѓЎгѓјг‚їг‚’xyzеє§жЁ™еЂ¤гЃ«е¤‰жЏ›гЃ—гЃџг‚‚гЃ®г‚’дїќжЊЃгЃ—гЃ¦гЃЉгЃЏ
-		init_pt_Coord_S[i] = CalcNurbsSCoord(nurbS,init_pt_S[i].x,init_pt_S[i].y);		// дє¤з‚№гЃ®uvгѓ‘гѓ©гѓЎгѓјг‚їг‚’xyzеє§жЁ™еЂ¤гЃ«е¤‰жЏ›гЃ—гЃџг‚‚гЃ®г‚’дїќжЊЃгЃ—гЃ¦гЃЉгЃЏ
+//		init_pt_Coord_R[i] = CalcNurbsSCoord(nurbR,init_pt_R[i].x,init_pt_R[i].y);		// Њр“_‚Мuvѓpѓ‰ѓЃЃ[ѓ^‚рxyzЌА•W’l‚Й•ПЉ·‚µ‚Ѕ‚а‚М‚р•ЫЋќ‚µ‚Д‚Ё‚­
+//		init_pt_Coord_S[i] = CalcNurbsSCoord(nurbS,init_pt_S[i].x,init_pt_S[i].y);		// Њр“_‚Мuvѓpѓ‰ѓЃЃ[ѓ^‚рxyzЌА•W’l‚Й•ПЉ·‚µ‚Ѕ‚а‚М‚р•ЫЋќ‚µ‚Д‚Ё‚­
+		init_pt_Coord_R[i] = nurbR->CalcNurbsSCoord(init_pt_R[i].x,init_pt_R[i].y);		// Њр“_‚Мuvѓpѓ‰ѓЃЃ[ѓ^‚рxyzЌА•W’l‚Й•ПЉ·‚µ‚Ѕ‚а‚М‚р•ЫЋќ‚µ‚Д‚Ё‚­
+		init_pt_Coord_S[i] = nurbS->CalcNurbsSCoord(init_pt_S[i].x,init_pt_S[i].y);		// Њр“_‚Мuvѓpѓ‰ѓЃЃ[ѓ^‚рxyzЌА•W’l‚Й•ПЉ·‚µ‚Ѕ‚а‚М‚р•ЫЋќ‚µ‚Д‚Ё‚­
 	//	DrawPoint(init_pt_Coord_R[i],1,5,color);
 	//	DrawPoint(init_pt_Coord_S[i],1,5,color);
 	}
 	ansR[ans_count] = SetCoord(init_pt_R[0]);
 	ansS[ans_count] = SetCoord(init_pt_S[0]);
 	
-	// е€ќжњџз‚№г‚’е…ЁгЃ¦йЂљйЃЋгЃ™г‚‹гЃѕгЃ§дє¤з·љиїЅи·Ўжі•г‚’з№°г‚Љиї”гЃ™
+	// Џ‰Љъ“_‚р‘S‚Д’К‰Я‚·‚й‚Ь‚ЕЊрђь’ЗђХ–@‚рЊJ‚и•Ф‚·
 	while(init_allpt_flag == KOD_FALSE){
-		// дє¤з·љиїЅи·ЎгЃ®гЃџг‚ЃгЃ®е§‹з‚№R(w,t),S(u,v)г‚’г‚»гѓѓгѓ€
+		// Њрђь’ЗђХ‚М‚Ѕ‚Я‚МЋn“_R(w,t),S(u,v)‚рѓZѓbѓg
 		w = ansR[ans_count].x = init_pt_R[pnow].x;
 		t = ansR[ans_count].y = init_pt_R[pnow].y;
 		u = ansS[ans_count].x = init_pt_S[pnow].x;
 		v = ansS[ans_count].y = init_pt_S[pnow].y;
- 		if(inverse_flag == KOD_FALSE){		// иїЅи·Ўж–№еђ‘гЃЊй †ж–№еђ‘гЃ‹г‚‰йЂ†ж–№еђ‘гЃ«е¤‰г‚Џг‚‹гЃЁгЃЌд»Ґе¤–
-			ans_count++;			// и§Јг‚’г‚«г‚¦гѓігѓ€
-			init_pt_flag[pnow] = KOD_TRUE;	// е€ќжњџз‚№йЂљйЃЋгѓ•гѓ©г‚°г‚’з«‹гЃ¦г‚‹
+ 		if(inverse_flag == KOD_FALSE){		// ’ЗђХ•ыЊь‚ЄЏ‡•ыЊь‚©‚з‹t•ыЊь‚Й•П‚н‚й‚Ж‚«€ИЉO
+			ans_count++;			// ‰р‚рѓJѓEѓ“ѓg
+			init_pt_flag[pnow] = KOD_TRUE;	// Џ‰Љъ“_’К‰Яѓtѓ‰ѓO‚р—§‚Д‚й
 		}
-		else if(inverse_flag == KOD_TRUE)		// иїЅи·Ўж–№еђ‘гЃЊй †ж–№еђ‘гЃ‹г‚‰йЂ†ж–№еђ‘гЃ«е¤‰г‚Џг‚‹гЃЁгЃЌ
-			inverse_flag = KOD_FALSE;		// иїЅи·Ўж–№еђ‘(й †гЃ‹г‚‰йЂ†)гѓ•гѓ©г‚°г‚’е…ѓгЃ«ж€»гЃ™
+		else if(inverse_flag == KOD_TRUE)		// ’ЗђХ•ыЊь‚ЄЏ‡•ыЊь‚©‚з‹t•ыЊь‚Й•П‚н‚й‚Ж‚«
+			inverse_flag = KOD_FALSE;		// ’ЗђХ•ыЊь(Џ‡‚©‚з‹t)ѓtѓ‰ѓO‚рЊі‚Й–Я‚·
 		
-		// дє¤з·љиїЅи·Ўй–‹е§‹
+		// Њрђь’ЗђХЉJЋn
 		while(1){
-			// иїЅи·Ўж–№еђ‘гЃЊй †ж–№еђ‘гЃ®е ґеђ€
+			// ’ЗђХ•ыЊь‚ЄЏ‡•ыЊь‚МЏкЌ‡
 			if(search_flag == KOD_TRUE){
-				search_flag = SearchIntersectPt(nurbR,nurbS,ds,&w,&t,&u,&v,FORWARD);	// й †ж–№еђ‘гЃ«дє¤з·љиїЅи·Ў
-				if(search_flag != KOD_TRUE)						// uvгѓ‘гѓ©гѓЎгѓјг‚їе¤–гЃ«е‡єгЃџг‚‰
- 					inverse_flag = KOD_TRUE;						// иїЅи·Ўж–№еђ‘(й †гЃ‹г‚‰йЂ†)гѓ•гѓ©г‚°г‚’з«‹гЃ¦г‚‹
+				search_flag = SearchIntersectPt(nurbR,nurbS,ds,&w,&t,&u,&v,FORWARD);	// Џ‡•ыЊь‚ЙЊрђь’ЗђХ
+				if(search_flag != KOD_TRUE)						// uvѓpѓ‰ѓЃЃ[ѓ^ЉO‚ЙЏo‚Ѕ‚з
+ 					inverse_flag = KOD_TRUE;						// ’ЗђХ•ыЊь(Џ‡‚©‚з‹t)ѓtѓ‰ѓO‚р—§‚Д‚й
 			}
-			// иїЅи·Ўж–№еђ‘гЃЊйЂ†ж–№еђ‘гЃ®е ґеђ€
+			// ’ЗђХ•ыЊь‚Є‹t•ыЊь‚МЏкЌ‡
 			else if(search_flag == KOD_FALSE){
 				int flag = SearchIntersectPt(nurbR,nurbS,ds,&w,&t,&u,&v,INVERSE);
-				if(flag == KOD_FALSE)	// uvгѓ‘гѓ©гѓЎгѓјг‚їе¤–гЃ«е‡єгЃџг‚‰
-					search_flag = KOD_TRUE;						// иїЅи·Ўж–№еђ‘гѓ•гѓ©г‚°г‚’й †ж–№еђ‘гЃ«
+				if(flag == KOD_FALSE)	// uvѓpѓ‰ѓЃЃ[ѓ^ЉO‚ЙЏo‚Ѕ‚з
+					search_flag = KOD_TRUE;						// ’ЗђХ•ыЊьѓtѓ‰ѓO‚рЏ‡•ыЊь‚Й
  			}
-			// з‰№з•°з‚№ж¤ње‡єгЃЄгЃ©гЃ«г‚€г‚Ље‡¦зђ†г‚’з¶™з¶љгЃ§гЃЌгЃЄгЃ„е ґеђ€
+			// “Б€Щ“_ЊџЏo‚И‚З‚Й‚ж‚иЏ€—ќ‚рЊp‘±‚Е‚«‚И‚ўЏкЌ‡
 			else if(search_flag == KOD_ERR){
 				return KOD_ERR;
 			}
 
-			Coord pr = CalcNurbsSCoord(nurbR,w,t);			// еѕ—г‚‰г‚ЊгЃџu,vг‚’xyzеє§жЁ™еЂ¤гЃ«е¤‰жЏ›
-			Coord ps = CalcNurbsSCoord(nurbS,u,v);			// еѕ—г‚‰г‚ЊгЃџu,vг‚’xyzеє§жЁ™еЂ¤гЃ«е¤‰жЏ›
-			double distr = CalcDistance(init_pt_Coord_R[pnow],pr);	// еѕ—г‚‰г‚ЊгЃџxyzеє§жЁ™еЂ¤гЃЁе€ќжњџз‚№гЃЁгЃ®и·ќй›ўг‚’з®—е‡є
-			double dists = CalcDistance(init_pt_Coord_S[pnow],ps);	// еѕ—г‚‰г‚ЊгЃџxyzеє§жЁ™еЂ¤гЃЁе€ќжњџз‚№гЃЁгЃ®и·ќй›ўг‚’з®—е‡є
+//			Coord pr = CalcNurbsSCoord(nurbR,w,t);			// “ѕ‚з‚к‚Ѕu,v‚рxyzЌА•W’l‚Й•ПЉ·
+//			Coord ps = CalcNurbsSCoord(nurbS,u,v);			// “ѕ‚з‚к‚Ѕu,v‚рxyzЌА•W’l‚Й•ПЉ·
+			Coord pr = nurbR->CalcNurbsSCoord(w,t);			// “ѕ‚з‚к‚Ѕu,v‚рxyzЌА•W’l‚Й•ПЉ·
+			Coord ps = nurbS->CalcNurbsSCoord(u,v);			// “ѕ‚з‚к‚Ѕu,v‚рxyzЌА•W’l‚Й•ПЉ·
+			double distr = CalcDistance(init_pt_Coord_R[pnow],pr);	// “ѕ‚з‚к‚ЅxyzЌА•W’l‚ЖЏ‰Љъ“_‚Ж‚М‹——Ј‚рЋZЏo
+			double dists = CalcDistance(init_pt_Coord_S[pnow],ps);	// “ѕ‚з‚к‚ЅxyzЌА•W’l‚ЖЏ‰Љъ“_‚Ж‚М‹——Ј‚рЋZЏo
 			
-			// дє¤з‚№гЃ®еЂ‹ж•°гЃЊгѓЄгѓџгѓѓгѓ€г‚’и¶ЉгЃ€гЃџг‚‰
+			// Њр“_‚МЊВђ”‚ЄѓЉѓ~ѓbѓg‚р‰z‚¦‚Ѕ‚з
 			if(ans_count >= ans_size-1){
                 GuiIF.SetMessage("NURBS KOD_ERROR:Intersection points exceeded the allocated array length");
 				return ans_count;
 			}
 
-			// жњЂе€ќгЃ«ж±‚г‚ЃгЃџе€ќжњџз‚№гЃЊдє¤з·љиїЅи·Ўжі•гЃ«г‚€гЃЈгЃ¦е…ЁгЃ¦йЂљйЃЋгЃ—гЃџгЃ‹иЄїгЃ№г‚‹
+			// ЌЕЏ‰‚Й‹Ѓ‚Я‚ЅЏ‰Љъ“_‚ЄЊрђь’ЗђХ–@‚Й‚ж‚Б‚Д‘S‚Д’К‰Я‚µ‚Ѕ‚©’І‚Ч‚й
 			for(int i=0;i<init_pt_num;i++){
 				if(CalcDistance(init_pt_Coord_R[i],pr) < ds){
 					if(init_pt_flag[i] == KOD_TRUE && i < pnow){
@@ -2972,7 +3317,7 @@ int NURBS_Func::CalcIntersecPtsNurbsSSearch(NURBSS *nurbR,NURBSS *nurbS,int div,
 				}
 			}
 			
-			// u,vгЃЊеЏ–г‚Љеѕ—г‚‹гѓ‘гѓ©гѓЎгѓјг‚їзЇ„е›Іпј€0пЅћ1пј‰г‚’и¶…гЃ€гЃџе ґеђ€гЃѕгЃџгЃЇгЂЃпј‘е‘ЁгЃ—гЃ¦ж€»гЃЈгЃ¦гЃЌгЃџе ґеђ€гЃЇгѓ«гѓјгѓ—г‚’жЉњгЃ‘г‚‹
+			// u,v‚ЄЋж‚и“ѕ‚йѓpѓ‰ѓЃЃ[ѓ^”Н€НЃi0Ѓ`1Ѓj‚р’ґ‚¦‚ЅЏкЌ‡‚Ь‚Ѕ‚НЃA‚PЋь‚µ‚Д–Я‚Б‚Д‚«‚ЅЏкЌ‡‚Нѓ‹Ѓ[ѓv‚р”І‚Ї‚й
 			if(!CheckRange(nurbR->U[0],nurbR->U[1],w,0) || !CheckRange(nurbR->V[0],nurbR->V[1],t,0) || (distr < ds/2 && loop_count > 0)){
 				break;
 			}
@@ -2981,7 +3326,7 @@ int NURBS_Func::CalcIntersecPtsNurbsSSearch(NURBSS *nurbR,NURBSS *nurbS,int div,
 				break;
 			}
 			
-			// еѕ—г‚‰г‚ЊгЃџu,vг‚’дє¤з·љ(дє¤з‚№зѕ¤)гЃЁгЃ—гЃ¦з™»йЊІ
+			// “ѕ‚з‚к‚Ѕu,v‚рЊрђь(Њр“_ЊQ)‚Ж‚µ‚Д“o^
 			ansR[ans_count] = SetCoord(w,t,0);
 			ansS[ans_count] = SetCoord(u,v,0);
 			ans_count++;
@@ -2991,11 +3336,11 @@ int NURBS_Func::CalcIntersecPtsNurbsSSearch(NURBSS *nurbR,NURBSS *nurbS,int div,
 				break;
 			}
 
-			loop_count++;		// гѓ«гѓјгѓ—е›ћж•°г‚’г‚¤гѓіг‚ЇгѓЄгѓЎгѓігѓ€
+			loop_count++;		// ѓ‹Ѓ[ѓv‰сђ”‚рѓCѓ“ѓNѓЉѓЃѓ“ѓg
 
- 		}// дє¤з·љиїЅи·ЎгЃ“гЃ“гЃѕгЃ§
+ 		}// Њрђь’ЗђХ‚±‚±‚Ь‚Е
 
-		// ж®‹гЃЈгЃџз‚№гЃЊгЃ‚г‚ЊгЃ°гЂЃе€ҐгЃ®дє¤з·љгЃЊгЃ‚г‚‹гЃ®гЃ§гЂЃгЃќгЃ®з‚№г‚’е§‹з‚№гЃЁгЃ—гЃ¦е†Ќеє¦дє¤з·љиїЅи·Ўг‚’иЎЊгЃ†
+		// Ћc‚Б‚Ѕ“_‚Є‚ ‚к‚ОЃA•К‚МЊрђь‚Є‚ ‚й‚М‚ЕЃA‚»‚М“_‚рЋn“_‚Ж‚µ‚ДЌД“xЊрђь’ЗђХ‚рЌs‚¤
 		if(search_flag == KOD_TRUE){
 			init_allpt_flag = KOD_TRUE;
 			for(int i=0;i<init_pt_num;i++){
@@ -3013,75 +3358,81 @@ int NURBS_Func::CalcIntersecPtsNurbsSSearch(NURBSS *nurbR,NURBSS *nurbS,int div,
 }
 
 // Function: CalcIntersecPtsNurbsSGeom
-// NURBSж›ІйќўS(u,v)гЃЁNURBSж›ІйќўR(w,t)гЃ®дє¤з·љ(дє¤з‚№зѕ¤)г‚’е№ѕдЅ•е­¦зљ„гЃ«ж±‚г‚Ѓг‚‹(иЈњеЉ©е№ійќўг‚’з”ЁгЃ„гЃџи§Јжі•)
+// NURBS‹И–КS(u,v)‚ЖNURBS‹И–КR(w,t)‚МЊрђь(Њр“_ЊQ)‚рЉф‰ЅЉw“I‚Й‹Ѓ‚Я‚й(•вЏ••Ѕ–К‚р—p‚ў‚Ѕ‰р–@)
 //
 // Parameters:
-// *nurbS - NURBSж›ІйќўS(u,v) 
-// *nurbR - NURBSж›ІйќўR(w,t) 
-// u_divnum - uгѓ‘гѓ©гѓЎгѓјг‚їе€†е‰Іж•°гЂЂ
-// v_divnum - vгѓ‘гѓ©гѓЎгѓјг‚їе€†е‰Іж•°
-// *ans - з®—е‡єгЃ•г‚ЊгЃџдє¤з‚№гЃ®u,vгѓ‘гѓ©гѓЎгѓјг‚їеЂ¤г‚’гЃќг‚ЊгЃћг‚Њans.x,ans.yгЃ«ж јзґЌ
-// ans_size - ansгЃ®й…Ќе€—й•·
+// *nurbS - NURBS‹И–КS(u,v) 
+// *nurbR - NURBS‹И–КR(w,t) 
+// u_divnum - uѓpѓ‰ѓЃЃ[ѓ^•ЄЉ„ђ”Ѓ@
+// v_divnum - vѓpѓ‰ѓЃЃ[ѓ^•ЄЉ„ђ”
+// *ans - ЋZЏo‚і‚к‚ЅЊр“_‚Мu,vѓpѓ‰ѓЃЃ[ѓ^’l‚р‚»‚к‚ј‚кans.x,ans.y‚ЙЉi”[
+// ans_size - ans‚М”z—с’·
 //
 // Return:
-// дє¤з‚№гЃ®еЂ‹ж•°
+// Њр“_‚МЊВђ”
 int NURBS_Func::CalcIntersecPtsNurbsSGeom(NURBSS *nurbR,NURBSS *nurbS,int u_divnum,int v_divnum,Coord *ansR,Coord *ansS,int ans_size)
 {
 	int ansnum=0;
 	
-	// еђ„ж›Ійќўг‚’жЊ‡е®љгЃ®е€†е‰Іж•°гЃ§uvе€†е‰ІгЃ—гЂЃгЃќг‚Њг‚‰гЃ®з‚№гЃ«гЃЉгЃ‘г‚‹иЈњеЉ©е№ійќўг‚’з”џж€ђгЃ—гЃ¦дє¤з·љдёЉгЃ®д»»ж„ЏгЃ®1з‚№гЃ«еЏЋжќџгЃ•гЃ›г‚‹
+	// Љe‹И–К‚рЋw’и‚М•ЄЉ„ђ”‚Еuv•ЄЉ„‚µЃA‚»‚к‚з‚М“_‚Й‚Ё‚Ї‚й•вЏ••Ѕ–К‚рђ¶ђ¬‚µ‚ДЊрђьЏг‚М”C€У‚М1“_‚ЙЋы‘©‚і‚№‚й
 	for(int w=0;w<u_divnum;w++){
 		for(int t=0;t<v_divnum;t++){
 			for(int u=0;u<u_divnum;u++){
 				for(int v=0;v<v_divnum;v++){
-					// еђ„ж›ІйќўгЃ«е€†е‰Із‚№г‚’з”џж€ђгЃ™г‚‹
+					// Љe‹И–К‚Й•ЄЉ„“_‚рђ¶ђ¬‚·‚й
 					double w0 = nurbR->U[0] + (nurbR->U[1] - nurbR->U[0])*(double)w/(double)u_divnum;
 					double t0 = nurbR->V[0] + (nurbR->V[1] - nurbR->V[0])*(double)t/(double)v_divnum;
 					double u0 = nurbS->U[0] + (nurbS->U[1] - nurbS->U[0])*(double)u/(double)u_divnum;
 					double v0 = nurbS->V[0] + (nurbS->V[1] - nurbS->V[0])*(double)v/(double)v_divnum;
 					for(int i=0;i<10;i++){
-						// еђ„зЁ®гѓ‘гѓ©гѓЎгѓјг‚їг‚’з®—е‡єгЃ™г‚‹
-						Coord p0 = CalcNurbsSCoord(nurbR,w0,t0);					// R(w0,t0)гЃЁгЃЄг‚‹з‚№(е€ќжњџз‚№)гЃ®еє§жЁ™
-						Coord q0 = CalcNurbsSCoord(nurbS,u0,v0);					// S(u0,v0)гЃЁгЃЄг‚‹з‚№(е€ќжњџз‚№)гЃ®еє§жЁ™
-						Coord rw = CalcDiffuNurbsS(nurbR,w0,t0);					// з‚№R(w0,t0)гЃ®uеЃЏеѕ®е€†(еџєжњ¬гѓ™г‚Їгѓ€гѓ«)
-						Coord rt = CalcDiffvNurbsS(nurbR,w0,t0);					// з‚№R(w0,t0)гЃ®vеЃЏеѕ®е€†(еџєжњ¬гѓ™г‚Їгѓ€гѓ«)
+						// ЉeЋнѓpѓ‰ѓЃЃ[ѓ^‚рЋZЏo‚·‚й
+//						Coord p0 = CalcNurbsSCoord(nurbR,w0,t0);					// R(w0,t0)‚Ж‚И‚й“_(Џ‰Љъ“_)‚МЌА•W
+//						Coord q0 = CalcNurbsSCoord(nurbS,u0,v0);					// S(u0,v0)‚Ж‚И‚й“_(Џ‰Љъ“_)‚МЌА•W
+//						Coord rw = CalcDiffuNurbsS(nurbR,w0,t0);					// “_R(w0,t0)‚Мu•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+//						Coord rt = CalcDiffvNurbsS(nurbR,w0,t0);					// “_R(w0,t0)‚Мv•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+						Coord p0 = nurbR->CalcNurbsSCoord(w0,t0);					// R(w0,t0)‚Ж‚И‚й“_(Џ‰Љъ“_)‚МЌА•W
+						Coord q0 = nurbS->CalcNurbsSCoord(u0,v0);					// S(u0,v0)‚Ж‚И‚й“_(Џ‰Љъ“_)‚МЌА•W
+						Coord rw = nurbR->CalcDiffuNurbsS(w0,t0);					// “_R(w0,t0)‚Мu•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+						Coord rt = nurbR->CalcDiffvNurbsS(w0,t0);					// “_R(w0,t0)‚Мv•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
 						double rwt = CalcEuclid(CalcOuterProduct(rw,rt));
 						if(rwt==0.0) break;
-						Coord np = DivCoord(CalcOuterProduct(rw,rt),rwt);			// з‚№R(w0,t0)гЃ®еЌдЅЌжі•з·љгѓ™г‚Їгѓ€гѓ«
-						Coord su = CalcDiffuNurbsS(nurbS,u0,v0);					// з‚№S(u0,v0)гЃ®uеЃЏеѕ®е€†(еџєжњ¬гѓ™г‚Їгѓ€гѓ«)
-						Coord sv = CalcDiffvNurbsS(nurbS,u0,v0);					// з‚№S(u0,v0)гЃ®vеЃЏеѕ®е€†(еџєжњ¬гѓ™г‚Їгѓ€гѓ«)
+						Coord np = DivCoord(CalcOuterProduct(rw,rt),rwt);			// “_R(w0,t0)‚М’P€К–@ђьѓxѓNѓgѓ‹
+//						Coord su = CalcDiffuNurbsS(nurbS,u0,v0);					// “_S(u0,v0)‚Мu•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+//						Coord sv = CalcDiffvNurbsS(nurbS,u0,v0);					// “_S(u0,v0)‚Мv•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+						Coord su = nurbS->CalcDiffuNurbsS(u0,v0);					// “_S(u0,v0)‚Мu•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+						Coord sv = nurbS->CalcDiffvNurbsS(u0,v0);					// “_S(u0,v0)‚Мv•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
 						double suv = CalcEuclid(CalcOuterProduct(su,sv));
 						if(suv==0.0) break;
-						Coord nq = DivCoord(CalcOuterProduct(su,sv),suv);			// з‚№S(u0,v0)гЃ®еЌдЅЌжі•з·љгѓ™г‚Їгѓ€гѓ«
+						Coord nq = DivCoord(CalcOuterProduct(su,sv),suv);			// “_S(u0,v0)‚М’P€К–@ђьѓxѓNѓgѓ‹
 						double npq = CalcEuclid(CalcOuterProduct(np,nq));
 						if(npq==0.0) break;
-						Coord nn = DivCoord(CalcOuterProduct(np,nq),npq);			// е№ійќўFpгЃЁе№ійќўFqгЃ«з›ґдє¤гЃ™г‚‹е№ійќўFnгЃ®еЌдЅЌжі•з·љгѓ™г‚Їгѓ€гѓ«
-						double dp = CalcInnerProduct(p0,np);						// еЋџз‚№гЃ‹г‚‰е№ійќўFpгЃѕгЃ§гЃ®и·ќй›ў
-						double dq = CalcInnerProduct(q0,nq);						// еЋџз‚№гЃ‹г‚‰е№ійќўFqгЃѕгЃ§гЃ®и·ќй›ў
-						double dn = CalcInnerProduct(p0,nn);						// еЋџз‚№гЃ‹г‚‰е№ійќўFnгЃѕгЃ§гЃ®и·ќй›ў
-						Coord cross_nqn = CalcOuterProduct(nq,nn);					// еЌдЅЌжі•з·љгѓ™г‚Їгѓ€гѓ«nq,nnгЃ®гѓ™г‚Їгѓ€гѓ«з©Ќ
-						Coord cross_nnp = CalcOuterProduct(nn,np);					// еЌдЅЌжі•з·љгѓ™г‚Їгѓ€гѓ«nn,npгЃ®гѓ™г‚Їгѓ€гѓ«з©Ќ
-						Coord cross_npq = CalcOuterProduct(np,nq);					// еЌдЅЌжі•з·љгѓ™г‚Їгѓ€гѓ«np,nqгЃ®гѓ™г‚Їгѓ€гѓ«з©Ќ
-						Coord nume_p_sub =  AddCoord(MulCoord(cross_nqn,dp),MulCoord(cross_nnp,dq));	// 3е№ійќўFp,Fq,FnгЃ®дє¤з‚№pгЃ®е€†е­ђгЃ®жњЂе€ќгЃ®2й …г‚’иЁ€з®—
-						Coord nume_p = AddCoord(nume_p_sub,MulCoord(cross_npq,dn));			// pгЃ®е€†е­ђг‚’з®—е‡є
-						double denom_p = CalcScalarTriProduct(np,nq,nn);			// pгЃ®е€†жЇЌг‚’з®—е‡є
-						Coord p = DivCoord(nume_p,denom_p);							// pг‚’з®—е‡є
-						Coord deltap0 = SubCoord(p,p0);								// з‚№pгЃЁз‚№p0гЃ®е·®гѓ™г‚Їгѓ€гѓ«г‚’з®—е‡є
-						Coord deltaq0 = SubCoord(p,q0);								// з‚№pгЃЁз‚№q0гЃ®е·®гѓ™г‚Їгѓ€гѓ«г‚’з®—е‡є
-						Coord rw_sub = CalcOuterProduct(rw,np);						// еџєжњ¬гѓ™г‚Їгѓ€гѓ«rwгЃЁжі•з·љгѓ™г‚Їгѓ€гѓ«npгЃ«з›ґдє¤гЃ™г‚‹гѓ™г‚Їгѓ€гѓ«
-						Coord rt_sub = CalcOuterProduct(rt,np);						// еџєжњ¬гѓ™г‚Їгѓ€гѓ«rtгЃЁжі•з·љгѓ™г‚Їгѓ€гѓ«npгЃ«з›ґдє¤гЃ™г‚‹гѓ™г‚Їгѓ€гѓ«
-						Coord su_sub = CalcOuterProduct(su,nq);						// еџєжњ¬гѓ™г‚Їгѓ€гѓ«suгЃЁжі•з·љгѓ™г‚Їгѓ€гѓ«nqгЃ«з›ґдє¤гЃ™г‚‹гѓ™г‚Їгѓ€гѓ«
-						Coord sv_sub = CalcOuterProduct(sv,nq);						// еџєжњ¬гѓ™г‚Їгѓ€гѓ«svгЃЁжі•з·љгѓ™г‚Їгѓ€гѓ«nqгЃ«з›ґдє¤гЃ™г‚‹гѓ™г‚Їгѓ€гѓ«
-						double dw = CalcInnerProduct(rt_sub,deltap0)/CalcInnerProduct(rt_sub,rw);	// ж–°гЃ—гЃ„з‚№r(w0+dw,t0+dt)г‚’дёЋгЃ€г‚‹гЃџг‚ЃгЃ®dwг‚’з®—е‡є
-						double dt = CalcInnerProduct(rw_sub,deltap0)/CalcInnerProduct(rw_sub,rt);	// ж–°гЃ—гЃ„з‚№r(w0+dw,t0+dt)г‚’дёЋгЃ€г‚‹гЃџг‚ЃгЃ®dtг‚’з®—е‡є
-						double du = CalcInnerProduct(sv_sub,deltaq0)/CalcInnerProduct(sv_sub,su);	// ж–°гЃ—гЃ„з‚№r(w0+dw,t0+dt)г‚’дёЋгЃ€г‚‹гЃџг‚ЃгЃ®dwг‚’з®—е‡є
-						double dv = CalcInnerProduct(su_sub,deltaq0)/CalcInnerProduct(su_sub,sv);	// ж–°гЃ—гЃ„з‚№r(w0+dw,t0+dt)г‚’дёЋгЃ€г‚‹гЃџг‚ЃгЃ®dtг‚’з®—е‡є
-						w0 += dw;									// ж–°гЃ—гЃ„з‚№гЃ®wгѓ‘гѓ©гѓЎгѓјг‚їг‚’еѕ—г‚‹
-						t0 += dt;									// ж–°гЃ—гЃ„з‚№гЃ®tгѓ‘гѓ©гѓЎгѓјг‚їг‚’еѕ—г‚‹
-						u0 += du;									// ж–°гЃ—гЃ„з‚№гЃ®uгѓ‘гѓ©гѓЎгѓјг‚їг‚’еѕ—г‚‹
-						v0 += dv;									// ж–°гЃ—гЃ„з‚№гЃ®vгѓ‘гѓ©гѓЎгѓјг‚їг‚’еѕ—г‚‹
+						Coord nn = DivCoord(CalcOuterProduct(np,nq),npq);			// •Ѕ–КFp‚Ж•Ѕ–КFq‚Й’јЊр‚·‚й•Ѕ–КFn‚М’P€К–@ђьѓxѓNѓgѓ‹
+						double dp = CalcInnerProduct(p0,np);						// Њґ“_‚©‚з•Ѕ–КFp‚Ь‚Е‚М‹——Ј
+						double dq = CalcInnerProduct(q0,nq);						// Њґ“_‚©‚з•Ѕ–КFq‚Ь‚Е‚М‹——Ј
+						double dn = CalcInnerProduct(p0,nn);						// Њґ“_‚©‚з•Ѕ–КFn‚Ь‚Е‚М‹——Ј
+						Coord cross_nqn = CalcOuterProduct(nq,nn);					// ’P€К–@ђьѓxѓNѓgѓ‹nq,nn‚МѓxѓNѓgѓ‹ђП
+						Coord cross_nnp = CalcOuterProduct(nn,np);					// ’P€К–@ђьѓxѓNѓgѓ‹nn,np‚МѓxѓNѓgѓ‹ђП
+						Coord cross_npq = CalcOuterProduct(np,nq);					// ’P€К–@ђьѓxѓNѓgѓ‹np,nq‚МѓxѓNѓgѓ‹ђП
+						Coord nume_p_sub =  AddCoord(MulCoord(cross_nqn,dp),MulCoord(cross_nnp,dq));	// 3•Ѕ–КFp,Fq,Fn‚МЊр“_p‚М•ЄЋq‚МЌЕЏ‰‚М2ЌЂ‚рЊvЋZ
+						Coord nume_p = AddCoord(nume_p_sub,MulCoord(cross_npq,dn));			// p‚М•ЄЋq‚рЋZЏo
+						double denom_p = CalcScalarTriProduct(np,nq,nn);			// p‚М•Є•к‚рЋZЏo
+						Coord p = DivCoord(nume_p,denom_p);							// p‚рЋZЏo
+						Coord deltap0 = SubCoord(p,p0);								// “_p‚Ж“_p0‚МЌ·ѓxѓNѓgѓ‹‚рЋZЏo
+						Coord deltaq0 = SubCoord(p,q0);								// “_p‚Ж“_q0‚МЌ·ѓxѓNѓgѓ‹‚рЋZЏo
+						Coord rw_sub = CalcOuterProduct(rw,np);						// Љо–{ѓxѓNѓgѓ‹rw‚Ж–@ђьѓxѓNѓgѓ‹np‚Й’јЊр‚·‚йѓxѓNѓgѓ‹
+						Coord rt_sub = CalcOuterProduct(rt,np);						// Љо–{ѓxѓNѓgѓ‹rt‚Ж–@ђьѓxѓNѓgѓ‹np‚Й’јЊр‚·‚йѓxѓNѓgѓ‹
+						Coord su_sub = CalcOuterProduct(su,nq);						// Љо–{ѓxѓNѓgѓ‹su‚Ж–@ђьѓxѓNѓgѓ‹nq‚Й’јЊр‚·‚йѓxѓNѓgѓ‹
+						Coord sv_sub = CalcOuterProduct(sv,nq);						// Љо–{ѓxѓNѓgѓ‹sv‚Ж–@ђьѓxѓNѓgѓ‹nq‚Й’јЊр‚·‚йѓxѓNѓgѓ‹
+						double dw = CalcInnerProduct(rt_sub,deltap0)/CalcInnerProduct(rt_sub,rw);	// ђV‚µ‚ў“_r(w0+dw,t0+dt)‚р—^‚¦‚й‚Ѕ‚Я‚Мdw‚рЋZЏo
+						double dt = CalcInnerProduct(rw_sub,deltap0)/CalcInnerProduct(rw_sub,rt);	// ђV‚µ‚ў“_r(w0+dw,t0+dt)‚р—^‚¦‚й‚Ѕ‚Я‚Мdt‚рЋZЏo
+						double du = CalcInnerProduct(sv_sub,deltaq0)/CalcInnerProduct(sv_sub,su);	// ђV‚µ‚ў“_r(w0+dw,t0+dt)‚р—^‚¦‚й‚Ѕ‚Я‚Мdw‚рЋZЏo
+						double dv = CalcInnerProduct(su_sub,deltaq0)/CalcInnerProduct(su_sub,sv);	// ђV‚µ‚ў“_r(w0+dw,t0+dt)‚р—^‚¦‚й‚Ѕ‚Я‚Мdt‚рЋZЏo
+						w0 += dw;									// ђV‚µ‚ў“_‚Мwѓpѓ‰ѓЃЃ[ѓ^‚р“ѕ‚й
+						t0 += dt;									// ђV‚µ‚ў“_‚Мtѓpѓ‰ѓЃЃ[ѓ^‚р“ѕ‚й
+						u0 += du;									// ђV‚µ‚ў“_‚Мuѓpѓ‰ѓЃЃ[ѓ^‚р“ѕ‚й
+						v0 += dv;									// ђV‚µ‚ў“_‚Мvѓpѓ‰ѓЃЃ[ѓ^‚р“ѕ‚й
 						
-						// ж›ІйќўгЃ®зЇ„е›Іе¤–гЃ«е‡єгЃ¦гЃ—гЃѕгЃЈгЃџг‚‰гѓ«гѓјгѓ—г‚’жЉњгЃ‘г‚‹
+						// ‹И–К‚М”Н€НЉO‚ЙЏo‚Д‚µ‚Ь‚Б‚Ѕ‚зѓ‹Ѓ[ѓv‚р”І‚Ї‚й
 						if(!CheckRange(nurbR->U[0],nurbR->U[1],w0,1) || !CheckRange(nurbR->V[0],nurbR->V[1],t0,1)){
 							break;
 						}
@@ -3089,16 +3440,16 @@ int NURBS_Func::CalcIntersecPtsNurbsSGeom(NURBSS *nurbR,NURBSS *nurbS,int u_divn
 							break;
 						}
 						
-						Coord deltapq = SubCoord(p0,q0);						// з‚№p0гЃЁз‚№q0гЃ®е·®гѓ™г‚Їгѓ€гѓ«г‚’з®—е‡є
-						double deltapq_dis = CalcEuclid(deltapq);					// |p0-q0|гЃ®и·ќй›ўг‚’з®—е‡є
+						Coord deltapq = SubCoord(p0,q0);						// “_p0‚Ж“_q0‚МЌ·ѓxѓNѓgѓ‹‚рЋZЏo
+						double deltapq_dis = CalcEuclid(deltapq);					// |p0-q0|‚М‹——Ј‚рЋZЏo
 
-						// еЌЃе€†еЏЋжќџгЃ—гЃџг‚‰и§Јг‚’з™»йЊІгЃ™г‚‹
+						// Џ\•ЄЋы‘©‚µ‚Ѕ‚з‰р‚р“o^‚·‚й
 						if(deltapq_dis < CONVERG_GAP){								
-							if(!ansnum || (!CheckZero(ansR[ansnum-1].x-w0,MID_ACCURACY) && !CheckZero(ansR[ansnum-1].y-t0,MID_ACCURACY))){// з›ґе‰ЌгЃ«з®—е‡єгЃ—гЃџи§ЈгЃЁеђЊдёЂгЃ®и§ЈгЃ§гЃЄгЃ‘г‚ЊгЃ°
-								ansR[ansnum] = SetCoord(w0,t0,0);						// и§ЈгЃЁгЃ—гЃ¦з™»йЊІ
+							if(!ansnum || (!CheckZero(ansR[ansnum-1].x-w0,MID_ACCURACY) && !CheckZero(ansR[ansnum-1].y-t0,MID_ACCURACY))){// ’ј‘O‚ЙЋZЏo‚µ‚Ѕ‰р‚Ж“Ї€к‚М‰р‚Е‚И‚Ї‚к‚О
+								ansR[ansnum] = SetCoord(w0,t0,0);						// ‰р‚Ж‚µ‚Д“o^
 								ansS[ansnum] = SetCoord(u0,v0,0);
-								ansnum++;								// и§Јг‚’г‚«г‚¦гѓігѓ€
-								if(ansnum == ans_size)					// и§ЈгЃ®ж•°гЃЊе€¶й™ђг‚’и¶ЉгЃ€гЃџ
+								ansnum++;								// ‰р‚рѓJѓEѓ“ѓg
+								if(ansnum == ans_size)					// ‰р‚Мђ”‚Єђ§ЊА‚р‰z‚¦‚Ѕ
 									return ansnum;
 							}
 							break;
@@ -3112,17 +3463,17 @@ int NURBS_Func::CalcIntersecPtsNurbsSGeom(NURBSS *nurbR,NURBSS *nurbS,int u_divn
 }
 
 // Function: SearchIntersectPt
-// (private)гѓ‹гѓҐгѓјгѓ€гѓіжі•гЃ«г‚€г‚Љдє¤з‚№г‚’зњџеЂ¤гЃ«еЏЋжќџгЃ•гЃ›г‚‹(NURBSж›ІйќўеђЊеЈ«)
+// (private)ѓjѓ…Ѓ[ѓgѓ“–@‚Й‚ж‚иЊр“_‚рђ^’l‚ЙЋы‘©‚і‚№‚й(NURBS‹И–К“ЇЋm)
 // 
 // Parameters:
-// *nurbR - NURBSж›ІйќўS(u,v)
-// *nurbS - NURBSж›ІйќўR(w,t) 
-// ds - и§ЈиїЅи·Ўж™‚гЃ®е€»гЃїе№…
-// *w,*t,*u,*v - и§Ј
-// direction - иїЅи·Ўж–№еђ‘г‚’иЎЁгЃ™гѓ•гѓ©г‚°пј€FORWARD or INVERSE)
+// *nurbR - NURBS‹И–КS(u,v)
+// *nurbS - NURBS‹И–КR(w,t) 
+// ds - ‰р’ЗђХЋћ‚МЌЏ‚Э•ќ
+// *w,*t,*u,*v - ‰р
+// direction - ’ЗђХ•ыЊь‚р•\‚·ѓtѓ‰ѓOЃiFORWARD or INVERSE)
 //
 // Return:
-// еЏЋжќџгЃ—гЃџпјљKOD_TRUE, гѓ‘гѓ©гѓЎгѓјг‚їзЇ„е›Іе¤–пјљKOD_FALSE, з‰№з•°з‚№ж¤ње‡єпјљKOD_ERR
+// Ћы‘©‚µ‚ЅЃFKOD_TRUE, ѓpѓ‰ѓЃЃ[ѓ^”Н€НЉOЃFKOD_FALSE, “Б€Щ“_ЊџЏoЃFKOD_ERR
 int NURBS_Func::SearchIntersectPt(NURBSS *nurbR,NURBSS *nurbS,double ds,double *w,double *t,double *u,double *v,int direction)
 {
 	double **J;
@@ -3130,21 +3481,27 @@ int NURBS_Func::SearchIntersectPt(NURBSS *nurbR,NURBSS *nurbS,double ds,double *
 	double ans[3];
 	int flag = KOD_TRUE;
 
-	// гѓЎгѓўгѓЄзўєдїќ
+	// ѓЃѓ‚ѓЉЉm•Ы
 	if((J = NewMatrix(3,3)) == NULL){
         GuiIF.SetMessage("NURBS ERROR: fail to malloc\n");
 		return KOD_ERR;
 	}
 
-	// гЃѕгЃље€ќжњџеЂ¤гЃЁгЃ—гЃ¦гЃ®dw,dt,du,dvг‚’ж±‚г‚Ѓг‚‹
-	Coord r = CalcNurbsSCoord(nurbR,*w,*t);					// з‚№R(w,t)гЃ®NURBSж›ІйќўгЃ®еє§жЁ™еЂ¤г‚’ж±‚г‚Ѓг‚‹
-	Coord s = CalcNurbsSCoord(nurbS,*u,*v);					// з‚№S(u,v)гЃ®NURBSж›ІйќўгЃ®еє§жЁ™еЂ¤г‚’ж±‚г‚Ѓг‚‹
-	Coord rw = CalcDiffuNurbsS(nurbR,*w,*t);					// з‚№R(w,t)гЃ®uеЃЏеѕ®е€†(еџєжњ¬гѓ™г‚Їгѓ€гѓ«)
-	Coord rt = CalcDiffvNurbsS(nurbR,*w,*t);					// з‚№R(w,t)гЃ®vеЃЏеѕ®е€†(еџєжњ¬гѓ™г‚Їгѓ€гѓ«)
-	Coord su = CalcDiffuNurbsS(nurbS,*u,*v);					// з‚№S(u,v)гЃ®uеЃЏеѕ®е€†(еџєжњ¬гѓ™г‚Їгѓ€гѓ«)
-	Coord sv = CalcDiffvNurbsS(nurbS,*u,*v);					// з‚№S(u,v)гЃ®vеЃЏеѕ®е€†(еџєжњ¬гѓ™г‚Їгѓ€гѓ«)
-	Coord n1 = DivCoord(CalcOuterProduct(rw,rt),CalcEuclid(CalcOuterProduct(rw,rt)));	// з‚№R(w0,t0)гЃ®еЌдЅЌжі•з·љгѓ™г‚Їгѓ€гѓ«
-	Coord n2 = DivCoord(CalcOuterProduct(su,sv),CalcEuclid(CalcOuterProduct(su,sv)));	// з‚№S(u0,v0)гЃ®еЌдЅЌжі•з·љгѓ™г‚Їгѓ€гѓ«
+	// ‚Ь‚ёЏ‰Љъ’l‚Ж‚µ‚Д‚Мdw,dt,du,dv‚р‹Ѓ‚Я‚й
+//	Coord r = CalcNurbsSCoord(nurbR,*w,*t);					// “_R(w,t)‚МNURBS‹И–К‚МЌА•W’l‚р‹Ѓ‚Я‚й
+//	Coord s = CalcNurbsSCoord(nurbS,*u,*v);					// “_S(u,v)‚МNURBS‹И–К‚МЌА•W’l‚р‹Ѓ‚Я‚й
+//	Coord rw = CalcDiffuNurbsS(nurbR,*w,*t);					// “_R(w,t)‚Мu•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+//	Coord rt = CalcDiffvNurbsS(nurbR,*w,*t);					// “_R(w,t)‚Мv•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+//	Coord su = CalcDiffuNurbsS(nurbS,*u,*v);					// “_S(u,v)‚Мu•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+//	Coord sv = CalcDiffvNurbsS(nurbS,*u,*v);					// “_S(u,v)‚Мv•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+	Coord r = nurbR->CalcNurbsSCoord(*w,*t);					// “_R(w,t)‚МNURBS‹И–К‚МЌА•W’l‚р‹Ѓ‚Я‚й
+	Coord s = nurbS->CalcNurbsSCoord(*u,*v);					// “_S(u,v)‚МNURBS‹И–К‚МЌА•W’l‚р‹Ѓ‚Я‚й
+	Coord rw = nurbR->CalcDiffuNurbsS(*w,*t);					// “_R(w,t)‚Мu•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+	Coord rt = nurbR->CalcDiffvNurbsS(*w,*t);					// “_R(w,t)‚Мv•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+	Coord su = nurbS->CalcDiffuNurbsS(*u,*v);					// “_S(u,v)‚Мu•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+	Coord sv = nurbS->CalcDiffvNurbsS(*u,*v);					// “_S(u,v)‚Мv•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+	Coord n1 = DivCoord(CalcOuterProduct(rw,rt),CalcEuclid(CalcOuterProduct(rw,rt)));	// “_R(w0,t0)‚М’P€К–@ђьѓxѓNѓgѓ‹
+	Coord n2 = DivCoord(CalcOuterProduct(su,sv),CalcEuclid(CalcOuterProduct(su,sv)));	// “_S(u0,v0)‚М’P€К–@ђьѓxѓNѓgѓ‹
 	double f1 = CalcInnerProduct(n2,rt);
 	double g1 = CalcInnerProduct(n2,rw);
 	double f2 = CalcInnerProduct(n1,sv);
@@ -3157,45 +3514,51 @@ int NURBS_Func::SearchIntersectPt(NURBSS *nurbR,NURBSS *nurbS,double ds,double *
 	double G2 = CalcInnerProduct(sv,sv);
 	double phi1 = sqrt(E1*f1*f1 - 2*F1*f1*g1 + G1*g1*g1);
 	double phi2 = sqrt(E2*f2*f2 - 2*F2*f2*g2 + G2*g2*g2);
-	if(!phi1 && !phi2){			// з‰№з•°з‚№
+	if(!phi1 && !phi2){			// “Б€Щ“_
         GuiIF.SetMessage("NURBS KOD_ERROR:The process is stoped by detected singular point.");
 		FreeMatrix(J,3);
 		return KOD_ERR;				
 	}
 	
-	// дє¤з·љиїЅи·Ўй †ж–№еђ‘гЃ®е ґеђ€
+	// Њрђь’ЗђХЏ‡•ыЊь‚МЏкЌ‡
 	if(direction == FORWARD){
 		phi1 = 1/phi1;
 		phi2 = -1/phi2;
 	}
-	// дє¤з·љиїЅи·ЎйЂ†ж–№еђ‘гЃ®е ґеђ€
+	// Њрђь’ЗђХ‹t•ыЊь‚МЏкЌ‡
 	else if(direction == INVERSE){
 		phi1 = -1/phi1;
 		phi2 = 1/phi2;
 	}
 	
-	// е·®е€†гѓ‘гѓ©гѓЎгѓјг‚їгЃ®е€ќжњџеЂ¤г‚’иЁ­е®љ
+	// Ќ·•Єѓpѓ‰ѓЃЃ[ѓ^‚МЏ‰Љъ’l‚рђЭ’и
 	double dw = -f1*phi1*ds;		
 	double dt = g1*phi1*ds;		
 	double du = -f2*phi2*ds;
 	double dv = g2*phi2*ds;
-	double sort[4] = {fabs(dw),fabs(dt),fabs(du),fabs(dv)};	// г‚Ѕгѓјгѓ€з”Ёе¤‰ж•°г‚’з”Ёж„Џ
-	BubbleSort(sort,4);					// ж‡й †гЃ«г‚Ѕгѓјгѓ€
-	double max_delta = sort[3];				// еђ„гѓ‘гѓ©гѓЎгѓјг‚їгЃ®дё­гЃ§жњЂе¤§еЂ¤г‚’еѕ—г‚‹
+	double sort[4] = {fabs(dw),fabs(dt),fabs(du),fabs(dv)};	// ѓ\Ѓ[ѓg—p•Пђ”‚р—p€У
+	BubbleSort(sort,4);					// ЏёЏ‡‚Йѓ\Ѓ[ѓg
+	double max_delta = sort[3];				// Љeѓpѓ‰ѓЃЃ[ѓ^‚М’†‚ЕЌЕ‘е’l‚р“ѕ‚й
 
-	// гѓ‹гѓҐгѓјгѓ€гѓіжі•г‚’з”ЁгЃ„гЃ¦w,t,u,vг‚’зњџеЂ¤гЃ«еЏЋжќџгЃ•гЃ›г‚‹
-	int k=0;	// еЏЋжќџиЁ€з®—е›ћж•°г‚’е€ќжњџеЊ–
-	// dw,dt,du,dvгЃ®зµ¶еЇѕеЂ¤дё­гЃ§dwгЃЊжњЂе¤§гЃ®ж™‚гЂЃdwг‚’е®љж•°гЃЁгЃ—гЃ¦е›єе®љгЃ™г‚‹
+	// ѓjѓ…Ѓ[ѓgѓ“–@‚р—p‚ў‚Дw,t,u,v‚рђ^’l‚ЙЋы‘©‚і‚№‚й
+	int k=0;	// Ћы‘©ЊvЋZ‰сђ”‚рЏ‰Љъ‰»
+	// dw,dt,du,dv‚Мђв‘О’l’†‚Еdw‚ЄЌЕ‘е‚МЋћЃAdw‚р’иђ”‚Ж‚µ‚ДЊЕ’и‚·‚й
 	if(max_delta == fabs(dw)){
 		while(fabs(dt) > CONVERG_GAP || fabs(du) > CONVERG_GAP || fabs(dv) > CONVERG_GAP){	
-			r = CalcNurbsSCoord(nurbR,*w,*t);						// з‚№R(w,t)гЃ®NURBSж›ІйќўгЃ®еє§жЁ™еЂ¤г‚’ж±‚г‚Ѓг‚‹
-			s = CalcNurbsSCoord(nurbS,*u,*v);						// з‚№S(u,v)гЃ®NURBSж›ІйќўгЃ®еє§жЁ™еЂ¤г‚’ж±‚г‚Ѓг‚‹
-			rw = CalcDiffuNurbsS(nurbR,*w,*t);						// з‚№R(w,t)гЃ®uеЃЏеѕ®е€†(еџєжњ¬гѓ™г‚Їгѓ€гѓ«)
-			rt = CalcDiffvNurbsS(nurbR,*w,*t);						// з‚№R(w,t)гЃ®vеЃЏеѕ®е€†(еџєжњ¬гѓ™г‚Їгѓ€гѓ«)
-			su = CalcDiffuNurbsS(nurbS,*u,*v);						// з‚№S(u,v)гЃ®uеЃЏеѕ®е€†(еџєжњ¬гѓ™г‚Їгѓ€гѓ«)
-			sv = CalcDiffvNurbsS(nurbS,*u,*v);						// з‚№S(u,v)гЃ®vеЃЏеѕ®е€†(еџєжњ¬гѓ™г‚Їгѓ€гѓ«)
+//			r = CalcNurbsSCoord(nurbR,*w,*t);						// “_R(w,t)‚МNURBS‹И–К‚МЌА•W’l‚р‹Ѓ‚Я‚й
+//			s = CalcNurbsSCoord(nurbS,*u,*v);						// “_S(u,v)‚МNURBS‹И–К‚МЌА•W’l‚р‹Ѓ‚Я‚й
+//			rw = CalcDiffuNurbsS(nurbR,*w,*t);						// “_R(w,t)‚Мu•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+//			rt = CalcDiffvNurbsS(nurbR,*w,*t);						// “_R(w,t)‚Мv•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+//			su = CalcDiffuNurbsS(nurbS,*u,*v);						// “_S(u,v)‚Мu•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+//			sv = CalcDiffvNurbsS(nurbS,*u,*v);						// “_S(u,v)‚Мv•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+			r = nurbR->CalcNurbsSCoord(*w,*t);						// “_R(w,t)‚МNURBS‹И–К‚МЌА•W’l‚р‹Ѓ‚Я‚й
+			s = nurbS->CalcNurbsSCoord(*u,*v);						// “_S(u,v)‚МNURBS‹И–К‚МЌА•W’l‚р‹Ѓ‚Я‚й
+			rw = nurbR->CalcDiffuNurbsS(*w,*t);						// “_R(w,t)‚Мu•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+			rt = nurbR->CalcDiffvNurbsS(*w,*t);						// “_R(w,t)‚Мv•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+			su = nurbS->CalcDiffuNurbsS(*u,*v);						// “_S(u,v)‚Мu•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+			sv = nurbS->CalcDiffvNurbsS(*u,*v);						// “_S(u,v)‚Мv•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
 			
-			// 3йЂЈз«‹ж–№зЁ‹ејЏг‚’и§ЈгЃЏгЃџг‚ЃгЃ«еђ„гѓ‘гѓ©гѓЎгѓјг‚їг‚’й…Ќе€—гЃ«ж јзґЌгЃ™г‚‹
+			// 3A—§•ы’цЋ®‚р‰р‚­‚Ѕ‚Я‚ЙЉeѓpѓ‰ѓЃЃ[ѓ^‚р”z—с‚ЙЉi”[‚·‚й
 			double sol[3] = {s.x-r.x-rw.x*dw, s.y-r.y-rw.y*dw, s.z-r.z-rw.z*dw};
 			double coef[3][3] = {{rt.x,-su.x,-sv.x},{rt.y,-su.y,-sv.y},{rt.z,-su.z,-sv.z}};
 			
@@ -3207,7 +3570,7 @@ int NURBS_Func::SearchIntersectPt(NURBSS *nurbR,NURBSS *nurbS,double ds,double *
 				}
 			}
 
-			// йЂЈз«‹ж–№зЁ‹ејЏг‚’и§ЈгЃЌгЂЃгѓ‘гѓ©гѓЎгѓјг‚їг‚’ж›ґж–°
+			// A—§•ы’цЋ®‚р‰р‚«ЃAѓpѓ‰ѓЃЃ[ѓ^‚рЌXђV
 			Gauss(3,J,D,ans);
 			dt = ans[0];
 			du = ans[1];
@@ -3216,31 +3579,37 @@ int NURBS_Func::SearchIntersectPt(NURBSS *nurbR,NURBSS *nurbS,double ds,double *
 			*u += du;
 			*v += dv;
 			
-			// uvгѓ‘гѓ©гѓЎгѓјг‚їзЇ„е›Іе¤–гЃ«е‡єгЃџг‚‰
+			// uvѓpѓ‰ѓЃЃ[ѓ^”Н€НЉO‚ЙЏo‚Ѕ‚з
 			if(!CheckRange(nurbR->V[0],nurbR->V[1],*t,0) || !CheckRange(nurbS->U[0],nurbS->U[1],*u,0) || !CheckRange(nurbS->V[0],nurbS->V[1],*v,0) || k>LOOPCOUNTMAX){
 				flag = KOD_FALSE;
 				goto EXIT;
 			}
 			k++;
 		}
-		*w += dw;	// еЏЋжќџгЃ—гЃџг‚‰е›єе®љгЃ—гЃ¦гЃ„гЃџгѓ‘гѓ©гѓЎгѓјг‚їг‚’ж›ґж–°
+		*w += dw;	// Ћы‘©‚µ‚Ѕ‚зЊЕ’и‚µ‚Д‚ў‚Ѕѓpѓ‰ѓЃЃ[ѓ^‚рЌXђV
 		if(!CheckRange(nurbR->U[0],nurbR->U[1],*w,0)){
 			flag = KOD_FALSE;
 			goto EXIT;
 		}
 	}
 	
-	// dw,dt,du,dvгЃ®зµ¶еЇѕеЂ¤дё­гЃ§dtгЃЊжњЂе¤§гЃ®ж™‚гЂЃdtг‚’е®љж•°гЃЁгЃ—гЃ¦е›єе®љгЃ™г‚‹
+	// dw,dt,du,dv‚Мђв‘О’l’†‚Еdt‚ЄЌЕ‘е‚МЋћЃAdt‚р’иђ”‚Ж‚µ‚ДЊЕ’и‚·‚й
 	else if(max_delta == fabs(dt)){	
 		while(fabs(dw) > CONVERG_GAP || fabs(du) > CONVERG_GAP || fabs(dv) > CONVERG_GAP){	
-			r = CalcNurbsSCoord(nurbR,*w,*t);					// з‚№R(w,t)гЃ®NURBSж›ІйќўгЃ®еє§жЁ™еЂ¤г‚’ж±‚г‚Ѓг‚‹
-			s = CalcNurbsSCoord(nurbS,*u,*v);					// з‚№S(u,v)гЃ®NURBSж›ІйќўгЃ®еє§жЁ™еЂ¤г‚’ж±‚г‚Ѓг‚‹
-			rw = CalcDiffuNurbsS(nurbR,*w,*t);					// з‚№R(w,t)гЃ®uеЃЏеѕ®е€†(еџєжњ¬гѓ™г‚Їгѓ€гѓ«)
-			rt = CalcDiffvNurbsS(nurbR,*w,*t);					// з‚№R(w,t)гЃ®vеЃЏеѕ®е€†(еџєжњ¬гѓ™г‚Їгѓ€гѓ«)
-			su = CalcDiffuNurbsS(nurbS,*u,*v);					// з‚№S(u,v)гЃ®uеЃЏеѕ®е€†(еџєжњ¬гѓ™г‚Їгѓ€гѓ«)
-			sv = CalcDiffvNurbsS(nurbS,*u,*v);					// з‚№S(u,v)гЃ®vеЃЏеѕ®е€†(еџєжњ¬гѓ™г‚Їгѓ€гѓ«)
+//			r = CalcNurbsSCoord(nurbR,*w,*t);					// “_R(w,t)‚МNURBS‹И–К‚МЌА•W’l‚р‹Ѓ‚Я‚й
+//			s = CalcNurbsSCoord(nurbS,*u,*v);					// “_S(u,v)‚МNURBS‹И–К‚МЌА•W’l‚р‹Ѓ‚Я‚й
+//			rw = CalcDiffuNurbsS(nurbR,*w,*t);					// “_R(w,t)‚Мu•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+//			rt = CalcDiffvNurbsS(nurbR,*w,*t);					// “_R(w,t)‚Мv•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+//			su = CalcDiffuNurbsS(nurbS,*u,*v);					// “_S(u,v)‚Мu•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+//			sv = CalcDiffvNurbsS(nurbS,*u,*v);					// “_S(u,v)‚Мv•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+			r = nurbR->CalcNurbsSCoord(*w,*t);					// “_R(w,t)‚МNURBS‹И–К‚МЌА•W’l‚р‹Ѓ‚Я‚й
+			s = nurbS->CalcNurbsSCoord(*u,*v);					// “_S(u,v)‚МNURBS‹И–К‚МЌА•W’l‚р‹Ѓ‚Я‚й
+			rw = nurbR->CalcDiffuNurbsS(*w,*t);					// “_R(w,t)‚Мu•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+			rt = nurbR->CalcDiffvNurbsS(*w,*t);					// “_R(w,t)‚Мv•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+			su = nurbS->CalcDiffuNurbsS(*u,*v);					// “_S(u,v)‚Мu•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+			sv = nurbS->CalcDiffvNurbsS(*u,*v);					// “_S(u,v)‚Мv•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
 			
-			// 3йЂЈз«‹ж–№зЁ‹ејЏг‚’и§ЈгЃЏгЃџг‚ЃгЃ«еђ„гѓ‘гѓ©гѓЎгѓјг‚їг‚’й…Ќе€—гЃ«ж јзґЌгЃ™г‚‹
+			// 3A—§•ы’цЋ®‚р‰р‚­‚Ѕ‚Я‚ЙЉeѓpѓ‰ѓЃЃ[ѓ^‚р”z—с‚ЙЉi”[‚·‚й
 			double sol[3] = {s.x-r.x-rt.x*dt, s.y-r.y-rt.y*dt, s.z-r.z-rt.z*dt};
 			double coef[3][3] = {{rw.x,-su.x,-sv.x},{rw.y,-su.y,-sv.y},{rw.z,-su.z,-sv.z}};
 			for(int i=0;i<3;i++){
@@ -3251,7 +3620,7 @@ int NURBS_Func::SearchIntersectPt(NURBSS *nurbR,NURBSS *nurbS,double ds,double *
 				}
 			}
 			
-			// йЂЈз«‹ж–№зЁ‹ејЏг‚’и§ЈгЃЌгЂЃгѓ‘гѓ©гѓЎгѓјг‚їг‚’ж›ґж–°
+			// A—§•ы’цЋ®‚р‰р‚«ЃAѓpѓ‰ѓЃЃ[ѓ^‚рЌXђV
 			Gauss(3,J,D,ans);
 			dw = ans[0];
 			du = ans[1];
@@ -3260,31 +3629,37 @@ int NURBS_Func::SearchIntersectPt(NURBSS *nurbR,NURBSS *nurbS,double ds,double *
 			*u += du;
 			*v += dv;
 				
-			// uvгѓ‘гѓ©гѓЎгѓјг‚їзЇ„е›Іе¤–гЃ«е‡єгЃџг‚‰
+			// uvѓpѓ‰ѓЃЃ[ѓ^”Н€НЉO‚ЙЏo‚Ѕ‚з
 			if(!CheckRange(nurbR->U[0],nurbR->U[1],*w,0) || !CheckRange(nurbS->U[0],nurbS->U[1],*u,0) || !CheckRange(nurbS->V[0],nurbS->V[1],*v,0) || k>LOOPCOUNTMAX){
 				flag = KOD_FALSE;
 				goto EXIT;
 			}
 			k++;
 		}
-		*t += dt;	// еЏЋжќџгЃ—гЃџг‚‰е›єе®љгЃ—гЃ¦гЃ„гЃџгѓ‘гѓ©гѓЎгѓјг‚їг‚’ж›ґж–°
+		*t += dt;	// Ћы‘©‚µ‚Ѕ‚зЊЕ’и‚µ‚Д‚ў‚Ѕѓpѓ‰ѓЃЃ[ѓ^‚рЌXђV
 		if(!CheckRange(nurbR->V[0],nurbR->V[1],*t,0)){
 			flag = KOD_FALSE;
 			goto EXIT;
 		}
 	}
 			
-	// dw,dt,du,dvгЃ®зµ¶еЇѕеЂ¤дё­гЃ§duгЃЊжњЂе¤§гЃ®ж™‚гЂЃduг‚’е®љж•°гЃЁгЃ—гЃ¦е›єе®љгЃ™г‚‹
+	// dw,dt,du,dv‚Мђв‘О’l’†‚Еdu‚ЄЌЕ‘е‚МЋћЃAdu‚р’иђ”‚Ж‚µ‚ДЊЕ’и‚·‚й
 	else if(max_delta == fabs(du)){	
 		while(fabs(dw) > CONVERG_GAP || fabs(dt) > CONVERG_GAP || fabs(dv) > CONVERG_GAP){	
-			r = CalcNurbsSCoord(nurbR,*w,*t);					// з‚№R(w,t)гЃ®NURBSж›ІйќўгЃ®еє§жЁ™еЂ¤г‚’ж±‚г‚Ѓг‚‹
-			s = CalcNurbsSCoord(nurbS,*u,*v);					// з‚№S(u,v)гЃ®NURBSж›ІйќўгЃ®еє§жЁ™еЂ¤г‚’ж±‚г‚Ѓг‚‹
-			rw = CalcDiffuNurbsS(nurbR,*w,*t);					// з‚№R(w,t)гЃ®uеЃЏеѕ®е€†(еџєжњ¬гѓ™г‚Їгѓ€гѓ«)
-			rt = CalcDiffvNurbsS(nurbR,*w,*t);					// з‚№R(w,t)гЃ®vеЃЏеѕ®е€†(еџєжњ¬гѓ™г‚Їгѓ€гѓ«)
-			su = CalcDiffuNurbsS(nurbS,*u,*v);					// з‚№S(u,v)гЃ®uеЃЏеѕ®е€†(еџєжњ¬гѓ™г‚Їгѓ€гѓ«)
-			sv = CalcDiffvNurbsS(nurbS,*u,*v);					// з‚№S(u,v)гЃ®vеЃЏеѕ®е€†(еџєжњ¬гѓ™г‚Їгѓ€гѓ«)
+//			r = CalcNurbsSCoord(nurbR,*w,*t);					// “_R(w,t)‚МNURBS‹И–К‚МЌА•W’l‚р‹Ѓ‚Я‚й
+//			s = CalcNurbsSCoord(nurbS,*u,*v);					// “_S(u,v)‚МNURBS‹И–К‚МЌА•W’l‚р‹Ѓ‚Я‚й
+//			rw = CalcDiffuNurbsS(nurbR,*w,*t);					// “_R(w,t)‚Мu•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+//			rt = CalcDiffvNurbsS(nurbR,*w,*t);					// “_R(w,t)‚Мv•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+//			su = CalcDiffuNurbsS(nurbS,*u,*v);					// “_S(u,v)‚Мu•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+//			sv = CalcDiffvNurbsS(nurbS,*u,*v);					// “_S(u,v)‚Мv•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+			r = nurbR->CalcNurbsSCoord(*w,*t);					// “_R(w,t)‚МNURBS‹И–К‚МЌА•W’l‚р‹Ѓ‚Я‚й
+			s = nurbS->CalcNurbsSCoord(*u,*v);					// “_S(u,v)‚МNURBS‹И–К‚МЌА•W’l‚р‹Ѓ‚Я‚й
+			rw = nurbR->CalcDiffuNurbsS(*w,*t);					// “_R(w,t)‚Мu•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+			rt = nurbR->CalcDiffvNurbsS(*w,*t);					// “_R(w,t)‚Мv•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+			su = nurbS->CalcDiffuNurbsS(*u,*v);					// “_S(u,v)‚Мu•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+			sv = nurbS->CalcDiffvNurbsS(*u,*v);					// “_S(u,v)‚Мv•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
 			
-			// 3йЂЈз«‹ж–№зЁ‹ејЏг‚’и§ЈгЃЏгЃџг‚ЃгЃ«еђ„гѓ‘гѓ©гѓЎгѓјг‚їг‚’й…Ќе€—гЃ«ж јзґЌгЃ™г‚‹
+			// 3A—§•ы’цЋ®‚р‰р‚­‚Ѕ‚Я‚ЙЉeѓpѓ‰ѓЃЃ[ѓ^‚р”z—с‚ЙЉi”[‚·‚й
 			double sol[3] = {s.x-r.x+su.x*du, s.y-r.y+su.y*du, s.z-r.z+su.z*du};
 			double coef[3][3] = {{rw.x,rt.x,-sv.x},{rw.y,rt.y,-sv.y},{rw.z,rt.z,-sv.z}};
 			for(int i=0;i<3;i++){
@@ -3295,7 +3670,7 @@ int NURBS_Func::SearchIntersectPt(NURBSS *nurbR,NURBSS *nurbS,double ds,double *
 				}
 			}
 			
-			// йЂЈз«‹ж–№зЁ‹ејЏг‚’и§ЈгЃЌгЂЃгѓ‘гѓ©гѓЎгѓјг‚їг‚’ж›ґж–°
+			// A—§•ы’цЋ®‚р‰р‚«ЃAѓpѓ‰ѓЃЃ[ѓ^‚рЌXђV
 			Gauss(3,J,D,ans);
 			dw = ans[0];
 			dt = ans[1];
@@ -3304,31 +3679,37 @@ int NURBS_Func::SearchIntersectPt(NURBSS *nurbR,NURBSS *nurbS,double ds,double *
 			*t += dt;
 			*v += dv;
 			
-			// uvгѓ‘гѓ©гѓЎгѓјг‚їзЇ„е›Іе¤–гЃ«е‡єгЃџг‚‰
+			// uvѓpѓ‰ѓЃЃ[ѓ^”Н€НЉO‚ЙЏo‚Ѕ‚з
 			if(!CheckRange(nurbR->U[0],nurbR->U[1],*w,0) || !CheckRange(nurbR->V[0],nurbR->V[1],*t,0) || !CheckRange(nurbS->V[0],nurbS->V[1],*v,0) || k>LOOPCOUNTMAX){
 				flag = KOD_FALSE;
 				goto EXIT;
 			}
 			k++;
 		}
-		*u += du;	// еЏЋжќџгЃ—гЃџг‚‰е›єе®љгЃ—гЃ¦гЃ„гЃџгѓ‘гѓ©гѓЎгѓјг‚їг‚’ж›ґж–°
+		*u += du;	// Ћы‘©‚µ‚Ѕ‚зЊЕ’и‚µ‚Д‚ў‚Ѕѓpѓ‰ѓЃЃ[ѓ^‚рЌXђV
 		if(!CheckRange(nurbS->U[0],nurbS->U[1],*u,0)){
 			flag = KOD_FALSE;
 			goto EXIT;
 		}
 	}
 	
-	// dw,dt,du,dvгЃ®зµ¶еЇѕеЂ¤дё­гЃ§dvгЃЊжњЂе¤§гЃ®ж™‚гЂЃdvг‚’е®љж•°гЃЁгЃ—гЃ¦е›єе®љгЃ™г‚‹
+	// dw,dt,du,dv‚Мђв‘О’l’†‚Еdv‚ЄЌЕ‘е‚МЋћЃAdv‚р’иђ”‚Ж‚µ‚ДЊЕ’и‚·‚й
 	else if(max_delta == fabs(dv)){	
 		while(fabs(dt) > CONVERG_GAP || fabs(dw) > CONVERG_GAP || fabs(du) > CONVERG_GAP){	
-			r = CalcNurbsSCoord(nurbR,*w,*t);					// з‚№R(w,t)гЃ®NURBSж›ІйќўгЃ®еє§жЁ™еЂ¤г‚’ж±‚г‚Ѓг‚‹
-			s = CalcNurbsSCoord(nurbS,*u,*v);					// з‚№S(u,v)гЃ®NURBSж›ІйќўгЃ®еє§жЁ™еЂ¤г‚’ж±‚г‚Ѓг‚‹
-			rw = CalcDiffuNurbsS(nurbR,*w,*t);					// з‚№R(w,t)гЃ®uеЃЏеѕ®е€†(еџєжњ¬гѓ™г‚Їгѓ€гѓ«)
-			rt = CalcDiffvNurbsS(nurbR,*w,*t);					// з‚№R(w,t)гЃ®vеЃЏеѕ®е€†(еџєжњ¬гѓ™г‚Їгѓ€гѓ«)
-			su = CalcDiffuNurbsS(nurbS,*u,*v);					// з‚№S(u,v)гЃ®uеЃЏеѕ®е€†(еџєжњ¬гѓ™г‚Їгѓ€гѓ«)
-			sv = CalcDiffvNurbsS(nurbS,*u,*v);					// з‚№S(u,v)гЃ®vеЃЏеѕ®е€†(еџєжњ¬гѓ™г‚Їгѓ€гѓ«)
+//			r = CalcNurbsSCoord(nurbR,*w,*t);					// “_R(w,t)‚МNURBS‹И–К‚МЌА•W’l‚р‹Ѓ‚Я‚й
+//			s = CalcNurbsSCoord(nurbS,*u,*v);					// “_S(u,v)‚МNURBS‹И–К‚МЌА•W’l‚р‹Ѓ‚Я‚й
+//			rw = CalcDiffuNurbsS(nurbR,*w,*t);					// “_R(w,t)‚Мu•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+//			rt = CalcDiffvNurbsS(nurbR,*w,*t);					// “_R(w,t)‚Мv•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+//			su = CalcDiffuNurbsS(nurbS,*u,*v);					// “_S(u,v)‚Мu•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+//			sv = CalcDiffvNurbsS(nurbS,*u,*v);					// “_S(u,v)‚Мv•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+			r = nurbR->CalcNurbsSCoord(*w,*t);					// “_R(w,t)‚МNURBS‹И–К‚МЌА•W’l‚р‹Ѓ‚Я‚й
+			s = nurbS->CalcNurbsSCoord(*u,*v);					// “_S(u,v)‚МNURBS‹И–К‚МЌА•W’l‚р‹Ѓ‚Я‚й
+			rw = nurbR->CalcDiffuNurbsS(*w,*t);					// “_R(w,t)‚Мu•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+			rt = nurbR->CalcDiffvNurbsS(*w,*t);					// “_R(w,t)‚Мv•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+			su = nurbS->CalcDiffuNurbsS(*u,*v);					// “_S(u,v)‚Мu•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
+			sv = nurbS->CalcDiffvNurbsS(*u,*v);					// “_S(u,v)‚Мv•О”ч•Є(Љо–{ѓxѓNѓgѓ‹)
 			
-			// 3йЂЈз«‹ж–№зЁ‹ејЏг‚’и§ЈгЃЏгЃџг‚ЃгЃ«еђ„гѓ‘гѓ©гѓЎгѓјг‚їг‚’й…Ќе€—гЃ«ж јзґЌгЃ™г‚‹
+			// 3A—§•ы’цЋ®‚р‰р‚­‚Ѕ‚Я‚ЙЉeѓpѓ‰ѓЃЃ[ѓ^‚р”z—с‚ЙЉi”[‚·‚й
 			double sol[3] = {s.x-r.x+sv.x*dv, s.y-r.y+sv.y*dv, s.z-r.z+sv.z*dv};
 			double coef[3][3] = {{rw.x,rt.x,-su.x},{rw.y,rt.y,-su.y},{rw.z,rt.z,-su.z}};
 			for(int i=0;i<3;i++){
@@ -3339,7 +3720,7 @@ int NURBS_Func::SearchIntersectPt(NURBSS *nurbR,NURBSS *nurbS,double ds,double *
 				}
 			}
 			
-			// йЂЈз«‹ж–№зЁ‹ејЏг‚’и§ЈгЃЌгЂЃгѓ‘гѓ©гѓЎгѓјг‚їг‚’ж›ґж–°
+			// A—§•ы’цЋ®‚р‰р‚«ЃAѓpѓ‰ѓЃЃ[ѓ^‚рЌXђV
 			Gauss(3,J,D,ans);
 			dw = ans[0];
 			dt = ans[1];
@@ -3348,14 +3729,14 @@ int NURBS_Func::SearchIntersectPt(NURBSS *nurbR,NURBSS *nurbS,double ds,double *
 			*t += dt;
 			*u += du;
 			
-			// uvгѓ‘гѓ©гѓЎгѓјг‚їзЇ„е›Іе¤–гЃ«е‡єгЃџг‚‰
+			// uvѓpѓ‰ѓЃЃ[ѓ^”Н€НЉO‚ЙЏo‚Ѕ‚з
 			if(!CheckRange(nurbR->U[0],nurbR->U[1],*w,0) || !CheckRange(nurbR->V[0],nurbR->V[1],*t,0) || !CheckRange(nurbS->U[0],nurbS->U[1],*u,0) || k>LOOPCOUNTMAX){
 				flag = KOD_FALSE;
 				goto EXIT;
 			}
 			k++;
 		}
-		*v += dv;	// еЏЋжќџгЃ—гЃџг‚‰е›єе®љгЃ—гЃ¦гЃ„гЃџгѓ‘гѓ©гѓЎгѓјг‚їг‚’ж›ґж–°
+		*v += dv;	// Ћы‘©‚µ‚Ѕ‚зЊЕ’и‚µ‚Д‚ў‚Ѕѓpѓ‰ѓЃЃ[ѓ^‚рЌXђV
 		if(!CheckRange(nurbS->V[0],nurbS->V[1],*v,0)){
 			flag = KOD_FALSE;
 			goto EXIT;
@@ -3363,7 +3744,7 @@ int NURBS_Func::SearchIntersectPt(NURBSS *nurbR,NURBSS *nurbS,double ds,double *
 	}
 
 EXIT:
-	// гѓЎгѓўгѓЄи§Јж”ѕ
+	// ѓЃѓ‚ѓЉ‰р•ъ
 	FreeMatrix(J,3);
 	
 	return flag;
@@ -3372,15 +3753,16 @@ EXIT:
 
 
 // Function: GetNurbsSCoef
-// (private)CalcIntersecPtsPlaneU/V3()гЃ®г‚µгѓ–й–ўж•°пјЋNURBSж›Із·љC(u) or C(v)гЃ®дї‚ж•°г‚’ж±‚г‚Ѓг‚‹
+// (private)CalcIntersecPtsPlaneU/V3()‚МѓTѓuЉЦђ”ЃDNURBS‹ИђьC(u) or C(v)‚МЊWђ”‚р‹Ѓ‚Я‚й
 //
 // Parameters:
-// M - йљЋж•°
-// **coef - Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°гЃ®дї‚ж•° 
-// *a,*b - u/vг‚’е›єе®љгЃ—гЃџж™‚гЃ®NURBSж›Із·љC(v)/C(u)гЃ®е€†жЇЌ/е€†е­ђгЃ®дї‚ж•° 
-// i - ж›Із·љгЃ®з•ЄеЏ·
-// *P, *Q - е›єе®љгЃ•г‚ЊгЃџгѓ‘гѓ©гѓЎгѓјг‚їгЃ«гЃЉгЃ‘г‚‹NURBSж›ІйќўгЃ®дї‚ж•°(P,Q) 
-void NURBS_Func::GetNurbsSCoef(int M,double **coef,double *a,Coord *b,int i,Coord *P,double *Q)
+// M - ЉKђ”
+// **coef - BѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”‚МЊWђ” 
+// *a,*b - u/v‚рЊЕ’и‚µ‚ЅЋћ‚МNURBS‹ИђьC(v)/C(u)‚М•Є•к/•ЄЋq‚МЊWђ” 
+// i - ‹Иђь‚М”ФЌ†
+// *P, *Q - ЊЕ’и‚і‚к‚Ѕѓpѓ‰ѓЃЃ[ѓ^‚Й‚Ё‚Ї‚йNURBS‹И–К‚МЊWђ”(P,Q) 
+//void NURBS_Func::GetNurbsSCoef(int M,double **coef,double *a,Coord *b,int i,Coord *P,double *Q)
+void GetNurbsSCoef(int M,double **coef,double *a,Coord *b,int i,Coord *P,double *Q)
 {
 	for(int k=0;k<M;k++){
 		Q[k] = 0;
@@ -3393,41 +3775,44 @@ void NURBS_Func::GetNurbsSCoef(int M,double **coef,double *a,Coord *b,int i,Coor
 }
 
 // Function: CalcIntersecPtsNurbsCNurbsCParam
-// (x,y)е№ійќўдёЉгЃ®NURBSж›Із·љеђЊеЈ«гЃ®дє¤з‚№г‚’ж±‚г‚Ѓг‚‹(гѓ‹гѓҐгѓјгѓ€гѓіжі•)
+// (x,y)•Ѕ–КЏг‚МNURBS‹Иђь“ЇЋm‚МЊр“_‚р‹Ѓ‚Я‚й(ѓjѓ…Ѓ[ѓgѓ“–@)
 // 
 // Parameters:
-// *NurbA, *NurbB - NURBSж›Із·љ
-// Divnum - е€ќжњџеЂ¤иЁ­е®љз”ЁгЃ®е€†е‰Іж•°     
-// *ans - дє¤з‚№ж јзґЌз”Ёй…Ќе€—   
-// ans_size - ansгЃ®й…Ќе€—й•·
+// *NurbA, *NurbB - NURBS‹Иђь
+// Divnum - Џ‰Љъ’lђЭ’и—p‚М•ЄЉ„ђ”     
+// *ans - Њр“_Љi”[—p”z—с   
+// ans_size - ans‚М”z—с’·
 // 
 // Return:
-// и§ЈгЃ®еЂ‹ж•°пј€ans_sizeг‚’и¶…гЃ€гЃџг‚‰пјЊKOD_ERRпј‰
+// ‰р‚МЊВђ”Ѓians_size‚р’ґ‚¦‚Ѕ‚зЃCKOD_ERRЃj
 int NURBS_Func::CalcIntersecPtsNurbsCNurbsCParam(NURBSC *NurbA,NURBSC *NurbB,int Divnum,Coord *ans,int ans_size)
 {
-	double t = NurbA->V[0];		// зЏѕењЁгЃ®NurbAгЃ®гѓ‘гѓ©гѓЎгѓјг‚їеЂ¤
-	double u = 0;				// зЏѕењЁгЃ®NurbBгЃ®гѓ‘гѓ©гѓЎгѓјг‚їеЂ¤
-	double dt = 0;				// гѓ‹гѓҐгѓјгѓ€гѓіжі•гЃ«г‚€г‚‹tгѓ‘гѓ©гѓЎгѓјг‚їгЃ®ж›ґж–°й‡Џ
-	double du = 0;				// гѓ‹гѓҐгѓјгѓ€гѓіжі•гЃ«г‚€г‚‹uгѓ‘гѓ©гѓЎгѓјг‚їгЃ®ж›ґж–°й‡Џ
-	Coord F;					// гѓ‹гѓҐгѓјгѓ€гѓіжі•гЃ®еЇѕи±ЎгЃЁгЃ™г‚‹ж–№зЁ‹ејЏ(F(t,u) = NurbA(t) - NurbB(u))
-	Coord Ft;					// FгЃ®tгЃ«г‚€г‚‹еѕ®е€†еЂ¤
-	Coord Fu;					// FгЃ®uгЃ«г‚€г‚‹еѕ®е€†еЂ¤
-	double d = (NurbA->V[1] - NurbA->V[0])/(double)Divnum;	// е€ќжњџз‚№гЃ®еў—е€†еЂ¤
-	int loopcount = 0;			// гѓ«гѓјгѓ—е›ћж•°
-	bool flag = false;			// еЏЋжќџгѓ•гѓ©г‚°
-	int anscount = 0;			// дє¤з‚№гЃ®ж•°г‚’г‚«г‚¦гѓігѓ€
-	Matrix A = NewMatrix(2,2);	// Ft,Fuг‚’ж€ђе€†гЃ”гЃЁгЃ«ж јзґЌгЃ—гЃџиЎЊе€—
-	Matrix A_ = NewMatrix(2,2);	// AгЃ®йЂ†иЎЊе€—г‚’ж јзґЌ
+	double t = NurbA->V[0];		// Њ»ЌЭ‚МNurbA‚Мѓpѓ‰ѓЃЃ[ѓ^’l
+	double u = 0;				// Њ»ЌЭ‚МNurbB‚Мѓpѓ‰ѓЃЃ[ѓ^’l
+	double dt = 0;				// ѓjѓ…Ѓ[ѓgѓ“–@‚Й‚ж‚йtѓpѓ‰ѓЃЃ[ѓ^‚МЌXђV—К
+	double du = 0;				// ѓjѓ…Ѓ[ѓgѓ“–@‚Й‚ж‚йuѓpѓ‰ѓЃЃ[ѓ^‚МЌXђV—К
+	Coord F;					// ѓjѓ…Ѓ[ѓgѓ“–@‚М‘ОЏЫ‚Ж‚·‚й•ы’цЋ®(F(t,u) = NurbA(t) - NurbB(u))
+	Coord Ft;					// F‚Мt‚Й‚ж‚й”ч•Є’l
+	Coord Fu;					// F‚Мu‚Й‚ж‚й”ч•Є’l
+	double d = (NurbA->V[1] - NurbA->V[0])/(double)Divnum;	// Џ‰Љъ“_‚М‘ќ•Є’l
+	int loopcount = 0;			// ѓ‹Ѓ[ѓv‰сђ”
+	bool flag = false;			// Ћы‘©ѓtѓ‰ѓO
+	int anscount = 0;			// Њр“_‚Мђ”‚рѓJѓEѓ“ѓg
+	Matrix A = NewMatrix(2,2);	// Ft,Fu‚рђ¬•Є‚І‚Ж‚ЙЉi”[‚µ‚ЅЌs—с
+	Matrix A_ = NewMatrix(2,2);	// A‚М‹tЌs—с‚рЉi”[
 	
 
 	for(int i=0;i<Divnum;i++){
 		flag = false;
 		loopcount = 0;
-		t = NurbA->V[0] + (double)i*d;		// е€ќжњџеЂ¤ж›ґж–°
+		t = NurbA->V[0] + (double)i*d;		// Џ‰Љъ’lЌXђV
 		while(loopcount < LOOPCOUNTMAX){
-			F = SubCoord(CalcNurbsCCoord(NurbA,t),CalcNurbsCCoord(NurbB,u));
-			Ft = CalcDiffNurbsC(NurbA,t);
-			Fu = CalcDiffNurbsC(NurbB,u);
+//			F = SubCoord(CalcNurbsCCoord(NurbA,t),CalcNurbsCCoord(NurbB,u));
+//			Ft = CalcDiffNurbsC(NurbA,t);
+//			Fu = CalcDiffNurbsC(NurbB,u);
+			F = SubCoord(NurbA->CalcNurbsCCoord(t),NurbB->CalcNurbsCCoord(u));
+			Ft = NurbA->CalcDiffNurbsC(t);
+			Fu = NurbB->CalcDiffNurbsC(u);
 			A[0][0] = Ft.x;
 			A[0][1] = Fu.x;
 			A[1][0] = Ft.y;
@@ -3436,30 +3821,30 @@ int NURBS_Func::CalcIntersecPtsNurbsCNurbsCParam(NURBSC *NurbA,NURBSC *NurbB,int
 			dt = -(A_[0][0]*F.x + A_[0][1]*F.y);
 			du = -(A_[1][0]*F.x + A_[1][1]*F.y);
 
-			if(CheckZero(dt,HIGH_ACCURACY) == KOD_TRUE && CheckZero(du,HIGH_ACCURACY) == KOD_TRUE){		// ж›ґж–°еЂ¤гЃЊй–ѕеЂ¤д»Ґдё‹гЃ«гЃЄгЃЈгЃџг‚‰гЂЃwhileг‚’жЉњгЃ‘гЂЃи§ЈгЃЁгЃ—гЃ¦з™»йЊІ
+			if(CheckZero(dt,HIGH_ACCURACY) == KOD_TRUE && CheckZero(du,HIGH_ACCURACY) == KOD_TRUE){		// ЌXђV’l‚Єи‡’l€И‰є‚Й‚И‚Б‚Ѕ‚зЃAwhile‚р”І‚ЇЃA‰р‚Ж‚µ‚Д“o^
 				flag = true;
 				break;
 			}
-			t += dt;		// гѓ‘гѓ©гѓЎгѓјг‚їеЂ¤ж›ґж–°
+			t += dt;		// ѓpѓ‰ѓЃЃ[ѓ^’lЌXђV
 			u += du;
-			if(t < NurbA->V[0] || t > NurbA->V[1] || u < NurbB->V[0] || u > NurbB->V[1]){		// гѓ‘гѓ©гѓЎгѓјг‚їзЇ„е›Іг‚’и¶…гЃ€гЃџг‚‰гЂЃwhileг‚’жЉњгЃ‘гЂЃж¬ЎгЃ®е€ќжњџеЂ¤гЃёз§»иЎЊ
+			if(t < NurbA->V[0] || t > NurbA->V[1] || u < NurbB->V[0] || u > NurbB->V[1]){		// ѓpѓ‰ѓЃЃ[ѓ^”Н€Н‚р’ґ‚¦‚Ѕ‚зЃAwhile‚р”І‚ЇЃAЋџ‚МЏ‰Љъ’l‚Ц€ЪЌs
 				flag = false;
 				break;
 			}
 			loopcount++;
 		}// end of wihle
 		if(flag == true){
-			ans[anscount].x = t;		// и§ЈгЃЁгЃ—гЃ¦з™»йЊІ
+			ans[anscount].x = t;		// ‰р‚Ж‚µ‚Д“o^
 			ans[anscount].y = u;
 			anscount++;
-			if(anscount == ans_size){	// и§ЈгЃ®еЂ‹ж•°гЃЊans_sizeг‚’и¶…гЃ€гЃџг‚‰гЂЃERRг‚’гѓЄг‚їгѓјгѓі
+			if(anscount == ans_size){	// ‰р‚МЊВђ”‚Єans_size‚р’ґ‚¦‚Ѕ‚зЃAERR‚рѓЉѓ^Ѓ[ѓ“
                 GuiIF.SetMessage("NURBS_Func ERROR: Ans_size overflow");
 				return KOD_ERR;
 			}
 		}
 	}// end of i loop
 
-	anscount = CheckTheSamePoints2D(ans,anscount);		// еђЊдёЂз‚№гЃЇй™¤еЋ»гЃ™г‚‹
+	anscount = CheckTheSamePoints2D(ans,anscount);		// “Ї€к“_‚НЏњ‹Ћ‚·‚й
 
 	FreeMatrix(A,2);
 	FreeMatrix(A_,2);
@@ -3468,30 +3853,33 @@ int NURBS_Func::CalcIntersecPtsNurbsCNurbsCParam(NURBSC *NurbA,NURBSC *NurbB,int
 }
 
 // Function: ClacIntersecPtsNurbsCLine
-// 2ж¬Ўе…ѓNURBSж›Із·љгЃЁз›ґз·љгЃЁгЃ®дє¤з‚№г‚’ж±‚г‚Ѓг‚‹
+// 2ЋџЊіNURBS‹Иђь‚Ж’јђь‚Ж‚МЊр“_‚р‹Ѓ‚Я‚й
 //
 // Parameters:
-// *C - NURBSж›Із·љ
-// P - з›ґз·љдёЉгЃ®1з‚№
-// r - з›ґз·љгЃ®ж–№еђ‘гѓ™г‚Їгѓ€гѓ«
-// *t1 - дє¤з‚№гЃ«гЃЉгЃ‘г‚‹NURBSж›Із·љгѓ‘гѓ©гѓЎгѓјг‚ї
-// *t2 - дє¤з‚№гЃ«гЃЉгЃ‘г‚‹з›ґз·љгѓ‘гѓ©гѓЎгѓјг‚ї
+// *C - NURBS‹Иђь
+// P - ’јђьЏг‚М1“_
+// r - ’јђь‚М•ыЊьѓxѓNѓgѓ‹
+// *t1 - Њр“_‚Й‚Ё‚Ї‚йNURBS‹Иђьѓpѓ‰ѓЃЃ[ѓ^
+// *t2 - Њр“_‚Й‚Ё‚Ї‚й’јђьѓpѓ‰ѓЃЃ[ѓ^
 //
 // return:
-// дє¤з‚№гЃ®жњ‰з„Ўпј€KOD_TRUEпјљдє¤з‚№гЃ‚г‚ЉпјЊ KOD_FALSEпјљдє¤з‚№гЃЄгЃ—пј‰
-int NURBS_Func::ClacIntersecPtsNurbsCLine(NURBSC *C, Coord P, Coord r, double *t1,double *t2)
+// Њр“_‚М—L–іЃiKOD_TRUEЃFЊр“_‚ ‚иЃC KOD_FALSEЃFЊр“_‚И‚µЃj
+//int NURBS_Func::ClacIntersecPtsNurbsCLine(NURBSC *C, Coord P, Coord r, double *t1,double *t2)
+int NURBSC::ClacIntersecPtsNurbsCLine(Coord P, Coord r, double *t1,double *t2)
 {
     Matrix A = NewMatrix(2,2);
     Matrix A_ = NewMatrix(2,2);
     bool conv_flag = false;
 
-    *t1 = (C->V[0]+C->V[1])/2;
+    *t1 = (V[0]+V[1])/2;
     *t2 = 0;
 
     while(1){
-        Coord Ct = CalcDiffNurbsC(C,*t1);
+//      Coord Ct = CalcDiffNurbsC(C,*t1);
+        Coord Ct = CalcDiffNurbsC(*t1);
         Coord Lt = SetCoord(r);
-        Coord B = SubCoord(AddCoord(P,MulCoord(r,*t2)),CalcNurbsCCoord(C,*t1));
+//      Coord B = SubCoord(AddCoord(P,MulCoord(r,*t2)),CalcNurbsCCoord(C,*t1));
+        Coord B = SubCoord(AddCoord(P,MulCoord(r,*t2)),CalcNurbsCCoord(*t1));
         A[0][0] = Ct.x;
         A[1][0] = Ct.y;
         A[0][1] = -Lt.x;
@@ -3501,7 +3889,7 @@ int NURBS_Func::ClacIntersecPtsNurbsCLine(NURBSC *C, Coord P, Coord r, double *t
         double dt1 = A_[0][0]*B.x + A_[0][1]*B.y;
         double dt2 = A_[1][0]*B.x + A_[1][1]*B.y;
         //fprintf(stderr,"    %lf,%lf,%lf,%lf,%lf\n",*t1,*t2,dt1,dt2,det);		// fro debug
-        if(CheckZero(dt1,LOW_ACCURACY) == KOD_TRUE && CheckZero(dt2,LOW_ACCURACY) == KOD_TRUE){		// дє¤з‚№гЃ«еЏЋжќџгЃ—гЃџг‚‰while break
+        if(CheckZero(dt1,LOW_ACCURACY) == KOD_TRUE && CheckZero(dt2,LOW_ACCURACY) == KOD_TRUE){		// Њр“_‚ЙЋы‘©‚µ‚Ѕ‚зwhile break
             conv_flag = true;
             break;
         }
@@ -3509,7 +3897,7 @@ int NURBS_Func::ClacIntersecPtsNurbsCLine(NURBSC *C, Coord P, Coord r, double *t
             *t1 += dt1/3;
             *t2 += dt2/3;
         }
-        if(*t1 < C->V[0] || *t1 > C->V[1])	// зЏѕењЁжіЁз›®дё­гЃ®г‚Ёгѓѓг‚ёгЃ®зЇ„е›Іг‚’и¶…гЃ€гЃџг‚‰break
+        if(*t1 < V[0] || *t1 > V[1])	// Њ»ЌЭ’Ќ–Ъ’†‚МѓGѓbѓW‚М”Н€Н‚р’ґ‚¦‚Ѕ‚зbreak
             break;
     }
 
@@ -3523,22 +3911,24 @@ int NURBS_Func::ClacIntersecPtsNurbsCLine(NURBSC *C, Coord P, Coord r, double *t
 }
 
 // Function: ClacIntersecPtsNurbsCLineSeg
-// 2ж¬Ўе…ѓNURBSж›Із·љгЃЁз·ље€†гЃЁгЃ®дє¤з‚№г‚’ж±‚г‚Ѓг‚‹
+// 2ЋџЊіNURBS‹Иђь‚Жђь•Є‚Ж‚МЊр“_‚р‹Ѓ‚Я‚й
 //
 // Parameters:
-// *C - NURBSж›Із·љ
-// P - з·ље€†дёЉгЃ®1з‚№
-// r - з·ље€†гЃ®ж–№еђ‘гѓ™г‚Їгѓ€гѓ«
-// ts - з·ље€†гЃ®е§‹з‚№гѓ‘гѓ©гѓЎгѓјг‚ї
-// te - з·ље€†гЃ®зµ‚з‚№гѓ‘гѓ©гѓЎгѓјг‚ї
-// *t1 - дє¤з‚№гЃ«гЃЉгЃ‘г‚‹NURBSж›Із·љгѓ‘гѓ©гѓЎгѓјг‚ї
-// *t2 - дє¤з‚№гЃ«гЃЉгЃ‘г‚‹з›ґз·љгѓ‘гѓ©гѓЎгѓјг‚ї
+// *C - NURBS‹Иђь
+// P - ђь•ЄЏг‚М1“_
+// r - ђь•Є‚М•ыЊьѓxѓNѓgѓ‹
+// ts - ђь•Є‚МЋn“_ѓpѓ‰ѓЃЃ[ѓ^
+// te - ђь•Є‚МЏI“_ѓpѓ‰ѓЃЃ[ѓ^
+// *t1 - Њр“_‚Й‚Ё‚Ї‚йNURBS‹Иђьѓpѓ‰ѓЃЃ[ѓ^
+// *t2 - Њр“_‚Й‚Ё‚Ї‚й’јђьѓpѓ‰ѓЃЃ[ѓ^
 //
 // return:
-// дє¤з‚№гЃ®жњ‰з„Ўпј€KOD_TRUEпјљдє¤з‚№гЃ‚г‚ЉпјЊ KOD_FALSEпјљдє¤з‚№гЃЄгЃ—пј‰
-int NURBS_Func::ClacIntersecPtsNurbsCLineSeg(NURBSC *C, Coord P, Coord r, double ts, double te, double *t1,double *t2)
+// Њр“_‚М—L–іЃiKOD_TRUEЃFЊр“_‚ ‚иЃC KOD_FALSEЃFЊр“_‚И‚µЃj
+//int NURBS_Func::ClacIntersecPtsNurbsCLineSeg(NURBSC *C, Coord P, Coord r, double ts, double te, double *t1,double *t2)
+int NURBSC::ClacIntersecPtsNurbsCLineSeg(Coord P, Coord r, double ts, double te, double *t1,double *t2)
 {
-    if(ClacIntersecPtsNurbsCLine(C,P,r,t1,t2) == KOD_TRUE){
+//	if(ClacIntersecPtsNurbsCLine(C,P,r,t1,t2) == KOD_TRUE){
+	if(ClacIntersecPtsNurbsCLine(P,r,t1,t2) == KOD_TRUE){
         if(*t2 >= ts && *t2 <= te){
             return KOD_TRUE;
         }
@@ -3551,32 +3941,33 @@ int NURBS_Func::ClacIntersecPtsNurbsCLineSeg(NURBSC *C, Coord P, Coord r, double
 }
 
 // Function: CalcIntersecCurve
-// NURBSж›Із·љгЃЁе№ійќўгЃЁгЃ®дє¤з‚№г‚’ж±‚г‚Ѓг‚‹(гѓ‹гѓҐгѓјгѓ€гѓіжі•)
-// F(t) = nvecгѓ»(C(t)-pt) = 0г‚’гѓ‹гѓҐгѓјгѓ€гѓіжі•г‚’з”ЁгЃ„гЃ¦ж±‚г‚Ѓг‚‹пјЋ
-// дє¤з‚№гЃЇжњЂе¤§гЃ§(M-1)*(K-M+1)з‚№еѕ—г‚‰г‚Њг‚‹.  (дѕ‹пјљ4йљЋгЃ§г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ®ж•°8еЂ‹гЃ®е ґеђ€гЂЃ(4-1)*(8-4+1)=15з‚№)пјЋ
-// г‚€гЃЈгЃ¦еј•ж•°*ansгЃЇ(M-1)*(K-M+1)еЂ‹гЃ®й…Ќе€—г‚’з”Ёж„ЏгЃ™г‚‹гЃ“гЃЁгЃЊжњ›гЃѕгЃ—гЃ„.
+// NURBS‹Иђь‚Ж•Ѕ–К‚Ж‚МЊр“_‚р‹Ѓ‚Я‚й(ѓjѓ…Ѓ[ѓgѓ“–@)
+// F(t) = nvecЃE(C(t)-pt) = 0‚рѓjѓ…Ѓ[ѓgѓ“–@‚р—p‚ў‚Д‹Ѓ‚Я‚йЃD
+// Њр“_‚НЌЕ‘е‚Е(M-1)*(K-M+1)“_“ѕ‚з‚к‚й.  (—бЃF4ЉK‚ЕѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Мђ”8ЊВ‚МЏкЌ‡ЃA(4-1)*(8-4+1)=15“_)ЃD
+// ‚ж‚Б‚Д€шђ”*ans‚Н(M-1)*(K-M+1)ЊВ‚М”z—с‚р—p€У‚·‚й‚±‚Ж‚Є–]‚Ь‚µ‚ў.
 //
 // Parameters:
-// *nurb - NURBSж›Із·љ  
-// pt - е№ійќўдёЉгЃ®дёЂз‚№  
-// nvec - е№ійќўгЃ®жі•з·љгѓ™г‚Їгѓ€гѓ«   
-// Divnum - NURBSж›Із·љгЃ®гѓ‘гѓ©гѓЎгѓјг‚їе€†е‰Іж•°  
-// *ans - з®—е‡єгЃ•г‚ЊгЃџдє¤з‚№гЃ®tгѓ‘гѓ©гѓЎгѓјг‚їеЂ¤г‚’ж јзґЌ
-// ans_size - ansгЃ®й…Ќе€—й•·
-// LoD - и©ізґ°еє¦пј€гѓ‹гѓҐгѓјгѓ€гѓіжі•гЃ®ж›ґж–°гѓ‘гѓ©гѓЎгѓјг‚їг‚’и¶ігЃ—гЃ“г‚ЂгЃЁгЃЌгЃ«пјЊLoDгЃ§е‰Іг‚‹гЃ“гЃЁгЃ§пјЊжЂҐжїЂгЃЄгѓ‘гѓ©гѓЎгѓјг‚їе¤‰ж›ґг‚’йЃїгЃ‘г‚‹пјЋйЂљеёёгЃЇ1гЃ§г‚€гЃ„гЃЊпјЊи§ЈгЃЊеѕ—г‚‰г‚ЊгЃЄгЃ„е ґеђ€гЃЇеЂ¤г‚’е¤§гЃЌгЃЏгЃ™г‚‹пјЋ2гЃЁгЃ‹3гЃЁгЃ‹пј‰
+// *nurb - NURBS‹Иђь  
+// pt - •Ѕ–КЏг‚М€к“_  
+// nvec - •Ѕ–К‚М–@ђьѓxѓNѓgѓ‹   
+// Divnum - NURBS‹Иђь‚Мѓpѓ‰ѓЃЃ[ѓ^•ЄЉ„ђ”  
+// *ans - ЋZЏo‚і‚к‚ЅЊр“_‚Мtѓpѓ‰ѓЃЃ[ѓ^’l‚рЉi”[
+// ans_size - ans‚М”z—с’·
+// LoD - ЏЪЌЧ“xЃiѓjѓ…Ѓ[ѓgѓ“–@‚МЌXђVѓpѓ‰ѓЃЃ[ѓ^‚р‘«‚µ‚±‚Ю‚Ж‚«‚ЙЃCLoD‚ЕЉ„‚й‚±‚Ж‚ЕЃC‹}Њѓ‚Иѓpѓ‰ѓЃЃ[ѓ^•ПЌX‚р”р‚Ї‚йЃD’КЏн‚Н1‚Е‚ж‚ў‚ЄЃC‰р‚Є“ѕ‚з‚к‚И‚ўЏкЌ‡‚Н’l‚р‘е‚«‚­‚·‚йЃD2‚Ж‚©3‚Ж‚©Ѓj
 //
 // Return:
-// дє¤з‚№гЃ®еЂ‹ж•°пј€KOD_ERRпјљдє¤з‚№гЃ®ж•°гЃЊans_sizeг‚’и¶…гЃ€гЃџпј‰
-int NURBS_Func::CalcIntersecCurve(NURBSC *nurb,Coord pt,Coord nvec,int Divnum,double *ans,int ans_size,int LoD)
+// Њр“_‚МЊВђ”ЃiKOD_ERRЃFЊр“_‚Мђ”‚Єans_size‚р’ґ‚¦‚ЅЃj
+//int NURBS_Func::CalcIntersecCurve(NURBSC *nurb,Coord pt,Coord nvec,int Divnum,double *ans,int ans_size,int LoD)
+int NURBSC::CalcIntersecCurve(Coord pt,Coord nvec,int Divnum,double *ans,int ans_size,int LoD)
 {
-	double t = nurb->V[0];		// зЏѕењЁгЃ®NURBSж›Із·љгЃ®гѓ‘гѓ©гѓЎгѓјг‚їеЂ¤
-	double d = 0;				// гѓ‹гѓҐгѓјгѓ€гѓіжі•гЃ«г‚€г‚‹гѓ‘гѓ©гѓЎгѓјг‚їгЃ®ж›ґж–°й‡Џ
-	double F;					// гѓ‹гѓҐгѓјгѓ€гѓіжі•гЃ®еЇѕи±ЎгЃЁгЃ™г‚‹ж–№зЁ‹ејЏ
-	double Ft;					// FгЃ®tгЃ«г‚€г‚‹еѕ®е€†еЂ¤
-	double dt = (nurb->V[1] - nurb->V[0])/(double)Divnum;	// е€ќжњџз‚№гЃ®еў—е€†еЂ¤
-	int loopcount = 0;			// гѓ«гѓјгѓ—е›ћж•°
-	bool flag = false;			// еЏЋжќџгѓ•гѓ©г‚°
-	int anscount = 0;			// дє¤з‚№гЃ®ж•°г‚’г‚«г‚¦гѓігѓ€
+	double t = V[0];		// Њ»ЌЭ‚МNURBS‹Иђь‚Мѓpѓ‰ѓЃЃ[ѓ^’l
+	double d = 0;				// ѓjѓ…Ѓ[ѓgѓ“–@‚Й‚ж‚йѓpѓ‰ѓЃЃ[ѓ^‚МЌXђV—К
+	double F;					// ѓjѓ…Ѓ[ѓgѓ“–@‚М‘ОЏЫ‚Ж‚·‚й•ы’цЋ®
+	double Ft;					// F‚Мt‚Й‚ж‚й”ч•Є’l
+	double dt = (V[1] - V[0])/(double)Divnum;	// Џ‰Љъ“_‚М‘ќ•Є’l
+	int loopcount = 0;			// ѓ‹Ѓ[ѓv‰сђ”
+	bool flag = false;			// Ћы‘©ѓtѓ‰ѓO
+	int anscount = 0;			// Њр“_‚Мђ”‚рѓJѓEѓ“ѓg
 
 	if(!LoD){
 		GuiIF.SetMessage("NURBS_Func ERROR: LoD is changed 0 to 1");
@@ -3586,226 +3977,238 @@ int NURBS_Func::CalcIntersecCurve(NURBSC *nurb,Coord pt,Coord nvec,int Divnum,do
 	for(int i=0;i<=Divnum;i++){
 		flag = false;
 		loopcount = 0;
-		t = nurb->V[0] + (double)i*dt;		// е€ќжњџеЂ¤ж›ґж–°
+		t = V[0] + (double)i*dt;		// Џ‰Љъ’lЌXђV
 		while(loopcount < LOOPCOUNTMAX){
-			F = CalcInnerProduct(nvec,SubCoord(CalcNurbsCCoord(nurb,t),pt));
-			Ft = CalcInnerProduct(nvec,CalcDiffNurbsC(nurb,t));
-			d = -F/Ft;		// ж›ґж–°еЂ¤
+//			F = CalcInnerProduct(nvec,SubCoord(CalcNurbsCCoord(nurb,t),pt));
+//			Ft = CalcInnerProduct(nvec,CalcDiffNurbsC(nurb,t));
+			F = CalcInnerProduct(nvec,SubCoord(CalcNurbsCCoord(t),pt));
+			Ft = CalcInnerProduct(nvec,CalcDiffNurbsC(t));
+			d = -F/Ft;		// ЌXђV’l
 			//fprintf(stderr,"   %d:%.14lf,%lf\n",i,d,t);	// for debug
-			if(CheckZero(d,HIGH_ACCURACY) == KOD_TRUE){		// ж›ґж–°еЂ¤гЃЊй–ѕеЂ¤д»Ґдё‹гЃ«гЃЄгЃЈгЃџг‚‰гЂЃwhileг‚’жЉњгЃ‘гЂЃи§ЈгЃЁгЃ—гЃ¦з™»йЊІ
+			if(CheckZero(d,HIGH_ACCURACY) == KOD_TRUE){		// ЌXђV’l‚Єи‡’l€И‰є‚Й‚И‚Б‚Ѕ‚зЃAwhile‚р”І‚ЇЃA‰р‚Ж‚µ‚Д“o^
 				flag = true;
 				break;
 			}
-			t += d/(double)LoD;		// гѓ‘гѓ©гѓЎгѓјг‚їеЂ¤ж›ґж–°
+			t += d/(double)LoD;		// ѓpѓ‰ѓЃЃ[ѓ^’lЌXђV
 			
-			if(t < nurb->V[0] || t > nurb->V[1]){		// гѓ‘гѓ©гѓЎгѓјг‚їзЇ„е›Іг‚’и¶…гЃ€гЃџг‚‰гЂЃwhileг‚’жЉњгЃ‘гЂЃж¬ЎгЃ®е€ќжњџеЂ¤гЃёз§»иЎЊ
+			if(t < V[0] || t > V[1]){		// ѓpѓ‰ѓЃЃ[ѓ^”Н€Н‚р’ґ‚¦‚Ѕ‚зЃAwhile‚р”І‚ЇЃAЋџ‚МЏ‰Љъ’l‚Ц€ЪЌs
 				flag = false;
 				break;
 			}
 			loopcount++;
 		}// end of wihle
 		if(flag == true){
-			if(anscount == ans_size){	// и§ЈгЃ®еЂ‹ж•°гЃЊans_sizeг‚’и¶…гЃ€гЃџг‚‰гЂЃERRг‚’гѓЄг‚їгѓјгѓі
+			if(anscount == ans_size){	// ‰р‚МЊВђ”‚Єans_size‚р’ґ‚¦‚Ѕ‚зЃAERR‚рѓЉѓ^Ѓ[ѓ“
 				GuiIF.SetMessage("NURBS_Func ERROR: Ans_size overflow");
 				return KOD_ERR;
 			}
-			ans[anscount] = t;		// и§ЈгЃЁгЃ—гЃ¦з™»йЊІ
+			ans[anscount] = t;		// ‰р‚Ж‚µ‚Д“o^
 			anscount++;
 		}
 	}// end of i loop
 
-	anscount = CheckTheSamePoints(ans,anscount);		// еђЊдёЂз‚№гЃЇй™¤еЋ»гЃ™г‚‹
+	anscount = CheckTheSamePoints(ans,anscount);		// “Ї€к“_‚НЏњ‹Ћ‚·‚й
 
 	return anscount;
 }
 
 // Function: CalcIntersecIsparaCurveU
-// NURBSж›ІйќўгЃ®Uж–№еђ‘г‚ўг‚¤г‚Ѕгѓ‘гѓ©ж›Із·љ(Vгѓ‘гѓ©гѓЎгѓјг‚їг‚’е›єе®љ)гЃЁе№ійќўгЃЁгЃ®дє¤з‚№г‚’ж±‚г‚Ѓг‚‹(гѓ‹гѓҐгѓјгѓ€гѓіжі•)
-// F(t) = nvecгѓ»(C(t)-pt) = 0г‚’гѓ‹гѓҐгѓјгѓ€гѓіжі•г‚’з”ЁгЃ„гЃ¦ж±‚г‚Ѓг‚‹
-// дє¤з‚№гЃЇжњЂе¤§гЃ§(M-1)*(K-M+1)з‚№еѕ—г‚‰г‚Њг‚‹.  (дѕ‹пјљ4йљЋгЃ§г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ®ж•°8еЂ‹гЃ®е ґеђ€гЂЃ(4-1)*(8-4+1)=15з‚№)
-// г‚€гЃЈгЃ¦еј•ж•°*ansгЃЇ(M-1)*(K-M+1)еЂ‹гЃ®й…Ќе€—г‚’з”Ёж„ЏгЃ™г‚‹гЃ“гЃЁгЃЊжњ›гЃѕгЃ—гЃ„.
+// NURBS‹И–К‚МU•ыЊьѓAѓCѓ\ѓpѓ‰‹Иђь(Vѓpѓ‰ѓЃЃ[ѓ^‚рЊЕ’и)‚Ж•Ѕ–К‚Ж‚МЊр“_‚р‹Ѓ‚Я‚й(ѓjѓ…Ѓ[ѓgѓ“–@)
+// F(t) = nvecЃE(C(t)-pt) = 0‚рѓjѓ…Ѓ[ѓgѓ“–@‚р—p‚ў‚Д‹Ѓ‚Я‚й
+// Њр“_‚НЌЕ‘е‚Е(M-1)*(K-M+1)“_“ѕ‚з‚к‚й.  (—бЃF4ЉK‚ЕѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Мђ”8ЊВ‚МЏкЌ‡ЃA(4-1)*(8-4+1)=15“_)
+// ‚ж‚Б‚Д€шђ”*ans‚Н(M-1)*(K-M+1)ЊВ‚М”z—с‚р—p€У‚·‚й‚±‚Ж‚Є–]‚Ь‚µ‚ў.
 //
 // Parameters:
-// *nurb - NURBSж›Ійќў  
-// V - vгЃ®е›єе®љеЂ¤  
-// pt - е№ійќўдёЉгЃ®дёЂз‚№  
-// nvec - е№ійќўгЃ®жі•з·љгѓ™г‚Їгѓ€гѓ«  
-// Divnum - NURBSж›Із·љгЃ®гѓ‘гѓ©гѓЎгѓјг‚їе€†е‰Іж•°  
-// *ans - з®—е‡єгЃ•г‚ЊгЃџдє¤з‚№гЃ®tгѓ‘гѓ©гѓЎгѓјг‚їеЂ¤г‚’ж јзґЌ  
-// ans_size - ansгЃ®й…Ќе€—й•·
+// *nurb - NURBS‹И–К  
+// V - v‚МЊЕ’и’l  
+// pt - •Ѕ–КЏг‚М€к“_  
+// nvec - •Ѕ–К‚М–@ђьѓxѓNѓgѓ‹  
+// Divnum - NURBS‹Иђь‚Мѓpѓ‰ѓЃЃ[ѓ^•ЄЉ„ђ”  
+// *ans - ЋZЏo‚і‚к‚ЅЊр“_‚Мtѓpѓ‰ѓЃЃ[ѓ^’l‚рЉi”[  
+// ans_size - ans‚М”z—с’·
 //
 // Return:
-// дє¤з‚№гЃ®еЂ‹ж•°пј€KOD_ERR:дє¤з‚№гЃ®ж•°гЃЊans_sizeг‚’и¶…гЃ€гЃџпј‰
-int NURBS_Func::CalcIntersecIsparaCurveU(NURBSS *nurb,double V,Coord pt,Coord nvec,int Divnum,double *ans,int ans_size)
+// Њр“_‚МЊВђ”ЃiKOD_ERR:Њр“_‚Мђ”‚Єans_size‚р’ґ‚¦‚ЅЃj
+//int NURBS_Func::CalcIntersecIsparaCurveU(NURBSS *nurb,double V,Coord pt,Coord nvec,int Divnum,double *ans,int ans_size)
+int NURBSS::CalcIntersecIsparaCurveU(double V,Coord pt,Coord nvec,int Divnum,double *ans,int ans_size)
 {
-	double d = 0;				// гѓ‹гѓҐгѓјгѓ€гѓіжі•гЃ«г‚€г‚‹гѓ‘гѓ©гѓЎгѓјг‚їгЃ®ж›ґж–°й‡Џ
-	double F;					// гѓ‹гѓҐгѓјгѓ€гѓіжі•гЃ®еЇѕи±ЎгЃЁгЃ™г‚‹ж–№зЁ‹ејЏ
-	double Fu;					// FгЃ®uгЃ«г‚€г‚‹еѕ®е€†еЂ¤
-	int loopcount = 0;			// гѓ«гѓјгѓ—е›ћж•°
-	bool flag = false;			// еЏЋжќџгѓ•гѓ©г‚°
-	int anscount = 0;			// дє¤з‚№гЃ®ж•°г‚’г‚«г‚¦гѓігѓ€
-	double u = nurb->U[0];		// зЏѕењЁгЃ®NURBSж›Із·љгЃ®гѓ‘гѓ©гѓЎгѓјг‚їеЂ¤
-	double du = (nurb->U[1] - nurb->U[0])/(double)Divnum;	// е€ќжњџз‚№гЃ®еў—е€†еЂ¤
+	double d = 0;				// ѓjѓ…Ѓ[ѓgѓ“–@‚Й‚ж‚йѓpѓ‰ѓЃЃ[ѓ^‚МЌXђV—К
+	double F;					// ѓjѓ…Ѓ[ѓgѓ“–@‚М‘ОЏЫ‚Ж‚·‚й•ы’цЋ®
+	double Fu;					// F‚Мu‚Й‚ж‚й”ч•Є’l
+	int loopcount = 0;			// ѓ‹Ѓ[ѓv‰сђ”
+	bool flag = false;			// Ћы‘©ѓtѓ‰ѓO
+	int anscount = 0;			// Њр“_‚Мђ”‚рѓJѓEѓ“ѓg
+	double u = U[0];		// Њ»ЌЭ‚МNURBS‹Иђь‚Мѓpѓ‰ѓЃЃ[ѓ^’l
+	double du = (U[1] - U[0])/(double)Divnum;	// Џ‰Љъ“_‚М‘ќ•Є’l
 
 	for(int i=0;i<=Divnum;i++){
 		flag = false;
 		loopcount = 0;
-		u = nurb->U[0] + (double)i*du;		// е€ќжњџеЂ¤ж›ґж–°
+		u = U[0] + (double)i*du;		// Џ‰Љъ’lЌXђV
 		while(loopcount < LOOPCOUNTMAX){
-			F = CalcInnerProduct(nvec,SubCoord(CalcNurbsSCoord(nurb,u,V),pt));
-			Fu = CalcInnerProduct(nvec,CalcDiffuNurbsS(nurb,u,V));
+//			F = CalcInnerProduct(nvec,SubCoord(CalcNurbsSCoord(nurb,u,V),pt));
+//			Fu = CalcInnerProduct(nvec,CalcDiffuNurbsS(nurb,u,V));
+			F = CalcInnerProduct(nvec,SubCoord(CalcNurbsSCoord(u,V),pt));
+			Fu = CalcInnerProduct(nvec,CalcDiffuNurbsS(u,V));
 			if(CheckZero(Fu,MID_ACCURACY) == KOD_TRUE)	break;
-			d = -F/Fu;		// ж›ґж–°еЂ¤
-			if(CheckZero(d,MID_ACCURACY) == KOD_TRUE){		// ж›ґж–°еЂ¤гЃЊй–ѕеЂ¤д»Ґдё‹гЃ«гЃЄгЃЈгЃџг‚‰гЂЃwhileг‚’жЉњгЃ‘гЂЃи§ЈгЃЁгЃ—гЃ¦з™»йЊІ
+			d = -F/Fu;		// ЌXђV’l
+			if(CheckZero(d,MID_ACCURACY) == KOD_TRUE){		// ЌXђV’l‚Єи‡’l€И‰є‚Й‚И‚Б‚Ѕ‚зЃAwhile‚р”І‚ЇЃA‰р‚Ж‚µ‚Д“o^
 				flag = true;
 				break;
 			}
-			u += d;		// гѓ‘гѓ©гѓЎгѓјг‚їеЂ¤ж›ґж–°
-			if(u < nurb->U[0] || u > nurb->U[1]){		// гѓ‘гѓ©гѓЎгѓјг‚їзЇ„е›Іг‚’и¶…гЃ€гЃџг‚‰гЂЃwhileг‚’жЉњгЃ‘гЂЃж¬ЎгЃ®е€ќжњџеЂ¤гЃёз§»иЎЊ
+			u += d;		// ѓpѓ‰ѓЃЃ[ѓ^’lЌXђV
+			if(u < U[0] || u > U[1]){		// ѓpѓ‰ѓЃЃ[ѓ^”Н€Н‚р’ґ‚¦‚Ѕ‚зЃAwhile‚р”І‚ЇЃAЋџ‚МЏ‰Љъ’l‚Ц€ЪЌs
 				flag = false;
 				break;
 			}
 			loopcount++;
 		}// end of wihle
 		if(flag == true){
-			anscount = CheckTheSamePoints(ans,anscount);		// еђЊдёЂз‚№гЃЇй™¤еЋ»гЃ™г‚‹
-			if(anscount == ans_size){	// и§ЈгЃ®еЂ‹ж•°гЃЊans_sizeг‚’и¶…гЃ€гЃџг‚‰гЂЃERRг‚’гѓЄг‚їгѓјгѓі
+			anscount = CheckTheSamePoints(ans,anscount);		// “Ї€к“_‚НЏњ‹Ћ‚·‚й
+			if(anscount == ans_size){	// ‰р‚МЊВђ”‚Єans_size‚р’ґ‚¦‚Ѕ‚зЃAERR‚рѓЉѓ^Ѓ[ѓ“
 				GuiIF.SetMessage("NURBS_Func ERROR: Ans_size overflow");
 				return KOD_ERR;
 			}
-			ans[anscount] = u;		// и§ЈгЃЁгЃ—гЃ¦з™»йЊІ
+			ans[anscount] = u;		// ‰р‚Ж‚µ‚Д“o^
 			anscount++;
 		}
 	}// end of i loop
 
-	anscount = CheckTheSamePoints(ans,anscount);		// еђЊдёЂз‚№гЃЇй™¤еЋ»гЃ™г‚‹
+	anscount = CheckTheSamePoints(ans,anscount);		// “Ї€к“_‚НЏњ‹Ћ‚·‚й
 
 	return anscount;
 }
 
 // Function: CalcIntersecIsparaCurveV
-// NURBSж›ІйќўгЃ®Vж–№еђ‘г‚ўг‚¤г‚Ѕгѓ‘гѓ©ж›Із·љ(Uгѓ‘гѓ©гѓЎгѓјг‚їг‚’е›єе®љ)гЃЁе№ійќўгЃЁгЃ®дє¤з‚№г‚’ж±‚г‚Ѓг‚‹(гѓ‹гѓҐгѓјгѓ€гѓіжі•)
-// F(t) = nvecгѓ»(C(t)-pt) = 0г‚’гѓ‹гѓҐгѓјгѓ€гѓіжі•г‚’з”ЁгЃ„гЃ¦ж±‚г‚Ѓг‚‹
-// дє¤з‚№гЃЇжњЂе¤§гЃ§(M-1)*(K-M+1)з‚№еѕ—г‚‰г‚Њг‚‹.  (дѕ‹пјљ4йљЋгЃ§г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ®ж•°8еЂ‹гЃ®е ґеђ€гЂЃ(4-1)*(8-4+1)=15з‚№)
-// г‚€гЃЈгЃ¦еј•ж•°*ansгЃЇ(M-1)*(K-M+1)еЂ‹гЃ®й…Ќе€—г‚’з”Ёж„ЏгЃ™г‚‹гЃ“гЃЁгЃЊжњ›гЃѕгЃ—гЃ„.
+// NURBS‹И–К‚МV•ыЊьѓAѓCѓ\ѓpѓ‰‹Иђь(Uѓpѓ‰ѓЃЃ[ѓ^‚рЊЕ’и)‚Ж•Ѕ–К‚Ж‚МЊр“_‚р‹Ѓ‚Я‚й(ѓjѓ…Ѓ[ѓgѓ“–@)
+// F(t) = nvecЃE(C(t)-pt) = 0‚рѓjѓ…Ѓ[ѓgѓ“–@‚р—p‚ў‚Д‹Ѓ‚Я‚й
+// Њр“_‚НЌЕ‘е‚Е(M-1)*(K-M+1)“_“ѕ‚з‚к‚й.  (—бЃF4ЉK‚ЕѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Мђ”8ЊВ‚МЏкЌ‡ЃA(4-1)*(8-4+1)=15“_)
+// ‚ж‚Б‚Д€шђ”*ans‚Н(M-1)*(K-M+1)ЊВ‚М”z—с‚р—p€У‚·‚й‚±‚Ж‚Є–]‚Ь‚µ‚ў.
 //
 // Parameters:
-// *nurb - NURBSж›Ійќў  
-// U - uгЃ®е›єе®љеЂ¤   
-// pt - е№ійќўдёЉгЃ®дёЂз‚№  
-// nvec - е№ійќўгЃ®жі•з·љгѓ™г‚Їгѓ€гѓ«
-// Divnum - NURBSж›Із·љгЃ®гѓ‘гѓ©гѓЎгѓјг‚їе€†е‰Іж•°  
-// *ans - з®—е‡єгЃ•г‚ЊгЃџдє¤з‚№гЃ®tгѓ‘гѓ©гѓЎгѓјг‚їеЂ¤г‚’ж јзґЌ
-// ans_size - ansгЃ®й…Ќе€—й•·
+// *nurb - NURBS‹И–К  
+// U - u‚МЊЕ’и’l   
+// pt - •Ѕ–КЏг‚М€к“_  
+// nvec - •Ѕ–К‚М–@ђьѓxѓNѓgѓ‹
+// Divnum - NURBS‹Иђь‚Мѓpѓ‰ѓЃЃ[ѓ^•ЄЉ„ђ”  
+// *ans - ЋZЏo‚і‚к‚ЅЊр“_‚Мtѓpѓ‰ѓЃЃ[ѓ^’l‚рЉi”[
+// ans_size - ans‚М”z—с’·
 //
 // Return:
-// дє¤з‚№гЃ®еЂ‹ж•°пј€KOD_ERR:дє¤з‚№гЃ®ж•°гЃЊans_sizeг‚’и¶…гЃ€гЃџпј‰
-int NURBS_Func::CalcIntersecIsparaCurveV(NURBSS *nurb,double U,Coord pt,Coord nvec,int Divnum,double *ans,int ans_size)
+// Њр“_‚МЊВђ”ЃiKOD_ERR:Њр“_‚Мђ”‚Єans_size‚р’ґ‚¦‚ЅЃj
+//int NURBS_Func::CalcIntersecIsparaCurveV(NURBSS *nurb,double U,Coord pt,Coord nvec,int Divnum,double *ans,int ans_size)
+int NURBSS::CalcIntersecIsparaCurveV(double U,Coord pt,Coord nvec,int Divnum,double *ans,int ans_size)
 {
-	double d = 0;				// гѓ‹гѓҐгѓјгѓ€гѓіжі•гЃ«г‚€г‚‹гѓ‘гѓ©гѓЎгѓјг‚їгЃ®ж›ґж–°й‡Џ
-	double F;					// гѓ‹гѓҐгѓјгѓ€гѓіжі•гЃ®еЇѕи±ЎгЃЁгЃ™г‚‹ж–№зЁ‹ејЏ
-	double Fv;					// FгЃ®vгЃ«г‚€г‚‹еѕ®е€†еЂ¤
-	int loopcount = 0;			// гѓ«гѓјгѓ—е›ћж•°
-	bool flag = false;			// еЏЋжќџгѓ•гѓ©г‚°
-	int anscount = 0;			// дє¤з‚№гЃ®ж•°г‚’г‚«г‚¦гѓігѓ€
-	double v = nurb->V[0];		// зЏѕењЁгЃ®NURBSж›Із·љгЃ®гѓ‘гѓ©гѓЎгѓјг‚їеЂ¤
-	double dv = (nurb->V[1] - nurb->V[0])/(double)Divnum;	// е€ќжњџз‚№гЃ®еў—е€†еЂ¤
+	double d = 0;				// ѓjѓ…Ѓ[ѓgѓ“–@‚Й‚ж‚йѓpѓ‰ѓЃЃ[ѓ^‚МЌXђV—К
+	double F;					// ѓjѓ…Ѓ[ѓgѓ“–@‚М‘ОЏЫ‚Ж‚·‚й•ы’цЋ®
+	double Fv;					// F‚Мv‚Й‚ж‚й”ч•Є’l
+	int loopcount = 0;			// ѓ‹Ѓ[ѓv‰сђ”
+	bool flag = false;			// Ћы‘©ѓtѓ‰ѓO
+	int anscount = 0;			// Њр“_‚Мђ”‚рѓJѓEѓ“ѓg
+	double v = V[0];		// Њ»ЌЭ‚МNURBS‹Иђь‚Мѓpѓ‰ѓЃЃ[ѓ^’l
+	double dv = (V[1] - V[0])/(double)Divnum;	// Џ‰Љъ“_‚М‘ќ•Є’l
 
 	for(int i=0;i<=Divnum;i++){
 		flag = false;
 		loopcount = 0;
-		v = nurb->V[0] + (double)i*dv;		// е€ќжњџеЂ¤ж›ґж–°
+		v = V[0] + (double)i*dv;		// Џ‰Љъ’lЌXђV
 		while(loopcount < LOOPCOUNTMAX){
-			F = CalcInnerProduct(nvec,SubCoord(CalcNurbsSCoord(nurb,U,v),pt));
-			Fv = CalcInnerProduct(nvec,CalcDiffvNurbsS(nurb,U,v));
+//			F = CalcInnerProduct(nvec,SubCoord(CalcNurbsSCoord(nurb,U,v),pt));
+//			Fv = CalcInnerProduct(nvec,CalcDiffvNurbsS(nurb,U,v));
+			F = CalcInnerProduct(nvec,SubCoord(CalcNurbsSCoord(U,v),pt));
+			Fv = CalcInnerProduct(nvec,CalcDiffvNurbsS(U,v));
 			if(CheckZero(Fv,MID_ACCURACY) == KOD_TRUE)	break;
-			d = -F/Fv;		// ж›ґж–°еЂ¤
-			if(CheckZero(d,MID_ACCURACY) == KOD_TRUE){		// ж›ґж–°еЂ¤гЃЊй–ѕеЂ¤д»Ґдё‹гЃ«гЃЄгЃЈгЃџг‚‰гЂЃwhileг‚’жЉњгЃ‘гЂЃи§ЈгЃЁгЃ—гЃ¦з™»йЊІ
+			d = -F/Fv;		// ЌXђV’l
+			if(CheckZero(d,MID_ACCURACY) == KOD_TRUE){		// ЌXђV’l‚Єи‡’l€И‰є‚Й‚И‚Б‚Ѕ‚зЃAwhile‚р”І‚ЇЃA‰р‚Ж‚µ‚Д“o^
 				flag = true;
 				break;
 			}
 			//fprintf(stderr,"   %lf,%lf,%lf,%lf\n",v,d,F,Fv); //for debug
-			v += d;		// гѓ‘гѓ©гѓЎгѓјг‚їеЂ¤ж›ґж–°
-			if(v < nurb->V[0] || v > nurb->V[1]){		// гѓ‘гѓ©гѓЎгѓјг‚їзЇ„е›Іг‚’и¶…гЃ€гЃџг‚‰гЂЃwhileг‚’жЉњгЃ‘гЂЃж¬ЎгЃ®е€ќжњџеЂ¤гЃёз§»иЎЊ
+			v += d;		// ѓpѓ‰ѓЃЃ[ѓ^’lЌXђV
+			if(v < V[0] || v > V[1]){		// ѓpѓ‰ѓЃЃ[ѓ^”Н€Н‚р’ґ‚¦‚Ѕ‚зЃAwhile‚р”І‚ЇЃAЋџ‚МЏ‰Љъ’l‚Ц€ЪЌs
 				flag = false;
 				break;
 			}
 			loopcount++;
 		}// end of wihle
 		if(flag == true){
-			anscount = CheckTheSamePoints(ans,anscount);		// еђЊдёЂз‚№гЃЇй™¤еЋ»гЃ™г‚‹
-			if(anscount == ans_size){	// и§ЈгЃ®еЂ‹ж•°гЃЊans_sizeг‚’и¶…гЃ€гЃџг‚‰гЂЃERRг‚’гѓЄг‚їгѓјгѓі
+			anscount = CheckTheSamePoints(ans,anscount);		// “Ї€к“_‚НЏњ‹Ћ‚·‚й
+			if(anscount == ans_size){	// ‰р‚МЊВђ”‚Єans_size‚р’ґ‚¦‚Ѕ‚зЃAERR‚рѓЉѓ^Ѓ[ѓ“
 				GuiIF.SetMessage("NURBS_Func ERROR: Ans_size overflow");
 				return KOD_ERR;
 			}
-			ans[anscount] = v;		// и§ЈгЃЁгЃ—гЃ¦з™»йЊІ
+			ans[anscount] = v;		// ‰р‚Ж‚µ‚Д“o^
 			anscount++;
 		}
 	}// end of i loop
 
-	anscount = CheckTheSamePoints(ans,anscount);		// еђЊдёЂз‚№гЃЇй™¤еЋ»гЃ™г‚‹
+	anscount = CheckTheSamePoints(ans,anscount);		// “Ї€к“_‚НЏњ‹Ћ‚·‚й
 
 	return anscount;
 }
 
 // Function: CalcIntersecCurve3 
-// NURBSж›Із·љгЃЁе№ійќўгЃЁгЃ®дє¤з‚№г‚’ж±‚г‚Ѓг‚‹(3ж¬ЎгЃѕгЃ§еЇѕеїњ)
-// дє¤з‚№гЃЇжњЂе¤§гЃ§(M-1)*(K-M+1)з‚№еѕ—г‚‰г‚Њг‚‹.  (дѕ‹пјљ4йљЋгЃ§г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ®ж•°8еЂ‹гЃ®е ґеђ€гЂЃ(4-1)*(8-4+1)=15з‚№)
-// г‚€гЃЈгЃ¦еј•ж•°*ansгЃЇ(M-1)*(K-M+1)еЂ‹гЃ®й…Ќе€—г‚’з”Ёж„ЏгЃ™г‚‹гЃ“гЃЁгЃЊжњ›гЃѕгЃ—гЃ„.
+// NURBS‹Иђь‚Ж•Ѕ–К‚Ж‚МЊр“_‚р‹Ѓ‚Я‚й(3Ћџ‚Ь‚Е‘О‰ћ)
+// Њр“_‚НЌЕ‘е‚Е(M-1)*(K-M+1)“_“ѕ‚з‚к‚й.  (—бЃF4ЉK‚ЕѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Мђ”8ЊВ‚МЏкЌ‡ЃA(4-1)*(8-4+1)=15“_)
+// ‚ж‚Б‚Д€шђ”*ans‚Н(M-1)*(K-M+1)ЊВ‚М”z—с‚р—p€У‚·‚й‚±‚Ж‚Є–]‚Ь‚µ‚ў.
 // 
 // Parameters:
-// *nurb - NURBSж›Із·љ  
-// pt - е№ійќўдёЉгЃ®дёЂз‚№  
-// nvec - е№ійќўгЃ®жі•з·љгѓ™г‚Їгѓ€гѓ«  
-// *ans - з®—е‡єгЃ•г‚ЊгЃџдє¤з‚№гЃ®tгѓ‘гѓ©гѓЎгѓјг‚їеЂ¤г‚’ж јзґЌ
-// ans_size - ansгЃ®й…Ќе€—й•·
+// *nurb - NURBS‹Иђь  
+// pt - •Ѕ–КЏг‚М€к“_  
+// nvec - •Ѕ–К‚М–@ђьѓxѓNѓgѓ‹  
+// *ans - ЋZЏo‚і‚к‚ЅЊр“_‚Мtѓpѓ‰ѓЃЃ[ѓ^’l‚рЉi”[
+// ans_size - ans‚М”z—с’·
 //
 // Return:
-// дє¤з‚№гЃ®еЂ‹ж•°пј€ж›Із·љж¬Ўж•°гЃЊ3ж¬Ўд»ҐдёЉпјљKOD_ERRпј‰
-int NURBS_Func::CalcIntersecCurve3(NURBSC *nurb,Coord pt,Coord nvec,double *ans,int ans_size)
+// Њр“_‚МЊВђ”Ѓi‹ИђьЋџђ”‚Є3Ћџ€ИЏгЃFKOD_ERRЃj
+//int NURBS_Func::CalcIntersecCurve3(NURBSC *nurb,Coord pt,Coord nvec,double *ans,int ans_size)
+int NURBSC::CalcIntersecCurve3(Coord pt,Coord nvec,double *ans,int ans_size)
 {
 	double **coef;
-	double Q[4];	// NURBSж›Із·љгЃ®е€†жЇЌгЃ®дї‚ж•°
-	Coord  P[4];	// NURBSж›Із·љгЃ®е€†е­ђгЃ®дї‚ж•°
+	double Q[4];	// NURBS‹Иђь‚М•Є•к‚МЊWђ”
+	Coord  P[4];	// NURBS‹Иђь‚М•ЄЋq‚МЊWђ”
 	double a[4];
 	double t[3];
 	int ansnum;
 	int k=0;
 
-	if((coef = NewMatrix(nurb->M,nurb->M)) == NULL){
+	if((coef = NewMatrix(M,M)) == NULL){
         GuiIF.SetMessage("NURBS KOD_ERROR: CalcIntersecPlane3()");
 		return KOD_ERR;
 	}
 
-	// 1жњ¬гЃ®NURBSж›Із·љгЃЇK-M+1жњ¬гЃ®ж›Із·љгЃ‹г‚‰ж§‹ж€ђгЃ•г‚Њг‚‹гЂ‚гЃќг‚ЊгЃћг‚ЊгЃ®ж§‹ж€ђж›Із·љгЃ«еЇѕгЃ—гЃ¦ж–№зЁ‹ејЏг‚’е°Ће‡єгЃ—гЂЃи§Јг‚’еѕ—г‚‹гЂ‚
-	for(int i=0;i<nurb->K-nurb->M+1;i++){
-		if(nurb->M-1 == 3){			// 3ж¬Ў			
-			GetBSplCoef3(nurb->M,nurb->K,i,nurb->T,coef);	// еђ„г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ«гЃЉгЃ‘г‚‹3ж¬ЎBг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°гЃ®дї‚ж•°(coef)г‚’ж±‚г‚Ѓг‚‹
+	// 1–{‚МNURBS‹Иђь‚НK-M+1–{‚М‹Иђь‚©‚зЌ\ђ¬‚і‚к‚йЃB‚»‚к‚ј‚к‚МЌ\ђ¬‹Иђь‚Й‘О‚µ‚Д•ы’цЋ®‚р“±Џo‚µЃA‰р‚р“ѕ‚йЃB
+	for(int i=0;i<K-M+1;i++){
+		if(M-1 == 3){			// 3Ћџ			
+			GetBSplCoef3(M,K,i,T,coef);	// ЉeѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Й‚Ё‚Ї‚й3ЋџBѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”‚МЊWђ”(coef)‚р‹Ѓ‚Я‚й
+//			GetBSplCoef3(M,K,i,T.get(),coef);	// ЉeѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Й‚Ё‚Ї‚й3ЋџBѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”‚МЊWђ”(coef)‚р‹Ѓ‚Я‚й
 		}
-		else if(nurb->M-1 == 2){	// 2ж¬Ў
-			GetBSplCoef2(nurb->M,nurb->K,i,nurb->T,coef);	// еђ„г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ«гЃЉгЃ‘г‚‹2ж¬ЎBг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°гЃ®дї‚ж•°г‚’ж±‚г‚Ѓг‚‹
+		else if(M-1 == 2){	// 2Ћџ
+			GetBSplCoef2(M,K,i,T,coef);	// ЉeѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Й‚Ё‚Ї‚й2ЋџBѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”‚МЊWђ”‚р‹Ѓ‚Я‚й
+//			GetBSplCoef2(M,K,i,T.get(),coef);	// ЉeѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Й‚Ё‚Ї‚й2ЋџBѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”‚МЊWђ”‚р‹Ѓ‚Я‚й
 		}
-		else if(nurb->M-1 == 1){	// 1ж¬Ў	
-			GetBSplCoef1(nurb->M,nurb->K,i,nurb->T,coef);	// еђ„г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ«гЃЉгЃ‘г‚‹1ж¬ЎBг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°гЃ®дї‚ж•°г‚’ж±‚г‚Ѓг‚‹
+		else if(M-1 == 1){	// 1Ћџ	
+			GetBSplCoef1(M,K,i,T,coef);	// ЉeѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Й‚Ё‚Ї‚й1ЋџBѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”‚МЊWђ”‚р‹Ѓ‚Я‚й
+//			GetBSplCoef1(M,K,i,T.get(),coef);	// ЉeѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Й‚Ё‚Ї‚й1ЋџBѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”‚МЊWђ”‚р‹Ѓ‚Я‚й
 		}
 		else{
 			char mes[256];
-			sprintf(mes,"NURBS KOD_ERROR:Ther order of equation is unsupported. (order = %d)",nurb->M-1);
+			sprintf(mes,"NURBS KOD_ERROR:Ther order of equation is unsupported. (order = %d)",M-1);
             GuiIF.SetMessage(mes);
 			goto EXIT;
 		}
-		GetNurbsCCoef(nurb,coef,i,P,Q);						// NURBSж›Із·љгЃ®дї‚ж•°(P,Q)г‚’ж±‚г‚Ѓг‚‹
-		GetIntersecEquation(nurb->M,P,Q,pt,nvec,a);			// NURBSж›Із·љгЃЁе№ійќўгЃ®дє¤з·ље°Ће‡єз”Ёж–№зЁ‹ејЏг‚’еѕ—г‚‹
-		ansnum = CalcEquation(a,t,nurb->M-1);					// ж–№зЁ‹ејЏг‚’и§ЈгЃЌгЂЃдє¤з‚№гЃ®гѓ‘гѓ©гѓЎгѓјг‚їеЂ¤г‚’еѕ—г‚‹
+		GetNurbsCCoef(coef,i,P,Q);						// NURBS‹Иђь‚МЊWђ”(P,Q)‚р‹Ѓ‚Я‚й
+		GetIntersecEquation(M,P,Q,pt,nvec,a);			// NURBS‹Иђь‚Ж•Ѕ–К‚МЊрђь“±Џo—p•ы’цЋ®‚р“ѕ‚й
+		ansnum = CalcEquation(a,t,M-1);					// •ы’цЋ®‚р‰р‚«ЃAЊр“_‚Мѓpѓ‰ѓЃЃ[ѓ^’l‚р“ѕ‚й
 
 		for(int j=0;j<ansnum;j++){
-			if(t[j] >= nurb->T[i+nurb->M-1] && t[j] <= nurb->T[i+nurb->M]){	// гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®еЂ¤гЃЁйЃ©еђ€гЃ™г‚‹г‚‚гЃ®гЃ®гЃїи§ЈгЃЁгЃ—гЃ¦жЉЅе‡є
+			if(t[j] >= T[i+M-1] && t[j] <= T[i+M]){	// ѓmѓbѓgѓxѓNѓgѓ‹‚М’l‚Ж“KЌ‡‚·‚й‚а‚М‚М‚Э‰р‚Ж‚µ‚Д’ЉЏo
 				if(k == ans_size){
                     GuiIF.SetMessage("NURBS KOD_ERROR:Intersection points exceeded the allocated array length");
 					goto EXIT;
 				}
-				ans[k] = t[j];		// и§Јг‚’еЏ–еѕ—
-				k++;				// и§ЈгЃ®ж•°г‚’г‚¤гѓіг‚ЇгѓЄгѓЎгѓігѓ€
+				ans[k] = t[j];		// ‰р‚рЋж“ѕ
+				k++;				// ‰р‚Мђ”‚рѓCѓ“ѓNѓЉѓЃѓ“ѓg
 			}
 		}
 	}
@@ -3813,21 +4216,22 @@ int NURBS_Func::CalcIntersecCurve3(NURBSC *nurb,Coord pt,Coord nvec,double *ans,
 	return k;
 
 EXIT:
-	FreeMatrix(coef,nurb->M);
+	FreeMatrix(coef,M);
 	return KOD_ERR;
 }
 
 // Function: CalcEquation
-// (private)CalcIntersecCurve3(), CalcIntersecPtsPlaneU/V3()гЃ®г‚µгѓ–й–ўж•°пјЋ3ж¬Ўж–№зЁ‹ејЏгЃѕгЃ§г‚’и§ЈгЃЏ
+// (private)CalcIntersecCurve3(), CalcIntersecPtsPlaneU/V3()‚МѓTѓuЉЦђ”ЃD3Ћџ•ы’цЋ®‚Ь‚Е‚р‰р‚­
 // 
 // Parameters:
-// *a - дї‚ж•°иЎЊе€—
-// *t - и§Ј
-// M - ж¬Ўж•°
+// *a - ЊWђ”Ќs—с
+// *t - ‰р
+// M - Ћџђ”
 //
 // Return:
-// и§ЈгЃ®еЂ‹ж•°пј€и§ЈгЃЊгЃЄгЃ‹гЃЈгЃџе ґеђ€ or ж¬Ўж•°гЃЊ3,2,1гЃ®гЃ„гЃљг‚ЊгЃ‹гЃ§гЃЄгЃ„пјљKOD_ERRпј‰
-int NURBS_Func::CalcEquation(double *a,double *t,int M)
+// ‰р‚МЊВђ”Ѓi‰р‚Є‚И‚©‚Б‚ЅЏкЌ‡ or Ћџђ”‚Є3,2,1‚М‚ў‚ё‚к‚©‚Е‚И‚ўЃFKOD_ERRЃj
+//int NURBS_Func::CalcEquation(double *a,double *t,int M)
+int CalcEquation(double *a,double *t,int M)
 {
 	int flag;
 
@@ -3840,15 +4244,16 @@ int NURBS_Func::CalcEquation(double *a,double *t,int M)
 }
 
 // Function: GetIntersecEquation
-// (private)CalcIntersecCurve3(), CalcIntersecPtsPlaneU/V3()гЃ®г‚µгѓ–й–ўж•°пјЋNURBSж›Із·љгЃЁе№ійќўгЃ®дє¤з·ље°Ће‡єз”Ёж–№зЁ‹ејЏг‚’еѕ—г‚‹
+// (private)CalcIntersecCurve3(), CalcIntersecPtsPlaneU/V3()‚МѓTѓuЉЦђ”ЃDNURBS‹Иђь‚Ж•Ѕ–К‚МЊрђь“±Џo—p•ы’цЋ®‚р“ѕ‚й
 // 
 // Parameters:
-// M - йљЋж•° 
-// *P, *Q - NURBSж›Із·љгЃ®дї‚ж•°пј€P,Q)
-// pt - е№ійќўдёЉгЃ®дёЂз‚№
-// nvec - е№ійќўгЃ®жі•з·љгѓ™г‚Їгѓ€гѓ« 
-// *a - зµђжћњ 
-void NURBS_Func::GetIntersecEquation(int M,Coord *P,double *Q,Coord pt,Coord nvec,double *a)
+// M - ЉKђ” 
+// *P, *Q - NURBS‹Иђь‚МЊWђ”ЃiP,Q)
+// pt - •Ѕ–КЏг‚М€к“_
+// nvec - •Ѕ–К‚М–@ђьѓxѓNѓgѓ‹ 
+// *a - Њ‹‰К 
+//void NURBS_Func::GetIntersecEquation(int M,Coord *P,double *Q,Coord pt,Coord nvec,double *a)
+void GetIntersecEquation(int M,Coord *P,double *Q,Coord pt,Coord nvec,double *a)
 {
 	for(int i=0;i<M;i++){
 		a[i] = (Q[i]*pt.x-P[i].x)*nvec.x + (Q[i]*pt.y-P[i].y)*nvec.y + (Q[i]*pt.z-P[i].z)*nvec.z;
@@ -3856,27 +4261,28 @@ void NURBS_Func::GetIntersecEquation(int M,Coord *P,double *Q,Coord pt,Coord nve
 }
 
 // Function: GetNurbsCCoef
-// (private)CalcIntersecCurve3()гЃ®г‚µгѓ–й–ўж•°пјЋNURBSж›Із·љгЃ®дї‚ж•°г‚’ж±‚г‚Ѓг‚‹(жњЂй«3ж¬Ў)
+// (private)CalcIntersecCurve3()‚МѓTѓuЉЦђ”ЃDNURBS‹Иђь‚МЊWђ”‚р‹Ѓ‚Я‚й(ЌЕЌ‚3Ћџ)
 // 
 // Parameters:
-// *nurb - еЇѕи±ЎгЃЁгЃЄг‚‹NURBSж›Із·љ 
-// **coef - Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°гЃ®дї‚ж•° 
-// i - ж›Із·љгЃ®з•ЄеЏ· 
-// *P, *Q - NURBSж›Із·љгЃ®дї‚ж•°(P,Q) 
+// *nurb - ‘ОЏЫ‚Ж‚И‚йNURBS‹Иђь 
+// **coef - BѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”‚МЊWђ” 
+// i - ‹Иђь‚М”ФЌ† 
+// *P, *Q - NURBS‹Иђь‚МЊWђ”(P,Q) 
 //
 // Return:
-// ж€ђеЉџпјљKOD_TRUE, е¤±ж•—пјљKOD_ERR
-int NURBS_Func::GetNurbsCCoef(NURBSC *nurb,double **coef,int i,Coord *P,double *Q)
+// ђ¬ЊчЃFKOD_TRUE, Ћё”sЃFKOD_ERR
+//int NURBS_Func::GetNurbsCCoef(NURBSC *nurb,double **coef,int i,Coord *P,double *Q)
+int NURBSC::GetNurbsCCoef(double **coef,int i,Coord *P,double *Q)
 {
-	for(int j=0;j<nurb->M;j++){
+	for(int j=0;j<M;j++){
 		InitCoord(&P[j]);
 		Q[j] = 0;
 	}
 
-	for(int j=0;j<nurb->M;j++){
-		for(int k=0;k<nurb->M;k++){
-			Q[j] += coef[k][j]*nurb->W[i+k];
-			P[j] = AddCoord(P[j],MulCoord(nurb->cp[i+k],coef[k][j]*nurb->W[i+k]));
+	for(int j=0;j<M;j++){
+		for(int k=0;k<M;k++){
+			Q[j] += coef[k][j]*W[i+k];
+			P[j] = AddCoord(P[j],MulCoord(cp[i+k],coef[k][j]*W[i+k]));
 		}
 	}
 	
@@ -3884,20 +4290,21 @@ int NURBS_Func::GetNurbsCCoef(NURBSC *nurb,double **coef,int i,Coord *P,double *
 }
 
 // Function: GetBSplCoef3
-// 3ж¬ЎгЃ®Bг‚№гѓ—гѓ©г‚¤гѓіж›Із·љгЃ®еђ„дї‚ж•°г‚’ж±‚г‚Ѓг‚‹.
+// 3Ћџ‚МBѓXѓvѓ‰ѓCѓ“‹Иђь‚МЉeЊWђ”‚р‹Ѓ‚Я‚й.
 //
 // coef[j][0]t^3 + coef[j][1]t^2 + coef[j][2]t + coef[j][3]   (Nj,4)
 // 
 // Parameters:
-// M - йљЋж•°  
-// K - г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ®ж•°  
-// i - жіЁз›®дё­гЃ®г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€ 
-// *t - гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«е€—  
-// *coef - з®—е‡єгЃ•г‚Њг‚‹дї‚ж•°г‚’ж јзґЌ
+// M - ЉKђ”  
+// K - ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Мђ”  
+// i - ’Ќ–Ъ’†‚МѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg 
+// *t - ѓmѓbѓgѓxѓNѓgѓ‹—с  
+// *coef - ЋZЏo‚і‚к‚йЊWђ”‚рЉi”[
 //
 // Return:
 // KOD_TRUE
-int NURBS_Func::GetBSplCoef3(int M,int K,int i,double *t,double **coef)
+//int NURBS_Func::GetBSplCoef3(int M,int K,int i,double *t,double **coef)
+int GetBSplCoef3(int M,int K,int i,double *t,double **coef)
 {
 	double bunbo[8];
 	double t10,t20,t21,t30,t31,t32,t41,t42,t43;
@@ -3963,20 +4370,21 @@ int NURBS_Func::GetBSplCoef3(int M,int K,int i,double *t,double **coef)
 }
 
 // Function: GetBSplCoef2
-// 2ж¬ЎгЃ®Bг‚№гѓ—гѓ©г‚¤гѓіж›Із·љгЃ®еђ„дї‚ж•°г‚’ж±‚г‚Ѓг‚‹
+// 2Ћџ‚МBѓXѓvѓ‰ѓCѓ“‹Иђь‚МЉeЊWђ”‚р‹Ѓ‚Я‚й
 //
 // coef[j][0]t^2 + coef[j][1]t + coef[j][2]
 //
 // Parameters:
-// M - йљЋж•°  
-// K - г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ®ж•°  
-// i - жіЁз›®дё­гЃ®г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€ 
-// *t - гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«е€—  
-// *coef - з®—е‡єгЃ•г‚Њг‚‹дї‚ж•°г‚’ж јзґЌ
+// M - ЉKђ”  
+// K - ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Мђ”  
+// i - ’Ќ–Ъ’†‚МѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg 
+// *t - ѓmѓbѓgѓxѓNѓgѓ‹—с  
+// *coef - ЋZЏo‚і‚к‚йЊWђ”‚рЉi”[
 //
 // Return:
 // KOD_TRUE
-int NURBS_Func::GetBSplCoef2(int M,int K,int i,double *t,double **coef)
+//int NURBS_Func::GetBSplCoef2(int M,int K,int i,double *t,double **coef)
+int GetBSplCoef2(int M,int K,int i,double *t,double **coef)
 {
 	double t20,t10,t21,t31,t32;
 	double bunbo[4];
@@ -4025,20 +4433,21 @@ int NURBS_Func::GetBSplCoef2(int M,int K,int i,double *t,double **coef)
 }
 
 // Function: GetBSplCoef1
-// 1ж¬ЎгЃ®Bг‚№гѓ—гѓ©г‚¤гѓіж›Із·љгЃ®еђ„дї‚ж•°г‚’ж±‚г‚Ѓг‚‹
+// 1Ћџ‚МBѓXѓvѓ‰ѓCѓ“‹Иђь‚МЉeЊWђ”‚р‹Ѓ‚Я‚й
 //
 // coef[j][0]t + coef[j][1]
 //
 // Parameters:
-// M - йљЋж•°  
-// K - г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ®ж•°  
-// i - жіЁз›®дё­гЃ®г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€ 
-// *t - гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«е€—  
-// *coef - з®—е‡єгЃ•г‚Њг‚‹дї‚ж•°г‚’ж јзґЌ
+// M - ЉKђ”  
+// K - ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Мђ”  
+// i - ’Ќ–Ъ’†‚МѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg 
+// *t - ѓmѓbѓgѓxѓNѓgѓ‹—с  
+// *coef - ЋZЏo‚і‚к‚йЊWђ”‚рЉi”[
 //
 // Return:
 // KOD_TRUE
-int NURBS_Func::GetBSplCoef1(int M,int K,int i,double *t,double **coef)
+//int NURBS_Func::GetBSplCoef1(int M,int K,int i,double *t,double **coef)
+int GetBSplCoef1(int M,int K,int i,double *t,double **coef)
 {
 	double bunbo[2];
 
@@ -4075,124 +4484,130 @@ int NURBS_Func::GetBSplCoef1(int M,int K,int i,double *t,double **coef)
 }
 
 // Function: ShiftNurbsS
-// NURBSж›ІйќўгЃ®г‚·гѓ•гѓ€
+// NURBS‹И–К‚МѓVѓtѓg
 //
 // Parameters:
-// *nurbs - е¤‰ж›ґгЃ•г‚Њг‚‹NURBSж›Ійќў  
-// shift - г‚·гѓ•гѓ€й‡Џ
-void NURBS_Func::ShiftNurbsS(NURBSS *nurbs,Coord shift)
+// *nurbs - •ПЌX‚і‚к‚йNURBS‹И–К  
+// shift - ѓVѓtѓg—К
+//void NURBS_Func::ShiftNurbsS(NURBSS *nurbs,Coord shift)
+void NURBSS::ShiftNurbsS(Coord shift)
 {
-	for(int i=0;i<nurbs->K[0];i++){
-		for(int j=0;j<nurbs->K[1];j++){
-			nurbs->cp[i][j] = AddCoord(nurbs->cp[i][j],shift);
+	for(int i=0;i<K[0];i++){
+		for(int j=0;j<K[1];j++){
+			cp[i][j] = AddCoord(cp[i][j],shift);
 		}
 	}
 }
 
 // Function: ShiftNurbsC
-// NURBSж›Із·љгЃ®г‚·гѓ•гѓ€
+// NURBS‹Иђь‚МѓVѓtѓg
 // 
 // Parameters:
-// *nurbs - е¤‰ж›ґгЃ•г‚Њг‚‹NURBSж›Із·љ  
-// shift - г‚·гѓ•гѓ€й‡Џ
-void NURBS_Func::ShiftNurbsC(NURBSC *nurbs,Coord shift)
+// *nurbs - •ПЌX‚і‚к‚йNURBS‹Иђь  
+// shift - ѓVѓtѓg—К
+//void NURBS_Func::ShiftNurbsC(NURBSC *nurbs,Coord shift)
+void NURBSC::ShiftNurbsC(Coord shift)
 {
-	for(int i=0;i<nurbs->K;i++){
-		nurbs->cp[i] = AddCoord(nurbs->cp[i],shift);
+	for(int i=0;i<K;i++){
+		cp[i] = AddCoord(cp[i],shift);
 	}
 }
 
 // Function: RotNurbsS
-// NURBSж›Ійќўг‚’Dгѓ™г‚Їгѓ€гѓ«е›ћг‚ЉгЃ«deg(В°)гЃ гЃ‘е›ћи»ўгЃ•гЃ›г‚‹
+// NURBS‹И–К‚рDѓxѓNѓgѓ‹‰с‚и‚Йdeg(Ѓ‹)‚ѕ‚Ї‰с“]‚і‚№‚й
 //
 // Parameters:
-// *nurbs - е¤‰ж›ґгЃ•г‚Њг‚‹NURBSж›ІйќўгЂЂ
-// axis - е›ћи»ўи»ёгЃ®еЌдЅЌгѓ™г‚Їгѓ€гѓ«гЂЂ
-// deg - и§’еє¦(degree)
-void NURBS_Func::RotNurbsS(NURBSS *nurbs,Coord axis,double deg)
+// *nurbs - •ПЌX‚і‚к‚йNURBS‹И–КЃ@
+// axis - ‰с“]ЋІ‚М’P€КѓxѓNѓgѓ‹Ѓ@
+// deg - Љp“x(degree)
+//void NURBS_Func::RotNurbsS(NURBSS *nurbs,Coord axis,double deg)
+void NURBSS::RotNurbsS(Coord axis,double deg)
 {
-	double rad;			// гѓ©г‚ёг‚ўгѓіж јзґЌз”Ё
-	QUATERNION QFunc;	// г‚Їг‚©гѓјг‚їгѓ‹г‚Єгѓій–ўйЂЈгЃ®й–ўж•°г‚’й›†г‚ЃгЃџг‚Їгѓ©г‚№гЃ®г‚Єгѓ–г‚ёг‚§г‚Їгѓ€г‚’з”џж€ђ
-	Quat StartQ;		// е›ћи»ўе‰ЌгЃ®еє§жЁ™г‚’ж јзґЌгЃ™г‚‹г‚Їг‚©гѓјг‚їгѓ‹г‚Єгѓі
-	Quat RotQ;			// е›ћи»ўг‚Їг‚©гѓјг‚їгѓ‹г‚Єгѓі
-	Quat ConjuQ;		// е…±еЅ№г‚Їг‚©гѓјг‚їгѓ‹г‚Єгѓі
-	Quat TargetQ;		// е›ћи»ўеѕЊгЃ®еє§жЁ™г‚’ж јзґЌгЃ™г‚‹г‚Їг‚©гѓјг‚їгѓ‹г‚Єгѓі
+	double rad;			// ѓ‰ѓWѓAѓ“Љi”[—p
+	QUATERNION QFunc;	// ѓNѓHЃ[ѓ^ѓjѓIѓ“ЉЦA‚МЉЦђ”‚рЏW‚Я‚ЅѓNѓ‰ѓX‚МѓIѓuѓWѓFѓNѓg‚рђ¶ђ¬
+	Quat StartQ;		// ‰с“]‘O‚МЌА•W‚рЉi”[‚·‚йѓNѓHЃ[ѓ^ѓjѓIѓ“
+	Quat RotQ;			// ‰с“]ѓNѓHЃ[ѓ^ѓjѓIѓ“
+	Quat ConjuQ;		// ‹¤–рѓNѓHЃ[ѓ^ѓjѓIѓ“
+	Quat TargetQ;		// ‰с“]Њг‚МЌА•W‚рЉi”[‚·‚йѓNѓHЃ[ѓ^ѓjѓIѓ“
 	
-	for(int i=0;i<nurbs->K[0];i++){			// uж–№еђ‘гЃ®г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€е€†гѓ«гѓјгѓ—
-		for(int j=0;j<nurbs->K[1];j++){		// vж–№еђ‘гЃ®г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€е€†гѓ«гѓјгѓ—
-			StartQ = QFunc.QInit(1,nurbs->cp[i][j].x,nurbs->cp[i][j].y,nurbs->cp[i][j].z);		// NURBSж›Ійќўг‚’ж§‹ж€ђгЃ™г‚‹cpгЃ®еє§жЁ™г‚’з™»йЊІ
-			rad = DegToRad(deg);										// degreeгЃ‹г‚‰radianгЃ«е¤‰жЏ›
-			RotQ = QFunc.QGenRot(rad,axis.x,axis.y,axis.z);				// е›ћи»ўг‚Їг‚©гѓјг‚їгѓ‹г‚ЄгѓігЃ«е›ћи»ўй‡Џг‚’з™»йЊІ(гЃ“гЃ“гЃ®ж•°е­—г‚’гЃ„гЃг‚ЊгЃ°д»»ж„ЏгЃ«е›ћи»ўгЃ§гЃЌг‚‹)
-			ConjuQ = QFunc.QConjugation(RotQ);							// RotQгЃ®е…±еЅ№г‚Їг‚©гѓјг‚їгѓ‹г‚Єгѓіг‚’з™»йЊІ
-			TargetQ = QFunc.QMult(QFunc.QMult(RotQ,StartQ),ConjuQ);		// е›ћи»ўгЃ•гЃ›г‚‹
-			nurbs->cp[i][j] = SetCoord(TargetQ.x,TargetQ.y,TargetQ.z);	// е›ћи»ўеѕЊгЃ®еє§жЁ™г‚’з™»йЊІ
+	for(int i=0;i<K[0];i++){			// u•ыЊь‚МѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg•Єѓ‹Ѓ[ѓv
+		for(int j=0;j<K[1];j++){		// v•ыЊь‚МѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg•Єѓ‹Ѓ[ѓv
+			StartQ = QFunc.QInit(1,cp[i][j].x,cp[i][j].y,cp[i][j].z);		// NURBS‹И–К‚рЌ\ђ¬‚·‚йcp‚МЌА•W‚р“o^
+			rad = DegToRad(deg);										// degree‚©‚зradian‚Й•ПЉ·
+			RotQ = QFunc.QGenRot(rad,axis.x,axis.y,axis.z);				// ‰с“]ѓNѓHЃ[ѓ^ѓjѓIѓ“‚Й‰с“]—К‚р“o^(‚±‚±‚Мђ”Ћљ‚р‚ў‚¶‚к‚О”C€У‚Й‰с“]‚Е‚«‚й)
+			ConjuQ = QFunc.QConjugation(RotQ);							// RotQ‚М‹¤–рѓNѓHЃ[ѓ^ѓjѓIѓ“‚р“o^
+			TargetQ = QFunc.QMult(QFunc.QMult(RotQ,StartQ),ConjuQ);		// ‰с“]‚і‚№‚й
+			cp[i][j] = SetCoord(TargetQ.x,TargetQ.y,TargetQ.z);	// ‰с“]Њг‚МЌА•W‚р“o^
 		}
 	}
 }
 
 // Function: RotNurbsC
-// NURBSж›Ійќўг‚’Dгѓ™г‚Їгѓ€гѓ«е›ћг‚ЉгЃ«deg(В°)гЃ гЃ‘е›ћи»ўгЃ•гЃ›г‚‹
+// NURBS‹И–К‚рDѓxѓNѓgѓ‹‰с‚и‚Йdeg(Ѓ‹)‚ѕ‚Ї‰с“]‚і‚№‚й
 //
 // Parameters:
-// *nurbs - е¤‰ж›ґгЃ•г‚Њг‚‹NURBSж›Із·љгЂЂ
-// axis - е›ћи»ўи»ёгЃ®еЌдЅЌгѓ™г‚Їгѓ€гѓ«гЂЂ
-// deg - и§’еє¦(degree)
-void NURBS_Func::RotNurbsC(NURBSC *nurbs,Coord axis,double deg)
+// *nurbs - •ПЌX‚і‚к‚йNURBS‹ИђьЃ@
+// axis - ‰с“]ЋІ‚М’P€КѓxѓNѓgѓ‹Ѓ@
+// deg - Љp“x(degree)
+//void NURBS_Func::RotNurbsC(NURBSC *nurbs,Coord axis,double deg)
+void NURBSC::RotNurbsC(Coord axis,double deg)
 {
-	double rad;			// гѓ©г‚ёг‚ўгѓіж јзґЌз”Ё
-	QUATERNION QFunc;	// г‚Їг‚©гѓјг‚їгѓ‹г‚Єгѓій–ўйЂЈгЃ®й–ўж•°г‚’й›†г‚ЃгЃџг‚Їгѓ©г‚№гЃ®г‚Єгѓ–г‚ёг‚§г‚Їгѓ€г‚’з”џж€ђ
-	Quat StartQ;		// е›ћи»ўе‰ЌгЃ®еє§жЁ™г‚’ж јзґЌгЃ™г‚‹г‚Їг‚©гѓјг‚їгѓ‹г‚Єгѓі
-	Quat RotQ;			// е›ћи»ўг‚Їг‚©гѓјг‚їгѓ‹г‚Єгѓі
-	Quat ConjuQ;		// е…±еЅ№г‚Їг‚©гѓјг‚їгѓ‹г‚Єгѓі
-	Quat TargetQ;		// е›ћи»ўеѕЊгЃ®еє§жЁ™г‚’ж јзґЌгЃ™г‚‹г‚Їг‚©гѓјг‚їгѓ‹г‚Єгѓі
+	double rad;			// ѓ‰ѓWѓAѓ“Љi”[—p
+	QUATERNION QFunc;	// ѓNѓHЃ[ѓ^ѓjѓIѓ“ЉЦA‚МЉЦђ”‚рЏW‚Я‚ЅѓNѓ‰ѓX‚МѓIѓuѓWѓFѓNѓg‚рђ¶ђ¬
+	Quat StartQ;		// ‰с“]‘O‚МЌА•W‚рЉi”[‚·‚йѓNѓHЃ[ѓ^ѓjѓIѓ“
+	Quat RotQ;			// ‰с“]ѓNѓHЃ[ѓ^ѓjѓIѓ“
+	Quat ConjuQ;		// ‹¤–рѓNѓHЃ[ѓ^ѓjѓIѓ“
+	Quat TargetQ;		// ‰с“]Њг‚МЌА•W‚рЉi”[‚·‚йѓNѓHЃ[ѓ^ѓjѓIѓ“
 	
-	for(int i=0;i<nurbs->K;i++){		// г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€е€†гѓ«гѓјгѓ—
-		StartQ = QFunc.QInit(1,nurbs->cp[i].x,nurbs->cp[i].y,nurbs->cp[i].z);		// NURBSж›Ійќўг‚’ж§‹ж€ђгЃ™г‚‹cpгЃ®еє§жЁ™г‚’з™»йЊІ
-		rad = DegToRad(deg);									// degreeгЃ‹г‚‰radianгЃ«е¤‰жЏ›
-		RotQ = QFunc.QGenRot(rad,axis.x,axis.y,axis.z);			// е›ћи»ўг‚Їг‚©гѓјг‚їгѓ‹г‚ЄгѓігЃ«е›ћи»ўй‡Џг‚’з™»йЊІ(гЃ“гЃ“гЃ®ж•°е­—г‚’гЃ„гЃг‚ЊгЃ°д»»ж„ЏгЃ«е›ћи»ўгЃ§гЃЌг‚‹)
-		ConjuQ = QFunc.QConjugation(RotQ);						// RotQгЃ®е…±еЅ№г‚Їг‚©гѓјг‚їгѓ‹г‚Єгѓіг‚’з™»йЊІ
-		TargetQ = QFunc.QMult(QFunc.QMult(RotQ,StartQ),ConjuQ);	// е›ћи»ўгЃ•гЃ›г‚‹
-		nurbs->cp[i] = SetCoord(TargetQ.x,TargetQ.y,TargetQ.z);	// е›ћи»ўеѕЊгЃ®еє§жЁ™г‚’з™»йЊІ
+	for(int i=0;i<K;i++){		// ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg•Єѓ‹Ѓ[ѓv
+		StartQ = QFunc.QInit(1,cp[i].x,cp[i].y,cp[i].z);		// NURBS‹И–К‚рЌ\ђ¬‚·‚йcp‚МЌА•W‚р“o^
+		rad = DegToRad(deg);									// degree‚©‚зradian‚Й•ПЉ·
+		RotQ = QFunc.QGenRot(rad,axis.x,axis.y,axis.z);			// ‰с“]ѓNѓHЃ[ѓ^ѓjѓIѓ“‚Й‰с“]—К‚р“o^(‚±‚±‚Мђ”Ћљ‚р‚ў‚¶‚к‚О”C€У‚Й‰с“]‚Е‚«‚й)
+		ConjuQ = QFunc.QConjugation(RotQ);						// RotQ‚М‹¤–рѓNѓHЃ[ѓ^ѓjѓIѓ“‚р“o^
+		TargetQ = QFunc.QMult(QFunc.QMult(RotQ,StartQ),ConjuQ);	// ‰с“]‚і‚№‚й
+		cp[i] = SetCoord(TargetQ.x,TargetQ.y,TargetQ.z);	// ‰с“]Њг‚МЌА•W‚р“o^
 	}
 }
 
 // Function: ChRatioNurbsS
-// NURBSж›ІйќўгЃ®еЂЌзЋ‡г‚’е¤‰ж›ґгЃ™г‚‹
+// NURBS‹И–К‚М”{—¦‚р•ПЌX‚·‚й
 //
 // Parameters:
-// *nurbs - е¤‰ж›ґгЃ•г‚Њг‚‹NURBSж›Ійќў  
-// ratio - еЂЌзЋ‡
-void NURBS_Func::ChRatioNurbsS(NURBSS *nurbs,Coord ratio)
+// *nurbs - •ПЌX‚і‚к‚йNURBS‹И–К  
+// ratio - ”{—¦
+//void NURBS_Func::ChRatioNurbsS(NURBSS *nurbs,Coord ratio)
+void NURBSS::ChRatioNurbsS(Coord ratio)
 {
-	for(int i=0;i<nurbs->K[0];i++){
-		for(int j=0;j<nurbs->K[1];j++){
-			nurbs->cp[i][j] = MulCoord(nurbs->cp[i][j],ratio);
+	for(int i=0;i<K[0];i++){
+		for(int j=0;j<K[1];j++){
+			cp[i][j] = MulCoord(cp[i][j],ratio);
 		}
 	}
 }
 
 // Function: ChRatioNurbsC
-// NURBSж›Із·љгЃ®еЂЌзЋ‡г‚’е¤‰ж›ґгЃ™г‚‹
+// NURBS‹Иђь‚М”{—¦‚р•ПЌX‚·‚й
 //
 // Parameters:
-// *nurbs - е¤‰ж›ґгЃ•г‚Њг‚‹NURBSж›Із·љ  
-// ratio - еЂЌзЋ‡
-void NURBS_Func::ChRatioNurbsC(NURBSC *nurbs,Coord ratio)
+// *nurbs - •ПЌX‚і‚к‚йNURBS‹Иђь  
+// ratio - ”{—¦
+//void NURBS_Func::ChRatioNurbsC(NURBSC *nurbs,Coord ratio)
+void NURBSC::ChRatioNurbsC(Coord ratio)
 {
-	for(int i=0;i<nurbs->K;i++){
-		nurbs->cp[i] = MulCoord(nurbs->cp[i],ratio);
+	for(int i=0;i<K;i++){
+		cp[i] = MulCoord(cp[i],ratio);
 	}
 }
 
 // Function: SetCPNurbsS
-// NURBSж›ІйќўnurbsгЃ®г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€г‚’пјЊNURBSж›ІйќўNurbsгЃ®г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ«зЅ®гЃЌжЏ›гЃ€г‚‹
+// NURBS‹И–Кnurbs‚МѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚рЃCNURBS‹И–КNurbs‚МѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Й’u‚«Љ·‚¦‚й
 //
 // Parameters:
-// *nurbs - зЅ®жЏ›гЃ•г‚Њг‚‹NURBSж›Ійќў  
-// Nurbs - д»Је…Ґе…ѓгЃ®NURBSж›Ійќў
+// *nurbs - ’uЉ·‚і‚к‚йNURBS‹И–К  
+// Nurbs - ‘г“ьЊі‚МNURBS‹И–К
 //
 // Return:
-// ж­Јеёёзµ‚дє†пјљKOD_TRUE, дёЎж›ІйќўгЃ®г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€ж•°гЃЊдёЂи‡ґгЃ—гЃ¦гЃ„гЃЄгЃ„пјљKOD_ERR
+// ђіЏнЏI—№ЃFKOD_TRUE, —ј‹И–К‚МѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓgђ”‚Є€к’v‚µ‚Д‚ў‚И‚ўЃFKOD_ERR
 int NURBS_Func::SetCPNurbsS(NURBSS *nurbs,NURBSS Nurbs)
 {
 	if(nurbs->K[0] != Nurbs.K[0] || nurbs->K[1] != Nurbs.K[1]){
@@ -4210,55 +4625,55 @@ int NURBS_Func::SetCPNurbsS(NURBSS *nurbs,NURBSS Nurbs)
 }
 
 // Function: GenInterpolatedNurbsC1
-// дёЋгЃ€г‚‰г‚ЊгЃџз‚№е€—г‚’иЈњй–“гЃ™г‚‹nйљЋгЃ®NURBSж›Із·љг‚’з”џж€ђгЃ™г‚‹.
-// з«Їжњ«жќЎд»¶г‚’дёЋгЃ€гЃЄгЃ„гѓђгѓјг‚ёгѓ§гѓі
+// —^‚¦‚з‚к‚Ѕ“_—с‚р•вЉФ‚·‚йnЉK‚МNURBS‹Иђь‚рђ¶ђ¬‚·‚й.
+// ’[––ЏрЊЏ‚р—^‚¦‚И‚ўѓoЃ[ѓWѓ‡ѓ“
 //
 // Parameters:
-// *Nurbs - з”џж€ђгЃ•г‚Њг‚‹NURBSж›Із·љгЃ®г‚ўгѓ‰гѓ¬г‚№   
-// *P - з‚№е€—   
-// PNum - з‚№е€—гЃ®ж•°   
-// M - йљЋж•°
+// *Nurbs - ђ¶ђ¬‚і‚к‚йNURBS‹Иђь‚МѓAѓhѓЊѓX   
+// *P - “_—с   
+// PNum - “_—с‚Мђ”   
+// M - ЉKђ”
 //
 // Return:
-// ж­Јеёёзµ‚дє†пјљKOD_TRUE, дёЋгЃ€г‚‰г‚ЊгЃџз‚№е€—гЃЊ1еЂ‹жњЄжєЂпјљKOD_ERR, иЁ€з®—йЃЋзЁ‹гЃ§г‚јгѓ­е‰ІгЃЊз™єз”џпјљKOD_ERR
+// ђіЏнЏI—№ЃFKOD_TRUE, —^‚¦‚з‚к‚Ѕ“_—с‚Є1ЊВ–ў–ћЃFKOD_ERR, ЊvЋZ‰Я’ц‚Еѓ[ѓЌЉ„‚Є”­ђ¶ЃFKOD_ERR
 int NURBS_Func::GenInterpolatedNurbsC1(NURBSC *Nurbs,Coord *P,int PNum,int M)
 {
 	int retflag = KOD_TRUE;
 
-	if(PNum <= 1){			// дёЋгЃ€г‚‰г‚ЊгЃџз‚№гЃЊ1еЂ‹жњЄжєЂгЃ®е ґеђ€гЃЇгЂЃNURBSж›Із·љг‚’з”џж€ђгЃ§гЃЌгЃЄгЃ„
+	if(PNum <= 1){			// —^‚¦‚з‚к‚Ѕ“_‚Є1ЊВ–ў–ћ‚МЏкЌ‡‚НЃANURBS‹Иђь‚рђ¶ђ¬‚Е‚«‚И‚ў
         GuiIF.SetMessage("NURBS KOD_ERROR:Few Point. You should set over 2 points at least");
 		return KOD_ERR;
 	}
-	if(PNum == 2 || PNum == 3)	M = PNum;	// дёЋгЃ€г‚‰г‚ЊгЃџз‚№гЃЊ2еЂ‹гЃ‹3еЂ‹гЃ®е ґеђ€гЃЇгЂЃйљЋж•°г‚’еј·е€¶зљ„гЃ«2гЃ‹3гЃ«гЃ™г‚‹
+	if(PNum == 2 || PNum == 3)	M = PNum;	// —^‚¦‚з‚к‚Ѕ“_‚Є2ЊВ‚©3ЊВ‚МЏкЌ‡‚НЃAЉKђ”‚р‹­ђ§“I‚Й2‚©3‚Й‚·‚й
 
-	int K = PNum;			// г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ®ж•°
-	int N = M+K;			// гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®ж•°
-	int prop[4] = {0,0,1,0};// гѓ‘гѓ©гѓЎгѓјг‚ї
-	double V[2] = {0,1};	// гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®й–‹е§‹еЂ¤,зµ‚дє†еЂ¤
+	int K = PNum;			// ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Мђ”
+	int N = M+K;			// ѓmѓbѓgѓxѓNѓgѓ‹‚Мђ”
+	int prop[4] = {0,0,1,0};// ѓpѓ‰ѓЃЃ[ѓ^
+	double V[2] = {0,1};	// ѓmѓbѓgѓxѓNѓgѓ‹‚МЉJЋn’l,ЏI—№’l
 
-	Vector T_ = NewVector(K);	// йЂљйЃЋз‚№дёЉгЃ®ж›Із·љгѓ‘гѓ©гѓЎгѓјг‚ї
-	Vector T = NewVector(N);	// гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«
-	Matrix B = NewMatrix(K,K);	// Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°иЎЊе€—
-	Matrix B_ = NewMatrix(K,K);	// Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°иЎЊе€—гЃ®йЂ†иЎЊе€—ж јзґЌз”Ё
-	Vector W = NewVector(K);	// й‡ЌгЃї
-	Coord *Q = NewCoord1(K);	// г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€
+	Vector T_ = NewVector(K);	// ’К‰Я“_Џг‚М‹Иђьѓpѓ‰ѓЃЃ[ѓ^
+	Vector T = NewVector(N);	// ѓmѓbѓgѓxѓNѓgѓ‹
+	Matrix B = NewMatrix(K,K);	// BѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”Ќs—с
+	Matrix B_ = NewMatrix(K,K);	// BѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”Ќs—с‚М‹tЌs—сЉi”[—p
+	Vector W = NewVector(K);	// Џd‚Э
+	Coord *Q = NewCoord1(K);	// ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg
 
-	// йЂљйЃЋз‚№дёЉгЃ®ж›Із·љгѓ‘гѓ©гѓЎгѓјг‚їг‚’еѕ—г‚‹
+	// ’К‰Я“_Џг‚М‹Иђьѓpѓ‰ѓЃЃ[ѓ^‚р“ѕ‚й
 	GetCurveKnotParam2(P,PNum,T_);
 	for(int i=0;i<PNum;i++)
 		P[i].dmy = T_[i];
 
-	// гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«г‚’еѕ—г‚‹
+	// ѓmѓbѓgѓxѓNѓgѓ‹‚р“ѕ‚й
 	GetInterpolatedKnot(T_,N,K,M,T);
 
-	// Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°иЎЊе€—г‚’з”џж€ђ
+	// BѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”Ќs—с‚рђ¶ђ¬
 	for(int i=0;i<K;i++){
 		for(int j=0;j<K;j++){
 			B[i][j] = CalcBSbasis(T_[i],T,N,j,M);
 		}
 	}
 
-	// Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°иЎЊе€—гЃ®йЂ†иЎЊе€—г‚’ж±‚г‚Ѓг‚‹
+	// BѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”Ќs—с‚М‹tЌs—с‚р‹Ѓ‚Я‚й
 	double det = Gauss(K,B,P,Q);
 	if(det == 0){
         GuiIF.SetMessage("NURBS ERROR:Determinant is 0");
@@ -4266,13 +4681,13 @@ int NURBS_Func::GenInterpolatedNurbsC1(NURBSC *Nurbs,Coord *P,int PNum,int M)
 		goto EXIT;
 	}
 
-	// г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃЁй‡ЌгЃїг‚’еѕ—г‚‹
+	// ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚ЖЏd‚Э‚р“ѕ‚й
 	for(int i=0;i<K;i++){
 		//MulMxVec(B_,K,K,P,Q);
 		W[i] = 1.0;
 	}
 
-	// NURBSж›Із·љг‚’з”џж€ђгЃ™г‚‹
+	// NURBS‹Иђь‚рђ¶ђ¬‚·‚й
 	if(M == 2)
 		GenNurbsC(Nurbs,K,M,N,T,W,P,V,prop,0);
 	else
@@ -4290,52 +4705,52 @@ EXIT:
 }
 
 // Function: GenInterpolatedNurbsC2
-// дёЋгЃ€г‚‰г‚ЊгЃџз‚№е€—г‚’иЈњй–“гЃ™г‚‹nйљЋгЃ®NURBSж›Із·љг‚’з”џж€ђгЃ™г‚‹пјЋ
-// з«Їжњ«жќЎд»¶:е§‹з‚№гЃЁC2гЃ§дёЂи‡ґ
+// —^‚¦‚з‚к‚Ѕ“_—с‚р•вЉФ‚·‚йnЉK‚МNURBS‹Иђь‚рђ¶ђ¬‚·‚йЃD
+// ’[––ЏрЊЏ:Ћn“_‚ЖC2‚Е€к’v
 //
 // Parameters:
-// *Nurbs - з”џж€ђгЃ•г‚Њг‚‹NURBSж›Із·љгЃ®г‚ўгѓ‰гѓ¬г‚№   
-// *P_ - йЂљйЃЋз‚№е€—пј€P_[0]гЃЁP_[PNum-1]гЃЇдёЂи‡ґгЃ—гЃ¦гЃ„г‚‹гЃ“гЃЁпј‰
-// PNum - йЂљйЃЋз‚№е€—гЃ®ж•°   
-// M - йљЋж•°
+// *Nurbs - ђ¶ђ¬‚і‚к‚йNURBS‹Иђь‚МѓAѓhѓЊѓX   
+// *P_ - ’К‰Я“_—сЃiP_[0]‚ЖP_[PNum-1]‚Н€к’v‚µ‚Д‚ў‚й‚±‚ЖЃj
+// PNum - ’К‰Я“_—с‚Мђ”   
+// M - ЉKђ”
 //
 // Return:
-// KOD_TRUE:ж­Јеёёзµ‚дє†, KOD_FALSE:з‚№е€—гЃ®е§‹з‚№гЃЁзµ‚з‚№гЃЊдёЂи‡ґгЃ—гЃ¦гЃ„гЃЄгЃ„, KOD_ERR:з‚№е€—гЃ®ж•°гЃЊ1еЂ‹жњЄжєЂ
+// KOD_TRUE:ђіЏнЏI—№, KOD_FALSE:“_—с‚МЋn“_‚ЖЏI“_‚Є€к’v‚µ‚Д‚ў‚И‚ў, KOD_ERR:“_—с‚Мђ”‚Є1ЊВ–ў–ћ
 int NURBS_Func::GenInterpolatedNurbsC2(NURBSC *Nurbs,Coord *P_,int PNum,int M)
 {
 	if(DiffCoord(P_[0],P_[PNum-1]) == KOD_FALSE){
         GuiIF.SetMessage("NURBS KOD_ERROR:Given points P0 and Pn are not unmuched");
 		return KOD_FALSE;
 	}
-	if(PNum <= 1){			// дёЋгЃ€г‚‰г‚ЊгЃџз‚№гЃЊ1еЂ‹жњЄжєЂгЃ®е ґеђ€гЃЇгЂЃNURBSж›Із·љг‚’з”џж€ђгЃ§гЃЌгЃЄгЃ„
+	if(PNum <= 1){			// —^‚¦‚з‚к‚Ѕ“_‚Є1ЊВ–ў–ћ‚МЏкЌ‡‚НЃANURBS‹Иђь‚рђ¶ђ¬‚Е‚«‚И‚ў
         GuiIF.SetMessage("NURBS KOD_ERROR:Few Point. You should set over 2 points at least");
 		return KOD_ERR;
 	}
-	if(PNum == 2 || PNum == 3)	M = PNum;	// дёЋгЃ€г‚‰г‚ЊгЃџз‚№гЃЊ2еЂ‹гЃ‹3еЂ‹гЃ®е ґеђ€гЃЇгЂЃйљЋж•°г‚’еј·е€¶зљ„гЃ«2гЃ‹3гЃ«гЃ™г‚‹
+	if(PNum == 2 || PNum == 3)	M = PNum;	// —^‚¦‚з‚к‚Ѕ“_‚Є2ЊВ‚©3ЊВ‚МЏкЌ‡‚НЃAЉKђ”‚р‹­ђ§“I‚Й2‚©3‚Й‚·‚й
 
-	int K = PNum+2;				// г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ®ж•°
-	int N = M+K;				// гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®ж•°
-	int prop[4] = {0,0,1,0};	// гѓ‘гѓ©гѓЎгѓјг‚ї
-	double V[2] = {0,1};		// гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®й–‹е§‹еЂ¤,зµ‚дє†еЂ¤
+	int K = PNum+2;				// ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Мђ”
+	int N = M+K;				// ѓmѓbѓgѓxѓNѓgѓ‹‚Мђ”
+	int prop[4] = {0,0,1,0};	// ѓpѓ‰ѓЃЃ[ѓ^
+	double V[2] = {0,1};		// ѓmѓbѓgѓxѓNѓgѓ‹‚МЉJЋn’l,ЏI—№’l
 
-	Vector T_ = NewVector(PNum);	// йЂљйЃЋз‚№дёЉгЃ®ж›Із·љгѓ‘гѓ©гѓЎгѓјг‚ї
-	Vector T = NewVector(N);		// гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«
-	Coord *P = NewCoord1(N);		// йЂљйЃЋз‚№е€—г‚’ж јзґЌ
-	Coord *Q = NewCoord1(K);		// г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€
-	Matrix B = NewMatrix(K,K);		// Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°иЎЊе€—
-	Vector W = NewVector(K);		// й‡ЌгЃї
+	Vector T_ = NewVector(PNum);	// ’К‰Я“_Џг‚М‹Иђьѓpѓ‰ѓЃЃ[ѓ^
+	Vector T = NewVector(N);		// ѓmѓbѓgѓxѓNѓgѓ‹
+	Coord *P = NewCoord1(N);		// ’К‰Я“_—с‚рЉi”[
+	Coord *Q = NewCoord1(K);		// ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg
+	Matrix B = NewMatrix(K,K);		// BѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”Ќs—с
+	Vector W = NewVector(K);		// Џd‚Э
 
-	// йЂљйЃЋз‚№е€—гѓ™г‚Їгѓ€гѓ«г‚’з”џж€ђ
+	// ’К‰Я“_—сѓxѓNѓgѓ‹‚рђ¶ђ¬
 	for(int i=0;i<PNum;i++){
 		P[i] = SetCoord(P_[i]);
 	}
 	P[PNum] = SetCoord(0,0,0);
 	P[PNum+1] = SetCoord(0,0,0);
 
-	// йЂљйЃЋз‚№дёЉгЃ®ж›Із·љгѓ‘гѓ©гѓЎгѓјг‚їг‚’еѕ—г‚‹
+	// ’К‰Я“_Џг‚М‹Иђьѓpѓ‰ѓЃЃ[ѓ^‚р“ѕ‚й
 	GetCurveKnotParam1(P_,PNum,T_);
 
-	// гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«г‚’еѕ—г‚‹
+	// ѓmѓbѓgѓxѓNѓgѓ‹‚р“ѕ‚й
 	for(int i=0;i<N;i++){
 		if(i < M)	T[i] = 0;
 		else if(i >= K)	T[i] = 1;
@@ -4344,7 +4759,7 @@ int NURBS_Func::GenInterpolatedNurbsC2(NURBSC *Nurbs,Coord *P_,int PNum,int M)
 		}
 	}
 
-	// Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°иЎЊе€—г‚’з”џж€ђ
+	// BѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”Ќs—с‚рђ¶ђ¬
 	for(int i=0;i<K;i++){
 		for(int j=0;j<K;j++){
 			B[i][j] = 0;
@@ -4363,18 +4778,18 @@ int NURBS_Func::GenInterpolatedNurbsC2(NURBSC *Nurbs,Coord *P_,int PNum,int M)
 	B[K-1][K-2] = -CalcDiffBSbasisN(T_[PNum-1],T,N,K-2,M,2);
 	B[K-1][K-1] = -CalcDiffBSbasisN(T_[PNum-1],T,N,K-1,M,2);
 
-	// г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€г‚’еѕ—г‚‹
+	// ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚р“ѕ‚й
 	Gauss(K,B,P,Q);
 
 	//for(int i=0;i<K;i++)
 	//	fprintf(stderr,"%lf,%lf,%lf\n",Q[i].x,Q[i].y,Q[i].z);
 
-	// й‡ЌгЃїг‚’еѕ—г‚‹
+	// Џd‚Э‚р“ѕ‚й
 	for(int i=0;i<K;i++){
 		W[i] = 1.0;
 	}
 
-	// NURBSж›Із·љг‚’з”џж€ђгЃ™г‚‹
+	// NURBS‹Иђь‚рђ¶ђ¬‚·‚й
 	if(M == 2)
 		GenNurbsC(Nurbs,K,M,N,T,W,P,V,prop,0);
 	else
@@ -4391,44 +4806,44 @@ int NURBS_Func::GenInterpolatedNurbsC2(NURBSC *Nurbs,Coord *P_,int PNum,int M)
 }
 
 // Function: GenApproximationNurbsC
-// дёЋгЃ€г‚‰г‚ЊгЃџз‚№е€—г‚’иї‘дјјгЃ™г‚‹nйљЋгЃ®NURBSж›Із·љг‚’з”џж€ђгЃ™г‚‹
+// —^‚¦‚з‚к‚Ѕ“_—с‚р‹ЯЋ—‚·‚йnЉK‚МNURBS‹Иђь‚рђ¶ђ¬‚·‚й
 //
 // Parameters:
-// *Nurbs - з”џж€ђгЃ•г‚Њг‚‹NURBSж›Із·љгЃ®г‚ўгѓ‰гѓ¬г‚№   
-// *P - з‚№е€—   
-// PNum - з‚№е€—гЃ®ж•°   
-// M - йљЋж•°
+// *Nurbs - ђ¶ђ¬‚і‚к‚йNURBS‹Иђь‚МѓAѓhѓЊѓX   
+// *P - “_—с   
+// PNum - “_—с‚Мђ”   
+// M - ЉKђ”
 //
 // Return:
-// ж­Јеёёзµ‚дє†пјљKOD_TRUE, дёЋгЃ€г‚‰г‚ЊгЃџз‚№гЃЊ1еЂ‹жњЄжєЂпјљKOD_ERR
+// ђіЏнЏI—№ЃFKOD_TRUE, —^‚¦‚з‚к‚Ѕ“_‚Є1ЊВ–ў–ћЃFKOD_ERR
 int NURBS_Func::GenApproximationNurbsC(NURBSC *Nurbs,Coord *P,int PNum,int M)
 {
-	if(PNum <= 1){			// дёЋгЃ€г‚‰г‚ЊгЃџз‚№гЃЊ1еЂ‹жњЄжєЂгЃ®е ґеђ€гЃЇгЂЃNURBSж›Із·љг‚’з”џж€ђгЃ§гЃЌгЃЄгЃ„
+	if(PNum <= 1){			// —^‚¦‚з‚к‚Ѕ“_‚Є1ЊВ–ў–ћ‚МЏкЌ‡‚НЃANURBS‹Иђь‚рђ¶ђ¬‚Е‚«‚И‚ў
         GuiIF.SetMessage("NURBS KOD_ERROR:Few Point. You should set over 2 points at least");
 		return KOD_ERR;
 	}
 
-	int K = SetApproximationCPnum(PNum);		// дёЋгЃ€г‚‰г‚ЊгЃџз‚№е€—гЃ‹г‚‰г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ®ж•°г‚’ж±єг‚Ѓг‚‹(г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ®ж•°гЃ§иї‘дјјгЃ•г‚Њг‚‹ж›Із·љгЃЊе¤‰г‚Џг‚‹)
-	int Nnum = M+K;					// гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®ж•°
-	int prop[4] = {0,0,1,0};		// гѓ‘гѓ©гѓЎгѓјг‚ї
-	double V[2] = {0,1};			// гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®й–‹е§‹еЂ¤,зµ‚дє†еЂ¤
+	int K = SetApproximationCPnum(PNum);		// —^‚¦‚з‚к‚Ѕ“_—с‚©‚зѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Мђ”‚рЊ€‚Я‚й(ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Мђ”‚Е‹ЯЋ—‚і‚к‚й‹Иђь‚Є•П‚н‚й)
+	int Nnum = M+K;					// ѓmѓbѓgѓxѓNѓgѓ‹‚Мђ”
+	int prop[4] = {0,0,1,0};		// ѓpѓ‰ѓЃЃ[ѓ^
+	double V[2] = {0,1};			// ѓmѓbѓgѓxѓNѓgѓ‹‚МЉJЋn’l,ЏI—№’l
 
-	Vector T_ = NewVector(PNum);	// йЂљйЃЋз‚№дёЉгЃ®ж›Із·љгѓ‘гѓ©гѓЎгѓјг‚ї
-	Vector T = NewVector(Nnum);		// гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«
-	Coord *Q = NewCoord1(K);		// г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€
-	Vector W = NewVector(K);		// й‡ЌгЃї
+	Vector T_ = NewVector(PNum);	// ’К‰Я“_Џг‚М‹Иђьѓpѓ‰ѓЃЃ[ѓ^
+	Vector T = NewVector(Nnum);		// ѓmѓbѓgѓxѓNѓgѓ‹
+	Coord *Q = NewCoord1(K);		// ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg
+	Vector W = NewVector(K);		// Џd‚Э
 
-	GetCurveKnotParam1(P,PNum,T_);		// йЂљйЃЋз‚№дёЉгЃ®ж›Із·љгѓ‘гѓ©гѓЎгѓјг‚їг‚’еѕ—г‚‹
+	GetCurveKnotParam1(P,PNum,T_);		// ’К‰Я“_Џг‚М‹Иђьѓpѓ‰ѓЃЃ[ѓ^‚р“ѕ‚й
 
-	GetApproximatedKnot(T_,PNum,M,K,T);	// гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«г‚’иЁ­е®љгЃ™г‚‹
+	GetApproximatedKnot(T_,PNum,M,K,T);	// ѓmѓbѓgѓxѓNѓgѓ‹‚рђЭ’и‚·‚й
 
-	CalcApproximationCP_LSM(P,T_,T,PNum,Nnum,M,K,Q);	// жњЂе°Џ2д№—жі•гЃ§иї‘дјјг‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€г‚’ж±‚г‚Ѓг‚‹
+	CalcApproximationCP_LSM(P,T_,T,PNum,Nnum,M,K,Q);	// ЌЕЏ¬2Џж–@‚Е‹ЯЋ—ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚р‹Ѓ‚Я‚й
 
-	for(int i=0;i<K;i++){	// й‡ЌгЃїгЃЇ1гЃ§е›єе®љ
+	for(int i=0;i<K;i++){	// Џd‚Э‚Н1‚ЕЊЕ’и
 		W[i] = 1;
 	}
 
-	GenNurbsC(Nurbs,K,M,Nnum,T,W,Q,V,prop,0);	// NURBSж›Із·љз”џж€ђ
+	GenNurbsC(Nurbs,K,M,Nnum,T,W,Q,V,prop,0);	// NURBS‹Иђьђ¶ђ¬
 
 	FreeCoord1(Q);
 	FreeVector(T);
@@ -4439,38 +4854,38 @@ int NURBS_Func::GenApproximationNurbsC(NURBSC *Nurbs,Coord *P,int PNum,int M)
 }
 
 // Function: GenNurbsCfromCP
-// г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ‹г‚‰NURBSж›Із·љг‚’з”џж€ђгЃ™г‚‹
+// ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚©‚зNURBS‹Иђь‚рђ¶ђ¬‚·‚й
 //
-// гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃЇз­‰й–“йљ”гЃ«иЁ­е®љгЃ•г‚Њг‚‹
+// ѓmѓbѓgѓxѓNѓgѓ‹‚Н“™ЉФЉu‚ЙђЭ’и‚і‚к‚й
 //
-// й‡ЌгЃїгЃЇе…ЁгЃ¦1гЃЁгЃ™г‚‹
+// Џd‚Э‚Н‘S‚Д1‚Ж‚·‚й
 //
 // Parameters:
-// *Nurbs - з”џж€ђгЃ•г‚Њг‚‹NURBSж›Із·љгЃ®г‚ўгѓ‰гѓ¬г‚№   
-// *P - з‚№е€—   
-// PNum - з‚№е€—гЃ®ж•°   
-// M - йљЋж•°
-// ж­Јеёёзµ‚дє†пјљKOD_TRUE, дёЋгЃ€г‚‰г‚ЊгЃџз‚№гЃЊ1еЂ‹жњЄжєЂпјљKOD_ERR
+// *Nurbs - ђ¶ђ¬‚і‚к‚йNURBS‹Иђь‚МѓAѓhѓЊѓX   
+// *P - “_—с   
+// PNum - “_—с‚Мђ”   
+// M - ЉKђ”
+// ђіЏнЏI—№ЃFKOD_TRUE, —^‚¦‚з‚к‚Ѕ“_‚Є1ЊВ–ў–ћЃFKOD_ERR
 int NURBS_Func::GenNurbsCfromCP(NURBSC *Nurbs,Coord *P,int PNum,int M)
 {
-	if(PNum <= 1){			// дёЋгЃ€г‚‰г‚ЊгЃџз‚№гЃЊ1еЂ‹жњЄжєЂгЃ®е ґеђ€гЃЇгЂЃNURBSж›Із·љг‚’з”џж€ђгЃ§гЃЌгЃЄгЃ„
+	if(PNum <= 1){			// —^‚¦‚з‚к‚Ѕ“_‚Є1ЊВ–ў–ћ‚МЏкЌ‡‚НЃANURBS‹Иђь‚рђ¶ђ¬‚Е‚«‚И‚ў
         GuiIF.SetMessage("NURBS KOD_ERROR:Few Point. You should set over 2 points at least");
 		return KOD_ERR;
 	}
 
-	int Nnum = M+PNum;				// гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®ж•°
-	int prop[4] = {0,0,1,0};		// гѓ‘гѓ©гѓЎгѓјг‚ї
-	double V[2] = {0,1};			// гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®й–‹е§‹еЂ¤,зµ‚дє†еЂ¤
-	Vector T = NewVector(Nnum);		// гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«
-	Vector W = NewVector(PNum);		// й‡ЌгЃї
+	int Nnum = M+PNum;				// ѓmѓbѓgѓxѓNѓgѓ‹‚Мђ”
+	int prop[4] = {0,0,1,0};		// ѓpѓ‰ѓЃЃ[ѓ^
+	double V[2] = {0,1};			// ѓmѓbѓgѓxѓNѓgѓ‹‚МЉJЋn’l,ЏI—№’l
+	Vector T = NewVector(Nnum);		// ѓmѓbѓgѓxѓNѓgѓ‹
+	Vector W = NewVector(PNum);		// Џd‚Э
 
-	GetEqIntervalKont(PNum,M,T);	// гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«г‚’еѕ—г‚‹
+	GetEqIntervalKont(PNum,M,T);	// ѓmѓbѓgѓxѓNѓgѓ‹‚р“ѕ‚й
 
-	for(int i=0;i<PNum;i++){	// й‡ЌгЃїгЃЇ1гЃ§е›єе®љ
+	for(int i=0;i<PNum;i++){	// Џd‚Э‚Н1‚ЕЊЕ’и
 		W[i] = 1;
 	}
 
-	GenNurbsC(Nurbs,PNum,M,Nnum,T,W,P,V,prop,0);	// NURBSж›Із·љз”џж€ђ
+	GenNurbsC(Nurbs,PNum,M,Nnum,T,W,P,V,prop,0);	// NURBS‹Иђьђ¶ђ¬
 
 	FreeVector(T);
 	FreeVector(W);
@@ -4479,31 +4894,31 @@ int NURBS_Func::GenNurbsCfromCP(NURBSC *Nurbs,Coord *P,int PNum,int M)
 }
 
 // Function: GenPolygonalLine
-// жЉг‚Њз·љ(NURBSж›Із·љ)г‚’з”џж€ђгЃ™г‚‹
+// ђЬ‚кђь(NURBS‹Иђь)‚рђ¶ђ¬‚·‚й
 // 
 // Parameters:
-// *Nurbs - з”џж€ђгЃ•г‚Њг‚‹NURBSж›Із·љгЃ®г‚ўгѓ‰гѓ¬г‚№   
-// *P - г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€   
-// PNum - г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ®ж•°
+// *Nurbs - ђ¶ђ¬‚і‚к‚йNURBS‹Иђь‚МѓAѓhѓЊѓX   
+// *P - ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg   
+// PNum - ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Мђ”
 //
 // Return:
-// ж­Јеёёзµ‚дє†пјљKOD_TRUE, дёЋгЃ€г‚‰г‚ЊгЃџз‚№гЃЊ1еЂ‹жњЄжєЂпјљKOD_ERR
+// ђіЏнЏI—№ЃFKOD_TRUE, —^‚¦‚з‚к‚Ѕ“_‚Є1ЊВ–ў–ћЃFKOD_ERR
 int NURBS_Func::GenPolygonalLine(NURBSC *Nurbs,Coord *P,int PNum)
 {
-	if(PNum <= 1){			// дёЋгЃ€г‚‰г‚ЊгЃџз‚№гЃЊ1еЂ‹жњЄжєЂгЃ®е ґеђ€гЃЇгЂЃNURBSж›Із·љг‚’з”џж€ђгЃ§гЃЌгЃЄгЃ„
+	if(PNum <= 1){			// —^‚¦‚з‚к‚Ѕ“_‚Є1ЊВ–ў–ћ‚МЏкЌ‡‚НЃANURBS‹Иђь‚рђ¶ђ¬‚Е‚«‚И‚ў
         GuiIF.SetMessage("NURBS KOD_ERROR:Few Point. You should set over 2 points at least");
 		return KOD_ERR;
 	}
 
-	int M=2;					// йљЋж•°2
-	int K=PNum;					// г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ®ж•°
-	int N=PNum+2;				// гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®ж•°
-	int prop[4] = {0,0,1,0};	// гѓ‘гѓ©гѓЎгѓјг‚ї
-	double V[2] = {0,1};		// гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®й–‹е§‹еЂ¤,зµ‚дє†еЂ¤
-	Vector T = NewVector(N);	// гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«
-	Vector W = NewVector(K);	// й‡ЌгЃї
+	int M=2;					// ЉKђ”2
+	int K=PNum;					// ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Мђ”
+	int N=PNum+2;				// ѓmѓbѓgѓxѓNѓgѓ‹‚Мђ”
+	int prop[4] = {0,0,1,0};	// ѓpѓ‰ѓЃЃ[ѓ^
+	double V[2] = {0,1};		// ѓmѓbѓgѓxѓNѓgѓ‹‚МЉJЋn’l,ЏI—№’l
+	Vector T = NewVector(N);	// ѓmѓbѓgѓxѓNѓgѓ‹
+	Vector W = NewVector(K);	// Џd‚Э
 
-	// гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«г‚’ж±‚г‚Ѓг‚‹
+	// ѓmѓbѓgѓxѓNѓgѓ‹‚р‹Ѓ‚Я‚й
 	T[0] = T[1] = 0.0;
 	T[K] = T[K+1] = 1.0;
 	double d_sum=0;
@@ -4514,12 +4929,12 @@ int NURBS_Func::GenPolygonalLine(NURBSC *Nurbs,Coord *P,int PNum)
 		T[i] = T[i-1] + d/d_sum;
 	}
 
-	// г‚¦г‚§г‚¤гѓ€
+	// ѓEѓFѓCѓg
 	for(int i=0;i<K;i++){
 		W[i] = 1.0;
 	}
 
-	// NURBSж›Із·љг‚’з”џж€ђгЃ™г‚‹
+	// NURBS‹Иђь‚рђ¶ђ¬‚·‚й
 	GenNurbsC(Nurbs,K,M,N,T,W,P,V,prop,0);
 
 	FreeVector(T);
@@ -4529,93 +4944,93 @@ int NURBS_Func::GenPolygonalLine(NURBSC *Nurbs,Coord *P,int PNum)
 }
 
 // Function: GenInterpolatedNurbsS1
-// дёЋгЃ€г‚‰г‚ЊгЃџз‚№е€—г‚’иЈњй–“гЃ™г‚‹nйљЋNURBSж›Ійќўг‚’з”џж€ђгЃ™г‚‹пјЋ
-// з«Їжњ«жќЎд»¶г‚’дёЋгЃ€гЃЄгЃ„гѓђгѓјг‚ёгѓ§гѓі
+// —^‚¦‚з‚к‚Ѕ“_—с‚р•вЉФ‚·‚йnЉKNURBS‹И–К‚рђ¶ђ¬‚·‚йЃD
+// ’[––ЏрЊЏ‚р—^‚¦‚И‚ўѓoЃ[ѓWѓ‡ѓ“
 //
 // Parameters:
-// *Nurbs - з”џж€ђгЃ•г‚Њг‚‹NURBSж›ІйќўгЃ®г‚ўгѓ‰гѓ¬г‚№   
-// **P - дёЋгЃ€г‚‰г‚ЊгЃџз‚№е€—   
-// PNum_u,PNum_v - з‚№гЃ®ж•°гЂЂ 
-// Mu,Mv - йљЋж•°
+// *Nurbs - ђ¶ђ¬‚і‚к‚йNURBS‹И–К‚МѓAѓhѓЊѓX   
+// **P - —^‚¦‚з‚к‚Ѕ“_—с   
+// PNum_u,PNum_v - “_‚Мђ”Ѓ@ 
+// Mu,Mv - ЉKђ”
 //
 // Return:
-// ж­Јеёёзµ‚дє†пјљKOD_TRUE, дёЋгЃ€г‚‰г‚ЊгЃџз‚№гЃЊ1еЂ‹жњЄжєЂпјљKOD_ERR
+// ђіЏнЏI—№ЃFKOD_TRUE, —^‚¦‚з‚к‚Ѕ“_‚Є1ЊВ–ў–ћЃFKOD_ERR
 int NURBS_Func::GenInterpolatedNurbsS1(NURBSS *Nurbs,Coord **P,int PNum_u,int PNum_v,int Mu,int Mv)
 {
-	if(PNum_u <= 1 || PNum_v <= 1){			// дёЋгЃ€г‚‰г‚ЊгЃџз‚№гЃЊеђ„ж–№еђ‘гЃ§1еЂ‹жњЄжєЂгЃ®е ґеђ€гЃЇгЂЃNURBSж›Ійќўг‚’з”џж€ђгЃ§гЃЌгЃЄгЃ„
+	if(PNum_u <= 1 || PNum_v <= 1){			// —^‚¦‚з‚к‚Ѕ“_‚ЄЉe•ыЊь‚Е1ЊВ–ў–ћ‚МЏкЌ‡‚НЃANURBS‹И–К‚рђ¶ђ¬‚Е‚«‚И‚ў
         GuiIF.SetMessage("NURBS ERROR:Few Point. You should set over 2 points at least");
 		return KOD_ERR;
 	}
-	if(PNum_u == 2 || PNum_u == 3)	Mu = PNum_u;	// uж–№еђ‘гЃ«дёЋгЃ€г‚‰г‚ЊгЃџз‚№гЃЊ2еЂ‹гЃ‹3еЂ‹гЃ®е ґеђ€гЃЇгЂЃuж–№еђ‘гЃ®йљЋж•°г‚’еј·е€¶зљ„гЃ«2гЃ‹3гЃ«гЃ™г‚‹
-	if(PNum_v == 2 || PNum_v == 3)	Mv = PNum_v;	// vж–№еђ‘гЃ«дёЋгЃ€г‚‰г‚ЊгЃџз‚№гЃЊ2еЂ‹гЃ‹3еЂ‹гЃ®е ґеђ€гЃЇгЂЃvж–№еђ‘гЃ®йљЋж•°г‚’еј·е€¶зљ„гЃ«2гЃ‹3гЃ«гЃ™г‚‹
+	if(PNum_u == 2 || PNum_u == 3)	Mu = PNum_u;	// u•ыЊь‚Й—^‚¦‚з‚к‚Ѕ“_‚Є2ЊВ‚©3ЊВ‚МЏкЌ‡‚НЃAu•ыЊь‚МЉKђ”‚р‹­ђ§“I‚Й2‚©3‚Й‚·‚й
+	if(PNum_v == 2 || PNum_v == 3)	Mv = PNum_v;	// v•ыЊь‚Й—^‚¦‚з‚к‚Ѕ“_‚Є2ЊВ‚©3ЊВ‚МЏкЌ‡‚НЃAv•ыЊь‚МЉKђ”‚р‹­ђ§“I‚Й2‚©3‚Й‚·‚й
 
-	int K[2] = {PNum_u,PNum_v};		// г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ®ж•°
-	int N[2] = {Mu+PNum_u,Mv+PNum_v};	// гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®ж•°
-	int prop[5] = {0,0,1,0,0};		// гѓ‘гѓ©гѓЎгѓјг‚ї
-	double U[2] = {0,1};			// uж–№еђ‘гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®й–‹е§‹еЂ¤гЂЃзµ‚дє†еЂ¤
-	double V[2] = {0,1};			// vж–№еђ‘гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®й–‹е§‹еЂ¤гЂЃзµ‚дє†еЂ¤
+	int K[2] = {PNum_u,PNum_v};		// ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Мђ”
+	int N[2] = {Mu+PNum_u,Mv+PNum_v};	// ѓmѓbѓgѓxѓNѓgѓ‹‚Мђ”
+	int prop[5] = {0,0,1,0,0};		// ѓpѓ‰ѓЃЃ[ѓ^
+	double U[2] = {0,1};			// u•ыЊьѓmѓbѓgѓxѓNѓgѓ‹‚МЉJЋn’lЃAЏI—№’l
+	double V[2] = {0,1};			// v•ыЊьѓmѓbѓgѓxѓNѓgѓ‹‚МЉJЋn’lЃAЏI—№’l
 
-	Vector S_ = NewVector(K[0]);		// uж–№еђ‘гЃ®йЂљйЃЋз‚№дёЉгЃ®ж›Із·љгѓ‘гѓ©гѓЎгѓјг‚ї
-	Vector S = NewVector(N[0]);			// uж–№еђ‘гЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«
-	Vector T_ = NewVector(K[1]);		// vж–№еђ‘гЃ®йЂљйЃЋз‚№дёЉгЃ®ж›Із·љгѓ‘гѓ©гѓЎгѓјг‚ї
-	Vector T = NewVector(N[1]);			// vж–№еђ‘гЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«
-	Matrix Bu = NewMatrix(K[0],K[0]);	// uж–№еђ‘гЃ®Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°иЎЊе€—
-	Matrix Bu_ = NewMatrix(K[0],K[0]);	// uж–№еђ‘гЃ®Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°иЎЊе€—гЃ®йЂ†иЎЊе€—ж јзґЌз”Ё
-	Matrix Bv = NewMatrix(K[1],K[1]);	// vж–№еђ‘гЃ®Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°иЎЊе€—
-	Matrix Bv_ = NewMatrix(K[1],K[1]);	// vж–№еђ‘гЃ®Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°иЎЊе€—гЃ®йЂ†иЎЊе€—ж јзґЌз”Ё
-	Matrix W = NewMatrix(K[0],K[1]);	// й‡ЌгЃї
-	Coord **PT = NewCoord2(K[1],K[0]);	// и»ўзЅ®гЃ—гЃџз‚№е€—P
-	Coord **R = NewCoord2(K[0],K[1]);	// г‚ўг‚¤г‚Ѕгѓ‘гѓ©ж›Із·љгЃ®г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€
-	Coord **RT = NewCoord2(K[1],K[0]);	// и»ўзЅ®гЃ—гЃџг‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€R
-	Coord **Q = NewCoord2(K[0],K[1]);	// NURBSж›ІйќўгЃ®г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€
+	Vector S_ = NewVector(K[0]);		// u•ыЊь‚М’К‰Я“_Џг‚М‹Иђьѓpѓ‰ѓЃЃ[ѓ^
+	Vector S = NewVector(N[0]);			// u•ыЊь‚МѓmѓbѓgѓxѓNѓgѓ‹
+	Vector T_ = NewVector(K[1]);		// v•ыЊь‚М’К‰Я“_Џг‚М‹Иђьѓpѓ‰ѓЃЃ[ѓ^
+	Vector T = NewVector(N[1]);			// v•ыЊь‚МѓmѓbѓgѓxѓNѓgѓ‹
+	Matrix Bu = NewMatrix(K[0],K[0]);	// u•ыЊь‚МBѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”Ќs—с
+	Matrix Bu_ = NewMatrix(K[0],K[0]);	// u•ыЊь‚МBѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”Ќs—с‚М‹tЌs—сЉi”[—p
+	Matrix Bv = NewMatrix(K[1],K[1]);	// v•ыЊь‚МBѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”Ќs—с
+	Matrix Bv_ = NewMatrix(K[1],K[1]);	// v•ыЊь‚МBѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”Ќs—с‚М‹tЌs—сЉi”[—p
+	Matrix W = NewMatrix(K[0],K[1]);	// Џd‚Э
+	Coord **PT = NewCoord2(K[1],K[0]);	// “]’u‚µ‚Ѕ“_—сP
+	Coord **R = NewCoord2(K[0],K[1]);	// ѓAѓCѓ\ѓpѓ‰‹Иђь‚МѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg
+	Coord **RT = NewCoord2(K[1],K[0]);	// “]’u‚µ‚ЅѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓgR
+	Coord **Q = NewCoord2(K[0],K[1]);	// NURBS‹И–К‚МѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg
 
 
-	GetSurfaceKnotParam(S_,T_,P,PNum_u,PNum_v);		// иЈњй–“ж›Ійќўз”Ёu,vгѓ‘гѓ©гѓЎгѓјг‚їг‚’еѕ—г‚‹
+	GetSurfaceKnotParam(S_,T_,P,PNum_u,PNum_v);		// •вЉФ‹И–К—pu,vѓpѓ‰ѓЃЃ[ѓ^‚р“ѕ‚й
 
-	GetInterpolatedKnot(S_,N[0],K[0],Mu,S);			// гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«Sг‚’еѕ—г‚‹
+	GetInterpolatedKnot(S_,N[0],K[0],Mu,S);			// ѓmѓbѓgѓxѓNѓgѓ‹S‚р“ѕ‚й
 
-	GetInterpolatedKnot(T_,N[1],K[1],Mv,T);			// гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«Tг‚’еѕ—г‚‹
+	GetInterpolatedKnot(T_,N[1],K[1],Mv,T);			// ѓmѓbѓgѓxѓNѓgѓ‹T‚р“ѕ‚й
 
-	// uж–№еђ‘гЃ®Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°иЎЊе€—г‚’з”џж€ђ
+	// u•ыЊь‚МBѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”Ќs—с‚рђ¶ђ¬
 	for(int i=0;i<K[0];i++){
 		for(int j=0;j<K[0];j++){
 			Bu[i][j] = CalcBSbasis(S_[i],S,N[0],j,Mu);
 		}
 	}
 
-	// vж–№еђ‘гЃ®Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°иЎЊе€—г‚’з”џж€ђ
+	// v•ыЊь‚МBѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”Ќs—с‚рђ¶ђ¬
 	for(int i=0;i<K[1];i++){
 		for(int j=0;j<K[1];j++){
 			Bv[i][j] = CalcBSbasis(T_[i],T,N[1],j,Mv);
 		}
 	}
 
-	// uж–№еђ‘гЃ®Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°иЎЊе€—гЃ®йЂ†иЎЊе€—г‚’ж±‚г‚Ѓг‚‹
+	// u•ыЊь‚МBѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”Ќs—с‚М‹tЌs—с‚р‹Ѓ‚Я‚й
 	MatInv(K[0],Bu,Bu_);
 
-	// vж–№еђ‘гЃ®Bг‚№гѓ—гѓ©г‚¤гѓіеџєеє•й–ўж•°иЎЊе€—гЃ®йЂ†иЎЊе€—г‚’ж±‚г‚Ѓг‚‹
+	// v•ыЊь‚МBѓXѓvѓ‰ѓCѓ“Љо’кЉЦђ”Ќs—с‚М‹tЌs—с‚р‹Ѓ‚Я‚й
 	MatInv(K[1],Bv,Bv_);
 
-	// г‚ўг‚¤г‚Ѕгѓ‘гѓ©ж›Із·љгЃ®г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€г‚’еѕ—г‚‹
+	// ѓAѓCѓ\ѓpѓ‰‹Иђь‚МѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚р“ѕ‚й
 	TranMx(P,K[0],K[1],PT);
 	for(int i=0;i<K[1];i++){
 		MulMxVec(Bu_,K[0],K[0],PT[i],RT[i]);
 	}
 
-	// NURBSж›ІйќўгЃ®г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€г‚’еѕ—г‚‹
+	// NURBS‹И–К‚МѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚р“ѕ‚й
 	TranMx(RT,K[1],K[0],R);
 	for(int i=0;i<K[0];i++){
  		MulMxVec(Bv_,K[1],K[1],R[i],Q[i]);
  	}
 
-	// й‡ЌгЃїг‚’еѕ—г‚‹
+	// Џd‚Э‚р“ѕ‚й
 	for(int i=0;i<K[0];i++){
 		for(int j=0;j<K[1];j++){
 			W[i][j] = 1;
 		}
 	}
 
-	// NURBSж›Ійќўг‚’з”џж€ђгЃ™г‚‹
+	// NURBS‹И–К‚рђ¶ђ¬‚·‚й
 	if(Mu == 2 && Mv == 2)
 		GenNurbsS(Nurbs,Mu,Mv,K[0],K[1],S,T,W,P,U[0],U[1],V[0],V[1]);
 	else
@@ -4639,70 +5054,70 @@ int NURBS_Func::GenInterpolatedNurbsS1(NURBSS *Nurbs,Coord **P,int PNum_u,int PN
 }
 
 // Function: GenApproximationNurbsS
-// дёЋгЃ€г‚‰г‚ЊгЃџз‚№е€—г‚’иї‘дјјгЃ™г‚‹nйљЋгЃ®NURBSж›Ійќўг‚’з”џж€ђгЃ™г‚‹
+// —^‚¦‚з‚к‚Ѕ“_—с‚р‹ЯЋ—‚·‚йnЉK‚МNURBS‹И–К‚рђ¶ђ¬‚·‚й
 //
 // Parameters:
-// *Nurbs - з”џж€ђгЃ•г‚Њг‚‹NURBSж›ІйќўгЃ®г‚ўгѓ‰гѓ¬г‚№   
-// **P - дёЋгЃ€г‚‰г‚ЊгЃџз‚№е€—   
-// PNum_u,PNum_v - з‚№гЃ®ж•°гЂЂ 
-// Mu,Mv - йљЋж•°
+// *Nurbs - ђ¶ђ¬‚і‚к‚йNURBS‹И–К‚МѓAѓhѓЊѓX   
+// **P - —^‚¦‚з‚к‚Ѕ“_—с   
+// PNum_u,PNum_v - “_‚Мђ”Ѓ@ 
+// Mu,Mv - ЉKђ”
 //
 // Return:
-// ж­Јеёёзµ‚дє†пјљKOD_TRUE, дёЋгЃ€г‚‰г‚ЊгЃџз‚№гЃЊ1еЂ‹жњЄжєЂпјљKOD_ERR
+// ђіЏнЏI—№ЃFKOD_TRUE, —^‚¦‚з‚к‚Ѕ“_‚Є1ЊВ–ў–ћЃFKOD_ERR
 int NURBS_Func::GenApproximationNurbsS(NURBSS *Nurbs,Coord **P,int PNum_u,int PNum_v,int Mu,int Mv)
 {
-	if(PNum_u <= 1 || PNum_v <= 1){			// дёЋгЃ€г‚‰г‚ЊгЃџз‚№гЃЊеђ„ж–№еђ‘гЃ§1еЂ‹жњЄжєЂгЃ®е ґеђ€гЃЇгЂЃNURBSж›Ійќўг‚’з”џж€ђгЃ§гЃЌгЃЄгЃ„
+	if(PNum_u <= 1 || PNum_v <= 1){			// —^‚¦‚з‚к‚Ѕ“_‚ЄЉe•ыЊь‚Е1ЊВ–ў–ћ‚МЏкЌ‡‚НЃANURBS‹И–К‚рђ¶ђ¬‚Е‚«‚И‚ў
         GuiIF.SetMessage("NURBS ERROR:Few Point. You should set over 2 points at least");
 		return KOD_ERR;
 	}
-	if(PNum_u == 2 || PNum_u == 3)	Mu = PNum_u;	// uж–№еђ‘гЃ«дёЋгЃ€г‚‰г‚ЊгЃџз‚№гЃЊ2еЂ‹гЃ‹3еЂ‹гЃ®е ґеђ€гЃЇгЂЃuж–№еђ‘гЃ®йљЋж•°г‚’еј·е€¶зљ„гЃ«2гЃ‹3гЃ«гЃ™г‚‹
-	if(PNum_v == 2 || PNum_v == 3)	Mv = PNum_v;	// vж–№еђ‘гЃ«дёЋгЃ€г‚‰г‚ЊгЃџз‚№гЃЊ2еЂ‹гЃ‹3еЂ‹гЃ®е ґеђ€гЃЇгЂЃvж–№еђ‘гЃ®йљЋж•°г‚’еј·е€¶зљ„гЃ«2гЃ‹3гЃ«гЃ™г‚‹
+	if(PNum_u == 2 || PNum_u == 3)	Mu = PNum_u;	// u•ыЊь‚Й—^‚¦‚з‚к‚Ѕ“_‚Є2ЊВ‚©3ЊВ‚МЏкЌ‡‚НЃAu•ыЊь‚МЉKђ”‚р‹­ђ§“I‚Й2‚©3‚Й‚·‚й
+	if(PNum_v == 2 || PNum_v == 3)	Mv = PNum_v;	// v•ыЊь‚Й—^‚¦‚з‚к‚Ѕ“_‚Є2ЊВ‚©3ЊВ‚МЏкЌ‡‚НЃAv•ыЊь‚МЉKђ”‚р‹­ђ§“I‚Й2‚©3‚Й‚·‚й
 
-	// дёЋгЃ€г‚‰г‚ЊгЃџз‚№е€—гЃ‹г‚‰г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ®ж•°г‚’ж±єг‚Ѓг‚‹
+	// —^‚¦‚з‚к‚Ѕ“_—с‚©‚зѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Мђ”‚рЊ€‚Я‚й
 	int K[2];
 	K[0] = SetApproximationCPnum(PNum_u);
 	K[1] = SetApproximationCPnum(PNum_v);
 
-	int N[2] = {Mu+K[0],Mv+K[1]};	// гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®ж•°
-	int prop[5] = {0,0,1,0,0};		// гѓ‘гѓ©гѓЎгѓјг‚ї
-	double U[2] = {0,1};			// uж–№еђ‘гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®й–‹е§‹еЂ¤гЂЃзµ‚дє†еЂ¤
-	double V[2] = {0,1};			// vж–№еђ‘гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®й–‹е§‹еЂ¤гЂЃзµ‚дє†еЂ¤
+	int N[2] = {Mu+K[0],Mv+K[1]};	// ѓmѓbѓgѓxѓNѓgѓ‹‚Мђ”
+	int prop[5] = {0,0,1,0,0};		// ѓpѓ‰ѓЃЃ[ѓ^
+	double U[2] = {0,1};			// u•ыЊьѓmѓbѓgѓxѓNѓgѓ‹‚МЉJЋn’lЃAЏI—№’l
+	double V[2] = {0,1};			// v•ыЊьѓmѓbѓgѓxѓNѓgѓ‹‚МЉJЋn’lЃAЏI—№’l
 
-	Vector S_ = NewVector(PNum_u);		// uж–№еђ‘гЃ®йЂљйЃЋз‚№дёЉгЃ®ж›Із·љгѓ‘гѓ©гѓЎгѓјг‚ї
-	Vector S = NewVector(N[0]);			// uж–№еђ‘гЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«
-	Vector T_ = NewVector(PNum_v);		// vж–№еђ‘гЃ®йЂљйЃЋз‚№дёЉгЃ®ж›Із·љгѓ‘гѓ©гѓЎгѓјг‚ї
-	Vector T = NewVector(N[1]);			// vж–№еђ‘гЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«
-	Coord **Q1 = NewCoord2(PNum_u,K[1]);	// NURBSж›ІйќўгЃ®г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€
+	Vector S_ = NewVector(PNum_u);		// u•ыЊь‚М’К‰Я“_Џг‚М‹Иђьѓpѓ‰ѓЃЃ[ѓ^
+	Vector S = NewVector(N[0]);			// u•ыЊь‚МѓmѓbѓgѓxѓNѓgѓ‹
+	Vector T_ = NewVector(PNum_v);		// v•ыЊь‚М’К‰Я“_Џг‚М‹Иђьѓpѓ‰ѓЃЃ[ѓ^
+	Vector T = NewVector(N[1]);			// v•ыЊь‚МѓmѓbѓgѓxѓNѓgѓ‹
+	Coord **Q1 = NewCoord2(PNum_u,K[1]);	// NURBS‹И–К‚МѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg
 	Coord **Q2 = NewCoord2(K[1],PNum_u);	
 	Coord **Q3 = NewCoord2(K[1],K[0]);
 	Coord **Q4 = NewCoord2(K[0],K[1]);
 	Coord **P_ = NewCoord2(K[1],K[0]);
-	Matrix W = NewMatrix(K[0],K[1]);	// й‡ЌгЃї
+	Matrix W = NewMatrix(K[0],K[1]);	// Џd‚Э
 
-	GetSurfaceKnotParam(S_,T_,P,PNum_u,PNum_v);		// иЈњй–“ж›Ійќўз”Ёu,vгѓ‘гѓ©гѓЎгѓјг‚їг‚’еѕ—г‚‹
+	GetSurfaceKnotParam(S_,T_,P,PNum_u,PNum_v);		// •вЉФ‹И–К—pu,vѓpѓ‰ѓЃЃ[ѓ^‚р“ѕ‚й
 
-	GetApproximatedKnot(S_,PNum_u,Mu,K[0],S);		// гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«Sг‚’иЁ­е®љгЃ™г‚‹
-	GetApproximatedKnot(T_,PNum_v,Mv,K[1],T);		// гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«Tг‚’иЁ­е®љгЃ™г‚‹
+	GetApproximatedKnot(S_,PNum_u,Mu,K[0],S);		// ѓmѓbѓgѓxѓNѓgѓ‹S‚рђЭ’и‚·‚й
+	GetApproximatedKnot(T_,PNum_v,Mv,K[1],T);		// ѓmѓbѓgѓxѓNѓgѓ‹T‚рђЭ’и‚·‚й
 
-	// vж–№еђ‘гЃ®з‚№е€—гЃ‹г‚‰иї‘дјјNURBSж›Із·љг‚’PNum_uеЂ‹дЅњж€ђгЃ™г‚‹
+	// v•ыЊь‚М“_—с‚©‚з‹ЯЋ—NURBS‹Иђь‚рPNum_uЊВЌмђ¬‚·‚й
 	for(int i=0;i<PNum_u;i++){
-		CalcApproximationCP_LSM(P[i],T_,T,PNum_v,N[1],Mv,K[1],Q1[i]);	// жњЂе°Џ2д№—жі•гЃ§иї‘дјјг‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€г‚’ж±‚г‚Ѓг‚‹
+		CalcApproximationCP_LSM(P[i],T_,T,PNum_v,N[1],Mv,K[1],Q1[i]);	// ЌЕЏ¬2Џж–@‚Е‹ЯЋ—ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚р‹Ѓ‚Я‚й
 	}
-	TranMx(Q1,PNum_u,K[1],Q2);					// QгЃ®и»ўзЅ®
+	TranMx(Q1,PNum_u,K[1],Q2);					// Q‚М“]’u
 
 	for(int i=0;i<K[1];i++){
-		CalcApproximationCP_LSM(Q2[i],S_,S,PNum_u,N[0],Mu,K[0],Q3[i]);	// жњЂе°Џ2д№—жі•гЃ§иї‘дјјг‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€г‚’ж±‚г‚Ѓг‚‹
+		CalcApproximationCP_LSM(Q2[i],S_,S,PNum_u,N[0],Mu,K[0],Q3[i]);	// ЌЕЏ¬2Џж–@‚Е‹ЯЋ—ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚р‹Ѓ‚Я‚й
 	}
-	TranMx(Q3,K[1],K[0],Q4);					// QгЃ®и»ўзЅ®
+	TranMx(Q3,K[1],K[0],Q4);					// Q‚М“]’u
 
-	// й‡ЌгЃїг‚’еѕ—г‚‹
+	// Џd‚Э‚р“ѕ‚й
 	for(int i=0;i<K[0];i++){
 		for(int j=0;j<K[1];j++){
 			W[i][j] = 1;
 		}
 	}
 
-	// NURBSж›Ійќўг‚’з”џж€ђгЃ™г‚‹
+	// NURBS‹И–К‚рђ¶ђ¬‚·‚й
 	if(Mu == 2 && Mv == 2)
 		GenNurbsS(Nurbs,Mu,Mv,K[0],K[1],S,T,W,P,U[0],U[1],V[0],V[1]);
 	else
@@ -4723,49 +5138,49 @@ int NURBS_Func::GenApproximationNurbsS(NURBSS *Nurbs,Coord **P,int PNum_u,int PN
 }
 
 // Function: GenNurbsSfromCP
-// дёЋгЃ€г‚‰г‚ЊгЃџг‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ‹г‚‰nйљЋгЃ®NURBSж›Ійќўг‚’з”џж€ђгЃ™г‚‹
+// —^‚¦‚з‚к‚ЅѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚©‚зnЉK‚МNURBS‹И–К‚рђ¶ђ¬‚·‚й
 //
-// гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃЇз­‰й–“йљ”гЃ«иЁ­е®љгЃ•г‚Њг‚‹
+// ѓmѓbѓgѓxѓNѓgѓ‹‚Н“™ЉФЉu‚ЙђЭ’и‚і‚к‚й
 //
-// й‡ЌгЃїгЃЇе…ЁгЃ¦1гЃЁгЃ™г‚‹
+// Џd‚Э‚Н‘S‚Д1‚Ж‚·‚й
 //
 // Parameters:
-// *Nurbs - з”џж€ђгЃ•г‚Њг‚‹NURBSж›ІйќўгЃ®г‚ўгѓ‰гѓ¬г‚№   
-// **P - дёЋгЃ€г‚‰г‚ЊгЃџг‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€е€—   
-// PNum_u,PNum_v - з‚№гЃ®ж•°гЂЂ 
-// Mu,Mv - йљЋж•°
+// *Nurbs - ђ¶ђ¬‚і‚к‚йNURBS‹И–К‚МѓAѓhѓЊѓX   
+// **P - —^‚¦‚з‚к‚ЅѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg—с   
+// PNum_u,PNum_v - “_‚Мђ”Ѓ@ 
+// Mu,Mv - ЉKђ”
 //
 // Return:
-// ж­Јеёёзµ‚дє†пјљKOD_TRUE, дёЋгЃ€г‚‰г‚ЊгЃџз‚№гЃЊ1еЂ‹жњЄжєЂпјљKOD_ERR
+// ђіЏнЏI—№ЃFKOD_TRUE, —^‚¦‚з‚к‚Ѕ“_‚Є1ЊВ–ў–ћЃFKOD_ERR
 int NURBS_Func::GenNurbsSfromCP(NURBSS *Nurbs,Coord **P,int PNum_u,int PNum_v,int Mu,int Mv)
 {
-	if(PNum_u <= 1 || PNum_v <= 1){			// дёЋгЃ€г‚‰г‚ЊгЃџз‚№гЃЊеђ„ж–№еђ‘гЃ§1еЂ‹жњЄжєЂгЃ®е ґеђ€гЃЇгЂЃNURBSж›Ійќўг‚’з”џж€ђгЃ§гЃЌгЃЄгЃ„
+	if(PNum_u <= 1 || PNum_v <= 1){			// —^‚¦‚з‚к‚Ѕ“_‚ЄЉe•ыЊь‚Е1ЊВ–ў–ћ‚МЏкЌ‡‚НЃANURBS‹И–К‚рђ¶ђ¬‚Е‚«‚И‚ў
         GuiIF.SetMessage("NURBS ERROR:Few Point. You should set over 2 points at least");
 		return KOD_ERR;
 	}
-	if(PNum_u == 2 || PNum_u == 3)	Mu = PNum_u;	// uж–№еђ‘гЃ«дёЋгЃ€г‚‰г‚ЊгЃџз‚№гЃЊ2еЂ‹гЃ‹3еЂ‹гЃ®е ґеђ€гЃЇгЂЃuж–№еђ‘гЃ®йљЋж•°г‚’еј·е€¶зљ„гЃ«2гЃ‹3гЃ«гЃ™г‚‹
-	if(PNum_v == 2 || PNum_v == 3)	Mv = PNum_v;	// vж–№еђ‘гЃ«дёЋгЃ€г‚‰г‚ЊгЃџз‚№гЃЊ2еЂ‹гЃ‹3еЂ‹гЃ®е ґеђ€гЃЇгЂЃvж–№еђ‘гЃ®йљЋж•°г‚’еј·е€¶зљ„гЃ«2гЃ‹3гЃ«гЃ™г‚‹
+	if(PNum_u == 2 || PNum_u == 3)	Mu = PNum_u;	// u•ыЊь‚Й—^‚¦‚з‚к‚Ѕ“_‚Є2ЊВ‚©3ЊВ‚МЏкЌ‡‚НЃAu•ыЊь‚МЉKђ”‚р‹­ђ§“I‚Й2‚©3‚Й‚·‚й
+	if(PNum_v == 2 || PNum_v == 3)	Mv = PNum_v;	// v•ыЊь‚Й—^‚¦‚з‚к‚Ѕ“_‚Є2ЊВ‚©3ЊВ‚МЏкЌ‡‚НЃAv•ыЊь‚МЉKђ”‚р‹­ђ§“I‚Й2‚©3‚Й‚·‚й
 
-	int K[2] = {PNum_u,PNum_v};			// г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ®ж•°		
-	int N[2] = {Mu+K[0],Mv+K[1]};		// гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®ж•°
-	int prop[5] = {0,0,1,0,0};			// гѓ‘гѓ©гѓЎгѓјг‚ї
-	double U[2] = {0,1};				// uж–№еђ‘гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®й–‹е§‹еЂ¤гЂЃзµ‚дє†еЂ¤
-	double V[2] = {0,1};				// vж–№еђ‘гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®й–‹е§‹еЂ¤гЂЃзµ‚дє†еЂ¤
-	Vector S = NewVector(N[0]);			// uж–№еђ‘гЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«
-	Vector T = NewVector(N[1]);			// vж–№еђ‘гЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«
-	Matrix W = NewMatrix(K[0],K[1]);	// й‡ЌгЃї
+	int K[2] = {PNum_u,PNum_v};			// ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Мђ”		
+	int N[2] = {Mu+K[0],Mv+K[1]};		// ѓmѓbѓgѓxѓNѓgѓ‹‚Мђ”
+	int prop[5] = {0,0,1,0,0};			// ѓpѓ‰ѓЃЃ[ѓ^
+	double U[2] = {0,1};				// u•ыЊьѓmѓbѓgѓxѓNѓgѓ‹‚МЉJЋn’lЃAЏI—№’l
+	double V[2] = {0,1};				// v•ыЊьѓmѓbѓgѓxѓNѓgѓ‹‚МЉJЋn’lЃAЏI—№’l
+	Vector S = NewVector(N[0]);			// u•ыЊь‚МѓmѓbѓgѓxѓNѓgѓ‹
+	Vector T = NewVector(N[1]);			// v•ыЊь‚МѓmѓbѓgѓxѓNѓgѓ‹
+	Matrix W = NewMatrix(K[0],K[1]);	// Џd‚Э
 
-	GetEqIntervalKont(K[0],Mu,S);		// uж–№еђ‘гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«г‚’еѕ—г‚‹
-	GetEqIntervalKont(K[1],Mv,T);		// vж–№еђ‘гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«г‚’еѕ—г‚‹
+	GetEqIntervalKont(K[0],Mu,S);		// u•ыЊьѓmѓbѓgѓxѓNѓgѓ‹‚р“ѕ‚й
+	GetEqIntervalKont(K[1],Mv,T);		// v•ыЊьѓmѓbѓgѓxѓNѓgѓ‹‚р“ѕ‚й
 
-	// й‡ЌгЃїг‚’еѕ—г‚‹
+	// Џd‚Э‚р“ѕ‚й
 	for(int i=0;i<K[0];i++){
 		for(int j=0;j<K[1];j++){
 			W[i][j] = 1;
 		}
 	}
 
-	GenNurbsS(Nurbs,Mu,Mv,K[0],K[1],S,T,W,P,U[0],U[1],V[0],V[1]);		// NURBSж›Ійќўг‚’з”џж€ђгЃ™г‚‹
+	GenNurbsS(Nurbs,Mu,Mv,K[0],K[1],S,T,W,P,U[0],U[1],V[0],V[1]);		// NURBS‹И–К‚рђ¶ђ¬‚·‚й
 
 	FreeVector(S);
 	FreeVector(T);
@@ -4775,29 +5190,29 @@ int NURBS_Func::GenNurbsSfromCP(NURBSS *Nurbs,Coord **P,int PNum_u,int PNum_v,in
 }
 
 // Function: 
-// жЉг‚Њйќў(NURBSж›Ійќў)г‚’з”џж€ђгЃ™г‚‹GenPolygonalSurface
+// ђЬ‚к–К(NURBS‹И–К)‚рђ¶ђ¬‚·‚йGenPolygonalSurface
 //
 // Parameters:
-// *Nurbs - з”џж€ђгЃ•г‚Њг‚‹NURBSж›ІйќўгЃ®г‚ўгѓ‰гѓ¬г‚№   
-// **P - г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€   
-// PNum_u,PNum_v - г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ®ж•°
+// *Nurbs - ђ¶ђ¬‚і‚к‚йNURBS‹И–К‚МѓAѓhѓЊѓX   
+// **P - ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg   
+// PNum_u,PNum_v - ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Мђ”
 //
 // Return:
 // KOD_TRUE
 int NURBS_Func::GenPolygonalSurface(NURBSS *Nurbs,Coord **P,int PNum_u,int PNum_v)
 {
-	int Mu=2;						// йљЋж•°2
+	int Mu=2;						// ЉKђ”2
 	int Mv=2;
-	int K[2] = {PNum_u,PNum_v};		// г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ®ж•°
-	int N[2] = {PNum_u+2,PNum_v+2};	// гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®ж•°
-	int prop[4] = {0,0,1,0};		// гѓ‘гѓ©гѓЎгѓјг‚ї
-	double U[2] = {0,1};			// uж–№еђ‘гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®й–‹е§‹еЂ¤гЂЃзµ‚дє†еЂ¤
-	double V[2] = {0,1};			// vж–№еђ‘гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®й–‹е§‹еЂ¤гЂЃзµ‚дє†еЂ¤
-	Vector S = NewVector(N[0]);			// uж–№еђ‘гЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«
-	Vector T = NewVector(N[1]);			// vж–№еђ‘гЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«
-	Matrix W = NewMatrix(K[0],K[1]);	// й‡ЌгЃї
+	int K[2] = {PNum_u,PNum_v};		// ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Мђ”
+	int N[2] = {PNum_u+2,PNum_v+2};	// ѓmѓbѓgѓxѓNѓgѓ‹‚Мђ”
+	int prop[4] = {0,0,1,0};		// ѓpѓ‰ѓЃЃ[ѓ^
+	double U[2] = {0,1};			// u•ыЊьѓmѓbѓgѓxѓNѓgѓ‹‚МЉJЋn’lЃAЏI—№’l
+	double V[2] = {0,1};			// v•ыЊьѓmѓbѓgѓxѓNѓgѓ‹‚МЉJЋn’lЃAЏI—№’l
+	Vector S = NewVector(N[0]);			// u•ыЊь‚МѓmѓbѓgѓxѓNѓgѓ‹
+	Vector T = NewVector(N[1]);			// v•ыЊь‚МѓmѓbѓgѓxѓNѓgѓ‹
+	Matrix W = NewMatrix(K[0],K[1]);	// Џd‚Э
 
-	// uж–№еђ‘гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«г‚’ж±‚г‚Ѓг‚‹
+	// u•ыЊьѓmѓbѓgѓxѓNѓgѓ‹‚р‹Ѓ‚Я‚й
 	Vector du_sum = NewVector(K[1]);
 	InitVector(du_sum,K[1]);
 	for(int i=0;i<K[1];i++){
@@ -4816,7 +5231,7 @@ int NURBS_Func::GenPolygonalSurface(NURBSS *Nurbs,Coord **P,int PNum_u,int PNum_
 	}
 	S[K[0]] = S[K[0]+1] = 1.0;
 	
-	// vж–№еђ‘гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«г‚’ж±‚г‚Ѓг‚‹
+	// v•ыЊьѓmѓbѓgѓxѓNѓgѓ‹‚р‹Ѓ‚Я‚й
 	Vector dv_sum = NewVector(K[0]);
 	InitVector(dv_sum,K[0]);
 	for(int i=0;i<K[0];i++){
@@ -4835,14 +5250,14 @@ int NURBS_Func::GenPolygonalSurface(NURBSS *Nurbs,Coord **P,int PNum_u,int PNum_
 	}
 	T[K[1]] = T[K[1]+1] = 1.0;
 
-	// г‚¦г‚§г‚¤гѓ€
+	// ѓEѓFѓCѓg
 	for(int i=0;i<K[0];i++){
 		for(int j=0;j<K[1];j++){
 			W[i][j] = 1.0;
 		}
 	}
 
-	// NURBSж›Ійќўг‚’з”џж€ђгЃ™г‚‹
+	// NURBS‹И–К‚рђ¶ђ¬‚·‚й
 	GenNurbsS(Nurbs,Mu,Mv,K[0],K[1],S,T,W,P,U[0],U[1],V[0],V[1]);
 
 	FreeVector(S);
@@ -4855,30 +5270,30 @@ int NURBS_Func::GenPolygonalSurface(NURBSS *Nurbs,Coord **P,int PNum_u,int PNum_
 }
 
 // Function: ConnectNurbsSU
-// 2жћљгЃ®NURBSж›Ійќўг‚’йЂЈзµђгЃ™г‚‹(Uж–№еђ‘гЃ«й•·гЃЏгЃЄг‚‹)(S1_U1гЃЁS2_U0г‚’йЂЈзµђ)
+// 2–‡‚МNURBS‹И–К‚рAЊ‹‚·‚й(U•ыЊь‚Й’·‚­‚И‚й)(S1_U1‚ЖS2_U0‚рAЊ‹)
 //
 // Parameters:
-// *S1 - йќў1
-// *S2 - йќў2
-// *S_ - йЂЈзµђеѕЊгЃ®йќўг‚’ж јзґЌ
+// *S1 - –К1
+// *S2 - –К2
+// *S_ - AЊ‹Њг‚М–К‚рЉi”[
 //
 // Return:
-// ж€ђеЉџпјљKOD_TRUE,  е¤±ж•—пјљKOD_FALSE
+// ђ¬ЊчЃFKOD_TRUE,  Ћё”sЃFKOD_FALSE
 int NURBS_Func::ConnectNurbsSU(NURBSS *S1,NURBSS *S2,NURBSS *S_)			
 {
-	// йЂЈзµђгЃ•г‚Њг‚‹г‚Ёгѓѓг‚ёгЃ®Vж–№еђ‘г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ®ж•°гЃЊе…ЁгЃ¦з­‰гЃ—гЃ„гЃ“гЃЁ
+	// AЊ‹‚і‚к‚йѓGѓbѓW‚МV•ыЊьѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Мђ”‚Є‘S‚Д“™‚µ‚ў‚±‚Ж
 	if(S1->K[1] != S2->K[1]){
 		fprintf(stderr,"ERROR: Number of control point on V direction is not equal.");
 		return KOD_ERR;
 	}
-	// йЂЈзµђгЃ•г‚Њг‚‹г‚Ёгѓѓг‚ёгЃ®Vж–№еђ‘г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃЊе…ЁгЃ¦з­‰гЃ—гЃ„гЃ“гЃЁ
+	// AЊ‹‚і‚к‚йѓGѓbѓW‚МV•ыЊьѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Є‘S‚Д“™‚µ‚ў‚±‚Ж
 	for(int i=0;i<S1->K[1];i++){
 		if(DiffCoord(S1->cp[S1->K[0]-1][i],S2->cp[0][i]) == KOD_FALSE){
 			fprintf(stderr,"ERROR: Knot value on V direction is not equal.");
 			return KOD_ERR;
 		}
 	}
-	// дёЎж›ІйќўгЃ®йљЋж•°гЃЊU,Vе…±гЃ«з­‰гЃ—гЃ„гЃ“гЃЁ
+	// —ј‹И–К‚МЉKђ”‚ЄU,V‹¤‚Й“™‚µ‚ў‚±‚Ж
 	if(S1->M[0] != S2->M[0] || S1->M[1] != S2->M[1]){
 		fprintf(stderr,"ERROR: Rank is not equal.");
 		return KOD_ERR;
@@ -4886,48 +5301,48 @@ int NURBS_Func::ConnectNurbsSU(NURBSS *S1,NURBSS *S2,NURBSS *S_)
 
 	int K[2],N[2];
 
-	K[0] = S1->K[0] + S2->K[0] - 1;				// S_гЃ®Uж–№еђ‘г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ®ж•°
-	K[1] = S1->K[1];							// S_гЃ®Vж–№еђ‘г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ®ж•°
-	N[0] = S1->N[0] + S2->N[0] - S2->M[0] - 1;	// S_гЃ®Uж–№еђ‘гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®ж•°
-	N[1] = S1->N[1];							// S_гЃ®Vж–№еђ‘гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®ж•°
+	K[0] = S1->K[0] + S2->K[0] - 1;				// S_‚МU•ыЊьѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Мђ”
+	K[1] = S1->K[1];							// S_‚МV•ыЊьѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Мђ”
+	N[0] = S1->N[0] + S2->N[0] - S2->M[0] - 1;	// S_‚МU•ыЊьѓmѓbѓgѓxѓNѓgѓ‹‚Мђ”
+	N[1] = S1->N[1];							// S_‚МV•ыЊьѓmѓbѓgѓxѓNѓgѓ‹‚Мђ”
 
-	New_NurbsS(S_,K,N);							// S_е†…гЃ®гѓЎгѓўгѓЄгѓјзўєдїќ
+	New_NurbsS(S_,K,N);							// S_“а‚МѓЃѓ‚ѓЉЃ[Љm•Ы
 
-	SetKnotVecSU_ConnectS(S1,S2,S_);			// S_гЃ®uж–№еђ‘гѓЋгѓѓгѓ€е®љзѕ©еџџг‚’жЊ‡е®љ
+	SetKnotVecSU_ConnectS(S1,S2,S_);			// S_‚Мu•ыЊьѓmѓbѓg’и‹`€ж‚рЋw’и
 
-	SetCPSU_ConnectS(S1,S2,S_);					// S_гЃ®uж–№еђ‘г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃЁг‚¦г‚§г‚¤гѓ€г‚’жЊ‡е®љ
+	SetCPSU_ConnectS(S1,S2,S_);					// S_‚Мu•ыЊьѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚ЖѓEѓFѓCѓg‚рЋw’и
 
-	S_->M[0] = S1->M[0];						// S_гЃ®йљЋж•°г‚’жЊ‡е®љ
+	S_->M[0] = S1->M[0];						// S_‚МЉKђ”‚рЋw’и
 	S_->M[1] = S1->M[1];
 
 	return KOD_TRUE;
 }
 
 // Function: ConnectNurbsSV
-// 2жћљгЃ®NURBSж›Ійќўг‚’йЂЈзµђгЃ™г‚‹(Vж–№еђ‘гЃ«й•·гЃЏгЃЄг‚‹)(S1_V1гЃЁS2_V0г‚’йЂЈзµђ)
+// 2–‡‚МNURBS‹И–К‚рAЊ‹‚·‚й(V•ыЊь‚Й’·‚­‚И‚й)(S1_V1‚ЖS2_V0‚рAЊ‹)
 //
 // Parameters:
-// *S1 - йќў1
-// *S2 - йќў2
-// *S_ - йЂЈзµђеѕЊгЃ®йќўг‚’ж јзґЌ
+// *S1 - –К1
+// *S2 - –К2
+// *S_ - AЊ‹Њг‚М–К‚рЉi”[
 //
 // Return:
-// ж€ђеЉџпјљKOD_TRUE,  е¤±ж•—пјљKOD_FALSE
+// ђ¬ЊчЃFKOD_TRUE,  Ћё”sЃFKOD_FALSE
 int NURBS_Func::ConnectNurbsSV(NURBSS *S1,NURBSS *S2,NURBSS *S_)			
 {
-	// йЂЈзµђгЃ•г‚Њг‚‹г‚Ёгѓѓг‚ёгЃ®Uж–№еђ‘г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ®ж•°гЃЊе…ЁгЃ¦з­‰гЃ—гЃ„гЃ“гЃЁ
+	// AЊ‹‚і‚к‚йѓGѓbѓW‚МU•ыЊьѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Мђ”‚Є‘S‚Д“™‚µ‚ў‚±‚Ж
 	if(S1->K[0] != S2->K[0]){
 		fprintf(stderr,"ERROR: Number of control point on U direction is not equal.");
 		return KOD_ERR;
 	}
-	// йЂЈзµђгЃ•г‚Њг‚‹г‚Ёгѓѓг‚ёгЃ®Uж–№еђ‘г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃЊе…ЁгЃ¦з­‰гЃ—гЃ„гЃ“гЃЁ
+	// AЊ‹‚і‚к‚йѓGѓbѓW‚МU•ыЊьѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Є‘S‚Д“™‚µ‚ў‚±‚Ж
 	for(int i=0;i<S1->K[0];i++){
 		if(DiffCoord(S1->cp[i][S1->K[0]-1],S2->cp[i][0]) == KOD_FALSE){
 			fprintf(stderr,"ERROR: Knot value on U direction is not equal.");
 			return KOD_ERR;
 		}
 	}
-	// дёЎж›ІйќўгЃ®йљЋж•°гЃЊU,Vе…±гЃ«з­‰гЃ—гЃ„гЃ“гЃЁ
+	// —ј‹И–К‚МЉKђ”‚ЄU,V‹¤‚Й“™‚µ‚ў‚±‚Ж
 	if(S1->M[0] != S2->M[0] || S1->M[1] != S2->M[1]){
 		fprintf(stderr,"ERROR: Rank is not equal.");
 		return KOD_ERR;
@@ -4935,30 +5350,30 @@ int NURBS_Func::ConnectNurbsSV(NURBSS *S1,NURBSS *S2,NURBSS *S_)
 
 	int K[2],N[2];
 
-	K[0] = S1->K[0];							// S_гЃ®Uж–№еђ‘г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ®ж•°
-	K[1] = S1->K[1] + S2->K[1] - 1;				// S_гЃ®Vж–№еђ‘г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ®ж•°
-	N[0] = S1->N[0];							// S_гЃ®Uж–№еђ‘гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®ж•°
-	N[1] = S1->N[1] + S2->N[1] - S2->M[1] - 1;	// S_гЃ®Vж–№еђ‘гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®ж•°
+	K[0] = S1->K[0];							// S_‚МU•ыЊьѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Мђ”
+	K[1] = S1->K[1] + S2->K[1] - 1;				// S_‚МV•ыЊьѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Мђ”
+	N[0] = S1->N[0];							// S_‚МU•ыЊьѓmѓbѓgѓxѓNѓgѓ‹‚Мђ”
+	N[1] = S1->N[1] + S2->N[1] - S2->M[1] - 1;	// S_‚МV•ыЊьѓmѓbѓgѓxѓNѓgѓ‹‚Мђ”
 
-	New_NurbsS(S_,K,N);							// S_е†…гЃ®гѓЎгѓўгѓЄгѓјзўєдїќ
+	New_NurbsS(S_,K,N);							// S_“а‚МѓЃѓ‚ѓЉЃ[Љm•Ы
 
-	SetKnotVecSV_ConnectS(S1,S2,S_);			// S_гЃ®vж–№еђ‘гѓЋгѓѓгѓ€е®љзѕ©еџџг‚’жЊ‡е®љ
+	SetKnotVecSV_ConnectS(S1,S2,S_);			// S_‚Мv•ыЊьѓmѓbѓg’и‹`€ж‚рЋw’и
 
-	SetCPSV_ConnectS(S1,S2,S_);					// S_гЃ®vж–№еђ‘г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃЁг‚¦г‚§г‚¤гѓ€г‚’жЊ‡е®љ
+	SetCPSV_ConnectS(S1,S2,S_);					// S_‚Мv•ыЊьѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚ЖѓEѓFѓCѓg‚рЋw’и
 
-	S_->M[0] = S1->M[0];						// S_гЃ®йљЋж•°г‚’жЊ‡е®љ
+	S_->M[0] = S1->M[0];						// S_‚МЉKђ”‚рЋw’и
 	S_->M[1] = S1->M[1];
 
 	return KOD_TRUE;
 }
 
 // Function: SetCPSU_ConnectS
-// (private)ConnectNurbsSU()гЃ®г‚µгѓ–й–ўж•°пјЋS_гЃ®uж–№еђ‘г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃЁг‚¦г‚§г‚¤гѓ€г‚’жЊ‡е®љ
+// (private)ConnectNurbsSU()‚МѓTѓuЉЦђ”ЃDS_‚Мu•ыЊьѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚ЖѓEѓFѓCѓg‚рЋw’и
 //
 // Parameters:
-// *S1 - йќў1
-// *S2 - йќў2
-// *S_ - йЂЈзµђеѕЊгЃ®йќўг‚’ж јзґЌ
+// *S1 - –К1
+// *S2 - –К2
+// *S_ - AЊ‹Њг‚М–К‚рЉi”[
 void NURBS_Func::SetCPSU_ConnectS(NURBSS *S1,NURBSS *S2,NURBSS *S_)
 {
 	S_->K[0] = S1->K[0] + S2->K[0] - 1;
@@ -4979,42 +5394,46 @@ void NURBS_Func::SetCPSU_ConnectS(NURBSS *S1,NURBSS *S2,NURBSS *S_)
 }
 
 // Function: SetKnotVecSU_ConnectS
-// (private)ConnectNurbsSU()гЃ®г‚µгѓ–й–ўж•°пјЋS_гЃ®uж–№еђ‘гѓЋгѓѓгѓ€е®љзѕ©еџџг‚’жЊ‡е®љ
+// (private)ConnectNurbsSU()‚МѓTѓuЉЦђ”ЃDS_‚Мu•ыЊьѓmѓbѓg’и‹`€ж‚рЋw’и
 //
 // Parameters:
-// *S1 - йќў1
-// *S2 - йќў2
-// *S_ - йЂЈзµђеѕЊгЃ®йќўг‚’ж јзґЌ
+// *S1 - –К1
+// *S2 - –К2
+// *S_ - AЊ‹Њг‚М–К‚рЉi”[
 void NURBS_Func::SetKnotVecSU_ConnectS(NURBSS *S1,NURBSS *S2,NURBSS *S_)
 {
-	// Vж–№еђ‘
-	S_->N[1] = S1->N[1];				// S_гЃ®Vж–№еђ‘гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®ж•°
-	CopyVector(S1->T,S1->N[1],S_->T);	// S_гЃ®Vж–№еђ‘гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«(Vж–№еђ‘гЃЇS1гЃ®г‚’гЃќгЃ®гЃѕгЃѕжµЃз”Ё)
-	S_->V[0] = S1->V[0];				// S_гЃ®Vж–№еђ‘гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®зЇ„е›І
+	// V•ыЊь
+	S_->N[1] = S1->N[1];				// S_‚МV•ыЊьѓmѓbѓgѓxѓNѓgѓ‹‚Мђ”
+	CopyVector(S1->T,S1->N[1],S_->T);	// S_‚МV•ыЊьѓmѓbѓgѓxѓNѓgѓ‹(V•ыЊь‚НS1‚М‚р‚»‚М‚Ь‚Ь—¬—p)
+	S_->V[0] = S1->V[0];				// S_‚МV•ыЊьѓmѓbѓgѓxѓNѓgѓ‹‚М”Н€Н
 	S_->V[1] = S1->V[1];
 
-	// Uж–№еђ‘
-	// г‚ігѓјгѓ‰й•·г‚’иЄїгЃ№г‚‹
-	double us=0,ue=NORM_KNOT_VAL,uc=0;		// Uж–№еђ‘й–‹е§‹пјЊзµ‚дє†пјЊйЂЈзµђйѓЁгѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«
-	double l1=0,l2=0;						// еђ„ж›ІйќўгЃ®Uж–№еђ‘гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®г‚ігѓјгѓ‰й•·
-	for(int i=0;i<S1->N[0]-1;i++)
-		l1 += CalcDistance(CalcNurbsSCoord(S1,S1->S[i+1],S1->T[0]),CalcNurbsSCoord(S1,S1->S[i],S1->T[0]));	// S1гЃ®г‚ігѓјгѓ‰й•·
-	for(int i=0;i<S2->N[0]-1;i++)
-		l2 += CalcDistance(CalcNurbsSCoord(S2,S2->S[i+1],S2->T[0]),CalcNurbsSCoord(S2,S2->S[i],S2->T[0]));	// S2гЃ®г‚ігѓјгѓ‰й•·
-	uc = l1/(l1+l2);	// зµђеђ€з‚№гЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«еЂ¤
+	// U•ыЊь
+	// ѓRЃ[ѓh’·‚р’І‚Ч‚й
+	double us=0,ue=NORM_KNOT_VAL,uc=0;		// U•ыЊьЉJЋnЃCЏI—№ЃCAЊ‹•”ѓmѓbѓgѓxѓNѓgѓ‹
+	double l1=0,l2=0;						// Љe‹И–К‚МU•ыЊьѓmѓbѓgѓxѓNѓgѓ‹‚МѓRЃ[ѓh’·
+	for(int i=0;i<S1->N[0]-1;i++) {
+//		l1 += CalcDistance(CalcNurbsSCoord(S1,S1->S[i+1],S1->T[0]),CalcNurbsSCoord(S1,S1->S[i],S1->T[0]));	// S1‚МѓRЃ[ѓh’·
+		l1 += CalcDistance(S1->CalcNurbsSCoord(S1->S[i+1],S1->T[0]),S1->CalcNurbsSCoord(S1->S[i],S1->T[0]));	// S1‚МѓRЃ[ѓh’·
+	}
+	for(int i=0;i<S2->N[0]-1;i++) {
+//		l2 += CalcDistance(CalcNurbsSCoord(S2,S2->S[i+1],S2->T[0]),CalcNurbsSCoord(S2,S2->S[i],S2->T[0]));	// S2‚МѓRЃ[ѓh’·
+		l2 += CalcDistance(S2->CalcNurbsSCoord(S2->S[i+1],S2->T[0]),S2->CalcNurbsSCoord(S2->S[i],S2->T[0]));	// S2‚МѓRЃ[ѓh’·
+	}
+	uc = l1/(l1+l2);	// Њ‹Ќ‡“_‚МѓmѓbѓgѓxѓNѓgѓ‹’l
 
-	// S_гЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«зЇ„е›Іг‚’еѕ—г‚‹
+	// S_‚МѓmѓbѓgѓxѓNѓgѓ‹”Н€Н‚р“ѕ‚й
 	Vector U1 = NewVector(S1->N[0]);	
 	Vector U2 = NewVector(S2->N[0]);	
-	CopyVector(S1->S,S1->N[0],U1);		// S1гЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«г‚’U1гЃ«г‚ігѓ”гѓј
-	CopyVector(S2->S,S2->N[0],U2);		// S2гЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«г‚’U2гЃ«г‚ігѓ”гѓј
-	ChangeKnotVecRange(U1,S1->N[0],S1->M[0],S1->K[0],us,uc);	// S1(U1)гЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®зЇ„е›Іг‚’е¤‰ж›ґ
-	ChangeKnotVecRange(U2,S2->N[0],S2->M[0],S2->K[0],uc,ue);	// S2(U2)гЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®зЇ„е›Іг‚’е¤‰ж›ґ
-	S_->U[0] = us;						// S_гЃ®Uж–№еђ‘гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®зЇ„е›І
+	CopyVector(S1->S,S1->N[0],U1);		// S1‚МѓmѓbѓgѓxѓNѓgѓ‹‚рU1‚ЙѓRѓsЃ[
+	CopyVector(S2->S,S2->N[0],U2);		// S2‚МѓmѓbѓgѓxѓNѓgѓ‹‚рU2‚ЙѓRѓsЃ[
+	ChangeKnotVecRange(U1,S1->N[0],S1->M[0],S1->K[0],us,uc);	// S1(U1)‚МѓmѓbѓgѓxѓNѓgѓ‹‚М”Н€Н‚р•ПЌX
+	ChangeKnotVecRange(U2,S2->N[0],S2->M[0],S2->K[0],uc,ue);	// S2(U2)‚МѓmѓbѓgѓxѓNѓgѓ‹‚М”Н€Н‚р•ПЌX
+	S_->U[0] = us;						// S_‚МU•ыЊьѓmѓbѓgѓxѓNѓgѓ‹‚М”Н€Н
 	S_->U[1] = ue;
-	S_->N[0] = S1->N[0] + S2->N[0] - S2->M[0] - 1;	// S_гЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«ж•°
+	S_->N[0] = S1->N[0] + S2->N[0] - S2->M[0] - 1;	// S_‚МѓmѓbѓgѓxѓNѓgѓ‹ђ”
 
-	// S_гЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«г‚’еѕ—г‚‹
+	// S_‚МѓmѓbѓgѓxѓNѓgѓ‹‚р“ѕ‚й
 	for(int i=0;i<S1->K[0];i++)
 		S_->S[i] = U1[i];
 	for(int i=1;i<S2->N[0];i++)
@@ -5025,12 +5444,12 @@ void NURBS_Func::SetKnotVecSU_ConnectS(NURBSS *S1,NURBSS *S2,NURBSS *S_)
 }
 
 // Function: SetCPSV_ConnectS
-// (private)ConnectNurbsSV()гЃ®г‚µгѓ–й–ўж•°пјЋS_гЃ®vж–№еђ‘г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃЁг‚¦г‚§г‚¤гѓ€г‚’жЊ‡е®љ
+// (private)ConnectNurbsSV()‚МѓTѓuЉЦђ”ЃDS_‚Мv•ыЊьѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚ЖѓEѓFѓCѓg‚рЋw’и
 //
 // Parameters:
-// *S1 - йќў1
-// *S2 - йќў2
-// *S_ - йЂЈзµђеѕЊгЃ®йќўг‚’ж јзґЌ
+// *S1 - –К1
+// *S2 - –К2
+// *S_ - AЊ‹Њг‚М–К‚рЉi”[
 void NURBS_Func::SetCPSV_ConnectS(NURBSS *S1,NURBSS *S2,NURBSS *S_)
 {
 	S_->K[0] = S1->K[0];
@@ -5051,42 +5470,46 @@ void NURBS_Func::SetCPSV_ConnectS(NURBSS *S1,NURBSS *S2,NURBSS *S_)
 }
 
 // Function: SetKnotVecSV_ConnectS
-// (private)ConnectNurbsSV()гЃ®г‚µгѓ–й–ўж•°пјЋS_гЃ®vж–№еђ‘гѓЋгѓѓгѓ€е®љзѕ©еџџг‚’жЊ‡е®љ
+// (private)ConnectNurbsSV()‚МѓTѓuЉЦђ”ЃDS_‚Мv•ыЊьѓmѓbѓg’и‹`€ж‚рЋw’и
 //
 // Parameters:
-// *S1 - йќў1
-// *S2 - йќў2
-// *S_ - йЂЈзµђеѕЊгЃ®йќўг‚’ж јзґЌ
+// *S1 - –К1
+// *S2 - –К2
+// *S_ - AЊ‹Њг‚М–К‚рЉi”[
 void NURBS_Func::SetKnotVecSV_ConnectS(NURBSS *S1,NURBSS *S2,NURBSS *S_)
 {
-	// Uж–№еђ‘
-	S_->N[0] = S1->N[0];				// S_гЃ®Uж–№еђ‘гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®ж•°
-	CopyVector(S1->S,S1->N[0],S_->S);	// S_гЃ®Uж–№еђ‘гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«(Uж–№еђ‘гЃЇS1гЃ®г‚’гЃќгЃ®гЃѕгЃѕжµЃз”Ё)
-	S_->U[0] = S1->U[0];				// S_гЃ®Uж–№еђ‘гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®зЇ„е›І
+	// U•ыЊь
+	S_->N[0] = S1->N[0];				// S_‚МU•ыЊьѓmѓbѓgѓxѓNѓgѓ‹‚Мђ”
+	CopyVector(S1->S,S1->N[0],S_->S);	// S_‚МU•ыЊьѓmѓbѓgѓxѓNѓgѓ‹(U•ыЊь‚НS1‚М‚р‚»‚М‚Ь‚Ь—¬—p)
+	S_->U[0] = S1->U[0];				// S_‚МU•ыЊьѓmѓbѓgѓxѓNѓgѓ‹‚М”Н€Н
 	S_->U[1] = S1->U[1];
 
-	// Vж–№еђ‘
-	// г‚ігѓјгѓ‰й•·г‚’иЄїгЃ№г‚‹
-	double vs=0,ve=NORM_KNOT_VAL,vc=0;		// Uж–№еђ‘й–‹е§‹пјЊзµ‚дє†пјЊйЂЈзµђйѓЁгѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«
-	double l1=0,l2=0;						// еђ„ж›ІйќўгЃ®Uж–№еђ‘гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®г‚ігѓјгѓ‰й•·
-	for(int i=0;i<S1->N[1]-1;i++)
-		l1 += CalcDistance(CalcNurbsSCoord(S1,S1->S[0],S1->T[i+1]),CalcNurbsSCoord(S1,S1->S[0],S1->T[i]));	// S1гЃ®г‚ігѓјгѓ‰й•·
-	for(int i=0;i<S2->N[1]-1;i++)
-		l2 += CalcDistance(CalcNurbsSCoord(S2,S2->S[0],S2->T[i+1]),CalcNurbsSCoord(S2,S2->S[0],S2->T[i]));	// S2гЃ®г‚ігѓјгѓ‰й•·
-	vc = l1/(l1+l2);	// зµђеђ€з‚№гЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«еЂ¤
+	// V•ыЊь
+	// ѓRЃ[ѓh’·‚р’І‚Ч‚й
+	double vs=0,ve=NORM_KNOT_VAL,vc=0;		// U•ыЊьЉJЋnЃCЏI—№ЃCAЊ‹•”ѓmѓbѓgѓxѓNѓgѓ‹
+	double l1=0,l2=0;						// Љe‹И–К‚МU•ыЊьѓmѓbѓgѓxѓNѓgѓ‹‚МѓRЃ[ѓh’·
+	for(int i=0;i<S1->N[1]-1;i++) {
+//		l1 += CalcDistance(CalcNurbsSCoord(S1,S1->S[0],S1->T[i+1]),CalcNurbsSCoord(S1,S1->S[0],S1->T[i]));	// S1‚МѓRЃ[ѓh’·
+		l1 += CalcDistance(S1->CalcNurbsSCoord(S1->S[0],S1->T[i+1]),S1->CalcNurbsSCoord(S1->S[0],S1->T[i]));	// S1‚МѓRЃ[ѓh’·
+	}
+	for(int i=0;i<S2->N[1]-1;i++) {
+//		l2 += CalcDistance(CalcNurbsSCoord(S2,S2->S[0],S2->T[i+1]),CalcNurbsSCoord(S2,S2->S[0],S2->T[i]));	// S2‚МѓRЃ[ѓh’·
+		l2 += CalcDistance(S2->CalcNurbsSCoord(S2->S[0],S2->T[i+1]),S2->CalcNurbsSCoord(S2->S[0],S2->T[i]));	// S2‚МѓRЃ[ѓh’·
+	}
+	vc = l1/(l1+l2);	// Њ‹Ќ‡“_‚МѓmѓbѓgѓxѓNѓgѓ‹’l
 
-	// S_гЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«зЇ„е›Іг‚’еѕ—г‚‹
+	// S_‚МѓmѓbѓgѓxѓNѓgѓ‹”Н€Н‚р“ѕ‚й
 	Vector V1 = NewVector(S1->N[1]);	
 	Vector V2 = NewVector(S2->N[1]);	
-	CopyVector(S1->T,S1->N[1],V1);		// S1гЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«г‚’V1гЃ«г‚ігѓ”гѓј
-	CopyVector(S2->T,S2->N[1],V2);		// S2гЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«г‚’V2гЃ«г‚ігѓ”гѓј
-	ChangeKnotVecRange(V1,S1->N[1],S1->M[1],S1->K[1],vs,vc);	// S1(V1)гЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®зЇ„е›Іг‚’е¤‰ж›ґ
-	ChangeKnotVecRange(V2,S2->N[1],S2->M[1],S2->K[1],vc,ve);	// S2(V2)гЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®зЇ„е›Іг‚’е¤‰ж›ґ
-	S_->V[0] = vs;						// S_гЃ®Vж–№еђ‘гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®зЇ„е›І
+	CopyVector(S1->T,S1->N[1],V1);		// S1‚МѓmѓbѓgѓxѓNѓgѓ‹‚рV1‚ЙѓRѓsЃ[
+	CopyVector(S2->T,S2->N[1],V2);		// S2‚МѓmѓbѓgѓxѓNѓgѓ‹‚рV2‚ЙѓRѓsЃ[
+	ChangeKnotVecRange(V1,S1->N[1],S1->M[1],S1->K[1],vs,vc);	// S1(V1)‚МѓmѓbѓgѓxѓNѓgѓ‹‚М”Н€Н‚р•ПЌX
+	ChangeKnotVecRange(V2,S2->N[1],S2->M[1],S2->K[1],vc,ve);	// S2(V2)‚МѓmѓbѓgѓxѓNѓgѓ‹‚М”Н€Н‚р•ПЌX
+	S_->V[0] = vs;						// S_‚МV•ыЊьѓmѓbѓgѓxѓNѓgѓ‹‚М”Н€Н
 	S_->V[1] = ve;
-	S_->N[1] = S1->N[1] + S2->N[1] - S2->M[1] - 1;	// S_гЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«ж•°
+	S_->N[1] = S1->N[1] + S2->N[1] - S2->M[1] - 1;	// S_‚МѓmѓbѓgѓxѓNѓgѓ‹ђ”
 
-	// S_гЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«г‚’еѕ—г‚‹
+	// S_‚МѓmѓbѓgѓxѓNѓgѓ‹‚р“ѕ‚й
 	for(int i=0;i<S1->K[1];i++)
 		S_->T[i] = V1[i];
 	for(int i=1;i<S2->N[1];i++)
@@ -5097,93 +5520,97 @@ void NURBS_Func::SetKnotVecSV_ConnectS(NURBSS *S1,NURBSS *S2,NURBSS *S_)
 }
 
 // Function: CalcuIntersecPtNurbsLine
-// NURBSж›ІйќўгЃЁз›ґз·љгЃ®дє¤з‚№г‚’з®—е‡є
+// NURBS‹И–К‚Ж’јђь‚МЊр“_‚рЋZЏo
 //
 // Parameters:
-// *Nurb - NURBSж›ІйќўS(u,v)гЃёгЃ®гѓќг‚¤гѓіг‚ї
-// r - з›ґз·љN(t)дёЉгЃ®1з‚№
-// p - з›ґз·љN(t)гЃ®ж–№еђ‘
-// DivNum - NURBSж›ІйќўгЃ®е€†е‰Іж•°
-// *ans - дє¤з‚№гЃ®u,v,tгѓ‘гѓ©гѓЎгѓјг‚їж јзґЌз”Ёй…Ќе€—
-// anssize - ansгЃ®й…Ќе€—й•·
+// *Nurb - NURBS‹И–КS(u,v)‚Ц‚Мѓ|ѓCѓ“ѓ^
+// r - ’јђьN(t)Џг‚М1“_
+// p - ’јђьN(t)‚М•ыЊь
+// DivNum - NURBS‹И–К‚М•ЄЉ„ђ”
+// *ans - Њр“_‚Мu,v,tѓpѓ‰ѓЃЃ[ѓ^Љi”[—p”z—с
+// anssize - ans‚М”z—с’·
 //
-// DivnumгЃЊе¤§гЃЌгЃ„гЃ»гЃ©гЂЃдє¤з‚№з®—е‡єгЃ®еЏ–г‚ЉгЃ“гЃјгЃ—гЃЇе°‘гЃЄгЃЏгЃЄг‚‹пјЋ
+// Divnum‚Є‘е‚«‚ў‚Щ‚ЗЃAЊр“_ЋZЏo‚МЋж‚и‚±‚Ъ‚µ‚НЏ­‚И‚­‚И‚йЃD
 //
-// anssizeгЃЇDivNum*DivNumд»ҐдёЉгЃ«гЃ™г‚‹гЃ®гЃЊеҐЅгЃѕгЃ—гЃ„.
+// anssize‚НDivNum*DivNum€ИЏг‚Й‚·‚й‚М‚ЄЌD‚Ь‚µ‚ў.
 //
-// LoD - и©ізґ°еє¦пј€гѓ‹гѓҐгѓјгѓ€гѓіжі•гЃ®ж›ґж–°гѓ‘гѓ©гѓЎгѓјг‚їг‚’и¶ігЃ—гЃ“г‚ЂгЃЁгЃЌгЃ«пјЊLoDгЃ§е‰Іг‚‹гЃ“гЃЁгЃ§пјЊжЂҐжїЂгЃЄгѓ‘гѓ©гѓЎгѓјг‚їе¤‰ж›ґг‚’йЃїгЃ‘г‚‹пјЋйЂљеёёгЃЇ1гЃ§г‚€гЃ„гЃЊпјЊи§ЈгЃЊеѕ—г‚‰г‚ЊгЃЄгЃ„е ґеђ€гЃЇеЂ¤г‚’е¤§гЃЌгЃЏгЃ™г‚‹пјЋ2гЃЁгЃ‹3гЃЁгЃ‹пј‰
+// LoD - ЏЪЌЧ“xЃiѓjѓ…Ѓ[ѓgѓ“–@‚МЌXђVѓpѓ‰ѓЃЃ[ѓ^‚р‘«‚µ‚±‚Ю‚Ж‚«‚ЙЃCLoD‚ЕЉ„‚й‚±‚Ж‚ЕЃC‹}Њѓ‚Иѓpѓ‰ѓЃЃ[ѓ^•ПЌX‚р”р‚Ї‚йЃD’КЏн‚Н1‚Е‚ж‚ў‚ЄЃC‰р‚Є“ѕ‚з‚к‚И‚ўЏкЌ‡‚Н’l‚р‘е‚«‚­‚·‚йЃD2‚Ж‚©3‚Ж‚©Ѓj
 //
 // Return:
-// дє¤з‚№гЃ®ж•°,   KOD_ERR:дє¤з‚№гЃ®ж•°гЃЊжЊ‡е®љгЃ—гЃџй…Ќе€—й•·г‚’и¶…гЃ€гЃџ
-int NURBS_Func::CalcuIntersecPtNurbsLine(NURBSS *Nurb,Coord r,Coord p,int Divnum,Coord *ans,int anssize,int LoD)
+// Њр“_‚Мђ”,   KOD_ERR:Њр“_‚Мђ”‚ЄЋw’и‚µ‚Ѕ”z—с’·‚р’ґ‚¦‚Ѕ
+//int NURBS_Func::CalcuIntersecPtNurbsLine(NURBSS *Nurb,Coord r,Coord p,int Divnum,Coord *ans,int anssize,int LoD)
+int NURBSS::CalcuIntersecPtNurbsLine(Coord r,Coord p,int Divnum,Coord *ans,int anssize,int LoD)
 {
-	Coord d = SetCoord(100,100,100);		// NURBSж›Із·љS(u,v)гЃ®еѕ®е°Џе¤‰еЊ–й‡Џ(du,dv)гЂЃз›ґз·љN(t)гЃ®еѕ®е°Џе¤‰еЊ–й‡Џdtг‚’ж јзґЌ
+	Coord d = SetCoord(100,100,100);		// NURBS‹ИђьS(u,v)‚М”чЏ¬•П‰»—К(du,dv)ЃA’јђьN(t)‚М”чЏ¬•П‰»—Кdt‚рЉi”[
 	Coord F,Fu,Fv,Ft;						// F(u,v,t) = S(u,v) - N(t)    Fu = dF/du     Fv = dF/dv     Ft = dF/dt
-	double u = Nurb->U[0];					// NURBSж›ІйќўS(u,v)гЃ®uгѓ‘гѓ©гѓЎгѓјг‚їгЃ®зЏѕењЁеЂ¤
-	double v = Nurb->V[0];					// NURBSж›ІйќўS(u,v)гЃ®vгѓ‘гѓ©гѓЎгѓјг‚їгЃ®зЏѕењЁеЂ¤
-	double t = 0;							// з›ґз·љN(t)гЃ®tгѓ‘гѓ©гѓЎгѓјг‚ї
-	Matrix A = NewMatrix(3,3);				// Fu,Fv,Ftг‚’ж§‹ж€ђгЃ™г‚‹3x3иЎЊе€—
-	Matrix A_ = NewMatrix(3,3);				// AгЃ®йЂ†иЎЊе€—г‚’ж јзґЌ
-	int flag = KOD_FALSE;						// еЏЋжќџгѓ•гѓ©г‚°
-	double dv = (Nurb->V[1] - Nurb->V[0])/(double)Divnum;	// еЏЋжќџжј”з®—з”ЁгЃ®vгѓ‘гѓ©гѓЎгѓјг‚їгЃ®г‚¤гѓіг‚їгѓјгѓђгѓ«еЂ¤
-	double du = (Nurb->U[1] - Nurb->U[0])/(double)Divnum;	// еЏЋжќџжј”з®—з”ЁгЃ®uгѓ‘гѓ©гѓЎгѓјг‚їгЃ®г‚¤гѓіг‚їгѓјгѓђгѓ«еЂ¤
-	int loopcount = 0;						// еЏЋжќџиЁ€з®—е›ћж•°
-	int anscount = 0;						// з®—е‡єгЃ•г‚ЊгЃџдє¤з‚№гЃ®ж•°
+	double u = U[0];					// NURBS‹И–КS(u,v)‚Мuѓpѓ‰ѓЃЃ[ѓ^‚МЊ»ЌЭ’l
+	double v = V[0];					// NURBS‹И–КS(u,v)‚Мvѓpѓ‰ѓЃЃ[ѓ^‚МЊ»ЌЭ’l
+	double t = 0;							// ’јђьN(t)‚Мtѓpѓ‰ѓЃЃ[ѓ^
+	Matrix A = NewMatrix(3,3);				// Fu,Fv,Ft‚рЌ\ђ¬‚·‚й3x3Ќs—с
+	Matrix A_ = NewMatrix(3,3);				// A‚М‹tЌs—с‚рЉi”[
+	int flag = KOD_FALSE;						// Ћы‘©ѓtѓ‰ѓO
+	double dv = (V[1] - V[0])/(double)Divnum;	// Ћы‘©‰‰ЋZ—p‚Мvѓpѓ‰ѓЃЃ[ѓ^‚МѓCѓ“ѓ^Ѓ[ѓoѓ‹’l
+	double du = (U[1] - U[0])/(double)Divnum;	// Ћы‘©‰‰ЋZ—p‚Мuѓpѓ‰ѓЃЃ[ѓ^‚МѓCѓ“ѓ^Ѓ[ѓoѓ‹’l
+	int loopcount = 0;						// Ћы‘©ЊvЋZ‰сђ”
+	int anscount = 0;						// ЋZЏo‚і‚к‚ЅЊр“_‚Мђ”
 
 	// u loop
 	for(int i=0;i<Divnum;i++){
 		// v loop
 		for(int j=0;j<Divnum;j++){
-			u = Nurb->U[0] + (double)i*du;			// г‚№гѓ†гѓѓгѓ—гѓ‘гѓ©гѓЎгѓјг‚їuгЃ®е€ќжњџеЂ¤г‚’г‚»гѓѓгѓ€
-			v = Nurb->V[0] + (double)j*dv;		// г‚№гѓ†гѓѓгѓ—гѓ‘гѓ©гѓЎгѓјг‚їvгЃ®е€ќжњџеЂ¤г‚’г‚»гѓѓгѓ€
-			t = 0;								// г‚№гѓ†гѓѓгѓ—гѓ‘гѓ©гѓЎгѓјг‚їtгЃ®е€ќжњџеЂ¤г‚’г‚»гѓѓгѓ€
-			flag = KOD_FALSE;						// еЏЋжќџгѓ•гѓ©г‚°г‚’OFF
-			loopcount = 0;						// гѓ«гѓјгѓ—г‚«г‚¦гѓігѓ€е€ќжњџеЊ–
-			// з›ґз·љгЃ®еѕ®е°Џе¤‰еЊ–й‡Џdt(=d.z)гЃЊAPPROX_ZEROг‚’дё‹е›ћг‚‹гЃѕгЃ§гѓ‹гѓҐгѓјгѓ€гѓіжі•гЃ«г‚€г‚‹еЏЋжќџиЁ€з®—г‚’иЎЊгЃ†
+			u = U[0] + (double)i*du;			// ѓXѓeѓbѓvѓpѓ‰ѓЃЃ[ѓ^u‚МЏ‰Љъ’l‚рѓZѓbѓg
+			v = V[0] + (double)j*dv;		// ѓXѓeѓbѓvѓpѓ‰ѓЃЃ[ѓ^v‚МЏ‰Љъ’l‚рѓZѓbѓg
+			t = 0;								// ѓXѓeѓbѓvѓpѓ‰ѓЃЃ[ѓ^t‚МЏ‰Љъ’l‚рѓZѓbѓg
+			flag = KOD_FALSE;						// Ћы‘©ѓtѓ‰ѓO‚рOFF
+			loopcount = 0;						// ѓ‹Ѓ[ѓvѓJѓEѓ“ѓgЏ‰Љъ‰»
+			// ’јђь‚М”чЏ¬•П‰»—Кdt(=d.z)‚ЄAPPROX_ZERO‚р‰є‰с‚й‚Ь‚Еѓjѓ…Ѓ[ѓgѓ“–@‚Й‚ж‚йЋы‘©ЊvЋZ‚рЌs‚¤
 			while(loopcount < LOOPCOUNTMAX){
-				F = SubCoord(CalcNurbsSCoord(Nurb,u,v),AddCoord(r,MulCoord(p,t)));	// F(u,v,t) = S(u,v) - N(t) = S(u,v) - (r+tp)
-				Fu = CalcDiffuNurbsS(Nurb,u,v);			// Fu = dF/du = dS/du
-				Fv = CalcDiffvNurbsS(Nurb,u,v);			// Fv = dF/dv = dS/dv
+//				F = SubCoord(CalcNurbsSCoord(Nurb,u,v),AddCoord(r,MulCoord(p,t)));	// F(u,v,t) = S(u,v) - N(t) = S(u,v) - (r+tp)
+//				Fu = CalcDiffuNurbsS(Nurb,u,v);			// Fu = dF/du = dS/du
+//				Fv = CalcDiffvNurbsS(Nurb,u,v);			// Fv = dF/dv = dS/dv
+				F = SubCoord(CalcNurbsSCoord(u,v),AddCoord(r,MulCoord(p,t)));	// F(u,v,t) = S(u,v) - N(t) = S(u,v) - (r+tp)
+				Fu = CalcDiffuNurbsS(u,v);			// Fu = dF/du = dS/du
+				Fv = CalcDiffvNurbsS(u,v);			// Fv = dF/dv = dS/dv
 				Ft = MulCoord(p,-1);					// Ft = dF/dt = -dN/dt = -p
-				A[0][0] = Fu.x;				// Fu,Fv,Ftг‚’3x3иЎЊе€—AгЃ«д»Је…Ґ
+				A[0][0] = Fu.x;				// Fu,Fv,Ft‚р3x3Ќs—сA‚Й‘г“ь
 				A[0][1] = Fv.x;				//     |Fu.x Fv.x Ft.x|       |du|       |F.x|
 				A[0][2] = Ft.x;				// A = |Fu.y Fv.y Ft.y| , d = |dv| , F = |F.y|
 				A[1][0] = Fu.y;				//     |Fu.z Fv.z Ft.z|       |dt|       |F.z|
 				A[1][1] = Fv.y;
-				A[1][2] = Ft.y;				// Aгѓ»d = F   --->   d = A_гѓ»F
+				A[1][2] = Ft.y;				// AЃEd = F   --->   d = A_ЃEF
 				A[2][0] = Fu.z;
 				A[2][1] = Fv.z;
 				A[2][2] = Ft.z;	
 				//fprintf(stderr,"   %lf,%lf,%lf,%lf,%lf\n",u,v,Fu.x,Fu.y,Fu.z);
-				if(MatInv3(A,A_) == KOD_FALSE){		// йЂ†иЎЊе€—г‚’ж±‚г‚Ѓг‚‹
+				if(MatInv3(A,A_) == KOD_FALSE){		// ‹tЌs—с‚р‹Ѓ‚Я‚й
 					flag = KOD_ERR;
 					break;		
 				}
-				d = MulCoord(MulMxCoord(A_,F),-1);			// dг‚’з®—е‡є
+				d = MulCoord(MulMxCoord(A_,F),-1);			// d‚рЋZЏo
 				
-				if(fabs(d.x) <= APPROX_ZERO && fabs(d.y) <= APPROX_ZERO && fabs(d.z) <= APPROX_ZERO){	// зњџеЂ¤гЃ«еЏЋжќџгЃ—гЃџг‚‰loopг‚’жЉњгЃ‘г‚‹
-					flag = KOD_TRUE;		// еЏЋжќџгѓ•гѓ©г‚°true
+				if(fabs(d.x) <= APPROX_ZERO && fabs(d.y) <= APPROX_ZERO && fabs(d.z) <= APPROX_ZERO){	// ђ^’l‚ЙЋы‘©‚µ‚Ѕ‚зloop‚р”І‚Ї‚й
+					flag = KOD_TRUE;		// Ћы‘©ѓtѓ‰ѓOtrue
 					break;
 				}
 
-				// зњџеЂ¤гЃ«йЃ”гЃ—гЃ¦гЃ„гЃЄгЃ‹гЃЈгЃџг‚‰u,v,tг‚’ж›ґж–°
+				// ђ^’l‚Й’B‚µ‚Д‚ў‚И‚©‚Б‚Ѕ‚зu,v,t‚рЌXђV
 				u += d.x/(double)LoD;
 				v += d.y/(double)LoD;
 				t += d.z/(double)LoD;
 
-				//if(u < Nurb->U[0] || u > Nurb->U[1] || v < Nurb->V[0] || v > Nurb->V[1]){	// u,vгЃ®гЃ©гЃЎг‚‰гЃ‹гЃЊз™єж•ЈгЃ—гЃџг‚‰loopг‚’жЉњгЃ‘г‚‹
-				//	flag = KOD_FALSE;		// еЏЋжќџгѓ•гѓ©г‚°false
+				//if(u < Nurb->U[0] || u > Nurb->U[1] || v < Nurb->V[0] || v > Nurb->V[1]){	// u,v‚М‚З‚ї‚з‚©‚Є”­ЋU‚µ‚Ѕ‚зloop‚р”І‚Ї‚й
+				//	flag = KOD_FALSE;		// Ћы‘©ѓtѓ‰ѓOfalse
 				//	break;
 				//}
 
 				loopcount++;
 			}// end of while
 
-			// LOOPCOUNTMAXе›ћгѓ«гѓјгѓ—гЃ—гЃ¦г‚‚еЏЋжќџгЃ—гЃ¦гЃ„гЃЄгЃ‹гЃЈгЃџг‚‰и­¦е‘Љ
+			// LOOPCOUNTMAX‰сѓ‹Ѓ[ѓv‚µ‚Д‚аЋы‘©‚µ‚Д‚ў‚И‚©‚Б‚Ѕ‚зЊxЌђ
 			if(loopcount == LOOPCOUNTMAX)
                 GuiIF.SetMessage("NURBS_Func ERROR: fail to converge");
 
-			// еЏЋжќџгЃ—гЃ¦гЃ„гЃџг‚‰и§ЈгЃЁгЃ—гЃ¦з™»йЊІ
+			// Ћы‘©‚µ‚Д‚ў‚Ѕ‚з‰р‚Ж‚µ‚Д“o^
 			if(flag == KOD_TRUE){
 				ans[anscount] = SetCoord(u,v,t);
 				anscount++;
@@ -5198,65 +5625,72 @@ int NURBS_Func::CalcuIntersecPtNurbsLine(NURBSS *Nurb,Coord r,Coord p,int Divnum
 	FreeMatrix(A,3);
 	FreeMatrix(A_,3);
 
-	anscount = CheckTheSamePoints(ans,anscount);		// еђЊдёЂз‚№гЃЇй™¤еЋ»гЃ™г‚‹
+	anscount = CheckTheSamePoints(ans,anscount);		// “Ї€к“_‚НЏњ‹Ћ‚·‚й
 
 	return anscount;
 }
 
 // Function: CalcIntersecPtNurbsPt
-// з©єй–“дёЉгЃ®1з‚№PгЃ‹г‚‰NURBSж›ІйќўSдёЉгЃ®жњЂиї‘е‚Ќз‚№Qг‚’ж±‚г‚Ѓг‚‹(гѓ‹гѓҐгѓјгѓ€гѓіжі•)
+// ‹уЉФЏг‚М1“_P‚©‚зNURBS‹И–КSЏг‚МЌЕ‹Я–T“_Q‚р‹Ѓ‚Я‚й(ѓjѓ…Ѓ[ѓgѓ“–@)
 //
-// >з›ґз·љгЃ®ж–№зЁ‹ејЏL(t) = P + tN
-// >NгЃЇSдёЉгЃ®жі•з·љгѓ™г‚Їгѓ€гѓ«гЃЁдёЂи‡ґгЃ™г‚‹гЃ‹г‚‰N=SuГ—Sv
-// >ж–№зЁ‹ејЏпјљS(u,v) = P + tN(u,v)
-// >F(u,v,t) = S(u,v) - P - tN(u,v)   гЃЁгЃ—гЃ¦гЂЃгѓ‹гѓҐгѓјгѓ€гѓіжі•г‚’з”ЁгЃ„г‚‹
+// >’јђь‚М•ы’цЋ®L(t) = P + tN
+// >N‚НSЏг‚М–@ђьѓxѓNѓgѓ‹‚Ж€к’v‚·‚й‚©‚зN=SuЃ~Sv
+// >•ы’цЋ®ЃFS(u,v) = P + tN(u,v)
+// >F(u,v,t) = S(u,v) - P - tN(u,v)   ‚Ж‚µ‚ДЃAѓjѓ…Ѓ[ѓgѓ“–@‚р—p‚ў‚й
 // >Fu = Su - tNu	Fv = Sv - tNv	Ft = -N
 // >|Fu.x Fv.x Ft.x||du|    |F.x|
-// >|Fu.y Fv.y Ft.y||dv| = -|F.y|    =>     dFгѓ»d = -F     =>     d = -Fгѓ»dF^-1  
+// >|Fu.y Fv.y Ft.y||dv| = -|F.y|    =>     dFЃEd = -F     =>     d = -FЃEdF^-1  
 // >|Fu.z Fv.z Ft.z||dt|    |F.z|
 // 
 // Parameters:
-// *S - NURBSж›Ійќў
-// P - з©єй–“дёЉгЃ®1з‚№
-// Divnum - гѓ‹гѓҐгѓјгѓ€гѓіжі•е€ќжњџеЂ¤жЊ‡е®љз”ЁгЃ®ж›Ійќўе€†е‰Іж•°
-// LoD - гѓ‹гѓҐгѓјгѓ€гѓігѓ‘гѓ©гѓЎгѓјг‚їж›ґж–°ж™‚гЃ®г‚№гѓ†гѓѓгѓ—г‚µг‚¤г‚є(1пЅћ)
-// Q - и§Јпј€SдёЉгЃ®з‚№г‚’u,v,tгѓ‘гѓ©гѓЎгѓјг‚їгЃ§Coordж§‹йЂ дЅ“гЃ«ж јзґЌпј‰
+// *S - NURBS‹И–К
+// P - ‹уЉФЏг‚М1“_
+// Divnum - ѓjѓ…Ѓ[ѓgѓ“–@Џ‰Љъ’lЋw’и—p‚М‹И–К•ЄЉ„ђ”
+// LoD - ѓjѓ…Ѓ[ѓgѓ“ѓpѓ‰ѓЃЃ[ѓ^ЌXђVЋћ‚МѓXѓeѓbѓvѓTѓCѓY(1Ѓ`)
+// Q - ‰рЃiSЏг‚М“_‚рu,v,tѓpѓ‰ѓЃЃ[ѓ^‚ЕCoordЌ\‘ў‘М‚ЙЉi”[Ѓj
 //
 // Return:
-// KOD_TRUEпјљеЏЋжќџгЃ—гЃџ    KOD_FALSE:еЏЋжќџгЃ—гЃЄгЃ‹гЃЈгЃџ
-int NURBS_Func::CalcIntersecPtNurbsPt(NURBSS *S,Coord P,int Divnum,int LoD,Coord *Q)
+// KOD_TRUEЃFЋы‘©‚µ‚Ѕ    KOD_FALSE:Ћы‘©‚µ‚И‚©‚Б‚Ѕ
+//int NURBS_Func::CalcIntersecPtNurbsPt(NURBSS *S,Coord P,int Divnum,int LoD,Coord *Q)
+int NURBSS::CalcIntersecPtNurbsPt(Coord P,int Divnum,int LoD,Coord *Q)
 {
-	Matrix dF = NewMatrix(3,3);		// Fu,Fv,Ftг‚’ж§‹ж€ђгЃ™г‚‹3x3иЎЊе€—
-	Matrix dF_ = NewMatrix(3,3);	// dFгЃ®йЂ†иЎЊе€—г‚’ж јзґЌ
-	Coord F,Fu,Fv,Ft;				// F(u,v,t) = S(u,v) - P - tгѓ»N(u,v)	гѓ‹гѓҐгѓјгѓ€гѓіжі•гЃ«гЃ‹гЃ‘г‚‹й–ўж•°
-	Coord N,Nu,Nv;					// N(u,v):S(u,v)дёЉгЃ®жі•з·љгѓ™г‚Їгѓ€гѓ«
-	Coord d = InitCoord();			// гѓ‹гѓҐгѓјгѓ€гѓіжі•гЃ«г‚€гЃЈгЃ¦ж›ґж–°гЃ•г‚Њг‚‹г‚№гѓ†гѓѓгѓ—г‚µг‚¤г‚єгѓ‘гѓ©гѓЎгѓјг‚ї
-	int loopcount=0;				// while()гѓ«гѓјгѓ—гЃ®г‚«г‚¦гѓігѓ€
-	double u,v,t;					// u,v,tгЃ®зЏѕењЁеЂ¤
-	double dv = (S->V[1] - S->V[0])/(double)Divnum;	// еЏЋжќџжј”з®—з”ЁгЃ®vгѓ‘гѓ©гѓЎгѓјг‚їгЃ®г‚¤гѓіг‚їгѓјгѓђгѓ«еЂ¤
-	double du = (S->U[1] - S->U[0])/(double)Divnum;	// еЏЋжќџжј”з®—з”ЁгЃ®uгѓ‘гѓ©гѓЎгѓјг‚їгЃ®г‚¤гѓіг‚їгѓјгѓђгѓ«еЂ¤
-	int flag = KOD_FALSE;			// while()жЉњгЃ‘з”Ёе€¤е€Ґгѓ•гѓ©г‚°
-	Coord *Q_ = NewCoord1(Divnum*Divnum);			// и§ЈгЃ®дёЂж™‚ж јзґЌз”Ё
+	Matrix dF = NewMatrix(3,3);		// Fu,Fv,Ft‚рЌ\ђ¬‚·‚й3x3Ќs—с
+	Matrix dF_ = NewMatrix(3,3);	// dF‚М‹tЌs—с‚рЉi”[
+	Coord F,Fu,Fv,Ft;				// F(u,v,t) = S(u,v) - P - tЃEN(u,v)	ѓjѓ…Ѓ[ѓgѓ“–@‚Й‚©‚Ї‚йЉЦђ”
+	Coord N,Nu,Nv;					// N(u,v):S(u,v)Џг‚М–@ђьѓxѓNѓgѓ‹
+	Coord d = InitCoord();			// ѓjѓ…Ѓ[ѓgѓ“–@‚Й‚ж‚Б‚ДЌXђV‚і‚к‚йѓXѓeѓbѓvѓTѓCѓYѓpѓ‰ѓЃЃ[ѓ^
+	int loopcount=0;				// while()ѓ‹Ѓ[ѓv‚МѓJѓEѓ“ѓg
+	double u,v,t;					// u,v,t‚МЊ»ЌЭ’l
+	double dv = (V[1] - V[0])/(double)Divnum;	// Ћы‘©‰‰ЋZ—p‚Мvѓpѓ‰ѓЃЃ[ѓ^‚МѓCѓ“ѓ^Ѓ[ѓoѓ‹’l
+	double du = (U[1] - U[0])/(double)Divnum;	// Ћы‘©‰‰ЋZ—p‚Мuѓpѓ‰ѓЃЃ[ѓ^‚МѓCѓ“ѓ^Ѓ[ѓoѓ‹’l
+	int flag = KOD_FALSE;			// while()”І‚Ї—p”»•Кѓtѓ‰ѓO
+	Coord *Q_ = NewCoord1(Divnum*Divnum);			// ‰р‚М€кЋћЉi”[—p
 
-	// еђ„е€ќжњџеЂ¤гЃ«еЇѕгЃ—гЃ¦гѓ‹гѓҐгѓјгѓ€гѓіжі•йЃ©з”Ё
+	// ЉeЏ‰Љъ’l‚Й‘О‚µ‚Дѓjѓ…Ѓ[ѓgѓ“–@“K—p
 	for(int i=0;i<Divnum;i++){
 		for(int j=0;j<Divnum;j++){
-			u = S->U[0] + (double)i*du;			// г‚№гѓ†гѓѓгѓ—гѓ‘гѓ©гѓЎгѓјг‚їuгЃ®е€ќжњџеЂ¤г‚’г‚»гѓѓгѓ€
-			v = S->V[0] + (double)j*dv;			// г‚№гѓ†гѓѓгѓ—гѓ‘гѓ©гѓЎгѓјг‚їvгЃ®е€ќжњџеЂ¤г‚’г‚»гѓѓгѓ€
-			t = 0;								// г‚№гѓ†гѓѓгѓ—гѓ‘гѓ©гѓЎгѓјг‚їtгЃ®е€ќжњџеЂ¤г‚’г‚»гѓѓгѓ€
+			u = U[0] + (double)i*du;			// ѓXѓeѓbѓvѓpѓ‰ѓЃЃ[ѓ^u‚МЏ‰Љъ’l‚рѓZѓbѓg
+			v = V[0] + (double)j*dv;			// ѓXѓeѓbѓvѓpѓ‰ѓЃЃ[ѓ^v‚МЏ‰Љъ’l‚рѓZѓbѓg
+			t = 0;								// ѓXѓeѓbѓvѓpѓ‰ѓЃЃ[ѓ^t‚МЏ‰Љъ’l‚рѓZѓbѓg
 			loopcount = 0;
 			flag = KOD_FALSE;
 
-			// еЏЋжќџиЁ€з®—
+			// Ћы‘©ЊvЋZ
 			while(loopcount < LOOPCOUNTMAX){
-				N = CalcNormVecOnNurbsS(S,u,v);									// S(u,v)дёЉгЃ®жі•з·љгѓ™г‚Їгѓ€гѓ«N(u,v)г‚’з®—е‡є
-				Nu = CalcDiffuNormVecOnNurbsS(S,u,v);								// N(u,v)гЃ®uж–№еђ‘еЃЏеѕ®е€†
-				Nv = CalcDiffvNormVecOnNurbsS(S,u,v);								// N(u,v)гЃ®vж–№еђ‘еЃЏеѕ®е€†
-				F = SubCoord(SubCoord(CalcNurbsSCoord(S,u,v),P),MulCoord(N,t));	// гѓ‹гѓҐгѓјгѓ€гѓіжі•гЃ«гЃ‹гЃ‘г‚‹й–ўж•°
-				Fu = SubCoord(CalcDiffuNurbsS(S,u,v),MulCoord(Nu,t));				// FгЃ®uж–№еђ‘еЃЏеѕ®е€†
-				Fv = SubCoord(CalcDiffvNurbsS(S,u,v),MulCoord(Nv,t));				// FгЃ®vж–№еђ‘еЃЏеѕ®е€†
-				Ft = MulCoord(N,-1);												// FгЃ®tж–№еђ‘еЃЏеѕ®е€†
-				dF[0][0] = Fu.x;		// 3x3гѓћгѓ€гѓЄгѓѓг‚Їг‚№гЃ«Fu,Fv,Ftг‚’д»Је…Ґ
+//				N = CalcNormVecOnNurbsS(S,u,v);									// S(u,v)Џг‚М–@ђьѓxѓNѓgѓ‹N(u,v)‚рЋZЏo
+//				Nu = CalcDiffuNormVecOnNurbsS(S,u,v);								// N(u,v)‚Мu•ыЊь•О”ч•Є
+//				Nv = CalcDiffvNormVecOnNurbsS(S,u,v);								// N(u,v)‚Мv•ыЊь•О”ч•Є
+//				F = SubCoord(SubCoord(CalcNurbsSCoord(S,u,v),P),MulCoord(N,t));	// ѓjѓ…Ѓ[ѓgѓ“–@‚Й‚©‚Ї‚йЉЦђ”
+//				Fu = SubCoord(CalcDiffuNurbsS(S,u,v),MulCoord(Nu,t));				// F‚Мu•ыЊь•О”ч•Є
+//				Fv = SubCoord(CalcDiffvNurbsS(S,u,v),MulCoord(Nv,t));				// F‚Мv•ыЊь•О”ч•Є
+				N = CalcNormVecOnNurbsS(u,v);									// S(u,v)Џг‚М–@ђьѓxѓNѓgѓ‹N(u,v)‚рЋZЏo
+				Nu = CalcDiffuNormVecOnNurbsS(u,v);								// N(u,v)‚Мu•ыЊь•О”ч•Є
+				Nv = CalcDiffvNormVecOnNurbsS(u,v);								// N(u,v)‚Мv•ыЊь•О”ч•Є
+				F = SubCoord(SubCoord(CalcNurbsSCoord(u,v),P),MulCoord(N,t));	// ѓjѓ…Ѓ[ѓgѓ“–@‚Й‚©‚Ї‚йЉЦђ”
+				Fu = SubCoord(CalcDiffuNurbsS(u,v),MulCoord(Nu,t));				// F‚Мu•ыЊь•О”ч•Є
+				Fv = SubCoord(CalcDiffvNurbsS(u,v),MulCoord(Nv,t));				// F‚Мv•ыЊь•О”ч•Є
+				Ft = MulCoord(N,-1);												// F‚Мt•ыЊь•О”ч•Є
+				dF[0][0] = Fu.x;		// 3x3ѓ}ѓgѓЉѓbѓNѓX‚ЙFu,Fv,Ft‚р‘г“ь
 				dF[0][1] = Fv.x;
 				dF[0][2] = Ft.x;
 				dF[1][0] = Fu.y;
@@ -5266,19 +5700,19 @@ int NURBS_Func::CalcIntersecPtNurbsPt(NURBSS *S,Coord P,int Divnum,int LoD,Coord
 				dF[2][1] = Fv.z;
 				dF[2][2] = Ft.z;
 
-				if((flag = MatInv3(dF,dF_)) == KOD_FALSE){		// йЂ†иЎЊе€—з®—е‡є detгЃЊ0гЃЄг‚‰ж¬ЎгЃ®е€ќжњџеЂ¤гЃё
+				if((flag = MatInv3(dF,dF_)) == KOD_FALSE){		// ‹tЌs—сЋZЏo det‚Є0‚И‚зЋџ‚МЏ‰Љъ’l‚Ц
 					//fprintf(stderr,"%d:det = 0\n",loopcount);	// debug
 					break;
 				}
 
-				d = MulCoord(MulMxCoord(dF_,F),-1);		// г‚№гѓ†гѓѓгѓ—г‚µг‚¤г‚єгѓ‘гѓ©гѓЎгѓјг‚їгЃ®ж›ґж–°еЂ¤г‚’з®—е‡є
+				d = MulCoord(MulMxCoord(dF_,F),-1);		// ѓXѓeѓbѓvѓTѓCѓYѓpѓ‰ѓЃЃ[ѓ^‚МЌXђV’l‚рЋZЏo
 
-				if(fabs(d.x) <= APPROX_ZERO_L && fabs(d.y) <= APPROX_ZERO_L && fabs(d.z) <= APPROX_ZERO_L){	// зњџеЂ¤гЃ«еЏЋжќџгЃ—гЃџг‚‰loopг‚’жЉњгЃ‘г‚‹
-					flag = KOD_TRUE;		// еЏЋжќџгѓ•гѓ©г‚°true
+				if(fabs(d.x) <= APPROX_ZERO_L && fabs(d.y) <= APPROX_ZERO_L && fabs(d.z) <= APPROX_ZERO_L){	// ђ^’l‚ЙЋы‘©‚µ‚Ѕ‚зloop‚р”І‚Ї‚й
+					flag = KOD_TRUE;		// Ћы‘©ѓtѓ‰ѓOtrue
 					break;
 				}
 
-				// зњџеЂ¤гЃ«йЃ”гЃ—гЃ¦гЃ„гЃЄгЃ‹гЃЈгЃџг‚‰u,v,tг‚’ж›ґж–°
+				// ђ^’l‚Й’B‚µ‚Д‚ў‚И‚©‚Б‚Ѕ‚зu,v,t‚рЌXђV
 				u += d.x/(double)LoD;
 				v += d.y/(double)LoD;
 				t += d.z/(double)LoD;
@@ -5287,14 +5721,14 @@ int NURBS_Func::CalcIntersecPtNurbsPt(NURBSS *S,Coord P,int Divnum,int LoD,Coord
 				loopcount++;
 			}// end of while
 
-			if(flag == KOD_TRUE)	Q_[i*Divnum+j] = SetCoord(u,v,t);		// еЏЋжќџгЃ—гЃ¦гЃ„гЃџг‚‰
+			if(flag == KOD_TRUE)	Q_[i*Divnum+j] = SetCoord(u,v,t);		// Ћы‘©‚µ‚Д‚ў‚Ѕ‚з
 
-			else Q_[i*Divnum+j] = SetCoord(KOD_ERR,KOD_ERR,KOD_ERR);		// еЏЋжќџгЃ—гЃ¦гЃ„гЃЄгЃ‹гЃЈгЃџг‚‰
+			else Q_[i*Divnum+j] = SetCoord(KOD_ERR,KOD_ERR,KOD_ERR);		// Ћы‘©‚µ‚Д‚ў‚И‚©‚Б‚Ѕ‚з
 
 		}// end of loop j
 	}// end of loop i
 
-	flag = GetMinDist(S,P,Q_,Divnum*Divnum,Q);		// жҐµе°Џи§ЈгЃ«гЃЄг‚‰гЃЄгЃ„г‚€гЃ†пјЊе…ЁгЃ¦гЃ®и§ЈгЃ®гЃ†гЃЎпјЊи·ќй›ўгЃЊжњЂе°ЏгЃ®г‚‚гЃ®г‚’зњџгЃ®и§ЈгЃЁгЃ—гЃ¦йЃёгЃіе‡єгЃ™
+	flag = GetMinDist(P,Q_,Divnum*Divnum,Q);		// ‹ЙЏ¬‰р‚Й‚И‚з‚И‚ў‚ж‚¤ЃC‘S‚Д‚М‰р‚М‚¤‚їЃC‹——Ј‚ЄЌЕЏ¬‚М‚а‚М‚рђ^‚М‰р‚Ж‚µ‚Д‘I‚СЏo‚·
 
 	FreeMatrix(dF,3);
 	FreeMatrix(dF_,3);
@@ -5304,52 +5738,57 @@ int NURBS_Func::CalcIntersecPtNurbsPt(NURBSS *S,Coord P,int Divnum,int LoD,Coord
 }
 
 // Function: CalcIntersecPtNurbsPt
-// з©єй–“дёЉгЃ®1з‚№PгЃ‹г‚‰NURBSж›Із·љCдёЉгЃ®жњЂиї‘е‚Ќз‚№Q(ж›Із·љгѓ‘гѓ©гѓЎгѓјг‚ї)г‚’ж±‚г‚Ѓг‚‹(гѓ‹гѓҐгѓјгѓ€гѓіжі•)
+// ‹уЉФЏг‚М1“_P‚©‚зNURBS‹ИђьCЏг‚МЌЕ‹Я–T“_Q(‹Иђьѓpѓ‰ѓЃЃ[ѓ^)‚р‹Ѓ‚Я‚й(ѓjѓ…Ѓ[ѓgѓ“–@)
 // 
-// >F(t) = (P-C'(t))пЅҐC'(t) = 0
+// >F(t) = (P-C'(t))ҐC'(t) = 0
 // >F'(t)dt = -F(t)
-// >F'(t) = -|C'(t)|^2 + (P+C(t))пЅҐC"(t)
+// >F'(t) = -|C'(t)|^2 + (P+C(t))ҐC"(t)
 //
 // Parameters:
-// *C - NURBSж›Із·љ
-// P - з©єй–“дёЉгЃ®1з‚№
-// Divnum - гѓ‹гѓҐгѓјгѓ€гѓіжі•е€ќжњџеЂ¤жЊ‡е®љз”ЁгЃ®ж›Із·ље€†е‰Іж•°
-// LoD - гѓ‹гѓҐгѓјгѓ€гѓігѓ‘гѓ©гѓЎгѓјг‚їж›ґж–°ж™‚гЃ®г‚№гѓ†гѓѓгѓ—г‚µг‚¤г‚є(1пЅћ)
-// Q - и§Јпј€CдёЉгЃ®з‚№г‚’tгѓ‘гѓ©гѓЎгѓјг‚їгЃ§ж јзґЌпј‰
+// *C - NURBS‹Иђь
+// P - ‹уЉФЏг‚М1“_
+// Divnum - ѓjѓ…Ѓ[ѓgѓ“–@Џ‰Љъ’lЋw’и—p‚М‹Иђь•ЄЉ„ђ”
+// LoD - ѓjѓ…Ѓ[ѓgѓ“ѓpѓ‰ѓЃЃ[ѓ^ЌXђVЋћ‚МѓXѓeѓbѓvѓTѓCѓY(1Ѓ`)
+// Q - ‰рЃiCЏг‚М“_‚рtѓpѓ‰ѓЃЃ[ѓ^‚ЕЉi”[Ѓj
 // 
 // Return:
-// KOD_TRUEпјљеЏЋжќџгЃ—гЃџ    KOD_FALSE:еЏЋжќџгЃ—гЃЄгЃ‹гЃЈгЃџ
-int NURBS_Func::CalcIntersecPtNurbsPt(NURBSC *C,Coord P,int Divnum,int LoD,double *Q)
+// KOD_TRUEЃFЋы‘©‚µ‚Ѕ    KOD_FALSE:Ћы‘©‚µ‚И‚©‚Б‚Ѕ
+//int NURBS_Func::CalcIntersecPtNurbsPt(NURBSC *C,Coord P,int Divnum,int LoD,double *Q)
+int NURBSC::CalcIntersecPtNurbsPt(Coord P,int Divnum,int LoD,double *Q)
 {
-	double *t_buf = NewVector(Divnum);					// еЏЋжќџи§Јж јзґЌз”Ёгѓђгѓѓгѓ•г‚Ў
-	double *dist_buf = NewVector(Divnum);				// еђ„tгЃ§гЃ®и·ќй›ўж јзґЌз”Ёгѓђгѓѓгѓ•г‚Ў
-	double delta = (C->V[1] - C->V[0])/(double)Divnum;	// еЏЋжќџжј”з®—з”ЁгЃ®tгѓ‘гѓ©гѓЎгѓјг‚їгЃ®г‚¤гѓіг‚їгѓјгѓђгѓ«еЂ¤
+	double *t_buf = NewVector(Divnum);					// Ћы‘©‰рЉi”[—pѓoѓbѓtѓ@
+	double *dist_buf = NewVector(Divnum);				// Љet‚Е‚М‹——ЈЉi”[—pѓoѓbѓtѓ@
+	double delta = (V[1] - V[0])/(double)Divnum;	// Ћы‘©‰‰ЋZ—p‚Мtѓpѓ‰ѓЃЃ[ѓ^‚МѓCѓ“ѓ^Ѓ[ѓoѓ‹’l
 
 	for(int i=0;i<Divnum;i++){
-		double t = C->V[0] + (double)i*delta;	// tгЃ®е€ќжњџеЂ¤г‚’г‚»гѓѓгѓ€
+		double t = V[0] + (double)i*delta;	// t‚МЏ‰Љъ’l‚рѓZѓbѓg
 		int loopcount = 0;
 		while(loopcount < LOOPCOUNTMAX){
-			Coord Ct = CalcNurbsCCoord(C,t);
-			Coord C_ = CalcDiffNurbsC(C,t);
-			Coord C__ = CalcDiff2NurbsC(C,t);
+//			Coord Ct = CalcNurbsCCoord(C,t);
+//			Coord C_ = CalcDiffNurbsC(C,t);
+//			Coord C__ = CalcDiff2NurbsC(C,t);
+			Coord Ct = CalcNurbsCCoord(t);
+			Coord C_ = CalcDiffNurbsC(t);
+			Coord C__ = CalcDiff2NurbsC(t);
 			double a = CalcInnerProduct(P,C_);
 			double b = CalcInnerProduct(Ct,C_);
 			double c = CalcInnerProduct(C_,C_);
 			double d = CalcInnerProduct(SubCoord(P,Ct),C__);
-			if(fabs(d-c) <= APPROX_ZERO)	break;			// е€†жЇЌгЃЊг‚јгѓ­гЃЄг‚‰ж¬ЎгЃ®е€ќжњџз‚№гЃё
+			if(fabs(d-c) <= APPROX_ZERO)	break;			// •Є•к‚Єѓ[ѓЌ‚И‚зЋџ‚МЏ‰Љъ“_‚Ц
 			double dt = (b-a)/(d-c);
-			t += dt/(double)LoD;				// tж›ґж–°
-			if(fabs(dt) <= APPROX_ZERO_L){	// еЏЋжќџгЃ—гЃ¦гЃ„гЃџг‚‰и§Јг‚’дїќжЊЃгЃ—ж¬ЎгЃ®tгЃё
+			t += dt/(double)LoD;				// tЌXђV
+			if(fabs(dt) <= APPROX_ZERO_L){	// Ћы‘©‚µ‚Д‚ў‚Ѕ‚з‰р‚р•ЫЋќ‚µЋџ‚Мt‚Ц
 				t_buf[i] = t;
-				dist_buf[i] = CalcDistance(CalcNurbsCCoord(C,t),P);	// PQй–“и·ќй›ўг‚’еѕ—г‚‹
+//				dist_buf[i] = CalcDistance(CalcNurbsCCoord(C,t),P);	// PQЉФ‹——Ј‚р“ѕ‚й
+				dist_buf[i] = CalcDistance(CalcNurbsCCoord(t),P);	// PQЉФ‹——Ј‚р“ѕ‚й
 				break;
 			}
 			loopcount++;
-			t_buf[i] = dist_buf[i] = -1;		// еЏЋжќџгЃ—гЃ¦гЃ„гЃЄгЃ‹гЃЈгЃџг‚‰пјЊг‚Ёгѓ©гѓјгѓ•гѓ©г‚°гЃЁгЃ—гЃ¦-1г‚’д»Је…Ґ
+			t_buf[i] = dist_buf[i] = -1;		// Ћы‘©‚µ‚Д‚ў‚И‚©‚Б‚Ѕ‚зЃCѓGѓ‰Ѓ[ѓtѓ‰ѓO‚Ж‚µ‚Д-1‚р‘г“ь
 		}
 	}
 
-	// еѕ—г‚‰г‚ЊгЃџи§ЈгЃ‹г‚‰пјЊPQй–“гЃ®и·ќй›ўгЃЊжњЂг‚‚зџ­гЃ„г‚‚гЃ®г‚’йЃёжЉћ
+	// “ѕ‚з‚к‚Ѕ‰р‚©‚зЃCPQЉФ‚М‹——Ј‚ЄЌЕ‚а’Z‚ў‚а‚М‚р‘I‘р
 	bool flag = false;
 	double min = 1E+308;
 	for(int i=0;i<Divnum;i++){
@@ -5367,25 +5806,27 @@ int NURBS_Func::CalcIntersecPtNurbsPt(NURBSC *C,Coord P,int Divnum,int LoD,doubl
 }
 
 // Function: GetMinDist
-// (private)CalcIntersecPtNurbsPt()гЃ®г‚µгѓ–й–ўж•°пјЋжњЂе°Џи·ќй›ўг‚’иЄїгЃ№г‚‹
+// (private)CalcIntersecPtNurbsPt()‚МѓTѓuЉЦђ”ЃDЌЕЏ¬‹——Ј‚р’І‚Ч‚й
 //
 // Parameters:
-// *S - NURBSж›ІйќўгЃёгЃ®гѓќг‚¤гѓіг‚ї
-// P - з©єй–“дёЉгЃ®1з‚№
-// *Q - ж›ІйќўдёЉгЃ®з‚№зѕ¤(u,vгѓ‘гѓ©гѓЎгѓјг‚їгЃ§жЊ‡е®љ)
-// N - з‚№ж•°
-// *Ans - жњЂе°Џи·ќй›ўг‚’жЊЃгЃ¤ж›ІйќўдёЉгЃ®з‚№
+// *S - NURBS‹И–К‚Ц‚Мѓ|ѓCѓ“ѓ^
+// P - ‹уЉФЏг‚М1“_
+// *Q - ‹И–КЏг‚М“_ЊQ(u,vѓpѓ‰ѓЃЃ[ѓ^‚ЕЋw’и)
+// N - “_ђ”
+// *Ans - ЌЕЏ¬‹——Ј‚рЋќ‚В‹И–КЏг‚М“_
 //
 // Return:
-// ж€ђеЉџпјљKOD_TRUE, е¤±ж•—пјљKOD_ERR
-int NURBS_Func::GetMinDist(NURBSS *S,Coord P,Coord *Q,int N,Coord *Ans)
+// ђ¬ЊчЃFKOD_TRUE, Ћё”sЃFKOD_ERR
+//int NURBS_Func::GetMinDist(NURBSS *S,Coord P,Coord *Q,int N,Coord *Ans)
+int NURBSS::GetMinDist(Coord P,Coord *Q,int N,Coord *Ans)
 {
 	double min = 1.0E+12;
 	int flag = KOD_FALSE;
 
 	for(int i=0;i<N;i++){
 		if(Q[i].z == KOD_ERR)	continue;
-		Coord Q_ = CalcNurbsSCoord(S,Q[i].x,Q[i].y);
+//		Coord Q_ = CalcNurbsSCoord(S,Q[i].x,Q[i].y);
+		Coord Q_ = CalcNurbsSCoord(Q[i].x,Q[i].y);
 		double d = CalcDistance(Q_,P);
 		if(d < min){
 			min = d;
@@ -5398,36 +5839,36 @@ int NURBS_Func::GetMinDist(NURBSS *S,Coord P,Coord *Q,int N,Coord *Ans)
 }
 
 // Function: DetermPtOnTRMSurf
-// жіЁз›®дё­гЃ®NURBSж›ІйќўдёЉгЃ®1з‚№(u,v)гЃЊгѓ€гѓЄгѓџгѓіг‚°й еџџе†…гЃ«гЃ‚г‚‹гЃ®гЃ‹г‚’е€¤е®љгЃ™г‚‹
+// ’Ќ–Ъ’†‚МNURBS‹И–КЏг‚М1“_(u,v)‚ЄѓgѓЉѓ~ѓ“ѓO—М€ж“а‚Й‚ ‚й‚М‚©‚р”»’и‚·‚й
 // 
 // Parameters:
-// *Trim - гѓ€гѓЄгѓ ж›Ійќў
-// u,v - гѓ€гѓЄгѓ ж›ІйќўдёЉгЃ®1з‚№(u, v)
+// *Trim - ѓgѓЉѓЂ‹И–К
+// u,v - ѓgѓЉѓЂ‹И–КЏг‚М1“_(u, v)
 //
 // Return:
-// KOD_TRUE:йќўдёЉ  KOD_ONEDGE:г‚Ёгѓѓг‚ёдёЉ  KOD_FALSE:йќўе¤–   KOD_ERR:г‚Ёгѓ©гѓј
+// KOD_TRUE:–КЏг  KOD_ONEDGE:ѓGѓbѓWЏг  KOD_FALSE:–КЉO   KOD_ERR:ѓGѓ‰Ѓ[
 int NURBS_Func::DetermPtOnTRMSurf(TRMS *Trim,double u,double v)
 {
 	int flag;
 
-	// е¤–е‘Ёгѓ€гѓЄгѓ 
+	// ЉOЋьѓgѓЉѓЂ
 	if(Trim->n1){
 		flag = DetermPtOnTRMSurf_sub(Trim->pTO,u,v);
 		if(flag == KOD_ERR)
 			return KOD_ERR;
-		else if(flag == KOD_FALSE)		// е¤–
+		else if(flag == KOD_FALSE)		// ЉO
 			return KOD_FALSE;
-		else if(flag == KOD_ONEDGE)		// г‚Ёгѓѓг‚ёдёЉ
+		else if(flag == KOD_ONEDGE)		// ѓGѓbѓWЏг
 			return KOD_ONEDGE;
 	}
 
-	// е†…е‘Ёгѓ€гѓЄгѓ 
+	// “аЋьѓgѓЉѓЂ
 	if(Trim->n2){
-		for(int i=0;i<Trim->n2;i++){		// е†…е‘ЁгЃ®гѓ€гѓЄгѓџгѓіг‚°й еџџе…ЁгЃ¦гЃ«еЇѕгЃ—гЃ¦
+		for(int i=0;i<Trim->n2;i++){		// “аЋь‚МѓgѓЉѓ~ѓ“ѓO—М€ж‘S‚Д‚Й‘О‚µ‚Д
 			flag = DetermPtOnTRMSurf_sub(Trim->pTI[i],u,v);
 			if(flag == KOD_ERR)
 				return KOD_ERR;
-			else if(flag == KOD_TRUE)	// е†…
+			else if(flag == KOD_TRUE)	// “а
 				return KOD_FALSE;
 		}
 	}
@@ -5436,84 +5877,90 @@ int NURBS_Func::DetermPtOnTRMSurf(TRMS *Trim,double u,double v)
 }
 
 // Function: DetermPtOnTRMSurf_sub
-// (private)DetermPtOnTRMSurf()гЃ®г‚µгѓ–й–ўж•°пјЋйќўдёЉз·љгЃ®г‚їг‚¤гѓ—гЃЊи¤‡еђ€ж›Із·љгЃ®е ґеђ€гЃ®гѓ€гѓЄгѓџгѓіг‚°й еџџе†…е¤–е€¤е®љ
+// (private)DetermPtOnTRMSurf()‚МѓTѓuЉЦђ”ЃD–КЏгђь‚Мѓ^ѓCѓv‚Є•ЎЌ‡‹Иђь‚МЏкЌ‡‚МѓgѓЉѓ~ѓ“ѓO—М€ж“аЉO”»’и
 //
 // Parameter:
-// *Conps - и¤‡еђ€ж›Із·љ
-// u,v - гѓ€гѓЄгѓ ж›ІйќўдёЉгЃ®1з‚№(u, v)
+// *Conps - •ЎЌ‡‹Иђь
+// u,v - ѓgѓЉѓЂ‹И–КЏг‚М1“_(u, v)
 // 
 // Return:
-// KOD_TRUE:йќўдёЉ  KOD_ONEDGE:г‚Ёгѓѓг‚ёдёЉ  KOD_FALSE:йќўе¤–   KOD_ERR:г‚Ёгѓ©гѓј
+// KOD_TRUE:–КЏг  KOD_ONEDGE:ѓGѓbѓWЏг  KOD_FALSE:–КЉO   KOD_ERR:ѓGѓ‰Ѓ[
 int NURBS_Func::DetermPtOnTRMSurf_sub(CONPS *Conps,double u,double v)
 {
-	// йќўдёЉз·љгЃЊи¤‡еђ€ж›Із·љгЃ«гЃЄгЃЈгЃ¦гЃ„г‚‹гЃ“гЃЁ
+	// –КЏгђь‚Є•ЎЌ‡‹Иђь‚Й‚И‚Б‚Д‚ў‚й‚±‚Ж
 	if(Conps->BType != COMPOSITE_CURVE){
-        GuiIF.SetMessage("NURBS_Func ERROR:TRIMжњЄе®џиЈ…!");
+        GuiIF.SetMessage("NURBS_Func ERROR:TRIM–ўЋА‘•!");
 		return KOD_ERR;
 	}
 
-	COMPC *CompC=(COMPC *)Conps->pB;	// NURBSж›ІйќўгЃ®гѓ‘гѓ©гѓЎгѓјг‚їз©єй–“дёЉгЃ«ж§‹ж€ђгЃ•г‚ЊгЃ¦гЃ„г‚‹и¤‡еђ€ж›Із·љгЃёгЃ®гѓќг‚¤гѓіг‚їг‚’еЏ–г‚Ље‡єгЃ™
-	Coord *P;							// гѓ€гѓЄгѓ еўѓз•Њз·љдёЉгЃ«з”џж€ђгЃ—гЃџз‚№(е¤љи§’еЅўиї‘дјјз”ЁгЃ®з‚№)г‚’ж јзґЌ
-	int ptnum;							// гѓ€гѓЄгѓ еўѓз•Њз·љг‚’з‚№зѕ¤иї‘дјјгЃ—гЃџгЃЁгЃЌгЃ®з‚№ж•°
+//	COMPC *CompC=(COMPC *)Conps->pB;	// NURBS‹И–К‚Мѓpѓ‰ѓЃЃ[ѓ^‹уЉФЏг‚ЙЌ\ђ¬‚і‚к‚Д‚ў‚й•ЎЌ‡‹Иђь‚Ц‚Мѓ|ѓCѓ“ѓ^‚рЋж‚иЏo‚·
+	COMPC *CompC=Conps->pB.CompC;	// NURBS‹И–К‚Мѓpѓ‰ѓЃЃ[ѓ^‹уЉФЏг‚ЙЌ\ђ¬‚і‚к‚Д‚ў‚й•ЎЌ‡‹Иђь‚Ц‚Мѓ|ѓCѓ“ѓ^‚рЋж‚иЏo‚·
+	Coord *P;							// ѓgѓЉѓЂ‹«ЉEђьЏг‚Йђ¶ђ¬‚µ‚Ѕ“_(‘ЅЉpЊ`‹ЯЋ——p‚М“_)‚рЉi”[
+	int ptnum;							// ѓgѓЉѓЂ‹«ЉEђь‚р“_ЊQ‹ЯЋ—‚µ‚Ѕ‚Ж‚«‚М“_ђ”
 
-	// гѓЎгѓўгѓЄзўєдїќ
-	if((P = (Coord *)malloc(sizeof(Coord)*(CompC->N*TRM_BORDERDIVNUM))) == NULL){
+	// ѓЃѓ‚ѓЉЉm•Ы
+//	if((P = (Coord *)malloc(sizeof(Coord)*(CompC->N*TRM_BORDERDIVNUM))) == NULL){
+	P = new Coord[CompC->N*TRM_BORDERDIVNUM];
+	if ( !P ) {
 		return KOD_ERR;
 	}
 
-	// гѓ€гѓЄгѓ еўѓз•Њз·љг‚’з‚№зѕ¤PгЃ§иї‘дјј
+	// ѓgѓЉѓЂ‹«ЉEђь‚р“_ЊQP‚Е‹ЯЋ—
 	if((ptnum = ApproxTrimBorder(CompC,P)) == KOD_ERR){
-			GuiIF.SetMessage("NURBS_Func ERROR:гѓ€гѓЄгѓ еўѓз•Њз·љгЃЊNURBSж›Із·љд»Ґе¤–гЃ§ж§‹ж€ђгЃ•г‚ЊгЃ¦гЃ„гЃѕгЃ™.жњЄе®џиЈ…!");
+			GuiIF.SetMessage("NURBS_Func ERROR:ѓgѓЉѓЂ‹«ЉEђь‚ЄNURBS‹Иђь€ИЉO‚ЕЌ\ђ¬‚і‚к‚Д‚ў‚Ь‚·.–ўЋА‘•!");
 			FreeCoord1(P);
 			return KOD_ERR;
 	}
 	
-	int trm_flag = KOD_FALSE;							// гѓ€гѓЄгѓџгѓіг‚°й еџџе†…е¤–е€¤е®љз”Ёгѓ•гѓ©г‚°
-	Coord TargetPoint = SetCoord(u,v,0);				// г‚їгѓјг‚Ігѓѓгѓ€гЃЁгЃЄг‚‹йќўдёЉгЃ®з‚№(u,v)г‚’CoordгЃ«ж јзґЌ
-	trm_flag = IsPointInPolygon(TargetPoint,P,ptnum);	// е†…е¤–е€¤е®љ
+	int trm_flag = KOD_FALSE;							// ѓgѓЉѓ~ѓ“ѓO—М€ж“аЉO”»’и—pѓtѓ‰ѓO
+	Coord TargetPoint = SetCoord(u,v,0);				// ѓ^Ѓ[ѓQѓbѓg‚Ж‚И‚й–КЏг‚М“_(u,v)‚рCoord‚ЙЉi”[
+	trm_flag = IsPointInPolygon(TargetPoint,P,ptnum);	// “аЉO”»’и
 
 	return trm_flag;
 }
 
 // Function: GetPtsOnOuterTRMSurf
-// е¤–е‘Ёгѓ€гѓЄгѓ йќўе†…гЃ®з‚№гЃ®гЃїж®‹гЃ™
+// ЉOЋьѓgѓЉѓЂ–К“а‚М“_‚М‚ЭЋc‚·
 //
 // Parameters:
-// *Trm - гѓ€гѓЄгѓ йќўгЃёгЃ®гѓќг‚¤гѓіг‚ї    
-// *Pt - е€¤е€ҐеЇѕи±ЎгЃ®(u,v)зѕ¤      
-// N - (u,v)зѕ¤гЃ®ж•°
+// *Trm - ѓgѓЉѓЂ–К‚Ц‚Мѓ|ѓCѓ“ѓ^    
+// *Pt - ”»•К‘ОЏЫ‚М(u,v)ЊQ      
+// N - (u,v)ЊQ‚Мђ”
 //
 // Return:
-// ж®‹гЃЈгЃџз‚№гЃ®ж•°гЂЂ(е¤–е‘Ёгѓ€гѓЄгѓ гЃЊе­ењЁгЃ—гЃЄгЃ„пјљKOD_FALSE)
+// Ћc‚Б‚Ѕ“_‚Мђ”Ѓ@(ЉOЋьѓgѓЉѓЂ‚Є‘¶ЌЭ‚µ‚И‚ўЃFKOD_FALSE)
 int NURBS_Func::GetPtsOnOuterTRMSurf(TRMS *Trm,Coord *Pt,int N)
 {
-	// е¤–е‘Ёгѓ€гѓЄгѓ гЃЊе­ењЁгЃ—гЃЄгЃ„е ґеђ€гЃЇ0г‚’гѓЄг‚їгѓјгѓі
+	// ЉOЋьѓgѓЉѓЂ‚Є‘¶ЌЭ‚µ‚И‚ўЏкЌ‡‚Н0‚рѓЉѓ^Ѓ[ѓ“
 	if(!Trm->n1)
 		return KOD_FALSE;
 
-	COMPC *CompC = (COMPC *)Trm->pTO->pB;	// NURBSж›ІйќўгЃ®гѓ‘гѓ©гѓЎгѓјг‚їз©єй–“дёЉгЃ«ж§‹ж€ђгЃ•г‚ЊгЃ¦гЃ„г‚‹и¤‡еђ€ж›Із·љгЃёгЃ®гѓќг‚¤гѓіг‚їг‚’еЏ–г‚Ље‡єгЃ™
-	Coord *P;								// гѓ€гѓЄгѓ еўѓз•Њз·љдёЉгЃ«з”џж€ђгЃ—гЃџз‚№(е¤љи§’еЅўиї‘дјјз”ЁгЃ®з‚№)г‚’ж јзґЌ
-	int ptnum;								// гѓ€гѓЄгѓ еўѓз•Њз·љг‚’з‚№зѕ¤иї‘дјјгЃ—гЃџгЃЁгЃЌгЃ®з‚№ж•°
+//	COMPC *CompC = (COMPC *)Trm->pTO->pB;	// NURBS‹И–К‚Мѓpѓ‰ѓЃЃ[ѓ^‹уЉФЏг‚ЙЌ\ђ¬‚і‚к‚Д‚ў‚й•ЎЌ‡‹Иђь‚Ц‚Мѓ|ѓCѓ“ѓ^‚рЋж‚иЏo‚·
+	COMPC *CompC = Trm->pTO->pB.CompC;	// NURBS‹И–К‚Мѓpѓ‰ѓЃЃ[ѓ^‹уЉФЏг‚ЙЌ\ђ¬‚і‚к‚Д‚ў‚й•ЎЌ‡‹Иђь‚Ц‚Мѓ|ѓCѓ“ѓ^‚рЋж‚иЏo‚·
+	Coord *P;								// ѓgѓЉѓЂ‹«ЉEђьЏг‚Йђ¶ђ¬‚µ‚Ѕ“_(‘ЅЉpЊ`‹ЯЋ——p‚М“_)‚рЉi”[
+	int ptnum;								// ѓgѓЉѓЂ‹«ЉEђь‚р“_ЊQ‹ЯЋ—‚µ‚Ѕ‚Ж‚«‚М“_ђ”
 
-	// гѓЎгѓўгѓЄзўєдїќ
-	if((P = (Coord *)malloc(sizeof(Coord)*(CompC->N*TRM_BORDERDIVNUM))) == NULL){
+	// ѓЃѓ‚ѓЉЉm•Ы
+//	if((P = (Coord *)malloc(sizeof(Coord)*(CompC->N*TRM_BORDERDIVNUM))) == NULL){
+	P = new Coord[CompC->N*TRM_BORDERDIVNUM];
+	if ( !P ) {
 		return KOD_ERR;
 	}
 
-	// гѓ€гѓЄгѓ еўѓз•Њз·љг‚’з‚№зѕ¤PгЃ§иї‘дјј
+	// ѓgѓЉѓЂ‹«ЉEђь‚р“_ЊQP‚Е‹ЯЋ—
 	if((ptnum = ApproxTrimBorder(CompC,P)) == KOD_ERR){
-			GuiIF.SetMessage("NURBS_Func ERROR:гѓ€гѓЄгѓ еўѓз•Њз·љгЃЊNURBSж›Із·љд»Ґе¤–гЃ§ж§‹ж€ђгЃ•г‚ЊгЃ¦гЃ„гЃѕгЃ™.жњЄе®џиЈ…!");
+			GuiIF.SetMessage("NURBS_Func ERROR:ѓgѓЉѓЂ‹«ЉEђь‚ЄNURBS‹Иђь€ИЉO‚ЕЌ\ђ¬‚і‚к‚Д‚ў‚Ь‚·.–ўЋА‘•!");
 			FreeCoord1(P);
 			return KOD_ERR;
 	}
 
-	Coord *ans = NewCoord1(N);		// ж®‹гЃ™з‚№гЃ®ж јзґЌе…€
-	int trm_flag = KOD_FALSE;		// гѓ€гѓЄгѓџгѓіг‚°й еџџе†…е¤–е€¤е®љз”Ёгѓ•гѓ©г‚°
+	Coord *ans = NewCoord1(N);		// Ћc‚·“_‚МЉi”[ђж
+	int trm_flag = KOD_FALSE;		// ѓgѓЉѓ~ѓ“ѓO—М€ж“аЉO”»’и—pѓtѓ‰ѓO
 	int n=0;
 
-	// е¤–еЃґгѓ€гѓЄгѓ гЃ®е†…еЃґгЃ гЃ‘г‚’ж®‹гЃ™
+	// ЉO‘¤ѓgѓЉѓЂ‚М“а‘¤‚ѕ‚Ї‚рЋc‚·
 	for(int i=0;i<N;i++){
-		trm_flag = IsPointInPolygon(Pt[i],P,ptnum);		// е†…е¤–е€¤е®љ
+		trm_flag = IsPointInPolygon(Pt[i],P,ptnum);		// “аЉO”»’и
 		if(trm_flag > 0){
 			ans[n] = SetCoord(Pt[i]);
 			n++;
@@ -5528,50 +5975,53 @@ int NURBS_Func::GetPtsOnOuterTRMSurf(TRMS *Trm,Coord *Pt,int N)
 }
 
 // Function: GetPtsOnInnerTRMSurf
-// е†…е‘Ёгѓ€гѓЄгѓ йќўе¤–гЃ®з‚№гЃ®гЃїж®‹гЃ™
+// “аЋьѓgѓЉѓЂ–КЉO‚М“_‚М‚ЭЋc‚·
 //
 // Parameters:
-// *Trm - гѓ€гѓЄгѓ йќўгЃёгЃ®гѓќг‚¤гѓіг‚ї    
-// *Pt - е€¤е€ҐеЇѕи±ЎгЃ®(u,v)зѕ¤      
-// N - (u,v)зѕ¤гЃ®ж•°
+// *Trm - ѓgѓЉѓЂ–К‚Ц‚Мѓ|ѓCѓ“ѓ^    
+// *Pt - ”»•К‘ОЏЫ‚М(u,v)ЊQ      
+// N - (u,v)ЊQ‚Мђ”
 //
 // Retrun:
-// ж®‹гЃЈгЃџз‚№гЃ®ж•°гЂЂ(е†…е‘Ёгѓ€гѓЄгѓ гЃЊе­ењЁгЃ—гЃЄгЃ„пјљKOD_FALSE)
+// Ћc‚Б‚Ѕ“_‚Мђ”Ѓ@(“аЋьѓgѓЉѓЂ‚Є‘¶ЌЭ‚µ‚И‚ўЃFKOD_FALSE)
 int NURBS_Func::GetPtsOnInnerTRMSurf(TRMS *Trm,Coord *Pt,int N)
 {
-	// е†…е‘Ёгѓ€гѓЄгѓ гЃЊе­ењЁгЃ—гЃЄгЃ„е ґеђ€гЃЇ0г‚’гѓЄг‚їгѓјгѓі
+	// “аЋьѓgѓЉѓЂ‚Є‘¶ЌЭ‚µ‚И‚ўЏкЌ‡‚Н0‚рѓЉѓ^Ѓ[ѓ“
 	if(!Trm->n2){
 		return KOD_FALSE;
 	}
 
-	COMPC *CompC;				// NURBSж›ІйќўгЃ®гѓ‘гѓ©гѓЎгѓјг‚їз©єй–“дёЉгЃ«ж§‹ж€ђгЃ•г‚ЊгЃ¦гЃ„г‚‹и¤‡еђ€ж›Із·љгЃёгЃ®гѓќг‚¤гѓіг‚їг‚’еЏ–г‚Ље‡єгЃ™
-	Coord *P;					// гѓ€гѓЄгѓ еўѓз•Њз·љдёЉгЃ«з”џж€ђгЃ—гЃџз‚№(е¤љи§’еЅўиї‘дјјз”ЁгЃ®з‚№)г‚’ж јзґЌ
-	int ptnum;					// гѓ€гѓЄгѓ еўѓз•Њз·љг‚’з‚№зѕ¤иї‘дјјгЃ—гЃџгЃЁгЃЌгЃ®з‚№ж•°
-	Coord *ans = NewCoord1(N);	// ж®‹гЃ™з‚№гЃ®ж јзґЌе…€
-	int trm_flag = KOD_FALSE;	// гѓ€гѓЄгѓџгѓіг‚°й еџџе†…е¤–е€¤е®љз”Ёгѓ•гѓ©г‚°
+	COMPC *CompC;				// NURBS‹И–К‚Мѓpѓ‰ѓЃЃ[ѓ^‹уЉФЏг‚ЙЌ\ђ¬‚і‚к‚Д‚ў‚й•ЎЌ‡‹Иђь‚Ц‚Мѓ|ѓCѓ“ѓ^‚рЋж‚иЏo‚·
+	Coord *P;					// ѓgѓЉѓЂ‹«ЉEђьЏг‚Йђ¶ђ¬‚µ‚Ѕ“_(‘ЅЉpЊ`‹ЯЋ——p‚М“_)‚рЉi”[
+	int ptnum;					// ѓgѓЉѓЂ‹«ЉEђь‚р“_ЊQ‹ЯЋ—‚µ‚Ѕ‚Ж‚«‚М“_ђ”
+	Coord *ans = NewCoord1(N);	// Ћc‚·“_‚МЉi”[ђж
+	int trm_flag = KOD_FALSE;	// ѓgѓЉѓ~ѓ“ѓO—М€ж“аЉO”»’и—pѓtѓ‰ѓO
 	int N_ = N;
 
-	// е†…е‘Ёгѓ€гѓЄгѓ гЃ®ж•°гЃ гЃ‘гѓ«гѓјгѓ—
+	// “аЋьѓgѓЉѓЂ‚Мђ”‚ѕ‚Їѓ‹Ѓ[ѓv
 	for(int k=0;k<Trm->n2;k++){
 
-		CompC = (COMPC *)Trm->pTI[k]->pB;	
+//		CompC = (COMPC *)Trm->pTI[k]->pB;	
+		CompC = Trm->pTI[k]->pB.CompC;	
 
-		// гѓЎгѓўгѓЄзўєдїќ
-		if((P = (Coord *)malloc(sizeof(Coord)*(CompC->N*TRM_BORDERDIVNUM))) == NULL){
+		// ѓЃѓ‚ѓЉЉm•Ы
+//		if((P = (Coord *)malloc(sizeof(Coord)*(CompC->N*TRM_BORDERDIVNUM))) == NULL){
+		P = new Coord[CompC->N*TRM_BORDERDIVNUM];
+		if ( !P ) {
 			return KOD_ERR;
 		}
 
-		// гѓ€гѓЄгѓ еўѓз•Њз·љг‚’з‚№зѕ¤PгЃ§иї‘дјј
+		// ѓgѓЉѓЂ‹«ЉEђь‚р“_ЊQP‚Е‹ЯЋ—
 		if((ptnum = ApproxTrimBorder(CompC,P)) == KOD_ERR){
-			GuiIF.SetMessage("NURBS_Func ERROR:гѓ€гѓЄгѓ еўѓз•Њз·љгЃЊNURBSж›Із·љд»Ґе¤–гЃ§ж§‹ж€ђгЃ•г‚ЊгЃ¦гЃ„гЃѕгЃ™.жњЄе®џиЈ…!");
+			GuiIF.SetMessage("NURBS_Func ERROR:ѓgѓЉѓЂ‹«ЉEђь‚ЄNURBS‹Иђь€ИЉO‚ЕЌ\ђ¬‚і‚к‚Д‚ў‚Ь‚·.–ўЋА‘•!");
 			FreeCoord1(P);
 			return KOD_ERR;
 		}
 
-		// е†…еЃґгѓ€гѓЄгѓ гЃ®е¤–еЃґгЃ гЃ‘г‚’ж®‹гЃ™
+		// “а‘¤ѓgѓЉѓЂ‚МЉO‘¤‚ѕ‚Ї‚рЋc‚·
 		int n=0;
 		for(int i=0;i<N_;i++){
-			trm_flag = IsPointInPolygon(Pt[i],P,ptnum);		// е†…е¤–е€¤е®љ
+			trm_flag = IsPointInPolygon(Pt[i],P,ptnum);		// “аЉO”»’и
 			if(trm_flag == KOD_FALSE || trm_flag == KOD_ONEDGE){
 				ans[n] = SetCoord(Pt[i]);
 				n++;
@@ -5589,62 +6039,64 @@ int NURBS_Func::GetPtsOnInnerTRMSurf(TRMS *Trm,Coord *Pt,int N)
 }
 
 // Function: GetPtsOnInnerOuterTRMSurf
-// е†…е¤–е‘Ёгѓ€гѓЄгѓ йќўе†…гЃ®з‚№гЃ®гЃїж®‹гЃ™
+// “аЉOЋьѓgѓЉѓЂ–К“а‚М“_‚М‚ЭЋc‚·
 //
 // Parameters:
-// *Trm - гѓ€гѓЄгѓ йќўгЃёгЃ®гѓќг‚¤гѓіг‚ї    
-// *Pt - е€¤е€ҐеЇѕи±ЎгЃ®(u,v)зѕ¤      
-// N - (u,v)зѕ¤гЃ®ж•°
+// *Trm - ѓgѓЉѓЂ–К‚Ц‚Мѓ|ѓCѓ“ѓ^    
+// *Pt - ”»•К‘ОЏЫ‚М(u,v)ЊQ      
+// N - (u,v)ЊQ‚Мђ”
 //
 // Return:
-// ж®‹гЃЈгЃџз‚№гЃ®ж•°гЂЂ(е†…е‘Ёгѓ€гѓЄгѓ гЃЊе­ењЁгЃ—гЃЄгЃ„пјљKOD_FALSE)
+// Ћc‚Б‚Ѕ“_‚Мђ”Ѓ@(“аЋьѓgѓЉѓЂ‚Є‘¶ЌЭ‚µ‚И‚ўЃFKOD_FALSE)
 int NURBS_Func::GetPtsOnInnerOuterTRMSurf(TRMS *Trm,Coord *Pt,int N)
 {
 	int n=0;
 
-	n = GetPtsOnInnerTRMSurf(Trm,Pt,N);		// е†…е‘Ёгѓ€гѓЄгѓ 
+	n = GetPtsOnInnerTRMSurf(Trm,Pt,N);		// “аЋьѓgѓЉѓЂ
 
 	if(n == KOD_FALSE)
 		n = N;
 
-	n = GetPtsOnOuterTRMSurf(Trm,Pt,n);		// е¤–е‘Ёгѓ€гѓЄгѓ 
+	n = GetPtsOnOuterTRMSurf(Trm,Pt,n);		// ЉOЋьѓgѓЉѓЂ
 
 	return n;
 }
 
 // Function: ApproxTrimBorder
-// (private)гѓ€гѓЄгѓ еўѓз•Њз·љг‚’з‚№зѕ¤гЃ§иї‘дјјгЃ™г‚‹
+// (private)ѓgѓЉѓЂ‹«ЉEђь‚р“_ЊQ‚Е‹ЯЋ—‚·‚й
 //
 // Parameters:
-// *CompC - гѓ€гѓЄгѓ еўѓз•Њз·љг‚’ж§‹ж€ђгЃ™г‚‹и¤‡еђ€ж›Із·љгЃёгЃ®гѓќг‚¤гѓіг‚ї
-// *P - иї‘дјјгЃ•г‚ЊгЃџз‚№зѕ¤г‚’ж јзґЌгЃ™г‚‹гЃџг‚ЃгЃ®Coordй…Ќе€—
+// *CompC - ѓgѓЉѓЂ‹«ЉEђь‚рЌ\ђ¬‚·‚й•ЎЌ‡‹Иђь‚Ц‚Мѓ|ѓCѓ“ѓ^
+// *P - ‹ЯЋ—‚і‚к‚Ѕ“_ЊQ‚рЉi”[‚·‚й‚Ѕ‚Я‚МCoord”z—с
 //
 // Return:
-// иї‘дјјгЃ—гЃџз‚№зѕ¤гЃ®ж•°пј€гѓ€гѓЄгѓ еўѓз•Њз·љгЃЊNURBSж›Із·љд»Ґе¤–гЃ§ж§‹ж€ђгЃ•г‚ЊгЃ¦гЃ„гЃџе ґеђ€гЃЇпјЊKOD_ERRпј‰
+// ‹ЯЋ—‚µ‚Ѕ“_ЊQ‚Мђ”ЃiѓgѓЉѓЂ‹«ЉEђь‚ЄNURBS‹Иђь€ИЉO‚ЕЌ\ђ¬‚і‚к‚Д‚ў‚ЅЏкЌ‡‚НЃCKOD_ERRЃj
 int NURBS_Func::ApproxTrimBorder(COMPC *CompC,Coord *P)
 {
-	double ent_dev=0;				// е€†е‰Із‚№гѓ‘гѓ©гѓЎгѓјг‚ї
-	NURBSC *NurbsC;					// гѓ€гѓЄгѓ еўѓз•Њз·љ(NURBSж›Із·љ)гЃ®гѓќг‚¤гѓіг‚їг‚’дЅњжҐ­з”ЁгЃ«ж јзґЌ
-	int trm_flag = KOD_FALSE;		// гѓ€гѓЄгѓџгѓіг‚°й еџџе†…е¤–е€¤е®љз”Ёгѓ•гѓ©г‚°
-	int divnum = TRM_BORDERDIVNUM;	// еђ„еўѓз•Њз·љгЃ®е€†е‰Іж•°
-	int ptnum=0;					// е…ЁдЅ“гЃ®з‚№ж•°г‚’г‚«г‚¦гѓігѓ€
+	double ent_dev=0;				// •ЄЉ„“_ѓpѓ‰ѓЃЃ[ѓ^
+	NURBSC *NurbsC;					// ѓgѓЉѓЂ‹«ЉEђь(NURBS‹Иђь)‚Мѓ|ѓCѓ“ѓ^‚рЌм‹Ж—p‚ЙЉi”[
+	int trm_flag = KOD_FALSE;		// ѓgѓЉѓ~ѓ“ѓO—М€ж“аЉO”»’и—pѓtѓ‰ѓO
+	int divnum = TRM_BORDERDIVNUM;	// Љe‹«ЉEђь‚М•ЄЉ„ђ”
+	int ptnum=0;					// ‘S‘М‚М“_ђ”‚рѓJѓEѓ“ѓg
 
-	// гѓ€гѓЄгѓ еўѓз•Њз·љдёЉгЃ«з‚№г‚’з”џж€ђпј€гѓ€гѓЄгѓ еўѓз•Њз·љг‚’е¤љи§’еЅўиї‘дјјпј‰
+	// ѓgѓЉѓЂ‹«ЉEђьЏг‚Й“_‚рђ¶ђ¬ЃiѓgѓЉѓЂ‹«ЉEђь‚р‘ЅЉpЊ`‹ЯЋ—Ѓj
 	for(int i=0;i<CompC->N;i++){
-		// гѓ€гѓЄгѓ еўѓз•Њз·љгЃЊNURBSж›Із·љгЃ§ж§‹ж€ђгЃ•г‚ЊгЃ¦гЃ„г‚‹
+		// ѓgѓЉѓЂ‹«ЉEђь‚ЄNURBS‹Иђь‚ЕЌ\ђ¬‚і‚к‚Д‚ў‚й
 		if(CompC->DEType[i] == NURBS_CURVE){
-			NurbsC = (NURBSC *)CompC->pDE[i];	// жіЁз›®дё­гЃ®Nurbsж›Із·љгЃ®гѓќг‚¤гѓіг‚їг‚’еЏ–еѕ—
-			if(NurbsC->K == 2 && CompC->DegeFlag == KOD_TRUE)	divnum = 2;		// г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃЊ2гЃ¤гЃ®е ґеђ€гЃЇз›ґз·љгЃЄгЃ®гЃ§гЂЃе€†е‰Із‚№г‚’з”џж€ђгЃ—гЃЄгЃЏгЃ¦г‚‚г‚€гЃЏгЃ™г‚‹
+//			NurbsC = (NURBSC *)CompC->pDE[i];	// ’Ќ–Ъ’†‚МNurbs‹Иђь‚Мѓ|ѓCѓ“ѓ^‚рЋж“ѕ
+			NurbsC = CompC->pDE[i].NurbsC;	// ’Ќ–Ъ’†‚МNurbs‹Иђь‚Мѓ|ѓCѓ“ѓ^‚рЋж“ѕ
+			if(NurbsC->K == 2 && CompC->DegeFlag == KOD_TRUE)	divnum = 2;		// ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Є2‚В‚МЏкЌ‡‚Н’јђь‚И‚М‚ЕЃA•ЄЉ„“_‚рђ¶ђ¬‚µ‚И‚­‚Д‚а‚ж‚­‚·‚й
 			else divnum = TRM_BORDERDIVNUM;
 			for(int j=0;j<divnum-1;j++){
-				ent_dev = NurbsC->T[NurbsC->M-1]+(NurbsC->T[NurbsC->K]-NurbsC->T[NurbsC->M-1])*(double)j/((double)divnum-1);	// е€†е‰Із‚№tг‚’ж±‚г‚Ѓг‚‹
-				P[ptnum] = CalcNurbsCCoord(NurbsC,ent_dev);	// NURBSж›ІйќўгЃ®гѓ‘гѓ©гѓЎгѓјг‚їз©єй–“е†…гЃ®NURBSж›Із·љгЃ®е€†е‰Із‚№tгЃ®еє§жЁ™еЂ¤(u,v)г‚’еѕ—г‚‹
+				ent_dev = NurbsC->T[NurbsC->M-1]+(NurbsC->T[NurbsC->K]-NurbsC->T[NurbsC->M-1])*(double)j/((double)divnum-1);	// •ЄЉ„“_t‚р‹Ѓ‚Я‚й
+//				P[ptnum] = CalcNurbsCCoord(NurbsC,ent_dev);	// NURBS‹И–К‚Мѓpѓ‰ѓЃЃ[ѓ^‹уЉФ“а‚МNURBS‹Иђь‚М•ЄЉ„“_t‚МЌА•W’l(u,v)‚р“ѕ‚й
+				P[ptnum] = NurbsC->CalcNurbsCCoord(ent_dev);	// NURBS‹И–К‚Мѓpѓ‰ѓЃЃ[ѓ^‹уЉФ“а‚МNURBS‹Иђь‚М•ЄЉ„“_t‚МЌА•W’l(u,v)‚р“ѕ‚й
 				ptnum++;
 			}
 		}
-		// гЃќг‚Њд»Ґе¤–
+		// ‚»‚к€ИЉO
 		else{
-			GuiIF.SetMessage("NURBS_Func ERROR:гѓ€гѓЄгѓ еўѓз•Њз·љгЃЊNURBSж›Із·љд»Ґе¤–гЃ§ж§‹ж€ђгЃ•г‚ЊгЃ¦гЃ„гЃѕгЃ™.жњЄе®џиЈ…!");
+			GuiIF.SetMessage("NURBS_Func ERROR:ѓgѓЉѓЂ‹«ЉEђь‚ЄNURBS‹Иђь€ИЉO‚ЕЌ\ђ¬‚і‚к‚Д‚ў‚Ь‚·.–ўЋА‘•!");
 			return KOD_ERR;
 		}
 	}
@@ -5653,83 +6105,90 @@ int NURBS_Func::ApproxTrimBorder(COMPC *CompC,Coord *P)
 }
 
 // Function: CalcDeltaPtsOnNurbsC
-// жЊ‡е®љгЃ—гЃџе€†е‰Іж•°гЃ§NURBSж›Із·љдёЉгЃ®еє§жЁ™еЂ¤г‚’е‡єеЉ›гЃ™г‚‹
+// Ћw’и‚µ‚Ѕ•ЄЉ„ђ”‚ЕNURBS‹ИђьЏг‚МЌА•W’l‚рЏo—Н‚·‚й
 // 
 // Parameters:
-// *Nurb - NURBSгЃёгЃ®гѓќг‚¤гѓіг‚ї  
-// D - е€†е‰Іж•°  
-// *Pts - е‡єеЉ›гЃ•г‚Њг‚‹еє§жЁ™еЂ¤г‚’ж јзґЌ
+// *Nurb - NURBS‚Ц‚Мѓ|ѓCѓ“ѓ^  
+// D - •ЄЉ„ђ”  
+// *Pts - Џo—Н‚і‚к‚йЌА•W’l‚рЉi”[
 //
 // Return:
-// з‚№ж•°
-int NURBS_Func::CalcDeltaPtsOnNurbsC(NURBSC *Nurb,int D,Coord *Pts)
+// “_ђ”
+//int NURBS_Func::CalcDeltaPtsOnNurbsC(NURBSC *Nurb,int D,Coord *Pts)
+int NURBSC::CalcDeltaPtsOnNurbsC(int D,Coord *Pts)
 {
-	double T = (Nurb->V[1] - Nurb->V[0])/D;	// гѓ‘гѓ©гѓЎгѓ€гѓЄгѓѓг‚Їз©єй–“е†…гЃ§гЃ®з·ље€†й•·г‚’еѕ—г‚‹
+	double T = (V[1] - V[0])/D;	// ѓpѓ‰ѓЃѓgѓЉѓbѓN‹уЉФ“а‚Е‚Мђь•Є’·‚р“ѕ‚й
 
 	for(int i=0;i<=D;i++){
-		Pts[i] = CalcNurbsCCoord(Nurb, Nurb->V[0] + T*(double)i);
+		Pts[i] = CalcNurbsCCoord(V[0] + T*(double)i);
 	}
 
 	return D+2;
 }
 
 // Function: CalcDeltaPtsOnNurbsC
-// жЊ‡е®љгЃ—гЃџй–“йљ”гЃ§NURBSж›Із·љдёЉгЃ®еє§жЁ™еЂ¤г‚’е‡єеЉ›гЃ™г‚‹
+// Ћw’и‚µ‚ЅЉФЉu‚ЕNURBS‹ИђьЏг‚МЌА•W’l‚рЏo—Н‚·‚й
 //
 // Parameters:
-// *Nurb - NURBSж›Із·љгЃёгЃ®гѓќг‚¤гѓіг‚ї  
-// D - й–“йљ”  
-// *Pts - е‡єеЉ›гЃ•г‚Њг‚‹еє§жЁ™еЂ¤г‚’ж јзґЌ
+// *Nurb - NURBS‹Иђь‚Ц‚Мѓ|ѓCѓ“ѓ^  
+// D - ЉФЉu  
+// *Pts - Џo—Н‚і‚к‚йЌА•W’l‚рЉi”[
 //
 // Return:
-// з‚№ж•°пј€DгЃЊ0пјЊгЃ‚г‚‹гЃ„гЃЇжЊ‡е®љгЃ—гЃџNURBSж›Із·љгЃ®е…Ёй•·г‚€г‚Љй•·гЃ‹гЃЈгЃџе ґеђ€гЃЇпјЊKOD_ERRпј‰
-int NURBS_Func::CalcDeltaPtsOnNurbsC(NURBSC *Nurb,double D,Coord *Pts)
+// “_ђ”ЃiD‚Є0ЃC‚ ‚й‚ў‚НЋw’и‚µ‚ЅNURBS‹Иђь‚М‘S’·‚ж‚и’·‚©‚Б‚ЅЏкЌ‡‚НЃCKOD_ERRЃj
+//int NURBS_Func::CalcDeltaPtsOnNurbsC(NURBSC *Nurb,double D,Coord *Pts)
+int NURBSC::CalcDeltaPtsOnNurbsC(double D,Coord *Pts)
 {
 	if(D == 0){
 		GuiIF.SetMessage("NURBS_Func ERROR: Set Correct Interval Value");
 		return KOD_ERR;
 	}
 
-	double L = CalcNurbsCLength(Nurb);		// NURBSж›Із·љгЃ®з·ље€†й•·г‚’еѕ—г‚‹
+//	double L = CalcNurbsCLength(Nurb);		// NURBS‹Иђь‚Мђь•Є’·‚р“ѕ‚й
+	double L = CalcNurbsCLength();		// NURBS‹Иђь‚Мђь•Є’·‚р“ѕ‚й
 	if(D > L){
 		GuiIF.SetMessage("NURBS_Func ERROR: Arc Length > Whole Lenth of the Curve");
 	}
 	//fprintf(stderr,"L = %lf\n",L);		// debug
 	//fprintf(stderr,"D = %lf\n",D);		// debug
 
-	int k=1;			// е€†е‰Іг‚«г‚¦гѓіг‚ї
-	double t = (Nurb->V[1] - Nurb->V[0])/(L/D);	// tгЃ®е€ќжњџеЂ¤г‚’г‚»гѓѓгѓ€
+	int k=1;			// •ЄЉ„ѓJѓEѓ“ѓ^
+	double t = (V[1] - V[0])/(L/D);	// t‚МЏ‰Љъ’l‚рѓZѓbѓg
 
-	while(t <= Nurb->V[1]){
-		t = CalcParamLengthOnNurbsC(Nurb,(double)k*D,t);	// и§Јг‚’жЋўзґў
-		Pts[k-1] = CalcNurbsCCoord(Nurb,t);		// и§Јг‚’з™»йЊІ
+	while(t <= V[1]){
+//		t = CalcParamLengthOnNurbsC(Nurb,(double)k*D,t);	// ‰р‚р’TЌх
+//		Pts[k-1] = CalcNurbsCCoord(Nurb,t);		// ‰р‚р“o^
+		t = CalcParamLengthOnNurbsC((double)k*D,t);	// ‰р‚р’TЌх
+		Pts[k-1] = CalcNurbsCCoord(t);		// ‰р‚р“o^
 		k++;
-		t = k*(Nurb->V[1] - Nurb->V[0])/(L/D);	// ж¬ЎгЃ®tгЃ®е€ќжњџеЂ¤г‚’г‚»гѓѓгѓ€
+		t = k*(V[1] - V[0])/(L/D);	// Ћџ‚Мt‚МЏ‰Љъ’l‚рѓZѓbѓg
 	}
 
 	return k-1;
 }
 
 // Function: CalcParamLengthOnNurbsC
-// NURBSж›Із·љгЃ«гЃЉгЃ„гЃ¦дёЂз«ЇгЃ‹г‚‰гЃ®жЊ‡е®љи·ќй›ўгЃ«гЃЉгЃ‘г‚‹гѓ‘гѓ©гѓЎгѓјг‚їеЂ¤г‚’иї”гЃ™
+// NURBS‹Иђь‚Й‚Ё‚ў‚Д€к’[‚©‚з‚МЋw’и‹——Ј‚Й‚Ё‚Ї‚йѓpѓ‰ѓЃЃ[ѓ^’l‚р•Ф‚·
 //
 // Parameters:
-// *C - NURBSж›Із·љ
-// L - жЊ‡е®љи·ќй›ў
-// Init_t - и§ЈжЋўзґўгЃ®е€ќжњџгѓ‘гѓ©гѓЎгѓјг‚ї
+// *C - NURBS‹Иђь
+// L - Ћw’и‹——Ј
+// Init_t - ‰р’TЌх‚МЏ‰Љъѓpѓ‰ѓЃЃ[ѓ^
 //
 // Return:
-// жЊ‡е®љи·ќй›ўгЃ«гЃЉгЃ‘г‚‹гѓ‘гѓ©гѓЎгѓјг‚їеЂ¤
-double NURBS_Func::CalcParamLengthOnNurbsC(NURBSC *C,double L,double Init_t)
+// Ћw’и‹——Ј‚Й‚Ё‚Ї‚йѓpѓ‰ѓЃЃ[ѓ^’l
+//double NURBS_Func::CalcParamLengthOnNurbsC(NURBSC *C,double L,double Init_t)
+double NURBSC::CalcParamLengthOnNurbsC(double L,double Init_t)
 {
-	double dt = 1E+12;			// г‚№гѓ†гѓѓгѓ—г‚µг‚¤г‚єгѓ‘гѓ©гѓЎгѓјг‚їгЃ®е€ќжњџеЂ¤
+	double dt = 1E+12;			// ѓXѓeѓbѓvѓTѓCѓYѓpѓ‰ѓЃЃ[ѓ^‚МЏ‰Љъ’l
 	double t = Init_t;
 	int count = 0;
 
 	while(fabs(dt) > APPROX_ZERO){
-		dt = (L - CalcNurbsCLength(C,0,t))/CalcEuclid(CalcDiffNurbsC(C,t))/2;		// гѓ‹гѓҐгѓјгѓ€гѓіжі•гЃ«г‚€г‚‹еЏЋжќџиЁ€з®—
+//		dt = (L - CalcNurbsCLength(C,0,t))/CalcEuclid(CalcDiffNurbsC(C,t))/2;		// ѓjѓ…Ѓ[ѓgѓ“–@‚Й‚ж‚йЋы‘©ЊvЋZ
+		dt = (L - CalcNurbsCLength(0,t))/CalcEuclid(CalcDiffNurbsC(t))/2;		// ѓjѓ…Ѓ[ѓgѓ“–@‚Й‚ж‚йЋы‘©ЊvЋZ
 		t += dt;
-		if(count > LOOPCOUNTMAX || t > C->V[1]){
+		if(count > LOOPCOUNTMAX || t > V[1]){
 			GuiIF.SetMessage("NURBS_Func ERROR: Cannot find a anser");
 			break;
 		}
@@ -5740,25 +6199,27 @@ double NURBS_Func::CalcParamLengthOnNurbsC(NURBSC *C,double L,double Init_t)
 }
 
 // Function: CalcDeltaPtsOnNurbsS
-// жЊ‡е®љгЃ—гЃџе€†е‰Іж•°гЃ§NURBSж›ІйќўдёЉгЃ®еє§жЁ™еЂ¤г‚’ж±‚г‚Ѓг‚‹
+// Ћw’и‚µ‚Ѕ•ЄЉ„ђ”‚ЕNURBS‹И–КЏг‚МЌА•W’l‚р‹Ѓ‚Я‚й
 // 
 // Parameters:
-// *S - NURBSSгЃёгЃ®гѓќг‚¤гѓіг‚ї  
-// Du,Dv - uж–№еђ‘пјЊvж–№еђ‘гЃ®е€†е‰Іж•°  
-// **Pts - е‡єеЉ›гЃ•г‚Њг‚‹еє§жЁ™еЂ¤г‚’ж јзґЌ
+// *S - NURBSS‚Ц‚Мѓ|ѓCѓ“ѓ^  
+// Du,Dv - u•ыЊьЃCv•ыЊь‚М•ЄЉ„ђ”  
+// **Pts - Џo—Н‚і‚к‚йЌА•W’l‚рЉi”[
 //
 // Return:
-// з‚№ж•°
-int NURBS_Func::CalcDeltaPtsOnNurbsS(NURBSS *S,int Du,int Dv,Coord **Pts)
+// “_ђ”
+//int NURBS_Func::CalcDeltaPtsOnNurbsS(NURBSS *S,int Du,int Dv,Coord **Pts)
+int NURBSS::CalcDeltaPtsOnNurbsS(int Du,int Dv,Coord **Pts)
 {
-	double u_val = (S->U[1] - S->U[0])/Du;		// гѓ‘гѓ©гѓЎгѓ€гѓЄгѓѓг‚Їз©єй–“е†…гЃ§гЃ®uж–№еђ‘з·ље€†й•·г‚’еѕ—г‚‹
-	double v_val = (S->V[1] - S->V[0])/Dv;		// гѓ‘гѓ©гѓЎгѓ€гѓЄгѓѓг‚Їз©єй–“е†…гЃ§гЃ®vж–№еђ‘з·ље€†й•·г‚’еѕ—г‚‹
+	double u_val = (U[1] - U[0])/Du;		// ѓpѓ‰ѓЃѓgѓЉѓbѓN‹уЉФ“а‚Е‚Мu•ыЊьђь•Є’·‚р“ѕ‚й
+	double v_val = (V[1] - V[0])/Dv;		// ѓpѓ‰ѓЃѓgѓЉѓbѓN‹уЉФ“а‚Е‚Мv•ыЊьђь•Є’·‚р“ѕ‚й
 
-	// uж–№еђ‘пјЊvж–№еђ‘гЃ®еђ„е€†е‰Із‚№гЃ«гЃЉгЃ‘г‚‹еє§жЁ™еЂ¤г‚’ж±‚г‚Ѓг‚‹
+	// u•ыЊьЃCv•ыЊь‚МЉe•ЄЉ„“_‚Й‚Ё‚Ї‚йЌА•W’l‚р‹Ѓ‚Я‚й
 	int num=0;
 	for(int i=0;i<=Du;i++){
 		for(int j=0;j<=Dv;j++){
-			Pts[i][j] = CalcNurbsSCoord(S,S->U[0]+u_val*i,S->V[0]+v_val*j);	// жЊ‡е®љгЃ—гЃџ(u,v)гЃ®еє§жЁ™еЂ¤г‚’ж±‚г‚Ѓг‚‹
+//			Pts[i][j] = CalcNurbsSCoord(S,S->U[0]+u_val*i,S->V[0]+v_val*j);	// Ћw’и‚µ‚Ѕ(u,v)‚МЌА•W’l‚р‹Ѓ‚Я‚й
+			Pts[i][j] = CalcNurbsSCoord(U[0]+u_val*i,V[0]+v_val*j);	// Ћw’и‚µ‚Ѕ(u,v)‚МЌА•W’l‚р‹Ѓ‚Я‚й
 			num++;
 		}
 	}
@@ -5767,21 +6228,23 @@ int NURBS_Func::CalcDeltaPtsOnNurbsS(NURBSS *S,int Du,int Dv,Coord **Pts)
 }
 
 // Funciton: RemoveTheSamePoints
-// (private)еђЊдёЂз‚№г‚’й™¤еЋ»гЃ™г‚‹
+// (private)“Ї€к“_‚рЏњ‹Ћ‚·‚й
 //
 // Parameters:
-// *S - ж›Ійќў 
-// *Q - ж›ІйќўдёЉгЃ®(u,v)гѓ‘гѓ©гѓЎгѓјг‚їзѕ¤(е¤‰ж›ґеѕЊгЃ®з‚№зѕ¤г‚‚гЃ“гЃ“гЃ«ж јзґЌгЃ•г‚Њг‚‹)   
-// N - з‚№ж•°
+// *S - ‹И–К 
+// *Q - ‹И–КЏг‚М(u,v)ѓpѓ‰ѓЃЃ[ѓ^ЊQ(•ПЌXЊг‚М“_ЊQ‚а‚±‚±‚ЙЉi”[‚і‚к‚й)   
+// N - “_ђ”
 //
 // Return:
-// е¤‰ж›ґеѕЊгЃ®з‚№ж•°
-int NURBS_Func::RemoveTheSamePoints(NURBSS *S,Coord *Q,int N)
+// •ПЌXЊг‚М“_ђ”
+//int NURBS_Func::RemoveTheSamePoints(NURBSS *S,Coord *Q,int N)
+int NURBSS::RemoveTheSamePoints(Coord *Q,int N)
 {
 	Coord *P = NewCoord1(N);
 
 	for(int i=0;i<N;i++){
-		P[i] = CalcNurbsSCoord(S,Q[i].x,Q[i].y);
+//		P[i] = CalcNurbsSCoord(S,Q[i].x,Q[i].y);
+		P[i] = CalcNurbsSCoord(Q[i].x,Q[i].y);
 		P[i].dmy = KOD_FALSE;
 	}
 	for(int i=0;i<N;i++){
@@ -5805,46 +6268,49 @@ int NURBS_Func::RemoveTheSamePoints(NURBSS *S,Coord *Q,int N)
 }
 
 // Function: CalcExtremumNurbsC
-// NURBSж›Із·љгЃ®жЊ‡е®љгЃ—гЃџж–№еђ‘гЃ«гЃЉгЃ‘г‚‹жҐµеЂ¤гЃ®еє§жЁ™еЂ¤г‚’еѕ—г‚‹
+// NURBS‹Иђь‚МЋw’и‚µ‚Ѕ•ыЊь‚Й‚Ё‚Ї‚й‹Й’l‚МЌА•W’l‚р“ѕ‚й
 //
 // Parameters:
-// *C - жҐµеЂ¤еє§жЁ™г‚’ж±‚г‚ЃгЃџгЃ„NURBSж›Із·љгЃёгЃ®гѓќг‚¤гѓіг‚ї   
-// nf - ж–№еђ‘гѓ™г‚Їгѓ€гѓ«     
-// *pt - еѕ—г‚‰г‚ЊгЃџжҐµеЂ¤гЃ®Nurbsж›Із·љгѓ‘гѓ©гѓЎгѓјг‚їеЂ¤е€—    
-// ptnum - *ptгЃ®й…Ќе€—й•·
+// *C - ‹Й’lЌА•W‚р‹Ѓ‚Я‚Ѕ‚ўNURBS‹Иђь‚Ц‚Мѓ|ѓCѓ“ѓ^   
+// nf - •ыЊьѓxѓNѓgѓ‹     
+// *pt - “ѕ‚з‚к‚Ѕ‹Й’l‚МNurbs‹Иђьѓpѓ‰ѓЃЃ[ѓ^’l—с    
+// ptnum - *pt‚М”z—с’·
 //
 // Return:
-// еѕ—г‚‰г‚ЊгЃџжҐµеЂ¤гѓ‘гѓ©гѓЎгѓјг‚їгЃ®ж•°пј€KOD_FALSE:еѕ—г‚‰г‚ЊгЃЄгЃ‹гЃЈгЃџ, KOD_ERR:жҐµеЂ¤гѓ‘гѓ©гѓЎгѓјг‚їгЃ®ж•°гЃЊptnumг‚’и¶…гЃ€гЃџпј‰
-int NURBS_Func::CalcExtremumNurbsC(NURBSC *C,Coord nf,double *pt,int ptnum)
+// “ѕ‚з‚к‚Ѕ‹Й’lѓpѓ‰ѓЃЃ[ѓ^‚Мђ”ЃiKOD_FALSE:“ѕ‚з‚к‚И‚©‚Б‚Ѕ, KOD_ERR:‹Й’lѓpѓ‰ѓЃЃ[ѓ^‚Мђ”‚Єptnum‚р’ґ‚¦‚ЅЃj
+//int NURBS_Func::CalcExtremumNurbsC(NURBSC *C,Coord nf,double *pt,int ptnum)
+int NURBSC::CalcExtremumNurbsC(Coord nf,double *pt,int ptnum)
 {
-	int anscount=0;			// жҐµеЂ¤гЃ®ж•°
+	int anscount=0;			// ‹Й’l‚Мђ”
 
-	// NURBSж›Із·љгЃ®гѓ‘гѓ©гѓЎгѓјг‚їеЊєй–“г‚’CONVDIVNUMгЃ§еЊєе€‡г‚ЉгЂЃгЃќг‚ЊгЃћг‚ЊгЃ«еЇѕгЃ—гЃ¦гѓ‹гѓҐгѓјгѓ€гѓіжі•гЃ«г‚€г‚‹еЏЋжќџиЁ€з®—г‚’иЎЊгЃ†
+	// NURBS‹Иђь‚Мѓpѓ‰ѓЃЃ[ѓ^‹жЉФ‚рCONVDIVNUM‚Е‹жђШ‚иЃA‚»‚к‚ј‚к‚Й‘О‚µ‚Дѓjѓ…Ѓ[ѓgѓ“–@‚Й‚ж‚йЋы‘©ЊvЋZ‚рЌs‚¤
 	for(int i=0;i<=CONVDIVNUM;i++){
-		double t = C->V[0] + (C->V[1] - C->V[0])/CONVDIVNUM*(double)i;	// жЋўзґўй–‹е§‹гѓ‘гѓ©гѓЎгѓјг‚їеЂ¤
-		double dt=0;					// гѓ‹гѓҐгѓјгѓ€гѓіжі•з”ЁгЃ®еў—е€†еЂ¤
-		int lpcount=0;					// еЏЋжќџиЁ€з®—е›ћж•°
-		bool flag = false;				// дѕ‹е¤–гѓ•гѓ©г‚°
+		double t = V[0] + (V[1] - V[0])/CONVDIVNUM*(double)i;	// ’TЌхЉJЋnѓpѓ‰ѓЃЃ[ѓ^’l
+		double dt=0;					// ѓjѓ…Ѓ[ѓgѓ“–@—p‚М‘ќ•Є’l
+		int lpcount=0;					// Ћы‘©ЊvЋZ‰сђ”
+		bool flag = false;				// —бЉOѓtѓ‰ѓO
 
-		// еЏЋжќџиЁ€з®—
+		// Ћы‘©ЊvЋZ
 		while(lpcount < LOOPCOUNTMAX){
-			double f_ = CalcInnerProduct(nf,CalcDiffNurbsC(C,t));
-			double f__ = CalcInnerProduct(nf,CalcDiff2NurbsC(C,t));
+//			double f_ = CalcInnerProduct(nf,CalcDiffNurbsC(C,t));
+//			double f__ = CalcInnerProduct(nf,CalcDiff2NurbsC(C,t));
+			double f_ = CalcInnerProduct(nf,CalcDiffNurbsC(t));
+			double f__ = CalcInnerProduct(nf,CalcDiff2NurbsC(t));
 			if(f__ == 0.0)	break;
 			dt = f_/f__;
 
-			if(CheckZero(dt,MID_ACCURACY)){			// еЏЋжќџгЃ—гЃџ
+			if(CheckZero(dt,MID_ACCURACY)){			// Ћы‘©‚µ‚Ѕ
 				flag = true;
 				break;
 			}
-			t -= dt;	// гѓ‹гѓҐгѓјгѓ€гѓігѓ‘гѓ©гѓЎгѓјг‚їж›ґж–°
-			if(t < C->V[0] || t > C->V[1])	break;		// зЇ„е›Іе¤–гЃ«е‡єгЃџ
+			t -= dt;	// ѓjѓ…Ѓ[ѓgѓ“ѓpѓ‰ѓЃЃ[ѓ^ЌXђV
+			if(t < V[0] || t > V[1])	break;		// ”Н€НЉO‚ЙЏo‚Ѕ
 			lpcount++;
 		}// End while
 
-		// еЏЋжќџгЃ—гЃ¦гЃ„гЃџг‚‰
+		// Ћы‘©‚µ‚Д‚ў‚Ѕ‚з
 		if(flag == true){
-			pt[anscount] = t;	// и§ЈгЃЁгЃ—гЃ¦з™»йЊІ
+			pt[anscount] = t;	// ‰р‚Ж‚µ‚Д“o^
 			anscount++;
 			if(anscount == ptnum){
                 GuiIF.SetMessage("NURBS_ERROR:range over");
@@ -5854,70 +6320,71 @@ int NURBS_Func::CalcExtremumNurbsC(NURBSC *C,Coord nf,double *pt,int ptnum)
 
 	}// End for i
 
-	anscount = CheckTheSamePoints(pt,anscount);		// еђЊдёЂз‚№г‚’й™¤еЋ»гЃ™г‚‹
+	anscount = CheckTheSamePoints(pt,anscount);		// “Ї€к“_‚рЏњ‹Ћ‚·‚й
 
 	return anscount;
 }
 
 // Function: CalcExtSearchCurve
-// пј€жє–е‚™дё­пј‰жҐµеЂ¤жЋўзґўз·љг‚’еѕ—г‚‹
+// ЃiЏЂ”х’†Ѓj‹Й’l’TЌхђь‚р“ѕ‚й
 // 
 // Parameters:
-// *S - еЇѕи±ЎгЃЁгЃ™г‚‹NURBSж›Із·љ
-// n - жі•з·љгѓ™г‚Їгѓ€гѓ«
+// *S - ‘ОЏЫ‚Ж‚·‚йNURBS‹Иђь
+// n - –@ђьѓxѓNѓgѓ‹
 // pt - 
-// ds - жҐµеЂ¤жЋўзґўз·љг‚’иїЅи·ЎгЃ™г‚‹йљ›гЃ®е€»гЃїе№…
-// *C1 - еѕ—г‚‰г‚ЊгЃџжҐµеЂ¤жЋўзґўз·љпј€NURBSж›Із·љпј‰
-// *C2 -  еѕ—г‚‰г‚ЊгЃџжҐµеЂ¤жЋўзґўз·љпј€NURBSж›Із·љпј‰пј€жҐµењ°жЋўзґўз·љгЃЇ2гЃ¤еѕ—г‚‰г‚Њг‚‹пј‰
+// ds - ‹Й’l’TЌхђь‚р’ЗђХ‚·‚йЌЫ‚МЌЏ‚Э•ќ
+// *C1 - “ѕ‚з‚к‚Ѕ‹Й’l’TЌхђьЃiNURBS‹ИђьЃj
+// *C2 -  “ѕ‚з‚к‚Ѕ‹Й’l’TЌхђьЃiNURBS‹ИђьЃjЃi‹Й’n’TЌхђь‚Н2‚В“ѕ‚з‚к‚йЃj
 //
 // Return:
 // KOD_TRUE
 int NURBS_Func::CalcExtSearchCurve(NURBSS *S,Coord n,Coord pt,double ds,NURBSC *C1,NURBSC *C2)
 {
-	// е·Ґдє‹дё­
+	// ЌHЋ–’†
 	return KOD_TRUE;
 }
 
 // Function: CalcExtGradCurve
-// пј€жє–е‚™дё­пј‰жҐµеЂ¤е‚ѕж–њз·љг‚’еѕ—г‚‹
+// ЃiЏЂ”х’†Ѓj‹Й’lЊXЋОђь‚р“ѕ‚й
 //
 // Parameters:
-// *S - еЇѕи±ЎгЃЁгЃ™г‚‹NURBSж›Із·љ
-// n - жі•з·љгѓ™г‚Їгѓ€гѓ«
+// *S - ‘ОЏЫ‚Ж‚·‚йNURBS‹Иђь
+// n - –@ђьѓxѓNѓgѓ‹
 // pt - 
-// ds - жҐµеЂ¤е‚ѕж–њз·љг‚’иїЅи·ЎгЃ™г‚‹йљ›гЃ®е€»гЃїе№…
-// *C1 - еѕ—г‚‰г‚ЊгЃџжҐµеЂ¤е‚ѕж–њз·љпј€NURBSж›Із·љпј‰
-// *C2 -  еѕ—г‚‰г‚ЊгЃџжҐµеЂ¤е‚ѕж–њз·љпј€NURBSж›Із·љпј‰пј€жҐµеЂ¤е‚ѕж–њз·љгЃЇ2гЃ¤еѕ—г‚‰г‚Њг‚‹пј‰
+// ds - ‹Й’lЊXЋОђь‚р’ЗђХ‚·‚йЌЫ‚МЌЏ‚Э•ќ
+// *C1 - “ѕ‚з‚к‚Ѕ‹Й’lЊXЋОђьЃiNURBS‹ИђьЃj
+// *C2 -  “ѕ‚з‚к‚Ѕ‹Й’lЊXЋОђьЃiNURBS‹ИђьЃjЃi‹Й’lЊXЋОђь‚Н2‚В“ѕ‚з‚к‚йЃj
 //
 // Return:
 // KOD_TRUE
 int NURBS_Func::CalcExtGradCurve(NURBSS *S,Coord n,Coord pt,double ds,NURBSC *C1,NURBSC *C2)
 {
-	// е·Ґдє‹дё­
+	// ЌHЋ–’†
 	return KOD_TRUE;
 }
 
 // Funciton: TrimNurbsSPlane
-// NURBSж›Ійќўг‚’е№ійќўгЃ§гѓ€гѓЄгѓ гЃ™г‚‹
+// NURBS‹И–К‚р•Ѕ–К‚ЕѓgѓЉѓЂ‚·‚й
 //
 // Parameters:
-// *Trm - гѓ€гѓЄгѓ йќўпј€гѓ€гѓЄгѓ гЃ•г‚ЊгЃџйќўг‚‚гЃ“гЃ“гЃ«е…Ґг‚‹пј‰
-// pt - е№ійќўдёЉгЃ®1з‚№
-// nvec - е№ійќўгЃ®жі•з·љгѓ™г‚Їгѓ€гѓ«
+// *Trm - ѓgѓЉѓЂ–КЃiѓgѓЉѓЂ‚і‚к‚Ѕ–К‚а‚±‚±‚Й“ь‚йЃj
+// pt - •Ѕ–КЏг‚М1“_
+// nvec - •Ѕ–К‚М–@ђьѓxѓNѓgѓ‹
 //
 // Return:
 // KOD_TRUE
 int NURBS_Func::TrimNurbsSPlane(TRMS *Trm,Coord pt,Coord nvec)
 {
-	Coord t[2000];					// и§Ј
-	int   num;						// и§ЈгЃ®ж•°
-	double pcolor[3] = {0,1,0};		// иЎЁз¤єгЃ®и‰І
+	Coord t[2000];					// ‰р
+	int   num;						// ‰р‚Мђ”
+	double pcolor[3] = {0,1,0};		// •\Ћ¦‚МђF
 	double tcolor[3] = {1,0,0};
 
 
-	num = CalcIntersecPtsPlaneSearch(Trm->pts,pt,nvec,0.5,5,t,2000,RUNGE_KUTTA);		// NURBSж›ІйќўгЃЁе№ійќўгЃЁгЃ®дє¤з‚№зѕ¤г‚’дє¤з·љиїЅи·Ўжі•гЃ§ж±‚г‚Ѓг‚‹
+//	num = CalcIntersecPtsPlaneSearch(Trm->pts,pt,nvec,0.5,5,t,2000,RUNGE_KUTTA);		// NURBS‹И–К‚Ж•Ѕ–К‚Ж‚МЊр“_ЊQ‚рЊрђь’ЗђХ–@‚Е‹Ѓ‚Я‚й
+	num = Trm->pts->CalcIntersecPtsPlaneSearch(pt,nvec,0.5,5,t,2000,RUNGE_KUTTA);		// NURBS‹И–К‚Ж•Ѕ–К‚Ж‚МЊр“_ЊQ‚рЊрђь’ЗђХ–@‚Е‹Ѓ‚Я‚й
 	
-	// гѓ‘гѓ©гѓЎгѓ€гѓЄгѓѓг‚Їй еџџе†…гЃ§з›ґз·љиї‘дјј(жњЂе°Џ2д№—жі•гЃ§иї‘дјјз›ґз·љгЃ®дї‚ж•°2гЃ¤г‚’ж±‚г‚Ѓг‚‹)
+	// ѓpѓ‰ѓЃѓgѓЉѓbѓN—М€ж“а‚Е’јђь‹ЯЋ—(ЌЕЏ¬2Џж–@‚Е‹ЯЋ—’јђь‚МЊWђ”2‚В‚р‹Ѓ‚Я‚й)
 	Matrix A = NewMatrix(2,2);
 	Matrix A_ = NewMatrix(2,2);
 	Vector B = NewVector(2);
@@ -5933,16 +6400,16 @@ int NURBS_Func::TrimNurbsSPlane(TRMS *Trm,Coord pt,Coord nvec)
 	A[1][0] = A[0][1];
 	A[1][1] = (double)num;
 	MatInv2(A,A_);
-	MulMxVec(A_,2,2,B,2,B_);		// з›ґз·љгЃ®дї‚ж•°гЃЊB_гЃ«ж јзґЌгЃ•г‚Њг‚‹гЂ‚y = B_[0]x + B_[1]
+	MulMxVec(A_,2,2,B,2,B_);		// ’јђь‚МЊWђ”‚ЄB_‚ЙЉi”[‚і‚к‚йЃBy = B_[0]x + B_[1]
 
-	// з«Їз‚№жЉЅе‡є
-	// гѓ‘гѓ©гѓЎгѓ€гѓЄгѓѓг‚Їй еџџе†…гЃ®U-VгЃ®зЇ„е›Іг‚’ж±єг‚Ѓг‚‹4з‚№гЃ‹г‚‰еѕ—г‚‰г‚Њг‚‹4жњ¬гЃ®з›ґз·љгЃЁгЂЃгЃ•гЃЈгЃЌж±‚г‚ЃгЃџиї‘дјјз›ґз·љгЃЁгЃ®дє¤з‚№4гЃ¤г‚’ж±‚г‚Ѓг‚‹
+	// ’[“_’ЉЏo
+	// ѓpѓ‰ѓЃѓgѓЉѓbѓN—М€ж“а‚МU-V‚М”Н€Н‚рЊ€‚Я‚й4“_‚©‚з“ѕ‚з‚к‚й4–{‚М’јђь‚ЖЃA‚і‚Б‚«‹Ѓ‚Я‚Ѕ‹ЯЋ—’јђь‚Ж‚МЊр“_4‚В‚р‹Ѓ‚Я‚й
 	Coord P[4];
 	P[0] = TrimNurbsSPlaneSub1(B_[0],B_[1],Trm->pts->U[0],Trm->pts->V[0],Trm->pts->U[1],Trm->pts->V[0]);
 	P[1] = TrimNurbsSPlaneSub1(B_[0],B_[1],Trm->pts->U[1],Trm->pts->V[0],Trm->pts->U[1],Trm->pts->V[1]);
 	P[2] = TrimNurbsSPlaneSub1(B_[0],B_[1],Trm->pts->U[1],Trm->pts->V[1],Trm->pts->U[0],Trm->pts->V[1]);
 	P[3] = TrimNurbsSPlaneSub1(B_[0],B_[1],Trm->pts->U[0],Trm->pts->V[1],Trm->pts->U[0],Trm->pts->V[0]);
-	// еѕ—г‚‰г‚ЊгЃџ4гЃ¤гЃ®дє¤з‚№PгЃ‹г‚‰гЂЃU-VзЇ„е›Іе†…гЃ«гЃ‚г‚‹2з‚№г‚’жЉЅе‡є
+	// “ѕ‚з‚к‚Ѕ4‚В‚МЊр“_P‚©‚зЃAU-V”Н€Н“а‚Й‚ ‚й2“_‚р’ЉЏo
 	Coord Q[2];
 	int j=0;
 	for(int i=0;i<4;i++){
@@ -5951,7 +6418,7 @@ int NURBS_Func::TrimNurbsSPlane(TRMS *Trm,Coord pt,Coord nvec)
 			j++;
 		}
 	}
-	// еѕ—г‚‰г‚ЊгЃџ2гЃ¤гЃ®з‚№QгЃ‹г‚‰NURBSж›Із·љ(з›ґз·љ)г‚’з”џж€ђ
+	// “ѕ‚з‚к‚Ѕ2‚В‚М“_Q‚©‚зNURBS‹Иђь(’јђь)‚рђ¶ђ¬
 	double T[4] = {0,0,1,1};
 	double W[2] = {1,1};
 	double V[2] = {0,1};
@@ -5961,13 +6428,14 @@ int NURBS_Func::TrimNurbsSPlane(TRMS *Trm,Coord pt,Coord nvec)
 	InitCoord(&cp[1]);
 	//GenNurbsC(&body->CompC[i].DegeNurbs,2,2,4,T,W,cp,V,prop,1);	
 
-	// гЃ™гЃ§гЃ«з™»йЊІгЃ•г‚ЊгЃ¦гЃ„г‚‹е¤–е‘Ёгѓ€гѓЄгѓ ж›Із·љгЃЁгЂЃж–°гЃџгЃ«е°Ће‡єгЃ—гЃџе¤–е‘Ёгѓ€гѓЄгѓ з”Ёз›ґз·љQгЃ‹г‚‰гЂЃж–°гЃџгЃЄй–‰ж›Із·љг‚’еЅўж€ђ
+	// ‚·‚Е‚Й“o^‚і‚к‚Д‚ў‚йЉOЋьѓgѓЉѓЂ‹Иђь‚ЖЃAђV‚Ѕ‚Й“±Џo‚µ‚ЅЉOЋьѓgѓЉѓЂ—p’јђьQ‚©‚зЃAђV‚Ѕ‚И•В‹Иђь‚рЊ`ђ¬
 	
 
 	FILE *fp = fopen("Debug.csv","w");
 	for(int i=0;i<num;i++){
-		Coord p = CalcNurbsSCoord(Trm->pts,t[i].x,t[i].y);			// дє¤з‚№г‚’гѓ‘гѓ©гѓЎгѓјг‚їеЂ¤гЃ‹г‚‰еє§жЁ™еЂ¤гЃёе¤‰жЏ›
-		DrawPoint(p,1,3,pcolor);			// дє¤з‚№г‚’жЏЏз”»
+//		Coord p = CalcNurbsSCoord(Trm->pts,t[i].x,t[i].y);			// Њр“_‚рѓpѓ‰ѓЃЃ[ѓ^’l‚©‚зЌА•W’l‚Ц•ПЉ·
+		Coord p = Trm->pts->CalcNurbsSCoord(t[i].x,t[i].y);			// Њр“_‚рѓpѓ‰ѓЃЃ[ѓ^’l‚©‚зЌА•W’l‚Ц•ПЉ·
+		DrawPoint(p,1,3,pcolor);			// Њр“_‚р•`‰ж
 		fprintf(fp,"%lf,%lf\n",t[i].x,t[i].y);
 	}
 	fclose(fp);
@@ -5976,59 +6444,60 @@ int NURBS_Func::TrimNurbsSPlane(TRMS *Trm,Coord pt,Coord nvec)
 }
 
 // Function: SearchExtremum_BS
-// Bulirsch-Stoerжі•гЃ«г‚€г‚ЉжҐµењ°жЋўзґўг‚’иЎЊгЃ†(еѕ®е€†ж–№зЁ‹ејЏпјљdu(s)/ds = fu(u,v) гЃЁгЂЃdv(s)/ds = fv(u,v)гЃ®и§ЈжЋўзґў)
+// Bulirsch-Stoer–@‚Й‚ж‚и‹Й’n’TЌх‚рЌs‚¤(”ч•Є•ы’цЋ®ЃFdu(s)/ds = fu(u,v) ‚ЖЃAdv(s)/ds = fv(u,v)‚М‰р’TЌх)
 // 
 // Parameters:
-// *S - жҐµеЂ¤жЋўзґўгЃ•г‚Њг‚‹NURBSж›ІйќўгЃёгЃ®гѓќг‚¤гѓіг‚ї
-// nf - е№ійќўгЃ®жі•з·љгѓ™г‚Їгѓ€гѓ«
-// u0,v0 - й–‹е§‹з‚№
-// H - жЋўзґўе№…
-// param - uж–№еђ‘гЃ®1йљЋеѕ®е€†гЃЊ0гЃЁгЃЄг‚‹жҐµеЂ¤гЃ®жЋўзґў(PARAM_U) or vж–№еђ‘жЋўзґў(PARAM_V)гЃ®йЃёжЉћ
-// direction - й †ж–№еђ‘жЋўзґў(FORWARD) orйЂ†ж–№еђ‘жЋўзґў(INVERSE)
-// *ans - ж›ґж–°гЃ•г‚ЊгЃџu,vгѓ‘гѓ©гѓЎгѓјг‚ї(ans.x = u, ans.y = v)
+// *S - ‹Й’l’TЌх‚і‚к‚йNURBS‹И–К‚Ц‚Мѓ|ѓCѓ“ѓ^
+// nf - •Ѕ–К‚М–@ђьѓxѓNѓgѓ‹
+// u0,v0 - ЉJЋn“_
+// H - ’TЌх•ќ
+// param - u•ыЊь‚М1ЉK”ч•Є‚Є0‚Ж‚И‚й‹Й’l‚М’TЌх(PARAM_U) or v•ыЊь’TЌх(PARAM_V)‚М‘I‘р
+// direction - Џ‡•ыЊь’TЌх(FORWARD) or‹t•ыЊь’TЌх(INVERSE)
+// *ans - ЌXђV‚і‚к‚Ѕu,vѓpѓ‰ѓЃЃ[ѓ^(ans.x = u, ans.y = v)
 //
 // Return:
-// KOD_TRUE:ж­Јеёёзµ‚дє†,  KOD_FALSE:з‰№з•°з‚№гЃ«г‚€г‚Ље‡¦зђ†г‚’дё­ж–­,  KOD_ERR:гѓ‘гѓ©гѓЎгѓјг‚їгЃ®жЊ‡е®љгѓџг‚№гЃ«г‚€г‚Ље‡¦зђ†г‚’дё­ж–­
-int NURBS_Func::SearchExtremum_BS(NURBSS *S,Coord nf,double u0,double v0,double H,int param,int direction,Coord *ans)
+// KOD_TRUE:ђіЏнЏI—№,  KOD_FALSE:“Б€Щ“_‚Й‚ж‚иЏ€—ќ‚р’†’f,  KOD_ERR:ѓpѓ‰ѓЃЃ[ѓ^‚МЋw’иѓ~ѓX‚Й‚ж‚иЏ€—ќ‚р’†’f
+//int NURBS_Func::SearchExtremum_BS(NURBSS *S,Coord nf,double u0,double v0,double H,int param,int direction,Coord *ans)
+int NURBSS::SearchExtremum_BS(Coord nf,double u0,double v0,double H,int param,int direction,Coord *ans)
 {
-	// еј•ж•°жЊ‡е®љгѓџг‚№
+	// €шђ”Ћw’иѓ~ѓX
 	if(direction != FORWARD && direction != INVERSE){
         GuiIF.SetMessage("NURBS ERROR: selected wrong direction");
 		return KOD_ERR;
 	}
 
-	int    n[11] = {2,4,6,8,12,16,24,32,48,64,96};		// B-Sжі•гЃ®е€†е‰Іж•°зѕ¤г‚’жЊ‡е®љ
-	Coord  z[97];							// дї®ж­Јдё­з‚№жі•гЃ®дё­й–“еЂ¤г‚’ж јзґЌ(z.x = u, z.y = v)
+	int    n[11] = {2,4,6,8,12,16,24,32,48,64,96};		// B-S–@‚М•ЄЉ„ђ”ЊQ‚рЋw’и
+	Coord  z[97];							// ЏCђі’†“_–@‚М’†ЉФ’l‚рЉi”[(z.x = u, z.y = v)
 	Coord  f;								// f.x = fu(u,v), f.y = fv(u,v)
-	Coord  D[10][10],C[10][10],P[11];		// B-Sжі•гЃ®дё­й–“гѓ‘гѓ©гѓЎгѓјг‚ї
-	double h[11];							// B-Sжі•гЃ®е€»гЃїе№…
-	Coord  R;								// h=0гЃ®е¤–жЊїеЂ¤
-	int    conv_flag = KOD_FALSE;			// еЏЋжќџгѓ•гѓ©г‚°
+	Coord  D[10][10],C[10][10],P[11];		// B-S–@‚М’†ЉФѓpѓ‰ѓЃЃ[ѓ^
+	double h[11];							// B-S–@‚МЌЏ‚Э•ќ
+	Coord  R;								// h=0‚МЉO‘}’l
+	int    conv_flag = KOD_FALSE;			// Ћы‘©ѓtѓ‰ѓO
 
-	// еђ„е€†е‰Іж•°гЃ«гЃЉгЃ‘г‚‹е€»гЃїе№…г‚’ж±‚г‚ЃгЃ¦гЃЉгЃЏ
+	// Љe•ЄЉ„ђ”‚Й‚Ё‚Ї‚йЌЏ‚Э•ќ‚р‹Ѓ‚Я‚Д‚Ё‚­
 	for(int i=0;i<11;i++)
 		h[i] = H/n[i];
 	
-	// е€»гЃїе№…г‚’е°ЏгЃ•гЃ„ж–№гЃ‹г‚‰й †гЃ«е¤‰ж›ґгЃ—гЃЄгЃЊг‚‰гЂЃB-Sжі•гЃ«г‚€г‚‹е¤–жЊїеЂ¤г‚’иЁ€з®—гЃ—гЃ¦гЃ„гЃЏ
+	// ЌЏ‚Э•ќ‚рЏ¬‚і‚ў•ы‚©‚зЏ‡‚Й•ПЌX‚µ‚И‚Є‚зЃAB-S–@‚Й‚ж‚йЉO‘}’l‚рЊvЋZ‚µ‚Д‚ў‚­
 	for(int i=0;i<11;i++){
 
-		// гЃѕгЃљгЂЃu(s+H)гЃ®еЂ¤г‚’дї®ж­Јдё­з‚№жі•гЃ«г‚€г‚ЉиЁ€з®—гЃ™г‚‹
-		z[0] = SetCoord(u0,v0,0);										// z0гЃЁz1гЃ®з®—е‡єгЃЇе€Ґе‡¦зђ†
-		if(GetSECParam1(S,u0,v0,nf,param,direction,&f) == KOD_FALSE)	// z0гЃ§гЃ®еѕ®е€†ж–№зЁ‹ејЏгЃ®еЏіиѕєг‚’иЁ€з®—
+		// ‚Ь‚ёЃAu(s+H)‚М’l‚рЏCђі’†“_–@‚Й‚ж‚иЊvЋZ‚·‚й
+		z[0] = SetCoord(u0,v0,0);										// z0‚Жz1‚МЋZЏo‚Н•КЏ€—ќ
+		if(GetSECParam1(u0,v0,nf,param,direction,&f) == KOD_FALSE)	// z0‚Е‚М”ч•Є•ы’цЋ®‚М‰E•У‚рЊvЋZ
 			return KOD_FALSE;
 			//fprintf(stderr,"f%d=(%lf,%lf)\n",i,f.x,f.y);
-		z[1] = AddCoord(z[0],MulCoord(f,h[i]));							// z0гЃЁz1гЃ®з®—е‡єгЃЇе€Ґе‡¦зђ†
+		z[1] = AddCoord(z[0],MulCoord(f,h[i]));							// z0‚Жz1‚МЋZЏo‚Н•КЏ€—ќ
 		for(int j=1;j<n[i];j++){
-			if(GetSECParam1(S,z[j].x,z[j].y,nf,param,direction,&f) == KOD_FALSE)	// zjгЃ§гЃ®еѕ®е€†ж–№зЁ‹ејЏгЃ®еЏіиѕєг‚’иЁ€з®—
+			if(GetSECParam1(z[j].x,z[j].y,nf,param,direction,&f) == KOD_FALSE)	// zj‚Е‚М”ч•Є•ы’цЋ®‚М‰E•У‚рЊvЋZ
 				return KOD_FALSE;
-			z[j+1] = AddCoord(z[j-1],MulCoord(f,2*h[i]));				// z2пЅћznгЃѕгЃ§г‚’з®—е‡є
+			z[j+1] = AddCoord(z[j-1],MulCoord(f,2*h[i]));				// z2Ѓ`zn‚Ь‚Е‚рЋZЏo
 		}
-		if(GetSECParam1(S,z[n[i]].x,z[n[i]].y,nf,param,direction,&f) == KOD_FALSE)	// znгЃ§гЃ®еѕ®е€†ж–№зЁ‹ејЏгЃ®еЏіиѕєг‚’иЁ€з®—
+		if(GetSECParam1(z[n[i]].x,z[n[i]].y,nf,param,direction,&f) == KOD_FALSE)	// zn‚Е‚М”ч•Є•ы’цЋ®‚М‰E•У‚рЊvЋZ
 			return KOD_FALSE;
 		P[i] = DivCoord(AddCoord(AddCoord(z[n[i]],z[n[i]-1]),MulCoord(f,h[i])),2);		// u(s+H)
 			//fprintf(stderr,"P%d=(%lf,%lf)\n",i,P[i].x,P[i].y);
 
-		// B-Sжі•гЃ®е·®е€†иЎЁг‚’й †ж¬Ўж±‚г‚ЃгЃ¦гЃ„гЃЏ
+		// B-S–@‚МЌ·•Є•\‚рЏ‡Ћџ‹Ѓ‚Я‚Д‚ў‚­
 		if(i > 0)	R = SetCoord(P[i-1]);
 		for(int k=i-1;k>=0;k--){
 			double x1 = h[k]*h[k];
@@ -6041,13 +6510,13 @@ int NURBS_Func::SearchExtremum_BS(NURBSS *S,Coord nf,double u0,double v0,double 
 				C[k][i-1-k] = MulCoord(SubCoord(C[k+1][i-2-k],D[k][i-2-k]),x1/(x1-x2));
 				D[k][i-1-k] = MulCoord(SubCoord(C[k+1][i-2-k],D[k][i-2-k]),x2/(x1-x2));
 			}
-			R = AddCoord(R,D[k][i-1-k]);		// е¤–жЊїеЂ¤
+			R = AddCoord(R,D[k][i-1-k]);		// ЉO‘}’l
 			//fprintf(stderr,"%d,D%d=(%lf,%lf)\n",i,k,D[k][i-1-k].x,D[k][i-1-k].y);
 		}
 
 		// fprintf(stderr,"%d,%lf,%.16lf\n",i,h[i],CalcEuclid2D(D[0][i-1].x,D[0][i-1].y));
 
-		// D[0][i-1]гЃЊж‰Ђе®љгЃ®й–ѕеЂ¤г‚€г‚Љг‚‚е°ЏгЃ•гЃЏгЃЄгЃЈгЃџг‚‰гЂЃгЃќгЃ®гЃЁгЃЌгЃ®е¤–жЊїеЂ¤г‚’и§ЈгЃЁгЃ—гЃ¦жј”з®—е‡¦зђ†г‚’зµ‚дє†гЃ™г‚‹
+		// D[0][i-1]‚ЄЏЉ’и‚Ми‡’l‚ж‚и‚аЏ¬‚і‚­‚И‚Б‚Ѕ‚зЃA‚»‚М‚Ж‚«‚МЉO‘}’l‚р‰р‚Ж‚µ‚Д‰‰ЋZЏ€—ќ‚рЏI—№‚·‚й
 		if(i > 0 && CalcEuclid2D(D[0][i-1].x,D[0][i-1].y) < APPROX_ZERO_L){
 			ans->x = R.x;
 			ans->y = R.y;
@@ -6060,28 +6529,34 @@ int NURBS_Func::SearchExtremum_BS(NURBSS *S,Coord nf,double u0,double v0,double 
 }
 
 // Function: GetSECParam1
-// (private)жҐµеЂ¤жЋўзґўз·љSubй–ўж•°1
+// (private)‹Й’l’TЌхђьSubЉЦђ”1
 // 
 // Parameters:
-// *S - NURBSж›Ійќў
-// u, v - жіЁз›®дё­гЃ®(u, v)гѓ‘гѓ©гѓЎгѓјг‚ї
-// nf - е№ійќўгЃ®жі•з·љгѓ™г‚Їгѓ€гѓ«
-// param - uж–№еђ‘гЃ®1йљЋеѕ®е€†гЃЊ0гЃЁгЃЄг‚‹жҐµеЂ¤гЃ®жЋўзґў(PARAM_U) or vж–№еђ‘жЋўзґў(PARAM_V)гЃ®йЃёжЉћ
-// direction - й †ж–№еђ‘жЋўзґў(FORWARD) orйЂ†ж–№еђ‘жЋўзґў(INVERSE)
+// *S - NURBS‹И–К
+// u, v - ’Ќ–Ъ’†‚М(u, v)ѓpѓ‰ѓЃЃ[ѓ^
+// nf - •Ѕ–К‚М–@ђьѓxѓNѓgѓ‹
+// param - u•ыЊь‚М1ЉK”ч•Є‚Є0‚Ж‚И‚й‹Й’l‚М’TЌх(PARAM_U) or v•ыЊь’TЌх(PARAM_V)‚М‘I‘р
+// direction - Џ‡•ыЊь’TЌх(FORWARD) or‹t•ыЊь’TЌх(INVERSE)
 // *f - f.x = fu(u,v), f.y = fv(u,v)
 // 
 // Return:
-// ж€ђеЉџпјљKOD_TURE, з‰№з•°з‚№гЃ«гЃ¤гЃЌе‡¦зђ†г‚’дё­ж–­гЃ—гЃџпјљKOD_FALSE
-int NURBS_Func::GetSECParam1(NURBSS *S,double u,double v,Coord nf,int param,int direction,Coord *f)
+// ђ¬ЊчЃFKOD_TURE, “Б€Щ“_‚Й‚В‚«Џ€—ќ‚р’†’f‚µ‚ЅЃFKOD_FALSE
+//int NURBS_Func::GetSECParam1(NURBSS *S,double u,double v,Coord nf,int param,int direction,Coord *f)
+int NURBSS::GetSECParam1(double u,double v,Coord nf,int param,int direction,Coord *f)
 {
-	double fuu = CalcInnerProduct(nf,CalcDiffNNurbsS(S,2,0,u,v));	// nfгѓ»Suu
-	double fuv = CalcInnerProduct(nf,CalcDiffNNurbsS(S,1,1,u,v));	// nfгѓ»Suv
-	double fvv = CalcInnerProduct(nf,CalcDiffNNurbsS(S,0,2,u,v));	// nfгѓ»Svv
-	Coord Su = CalcDiffuNurbsS(S,u,v);		// ж›ІйќўгЃ®uж–№еђ‘1йљЋеѕ®е€†
-	Coord Sv = CalcDiffvNurbsS(S,u,v);		// ж›ІйќўгЃ®vж–№еђ‘1йљЋеѕ®е€†
-	double E = CalcInnerProduct(Su,Su);		// 1ж¬Ўи¦Џж јй‡Џ
-	double F = CalcInnerProduct(Su,Sv);		// 1ж¬Ўи¦Џж јй‡Џ
-	double G = CalcInnerProduct(Sv,Sv);		// 1ж¬Ўи¦Џж јй‡Џ
+//	double fuu = CalcInnerProduct(nf,CalcDiffNNurbsS(S,2,0,u,v));	// nfЃESuu
+//	double fuv = CalcInnerProduct(nf,CalcDiffNNurbsS(S,1,1,u,v));	// nfЃESuv
+//	double fvv = CalcInnerProduct(nf,CalcDiffNNurbsS(S,0,2,u,v));	// nfЃESvv
+//	Coord Su = CalcDiffuNurbsS(S,u,v);		// ‹И–К‚Мu•ыЊь1ЉK”ч•Є
+//	Coord Sv = CalcDiffvNurbsS(S,u,v);		// ‹И–К‚Мv•ыЊь1ЉK”ч•Є
+	double fuu = CalcInnerProduct(nf,CalcDiffNNurbsS(2,0,u,v));	// nfЃESuu
+	double fuv = CalcInnerProduct(nf,CalcDiffNNurbsS(1,1,u,v));	// nfЃESuv
+	double fvv = CalcInnerProduct(nf,CalcDiffNNurbsS(0,2,u,v));	// nfЃESvv
+	Coord Su = CalcDiffuNurbsS(u,v);		// ‹И–К‚Мu•ыЊь1ЉK”ч•Є
+	Coord Sv = CalcDiffvNurbsS(u,v);		// ‹И–К‚Мv•ыЊь1ЉK”ч•Є
+	double E = CalcInnerProduct(Su,Su);		// 1Ћџ‹KЉi—К
+	double F = CalcInnerProduct(Su,Sv);		// 1Ћџ‹KЉi—К
+	double G = CalcInnerProduct(Sv,Sv);		// 1Ћџ‹KЉi—К
 	if(param == PARAM_U){
 		double f__ = E*fvv*fvv - 2*F*fuv*fvv + G*fuv*fuv;
 		if(f__==0.0){
@@ -6105,15 +6580,16 @@ int NURBS_Func::GetSECParam1(NURBSS *S,double u,double v,Coord nf,int param,int 
 }
 
 // Function: TrimNurbsSPlaneSub1
-// (private)TrimNurbsSPlaneгЃ®г‚µгѓ–й–ўж•°(2DдёЉгЃ®2з›ґз·љгЃ®дє¤з‚№г‚’г‚‚гЃЁг‚Ѓг‚‹)
+// (private)TrimNurbsSPlane‚МѓTѓuЉЦђ”(2DЏг‚М2’јђь‚МЊр“_‚р‚а‚Ж‚Я‚й)
 //
 // Parameters:
-// a,b - 1гЃ¤з›®гЃ®з›ґз·љгЃ®дї‚ж•°
-// x0, y0, x1, y1 - 2гЃ¤з›®гЃ®з›ґз·љгЃЊйЂљг‚‹2з‚№
+// a,b - 1‚В–Ъ‚М’јђь‚МЊWђ”
+// x0, y0, x1, y1 - 2‚В–Ъ‚М’јђь‚Є’К‚й2“_
 //
 // Return:
-// дє¤з‚№гЃ®2Dеє§жЁ™еЂ¤
-Coord NURBS_Func::TrimNurbsSPlaneSub1(double a,double b,double x0,double y0,double x1,double y1)
+// Њр“_‚М2DЌА•W’l
+//Coord NURBS_Func::TrimNurbsSPlaneSub1(double a,double b,double x0,double y0,double x1,double y1)
+Coord TrimNurbsSPlaneSub1(double a,double b,double x0,double y0,double x1,double y1)
 {
 	Coord c;
 
@@ -6132,13 +6608,14 @@ Coord NURBS_Func::TrimNurbsSPlaneSub1(double a,double b,double x0,double y0,doub
 }
 
 // Function: GetCurveKnotParam1
-// (private)еђ„йЂљйЃЋз‚№гЃ®ж›Із·љгѓ‘гѓ©гѓЎгѓјг‚їг‚’з®—е‡є(г‚ігѓјгѓ‰й•·гЃ®жЇ”гЃ‹г‚‰з®—е‡є)
+// (private)Љe’К‰Я“_‚М‹Иђьѓpѓ‰ѓЃЃ[ѓ^‚рЋZЏo(ѓRЃ[ѓh’·‚М”д‚©‚зЋZЏo)
 //
 // Parameters:
-// *P - йЂљйЃЋз‚№е€—   
-// PNum - йЂљйЃЋз‚№е€—гЃ®ж•°    
-// T_ - ж›Із·љгѓ‘гѓ©гѓЎгѓјг‚їг‚’ж јзґЌ
-void NURBS_Func::GetCurveKnotParam1(Coord *P,int PNum,Vector T_)
+// *P - ’К‰Я“_—с   
+// PNum - ’К‰Я“_—с‚Мђ”    
+// T_ - ‹Иђьѓpѓ‰ѓЃЃ[ѓ^‚рЉi”[
+//void NURBS_Func::GetCurveKnotParam1(Coord *P,int PNum,Vector T_)
+void GetCurveKnotParam1(Coord *P,int PNum,Vector T_)
 {
 	double d_sum=0;
 	for(int i=1;i<PNum;i++){
@@ -6153,13 +6630,14 @@ void NURBS_Func::GetCurveKnotParam1(Coord *P,int PNum,Vector T_)
 }
 
 // Function: GetCurveKnotParam2
-// (private)еђ„йЂљйЃЋз‚№гЃ®ж›Із·љгѓ‘гѓ©гѓЎгѓјг‚їг‚’з®—е‡є(г‚ігѓјгѓ‰й•·гЃ®е№іж–№ж №гЃ®жЇ”гЃ‹г‚‰з®—е‡є)
+// (private)Љe’К‰Я“_‚М‹Иђьѓpѓ‰ѓЃЃ[ѓ^‚рЋZЏo(ѓRЃ[ѓh’·‚М•Ѕ•ыЌЄ‚М”д‚©‚зЋZЏo)
 //
 // Parameters:
-// *P - йЂљйЃЋз‚№е€—   
-// PNum - йЂљйЃЋз‚№е€—гЃ®ж•°    
-// T_ - ж›Із·љгѓ‘гѓ©гѓЎгѓјг‚їг‚’ж јзґЌ
-void NURBS_Func::GetCurveKnotParam2(Coord *P,int PNum,Vector T_)
+// *P - ’К‰Я“_—с   
+// PNum - ’К‰Я“_—с‚Мђ”    
+// T_ - ‹Иђьѓpѓ‰ѓЃЃ[ѓ^‚рЉi”[
+//void NURBS_Func::GetCurveKnotParam2(Coord *P,int PNum,Vector T_)
+void GetCurveKnotParam2(Coord *P,int PNum,Vector T_)
 {
 	double d_sum=0;
 	for(int i=1;i<PNum;i++){
@@ -6174,19 +6652,20 @@ void NURBS_Func::GetCurveKnotParam2(Coord *P,int PNum,Vector T_)
 }
 
 // Funciton: GetSurfaceKnotParam
-// (private)иЈњй–“ж›Ійќўз”Ёu,vгѓ‘гѓ©гѓЎгѓјг‚їг‚’еѕ—г‚‹
+// (private)•вЉФ‹И–К—pu,vѓpѓ‰ѓЃЃ[ѓ^‚р“ѕ‚й
 // 
 // Parameters:
-// S - uж–№еђ‘ж›Із·љгѓ‘гѓ©гѓЎгѓјг‚ї
-// T - vж–№еђ‘ж›Із·љгѓ‘гѓ©гѓЎгѓјг‚ї 
-// **P - дёЋгЃ€г‚‰г‚ЊгЃџз‚№е€—
-// uNum, vNum - uж–№еђ‘пјЊvж–№еђ‘гЃ®з‚№е€—ж•°
-void NURBS_Func::GetSurfaceKnotParam(Vector S,Vector T,Coord **P,int uNum,int vNum)
+// S - u•ыЊь‹Иђьѓpѓ‰ѓЃЃ[ѓ^
+// T - v•ыЊь‹Иђьѓpѓ‰ѓЃЃ[ѓ^ 
+// **P - —^‚¦‚з‚к‚Ѕ“_—с
+// uNum, vNum - u•ыЊьЃCv•ыЊь‚М“_—сђ”
+//void NURBS_Func::GetSurfaceKnotParam(Vector S,Vector T,Coord **P,int uNum,int vNum)
+void GetSurfaceKnotParam(Vector S,Vector T,Coord **P,int uNum,int vNum)
 {
 	double d;
 	Matrix p_ = NewMatrix(uNum,vNum);
 
-	// uж–№еђ‘гЃ®йЂљйЃЋз‚№дёЉгЃ®ж›Із·љгѓ‘гѓ©гѓЎгѓјг‚їг‚’еѕ—г‚‹
+	// u•ыЊь‚М’К‰Я“_Џг‚М‹Иђьѓpѓ‰ѓЃЃ[ѓ^‚р“ѕ‚й
 	for(int j=0;j<vNum;j++){
 		d = 0;
 		for(int i=1;i<uNum;i++){
@@ -6209,7 +6688,7 @@ void NURBS_Func::GetSurfaceKnotParam(Vector S,Vector T,Coord **P,int uNum,int vN
 		S[i] /= (double)vNum;
 	}
 
-	// vж–№еђ‘гЃ®йЂљйЃЋз‚№дёЉгЃ®ж›Із·љгѓ‘гѓ©гѓЎгѓјг‚їг‚’еѕ—г‚‹
+	// v•ыЊь‚М’К‰Я“_Џг‚М‹Иђьѓpѓ‰ѓЃЃ[ѓ^‚р“ѕ‚й
 	for(int i=0;i<uNum;i++){
 		d = 0;
 		for(int j=1;j<vNum;j++){
@@ -6236,13 +6715,14 @@ void NURBS_Func::GetSurfaceKnotParam(Vector S,Vector T,Coord **P,int uNum,int vN
 }
 
 // Function: GetEqIntervalKont
-// (private)ж›Із·љ/ж›Ійќўгѓ‘гѓ©гѓЎгѓјг‚їгЃ‹г‚‰з­‰й–“йљ”гЃЄгѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«г‚’з®—е‡є
+// (private)‹Иђь/‹И–Кѓpѓ‰ѓЃЃ[ѓ^‚©‚з“™ЉФЉu‚ИѓmѓbѓgѓxѓNѓgѓ‹‚рЋZЏo
 // 
 // Parameters:
-// K - г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ®ж•°  
-// M - йљЋж•°   
-// T - ж јзґЌгЃ™г‚‹гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«е€—
-void NURBS_Func::GetEqIntervalKont(int K,int M,Vector T)
+// K - ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Мђ”  
+// M - ЉKђ”   
+// T - Љi”[‚·‚йѓmѓbѓgѓxѓNѓgѓ‹—с
+//void NURBS_Func::GetEqIntervalKont(int K,int M,Vector T)
+void GetEqIntervalKont(int K,int M,Vector T)
 {
 	for(int i=0;i<M;i++)
 		T[i] = 0;
@@ -6253,20 +6733,21 @@ void NURBS_Func::GetEqIntervalKont(int K,int M,Vector T)
 }
 
 // Function: GetInterpolatedKnot
-// (private)ж›Із·љ/ж›Ійќўгѓ‘гѓ©гѓЎгѓјг‚їгЃ‹г‚‰иЈњй–“з”ЁгѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«г‚’з®—е‡є
+// (private)‹Иђь/‹И–Кѓpѓ‰ѓЃЃ[ѓ^‚©‚з•вЉФ—pѓmѓbѓgѓxѓNѓgѓ‹‚рЋZЏo
 // 
 // Parameters:
-// T_ - ж›Із·љгѓ‘гѓ©гѓЎгѓјг‚їе€—  
-// N - гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®ж•°  
-// K - г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ®ж•°  
-// M - йљЋж•°   
-// T - ж јзґЌгЃ™г‚‹гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«е€—
-void NURBS_Func::GetInterpolatedKnot(Vector T_,int N,int K,int M,Vector T)
+// T_ - ‹Иђьѓpѓ‰ѓЃЃ[ѓ^—с  
+// N - ѓmѓbѓgѓxѓNѓgѓ‹‚Мђ”  
+// K - ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Мђ”  
+// M - ЉKђ”   
+// T - Љi”[‚·‚йѓmѓbѓgѓxѓNѓgѓ‹—с
+//void NURBS_Func::GetInterpolatedKnot(Vector T_,int N,int K,int M,Vector T)
+void GetInterpolatedKnot(Vector T_,int N,int K,int M,Vector T)
 {
 	for(int i=0;i<M;i++)
 		T[i] = 0;
 
-	// T_г‚’еЏ‚иЂѓгЃ«гЃ™г‚‹
+	// T_‚рЋQЌl‚Й‚·‚й
 	for(int j=1;j<K-M+1;j++){
 		double d=0;
 		for(int i=j;i<j+M-1;i++){
@@ -6275,7 +6756,7 @@ void NURBS_Func::GetInterpolatedKnot(Vector T_,int N,int K,int M,Vector T)
 		T[j+M-1] = d/((double)M-1);
 	}
 
-	// з­‰й–“йљ”гЃ«иЁ­е®љ
+	// “™ЉФЉu‚ЙђЭ’и
 	//for(int i=M;i<K;i++)
 	//	T[i] = ((double)i-(double)M+1)/((double)K-(double)M+1);
 
@@ -6284,15 +6765,16 @@ void NURBS_Func::GetInterpolatedKnot(Vector T_,int N,int K,int M,Vector T)
 }
 
 // Function: GetApproximatedKnot
-// (private)ж›Із·љ/ж›Ійќўгѓ‘гѓ©гѓЎгѓјг‚їгЃ‹г‚‰иї‘дјјз”ЁгѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«г‚’з®—е‡є
+// (private)‹Иђь/‹И–Кѓpѓ‰ѓЃЃ[ѓ^‚©‚з‹ЯЋ——pѓmѓbѓgѓxѓNѓgѓ‹‚рЋZЏo
 // 
 // Parameters:
-// T_ - ж›Із·љгѓ‘гѓ©гѓЎгѓјг‚їе€—  
-// N - ж›Із·љгѓ‘гѓ©гѓЎгѓјг‚їгЃ®ж•°  
-// M - йљЋж•°  
-// K - г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ®ж•°  
-// T - ж јзґЌгЃ™г‚‹гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«е€—
-void NURBS_Func::GetApproximatedKnot(Vector T_,int N,int M,int K,Vector T)
+// T_ - ‹Иђьѓpѓ‰ѓЃЃ[ѓ^—с  
+// N - ‹Иђьѓpѓ‰ѓЃЃ[ѓ^‚Мђ”  
+// M - ЉKђ”  
+// K - ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Мђ”  
+// T - Љi”[‚·‚йѓmѓbѓgѓxѓNѓgѓ‹—с
+//void NURBS_Func::GetApproximatedKnot(Vector T_,int N,int M,int K,Vector T)
+void GetApproximatedKnot(Vector T_,int N,int M,int K,Vector T)
 {
 	for(int i=0;i<M;i++)	T[i] = 0;
 	for(int i=K;i<K+M;i++)	T[i] = 1;
@@ -6301,21 +6783,22 @@ void NURBS_Func::GetApproximatedKnot(Vector T_,int N,int M,int K,Vector T)
 		int i = (int)(j*d);
 		double a = (double)j*d - (double)i;
 		T[j+M-1] = (1-a)*T_[i-1] + a*T_[i];
-		T[j+M-1] += 0.0001;					// и‚ќ!  TгЃЁT_гЃЊеђЊеЂ¤гЃ«гЃЄг‚‹гЃЁгЂЃжњЂе°Џпј’д№—жі•гЃЊгЃ†гЃѕгЃЏгЃ„гЃ‹гЃЄгЃ„гЃ®гЃ§гЂЃдѕїе®њзљ„гЃ«еђЊеЂ¤гЃ«гЃЄг‚‰гЃЄгЃ„г‚€гЃ†гЃ«гЃ—гЃ¦гЃ„г‚‹гЂ‚
+		T[j+M-1] += 0.0001;					// ЉМ!  T‚ЖT_‚Є“Ї’l‚Й‚И‚й‚ЖЃAЌЕЏ¬‚QЏж–@‚Є‚¤‚Ь‚­‚ў‚©‚И‚ў‚М‚ЕЃA•Ц‹X“I‚Й“Ї’l‚Й‚И‚з‚И‚ў‚ж‚¤‚Й‚µ‚Д‚ў‚йЃB
 	}
 }
 
 // Function: ChangeKnotVecRange
-// (private)ж›Із·љ/ж›Ійќўгѓ‘гѓ©гѓЎгѓјг‚їгЃ®е®љзѕ©еџџг‚’е¤‰ж›ґгЃ™г‚‹
+// (private)‹Иђь/‹И–Кѓpѓ‰ѓЃЃ[ѓ^‚М’и‹`€ж‚р•ПЌX‚·‚й
 // 
 // Parameters:
-// T - е¤‰ж›ґгЃ—гЃџгЃ„гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«е€—
-// N - TгЃ®й…Ќе€—й•·
-// M - йљЋж•°
-// K - г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ®ж•°
-// Tst - й–‹е§‹гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«
-// Te - зµ‚дє†гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«
-void NURBS_Func::ChangeKnotVecRange(Vector T, int N, int M, int K, double Ts, double Te)
+// T - •ПЌX‚µ‚Ѕ‚ўѓmѓbѓgѓxѓNѓgѓ‹—с
+// N - T‚М”z—с’·
+// M - ЉKђ”
+// K - ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Мђ”
+// Tst - ЉJЋnѓmѓbѓgѓxѓNѓgѓ‹
+// Te - ЏI—№ѓmѓbѓgѓxѓNѓgѓ‹
+//void NURBS_Func::ChangeKnotVecRange(Vector T, int N, int M, int K, double Ts, double Te)
+void ChangeKnotVecRange(Vector T, int N, int M, int K, double Ts, double Te)
 {
 	Vector T_ = NewVector(N);
 	
@@ -6328,19 +6811,20 @@ void NURBS_Func::ChangeKnotVecRange(Vector T, int N, int M, int K, double Ts, do
 	FreeVector(T_);
 }
 
-// Function: ChangeKnotVecRange
-// (private)жњЂе°Џ2д№—жі•гЃ§иї‘дјјг‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€г‚’ж±‚г‚Ѓг‚‹
+// Function: CalcApproximationCP_LSM
+// (private)ЌЕЏ¬2Џж–@‚Е‹ЯЋ—ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚р‹Ѓ‚Я‚й
 // 
 // Parameters:
-// *P - йЂљйЃЋз‚№е€—  
-// T_ - ж›Із·љгѓ‘гѓ©гѓЎгѓјг‚їе€—  
-// T - гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«  
-// Pnum - ж›Із·љгѓ‘гѓ©гѓЎгѓјг‚їгЃ®ж•°  
-// Nnum - гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®ж•°  
-// M - йљЋж•°  
-// K - г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ®ж•°   
-// *Q - з®—е‡єгЃ•г‚ЊгЃџг‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€е€—
-void NURBS_Func::CalcApproximationCP_LSM(Coord *P,Vector T_,Vector T,int Pnum,int Nnum,int M,int K,Coord *Q)
+// *P - ’К‰Я“_—с  
+// T_ - ‹Иђьѓpѓ‰ѓЃЃ[ѓ^—с  
+// T - ѓmѓbѓgѓxѓNѓgѓ‹  
+// Pnum - ‹Иђьѓpѓ‰ѓЃЃ[ѓ^‚Мђ”  
+// Nnum - ѓmѓbѓgѓxѓNѓgѓ‹‚Мђ”  
+// M - ЉKђ”  
+// K - ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Мђ”   
+// *Q - ЋZЏo‚і‚к‚ЅѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg—с
+//void NURBS_Func::CalcApproximationCP_LSM(Coord *P,Vector T_,Vector T,int Pnum,int Nnum,int M,int K,Coord *Q)
+void CalcApproximationCP_LSM(Coord *P,Vector T_,Vector T,int Pnum,int Nnum,int M,int K,Coord *Q)
 {
 	Matrix N = NewMatrix(Pnum-2,K-2);
 	for(int i=0;i<Pnum-2;i++){
@@ -6362,14 +6846,14 @@ void NURBS_Func::CalcApproximationCP_LSM(Coord *P,Vector T_,Vector T,int Pnum,in
 
 	Matrix N_ = NewMatrix(K-2,K-2);			// (NTN)^-1
 	Matrix NTN = NewMatrix(K-2,K-2);		// NT*N
-	Matrix NT = NewMatrix(K-2,Pnum-2);		// NгЃ®и»ўзЅ®иЎЊе€—NT
+	Matrix NT = NewMatrix(K-2,Pnum-2);		// N‚М“]’uЌs—сNT
 	TranMx(N,Pnum-2,K-2,NT);				// calc NT
 	MulMxMx(NT,K-2,Pnum-2,N,Pnum-2,K-2,NTN);// calc NTN
 
 	Coord *Q_ = NewCoord1(K-2);
 	Gauss(K-2,NTN,R,Q_);
 
-	// г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€
+	// ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg
 	Q[0] = SetCoord(P[0]);
 	Q[K-1] = SetCoord(P[Pnum-1]);
 	for(int i=1;i<K-1;i++){
@@ -6385,92 +6869,95 @@ void NURBS_Func::CalcApproximationCP_LSM(Coord *P,Vector T_,Vector T,int Pnum,in
 }
 
 // Function: SetApproximationCPnum
-// (private)з‚№е€—ж•°гЃ‹г‚‰з”џж€ђгЃ™г‚‹г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€ж•°г‚’з®—е®љгЃ™г‚‹пј€е‹гЃ§гЃ™гЂ‚пј‰
+// (private)“_—сђ”‚©‚зђ¶ђ¬‚·‚йѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓgђ”‚рЋZ’и‚·‚йЃiЉЁ‚Е‚·ЃBЃj
 // 
 // Parameters:
-// PNum - з‚№е€—ж•°
+// PNum - “_—сђ”
 //
 // Return:
-// г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ®ж•°
-int NURBS_Func::SetApproximationCPnum(int PNum)
+// ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Мђ”
+//int NURBS_Func::SetApproximationCPnum(int PNum)
+int SetApproximationCPnum(int PNum)
 {
-	if(PNum < 5)		// е‹
+	if(PNum < 5)		// ЉЁ
 		return PNum;
-	else if(PNum < 10)	// е‹
+	else if(PNum < 10)	// ЉЁ
 		return PNum-1;
 	else 
-		return PNum/2;	// е‹
+		return PNum/2;	// ЉЁ
 }
-
+#ifdef _DEBUG
 // Function: DebugForNurbsC
-// NURBSж›Із·љжѓ…е ±г‚’гѓ‡гѓђгѓѓг‚°гѓ—гѓЄгѓігѓ€
+// NURBS‹ИђьЏо•с‚рѓfѓoѓbѓOѓvѓЉѓ“ѓg
 //
 // Parameters:
-// *nurbs - гѓ‡гѓђгѓѓг‚°гЃ™г‚‹NURBSж›Із·љ
-void NURBS_Func::DebugForNurbsC(NURBSC *nurbs)
+// *nurbs - ѓfѓoѓbѓO‚·‚йNURBS‹Иђь
+//void NURBS_Func::DebugForNurbsC(NURBSC *nurbs)
+void NURBSC::DebugForNurbsC(void)
 {
-	fprintf(stderr,"Cp num: %d\n",nurbs->K);
-	fprintf(stderr,"Rank: %d\n",nurbs->M);
-	fprintf(stderr,"Knot num: %d\n",nurbs->N);
-	fprintf(stderr,"Knot range: %lf - %lf\n",nurbs->V[0], nurbs->V[1]);
+	fprintf(stderr,"Cp num: %d\n",K);
+	fprintf(stderr,"Rank: %d\n",M);
+	fprintf(stderr,"Knot num: %d\n",N);
+	fprintf(stderr,"Knot range: %lf - %lf\n",V[0], V[1]);
 
-	// г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€
+	// ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg
 	fprintf(stderr,"Control Point\n");
-	for(int i=0;i<nurbs->K;i++){
-		fprintf(stderr,"#%d: (%lf,%lf,%lf)\t",i+1,nurbs->cp[i].x,nurbs->cp[i].y,nurbs->cp[i].z);
+	for(int i=0;i<K;i++){
+		fprintf(stderr,"#%d: (%lf,%lf,%lf)\t",i+1,cp[i].x,cp[i].y,cp[i].z);
 	}
 	fprintf(stderr,"\n");
 
-	// гѓЋгѓѓгѓ€г‚·гѓјг‚±гѓіг‚№
+	// ѓmѓbѓgѓVЃ[ѓPѓ“ѓX
 	fprintf(stderr,"Knot Vector\t");
-	for(int i=0;i<nurbs->K+nurbs->M;i++){
-		fprintf(stderr,"#%d: %lf\t",i+1,nurbs->T[i]);
+	for(int i=0;i<K+M;i++){
+		fprintf(stderr,"#%d: %lf\t",i+1,T[i]);
 	}
 	fprintf(stderr,"\n");
 
-	// г‚¦г‚§г‚¤гѓ€
+	// ѓEѓFѓCѓg
 	fprintf(stderr,"Weight\n");
-	for(int i=0;i<nurbs->K;i++){
-		fprintf(stderr,"#%d: %lf\t",i+1,nurbs->W[i]);
+	for(int i=0;i<K;i++){
+		fprintf(stderr,"#%d: %lf\t",i+1,W[i]);
 	}
 }
 
 // Function: DebugForNurbsS
-// NURBSж›Ійќўжѓ…е ±г‚’гѓ‡гѓђгѓѓг‚°гѓ—гѓЄгѓігѓ€
+// NURBS‹И–КЏо•с‚рѓfѓoѓbѓOѓvѓЉѓ“ѓg
 //
 // Parameters:
-// *nurbs - гѓ‡гѓђгѓѓг‚°гЃ™г‚‹NURBSж›Ійќў
-void NURBS_Func::DebugForNurbsS(NURBSS *nurbs)
+// *nurbs - ѓfѓoѓbѓO‚·‚йNURBS‹И–К
+//void NURBS_Func::DebugForNurbsS(NURBSS *nurbs)
+void NURBSS::DebugForNurbsS(void)
 {
-	fprintf(stderr,"Cp num: %d-%d\n",nurbs->K[0],nurbs->K[1]);
-	fprintf(stderr,"Rank: %d-%d\n",nurbs->M[0],nurbs->M[1]);
-	fprintf(stderr,"Knot num: %d-%d\n",nurbs->N[0],nurbs->N[1]);
-	fprintf(stderr,"Knot range: (%lf - %lf),(%lf - %lf)\n",nurbs->U[0],nurbs->U[1],nurbs->V[0],nurbs->V[1]);
+	fprintf(stderr,"Cp num: %d-%d\n",K[0],K[1]);
+	fprintf(stderr,"Rank: %d-%d\n",M[0],M[1]);
+	fprintf(stderr,"Knot num: %d-%d\n",N[0],N[1]);
+	fprintf(stderr,"Knot range: (%lf - %lf),(%lf - %lf)\n",U[0],U[1],V[0],V[1]);
 
-	// г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€
+	// ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg
 	fprintf(stderr,"Control Point\n");
-	for(int i=0;i<nurbs->K[0];i++){
-		for(int j=0;j<nurbs->K[1];j++){
-			fprintf(stderr,"#(%d-%d): (%lf,%lf,%lf)\t",i+1,j+1,nurbs->cp[i][j].x,nurbs->cp[i][j].y,nurbs->cp[i][j].z);
+	for(int i=0;i<K[0];i++){
+		for(int j=0;j<K[1];j++){
+			fprintf(stderr,"#(%d-%d): (%lf,%lf,%lf)\t",i+1,j+1,cp[i][j].x,cp[i][j].y,cp[i][j].z);
 		}
 	}
 	fprintf(stderr,"\n");
 
-	// Uж–№еђ‘гѓЋгѓѓгѓ€г‚·гѓјг‚±гѓіг‚№
+	// U•ыЊьѓmѓbѓgѓVЃ[ѓPѓ“ѓX
 	fprintf(stderr,"U Knot Vector\t");
-	for(int i=0;i<nurbs->K[0]+nurbs->M[0];i++){
-		fprintf(stderr,"#%d: %lf\t",i+1,nurbs->S[i]);
+	for(int i=0;i<K[0]+M[0];i++){
+		fprintf(stderr,"#%d: %lf\t",i+1,S[i]);
 	}
 	fprintf(stderr,"\n");
 
-	// Vж–№еђ‘гѓЋгѓѓгѓ€г‚·гѓјг‚±гѓіг‚№
+	// V•ыЊьѓmѓbѓgѓVЃ[ѓPѓ“ѓX
 	fprintf(stderr,"V Knot Vector\t");
-	for(int i=0;i<nurbs->K[1]+nurbs->M[1];i++){
-		fprintf(stderr,"#%d: %lf\t",i+1,nurbs->T[i]);
+	for(int i=0;i<K[1]+M[1];i++){
+		fprintf(stderr,"#%d: %lf\t",i+1,T[i]);
 	}
 	fprintf(stderr,"\n");
 
-	// г‚¦г‚§г‚¤гѓ€
+	// ѓEѓFѓCѓg
 	//fprintf(stderr,"Weight\n");
 	//for(int i=0;i<nurbs->K[0];i++){
 	//	for(int j=0;j<nurbs->K[1];j++){
@@ -6478,21 +6965,22 @@ void NURBS_Func::DebugForNurbsS(NURBSS *nurbs)
 	//	}
 	//}
 }
-
+#endif
 // Function: CalcNurbsCLength
-// NURBSж›Із·љC(t)гЃ®жЊ‡е®љгѓ‘гѓ©гѓЎгѓјг‚їеЊєй–“[a,b]гЃ®з·ље€†й•·Lг‚’ж±‚г‚Ѓг‚‹
+// NURBS‹ИђьC(t)‚МЋw’иѓpѓ‰ѓЃЃ[ѓ^‹жЉФ[a,b]‚Мђь•Є’·L‚р‹Ѓ‚Я‚й
 //
-// L = S|C'(t)|dt	(SгЃЇз©Ќе€†иЁеЏ·)
+// L = S|C'(t)|dt	(S‚НђП•Є‹LЌ†)
 //
-// з©Ќе€†гЃЇж•°еЂ¤з©Ќе€†(г‚¬г‚¦г‚№-гѓ«г‚ёгѓЈгѓігѓ‰гѓ«гЃ®80е€†з‚№)г‚’з”ЁгЃ„г‚‹
+// ђП•Є‚Нђ”’lђП•Є(ѓKѓEѓX-ѓ‹ѓWѓѓѓ“ѓhѓ‹‚М80•Є“_)‚р—p‚ў‚й
 //
 // Parameters:
-// *Nurb - еЇѕи±ЎгЃЁгЃЄг‚‹NURBSж›Із·љ
-// a, b - жЊ‡е®љгѓ‘гѓ©гѓЎгѓјг‚їеЊєй–“[a,b]
+// *Nurb - ‘ОЏЫ‚Ж‚И‚йNURBS‹Иђь
+// a, b - Ћw’иѓpѓ‰ѓЃЃ[ѓ^‹жЉФ[a,b]
 //
 // Return:
-// з·ље€†й•·
-double NURBS_Func::CalcNurbsCLength(NURBSC *Nurb,double a,double b)
+// ђь•Є’·
+//double NURBS_Func::CalcNurbsCLength(NURBSC *Nurb,double a,double b)
+double NURBSC::CalcNurbsCLength(double a,double b)
 {
 	double g[80] = {-0.9995538226516306298800804990945671849917
 		,-0.997649864398237688899494208183122985331
@@ -6663,24 +7151,25 @@ double NURBS_Func::CalcNurbsCLength(NURBSC *Nurb,double a,double b)
 
 	for(int i=0;i<80;i++){
 		double xi = A+B*g[i];
-		len += w[i]*(CalcEuclid(CalcDiffNurbsC(Nurb,xi)));
+		len += w[i]*(CalcEuclid(CalcDiffNurbsC(xi)));
 	}
 	return(B*len);
 }
 
 // Function: CalcNurbsCLength
-// NURBSж›Із·љC(t)гЃ®е…ЁеЊєй–“гЃ®з·ље€†й•·Lг‚’ж±‚г‚Ѓг‚‹
+// NURBS‹ИђьC(t)‚М‘S‹жЉФ‚Мђь•Є’·L‚р‹Ѓ‚Я‚й
 //
-// L = S|C'(t)|dt	(SгЃЇз©Ќе€†иЁеЏ·)
+// L = S|C'(t)|dt	(S‚НђП•Є‹LЌ†)
 //
-// з©Ќе€†гЃЇж•°еЂ¤з©Ќе€†(г‚¬г‚¦г‚№-гѓ«г‚ёгѓЈгѓігѓ‰гѓ«гЃ®80е€†з‚№)г‚’з”ЁгЃ„г‚‹
+// ђП•Є‚Нђ”’lђП•Є(ѓKѓEѓX-ѓ‹ѓWѓѓѓ“ѓhѓ‹‚М80•Є“_)‚р—p‚ў‚й
 //
 // Parameters:
-// *Nurb - еЇѕи±ЎгЃЁгЃЄг‚‹NURBSж›Із·љ
+// *Nurb - ‘ОЏЫ‚Ж‚И‚йNURBS‹Иђь
 //
 // Return:
-// з·ље€†й•·
-double NURBS_Func::CalcNurbsCLength(NURBSC *Nurb)
+// ђь•Є’·
+//double NURBS_Func::CalcNurbsCLength(NURBSC *Nurb)
+double NURBSC::CalcNurbsCLength(void)
 {
 	double g[80] = {-0.9995538226516306298800804990945671849917
 		,-0.997649864398237688899494208183122985331
@@ -6845,28 +7334,29 @@ double NURBS_Func::CalcNurbsCLength(NURBSC *Nurb)
 		,0.0011449500031869415345441719413156361186993924055
 	};
 
-	double A = (Nurb->V[1]+Nurb->V[0])/2;
-	double B = (Nurb->V[1]-Nurb->V[0])/2;
+	double A = (V[1]+V[0])/2;
+	double B = (V[1]-V[0])/2;
 	double len=0;
 
 	for(int i=0;i<80;i++){
 		double xi = A+B*g[i];
-		len += w[i]*(CalcEuclid(CalcDiffNurbsC(Nurb,xi)));
+		len += w[i]*(CalcEuclid(CalcDiffNurbsC(xi)));
 	}
 	return(B*len);
 }
 
 // Function: GetMinDistance
-// (private)жњЂе°Џи·ќй›ўг‚’жЊЃгЃ¤еє§жЁ™еЂ¤г‚’иї”гЃ™
+// (private)ЌЕЏ¬‹——Ј‚рЋќ‚ВЌА•W’l‚р•Ф‚·
 //
 // Parameters:
-// a - еЇѕи±ЎгЃЁгЃ™г‚‹1з‚№
-// *b - жЋўзґўгЃ™г‚‹з‚№зѕ¤
-// n - з‚№зѕ¤гЃ®ж•°
+// a - ‘ОЏЫ‚Ж‚·‚й1“_
+// *b - ’TЌх‚·‚й“_ЊQ
+// n - “_ЊQ‚Мђ”
 //
 // Return:
-// жњЂе°Џи·ќй›ўгЃЁгЃЄг‚‹з‚№b_min
-Coord NURBS_Func::GetMinDistance(Coord a,Coord *b,int n)
+// ЌЕЏ¬‹——Ј‚Ж‚И‚й“_b_min
+//Coord NURBS_Func::GetMinDistance(Coord a,Coord *b,int n)
+Coord GetMinDistance(Coord a,Coord *b,int n)
 {
 	if(!n)	return SetCoord(0,0,0);
 
@@ -6891,65 +7381,67 @@ Coord NURBS_Func::GetMinDistance(Coord a,Coord *b,int n)
 }
 
 // Function: DivNurbsC
-// NURBSж›Із·љг‚’жЊ‡е®љгЃ—гЃџдЅЌзЅ®пј€з«ЇгЃ‹г‚‰гЃ®еј§й•·пј‰гЃ§е€†е‰ІгЃ™г‚‹
+// NURBS‹Иђь‚рЋw’и‚µ‚Ѕ€К’uЃi’[‚©‚з‚МЊК’·Ѓj‚Е•ЄЉ„‚·‚й
 //
 // Parameters:
-// *C0 - е€†е‰ІгЃ™г‚‹NURBSж›Із·љгЃёгЃ®гѓќг‚¤гѓіг‚ї        
-// *C1 - е€†е‰ІгЃ•г‚ЊгЃџNURBSж›Із·љгЃёгЃ®гѓќг‚¤гѓіг‚ї
-// *C2 - е€†е‰ІгЃ•г‚ЊгЃџNURBSж›Із·љгЃёгЃ®гѓќг‚¤гѓіг‚ї     
-// L - з«ЇгЃ‹г‚‰гЃ®еј§й•·
+// *C0 - •ЄЉ„‚·‚йNURBS‹Иђь‚Ц‚Мѓ|ѓCѓ“ѓ^        
+// *C1 - •ЄЉ„‚і‚к‚ЅNURBS‹Иђь‚Ц‚Мѓ|ѓCѓ“ѓ^
+// *C2 - •ЄЉ„‚і‚к‚ЅNURBS‹Иђь‚Ц‚Мѓ|ѓCѓ“ѓ^     
+// L - ’[‚©‚з‚МЊК’·
 //
 // Return:
-// ж€ђеЉџпјљKOD_TRUE, е¤±ж•—пјљKOD_FALSE 
+// ђ¬ЊчЃFKOD_TRUE, Ћё”sЃFKOD_FALSE 
 int NURBS_Func::DivNurbsC(NURBSC *C0, NURBSC *C1, NURBSC *C2, double L)
 {
-	double dLEN = CalcNurbsCLength(C0);					// NURBSж›Із·љгЃ®з·ље€†й•·г‚’еѕ—г‚‹
-	double t_init = (C0->V[1] - C0->V[0])*L/dLEN;		// tгЃ®е€ќжњџеЂ¤г‚’г‚»гѓѓгѓ€
-	double t = CalcParamLengthOnNurbsC(C0,L,t_init);	// е€†е‰Із‚№гѓ‘гѓ©гѓЎгѓјг‚їеЂ¤еЏ–еѕ—
+//	double dLEN = CalcNurbsCLength(C0);					// NURBS‹Иђь‚Мђь•Є’·‚р“ѕ‚й
+	double dLEN = C0->CalcNurbsCLength();					// NURBS‹Иђь‚Мђь•Є’·‚р“ѕ‚й
+	double t_init = (C0->V[1] - C0->V[0])*L/dLEN;		// t‚МЏ‰Љъ’l‚рѓZѓbѓg
+//	double t = CalcParamLengthOnNurbsC(C0,L,t_init);	// •ЄЉ„“_ѓpѓ‰ѓЃЃ[ѓ^’lЋж“ѕ
+	double t = C0->CalcParamLengthOnNurbsC(L,t_init);	// •ЄЉ„“_ѓpѓ‰ѓЃЃ[ѓ^’lЋж“ѕ
 
-	int iKOD = DivNurbsCParam(C0,C1,C2,t);		// е€†е‰І
+	int iKOD = DivNurbsCParam(C0,C1,C2,t);		// •ЄЉ„
 
 	return iKOD;
 
 }
 
 // Function: DivNurbsCParam
-// NURBSж›Із·љг‚’жЊ‡е®љгЃ—гЃџгѓ‘гѓ©гѓЎгѓјг‚їеЂ¤гЃ§е€†е‰ІгЃ™г‚‹
+// NURBS‹Иђь‚рЋw’и‚µ‚Ѕѓpѓ‰ѓЃЃ[ѓ^’l‚Е•ЄЉ„‚·‚й
 //
 // Parameters:
-// *C0 - е€†е‰ІгЃ™г‚‹NURBSж›Із·љгЃёгЃ®гѓќг‚¤гѓіг‚ї        
-// *C1 - е€†е‰ІгЃ•г‚ЊгЃџNURBSж›Із·љгЃёгЃ®гѓќг‚¤гѓіг‚ї
-// *C2 - е€†е‰ІгЃ•г‚ЊгЃџNURBSж›Із·љгЃёгЃ®гѓќг‚¤гѓіг‚ї    
-// t - е€†е‰ІдЅЌзЅ®г‚’иЎЁгЃ™ж›Із·љгѓ‘гѓ©гѓЎгѓјг‚ї
+// *C0 - •ЄЉ„‚·‚йNURBS‹Иђь‚Ц‚Мѓ|ѓCѓ“ѓ^        
+// *C1 - •ЄЉ„‚і‚к‚ЅNURBS‹Иђь‚Ц‚Мѓ|ѓCѓ“ѓ^
+// *C2 - •ЄЉ„‚і‚к‚ЅNURBS‹Иђь‚Ц‚Мѓ|ѓCѓ“ѓ^    
+// t - •ЄЉ„€К’u‚р•\‚·‹Иђьѓpѓ‰ѓЃЃ[ѓ^
 //
 // Return:
-// ж€ђеЉџпјљKOD_TRUE, е¤±ж•—пјљKOD_FALSE 
+// ђ¬ЊчЃFKOD_TRUE, Ћё”sЃFKOD_FALSE 
 int NURBS_Func::DivNurbsCParam(NURBSC *C0, NURBSC *C1, NURBSC *C2, double t)
 {
-	// tгѓ‘гѓ©гѓЎгѓјг‚їгЃЊйЃ©ж­ЈзЇ„е›ІгЃ‹
+	// tѓpѓ‰ѓЃЃ[ѓ^‚Є“Kђі”Н€Н‚©
 	if(t <= C0->T[0] || t >= C0->T[C0->N-1]){
 		GuiIF.SetMessage("NURBS_Func ERROR: Wrong Curve Parameter is set.");
 		return KOD_ERR;
 	}
 
-	int deg = C0->M - 1;		// е¤љй‡Ќеє¦
+	int deg = C0->M - 1;		// ‘ЅЏd“x
 
-	// е€†е‰ІгЃ®дё‹жє–е‚™
-	// е€†е‰Із”Ёж›Із·љC0_г‚’жє–е‚™гЃ™г‚‹
+	// •ЄЉ„‚М‰єЏЂ”х
+	// •ЄЉ„—p‹ИђьC0_‚рЏЂ”х‚·‚й
 	NURBSC C0_;
 	C0_.K = C0->K + deg;
 	C0_.N = C0->M + C0_.K;
 	New_NurbsC(&C0_,C0_.K,C0_.N);
 
-	// C0гЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ«tгЃЁеђЊгЃеЂ¤гЃЊгЃ‚г‚‹е ґеђ€гЃЇпјЊе¤љй‡Ќеє¦г‚’1гЃ¤иђЅгЃЁгЃ™
+	// C0‚МѓmѓbѓgѓxѓNѓgѓ‹‚Йt‚Ж“Ї‚¶’l‚Є‚ ‚йЏкЌ‡‚НЃC‘ЅЏd“x‚р1‚В—Ћ‚Ж‚·
 	for(int i=0;i<C0->N;i++){
 		if(t == C0->T[i])	deg--;
 	}
 
-	// е€†е‰ІдЅЌзЅ®гѓ‘гѓ©гѓЎгѓјг‚їtг‚’C0_гЃ«жЊїе…ҐгЃ™г‚‹
+	// •ЄЉ„€К’uѓpѓ‰ѓЃЃ[ѓ^t‚рC0_‚Й‘}“ь‚·‚й
 	int k = InsertNewKnotOnNurbsC(C0,&C0_,t,deg);
 
-	// 2жњ¬гЃ®е€†е‰Іж›Із·љг‚’з”џж€ђ
+	// 2–{‚М•ЄЉ„‹Иђь‚рђ¶ђ¬
 	int N1 = k+1;
 	int K1 = N1 - C0->M;
 	int N2 = C0_.N - k + deg+1;
@@ -6962,7 +7454,7 @@ int NURBS_Func::DivNurbsCParam(NURBSC *C0, NURBSC *C1, NURBSC *C2, double t)
 	Vector W2 = NewVector(K2);
 	Coord  *cp2 = NewCoord1(K2);
 
-	// гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«пјЊг‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€пјЊг‚¦г‚§г‚¤гѓ€г‚’C1,C2гЃ«е€†й…Ќ
+	// ѓmѓbѓgѓxѓNѓgѓ‹ЃCѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓgЃCѓEѓFѓCѓg‚рC1,C2‚Й•Є”z
 	for(int i=0;i<N1-1;i++)
 		T1[i] = C0_.T[i];
 	T1[N1-1] = t;
@@ -6994,11 +7486,11 @@ int NURBS_Func::DivNurbsCParam(NURBSC *C0, NURBSC *C1, NURBSC *C2, double t)
 	//for(int i=0;i<N2;i++)
 	//	fprintf(stderr,"%d:%lf\n",i+1,T2[i]);
 
-	// гѓЋгѓѓгѓ€гЃ®зЇ„е›Іг‚’0-1гЃ«е¤‰ж›ґ
+	// ѓmѓbѓg‚М”Н€Н‚р0-1‚Й•ПЌX
 	ChangeKnotVecRange(T1,N1,C0->M,K1,0,1);
 	ChangeKnotVecRange(T2,N2,C0->M,K2,0,1);
 
-	// C1,C2з”џж€ђ
+	// C1,C2ђ¶ђ¬
 	GenNurbsC(C1,K1,C0->M,N1,T1,W1,cp1,C0->V,C0->prop,0);
 	GenNurbsC(C2,K2,C0->M,N2,T2,W2,cp2,C0->V,C0->prop,0);
 	
@@ -7013,22 +7505,23 @@ int NURBS_Func::DivNurbsCParam(NURBSC *C0, NURBSC *C1, NURBSC *C2, double t)
 }
 
 // Function: ConnectNurbsC
-// 2жњ¬гЃ®NURBSж›Із·љг‚’йЂЈзµђгЃ™г‚‹
+// 2–{‚МNURBS‹Иђь‚рAЊ‹‚·‚й
 //
 // Parameter:
-// *C1 - ж›Із·љ1
-// *C2 - ж›Із·љ2
-// *C_ - йЂЈзµђеѕЊгЃ®ж›Із·љг‚’ж јзґЌ
+// *C1 - ‹Иђь1
+// *C2 - ‹Иђь2
+// *C_ - AЊ‹Њг‚М‹Иђь‚рЉi”[
 //
 // Return:
-// ж€ђеЉџпјљKOD_TRUE,  е¤±ж•—пјљKOD_FALSE
+// ђ¬ЊчЃFKOD_TRUE,  Ћё”sЃFKOD_FALSE
 int NURBS_Func::ConnectNurbsC(NURBSC *C1,NURBSC *C2,NURBSC *C_)
 {
-	int flag = -1;		// йЂЈзµђдЅЌзЅ®е€¤е€Ґз”Ёгѓ•гѓ©г‚°
+	int flag = -1;		// AЊ‹€К’u”»•К—pѓtѓ‰ѓO
 
-	// 2ж›Із·љгЃ®йЂЈзµђдЅЌзЅ®г‚’иЄїгЃ№пјЊйЂЈзµђз‚№гЃЊC1(1), C2(0)гЃЁгЃЄг‚‹г‚€гЃ†гЃ©гЃЎг‚‰гЃ‹гЃ®ж›Із·љг‚’иЄїж•ґгЃ™г‚‹
+	// 2‹Иђь‚МAЊ‹€К’u‚р’І‚ЧЃCAЊ‹“_‚ЄC1(1), C2(0)‚Ж‚И‚й‚ж‚¤‚З‚ї‚з‚©‚М‹Иђь‚р’Іђ®‚·‚й
 	if(DiffCoord(C1->cp[0],C2->cp[0]) == KOD_TRUE){
-		ReverseNurbsC(C1);				// C1гЃ®еђ‘гЃЌг‚’еЏЌи»ўгЃ™г‚‹
+//		ReverseNurbsC(C1);				// C1‚МЊь‚«‚р”Ѕ“]‚·‚й
+		C1->ReverseNurbsC();				// C1‚МЊь‚«‚р”Ѕ“]‚·‚й
 	}
 	else if(DiffCoord(C1->cp[0],C2->cp[C2->K-1]) == KOD_TRUE){
 		NURBSC *C;
@@ -7037,30 +7530,31 @@ int NURBS_Func::ConnectNurbsC(NURBSC *C1,NURBSC *C2,NURBSC *C_)
 		C1 = C;
 	}
 	else if(DiffCoord(C1->cp[C1->K-1],C2->cp[0]) == KOD_TRUE){
-		// гЃ“гЃ®г‚±гѓјг‚№гЃЇOKпјЋз‰№гЃ«иЄїж•ґеї…и¦ЃгЃЄгЃ—
+		// ‚±‚МѓPЃ[ѓX‚НOKЃD“Б‚Й’Іђ®•K—v‚И‚µ
 	}
 	else if(DiffCoord(C1->cp[C1->K-1],C2->cp[C2->K-1]) == KOD_TRUE){
-		ReverseNurbsC(C2);				// C2гЃ®еђ‘гЃЌг‚’еЏЌи»ўгЃ™г‚‹
+//		ReverseNurbsC(C2);				// C2‚МЊь‚«‚р”Ѕ“]‚·‚й
+		C2->ReverseNurbsC();				// C2‚МЊь‚«‚р”Ѕ“]‚·‚й
 	}
 	else{
 		GuiIF.SetMessage("NURBS_Func ERROR: Two Curves don't share the same coordinate value.");
 		return KOD_ERR;
 	}
 
-	// 2ж›Із·љгЃ®йљЋж•°гЃЊз­‰гЃ—гЃ„гЃ“гЃЁ
+	// 2‹Иђь‚МЉKђ”‚Є“™‚µ‚ў‚±‚Ж
 	if(C1->M != C2->M){
 		GuiIF.SetMessage("NURBS_Func ERROR: Two Curves don't have the same rank.");
 		return KOD_ERR;
 	}
 
-	int K = C1->K + C2->K - 1;				// C_гЃ®г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ®ж•°
-	int N = C1->N + C2->N - C2->M - 1;		// C_гЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®ж•°
+	int K = C1->K + C2->K - 1;				// C_‚МѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Мђ”
+	int N = C1->N + C2->N - C2->M - 1;		// C_‚МѓmѓbѓgѓxѓNѓgѓ‹‚Мђ”
 
-	New_NurbsC(C_,K,N);						// C_е†…гЃ®гѓЎгѓўгѓЄгѓјзўєдїќ
+	New_NurbsC(C_,K,N);						// C_“а‚МѓЃѓ‚ѓЉЃ[Љm•Ы
 
-	SetKnotVecC_ConnectC(C1,C2,C_);			// C_гЃ®гѓЋгѓѓгѓ€е®љзѕ©еџџг‚’жЊ‡е®љ
+	SetKnotVecC_ConnectC(C1,C2,C_);			// C_‚Мѓmѓbѓg’и‹`€ж‚рЋw’и
 
-	SetCPC_ConnectC(C1,C2,C_);				// C_гЃ®г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃЁг‚¦г‚§г‚¤гѓ€г‚’жЊ‡е®љ
+	SetCPC_ConnectC(C1,C2,C_);				// C_‚МѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚ЖѓEѓFѓCѓg‚рЋw’и
 
 	//for(int i=0;i<C_->N;i++)
 	//	fprintf(stderr,"%d,%lf\n",i+1,C_->T[i]);
@@ -7068,7 +7562,7 @@ int NURBS_Func::ConnectNurbsC(NURBSC *C1,NURBSC *C2,NURBSC *C_)
 	//for(int i=0;i<C_->K;i++)
 	//	fprintf(stderr,"%d,%lf,%lf,%lf,%lf\n",i+1,C_->cp[i].x,C_->cp[i].y,C_->cp[i].z,C_->W[i]);
 
-	C_->M = C1->M;							// C_гЃ®йљЋж•°г‚’жЊ‡е®љ
+	C_->M = C1->M;							// C_‚МЉKђ”‚рЋw’и
 
 	for(int i=0;i<4;i++)
 		C_->prop[i] = C1->prop[i];
@@ -7078,49 +7572,60 @@ int NURBS_Func::ConnectNurbsC(NURBSC *C1,NURBSC *C2,NURBSC *C_)
 }
 
 // Function: ReverseNurbsC
-// NURBSж›Із·љгЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«еђ‘гЃЌг‚’еЏЌи»ўгЃ™г‚‹
+// NURBS‹Иђь‚МѓmѓbѓgѓxѓNѓgѓ‹Њь‚«‚р”Ѕ“]‚·‚й
 //
 // Parameters:
-// *C - NURBSж›Із·љ 
-void NURBS_Func::ReverseNurbsC(NURBSC *C)
+// *C - NURBS‹Иђь 
+//void NURBS_Func::ReverseNurbsC(NURBSC *C)
+void NURBSC::ReverseNurbsC(void)
 {
-	Reverse(C->W,C->K);
-	Reverse(C->cp,C->K);
-	Reverse(C->T,C->N);
-	for(int i=0;i<C->N;i++)
-		C->T[i] *= -1;
-    ChangeKnotVecRange(C->T,C->N,C->M,C->K,0,1);
+	Reverse(W,K);
+	Reverse(cp,K);
+	Reverse(T,N);
+//	Reverse(W.get(),K);
+//	Reverse(cp.get(),K);
+//	Reverse(T.get(),N);
+	for(int i=0;i<N;i++)
+		T[i] *= -1;
+	ChangeKnotVecRange(T,N,M,K,0,1);
+//	ChangeKnotVecRange(T.get(),N,M,K,0,1);
 }
 
 // Function: SetKnotVecC_ConnectC
-// (private)2жњ¬гЃ®ж›Із·љг‚’з№‹гЃ’гЃџгЃЁгЃЌгЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«г‚’иЁ­е®љгЃ™г‚‹
+// (private)2–{‚М‹Иђь‚рЊq‚°‚Ѕ‚Ж‚«‚МѓmѓbѓgѓxѓNѓgѓ‹‚рђЭ’и‚·‚й
 // 
 // Parameters:
-// *C1, *Cs - йЂЈзµђгЃ™г‚‹2гЃ¤гЃ®NURBSж›Із·љ
-// *C_ - йЂЈзµђеѕЊгЃ®NURBSж›Із·љ
+// *C1, *Cs - AЊ‹‚·‚й2‚В‚МNURBS‹Иђь
+// *C_ - AЊ‹Њг‚МNURBS‹Иђь
 void NURBS_Func::SetKnotVecC_ConnectC(NURBSC *C1,NURBSC *C2,NURBSC *C_)
 {
-	// г‚ігѓјгѓ‰й•·г‚’иЄїгЃ№г‚‹
-	double s=0,e=NORM_KNOT_VAL,c=0;			// й–‹е§‹пјЊзµ‚дє†пјЊйЂЈзµђйѓЁгѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«
-	double l1=0,l2=0;						// еђ„ж›Із·љгЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®г‚ігѓјгѓ‰й•·
-	for(int i=0;i<C1->N-1;i++)
-		l1 += CalcDistance(CalcNurbsCCoord(C1,C1->T[i+1]),CalcNurbsCCoord(C1,C1->T[i]));	// C1гЃ®г‚ігѓјгѓ‰й•·
-	for(int i=0;i<C2->N-1;i++)
-		l2 += CalcDistance(CalcNurbsCCoord(C2,C2->T[i+1]),CalcNurbsCCoord(C2,C2->T[i]));	// C2гЃ®г‚ігѓјгѓ‰й•·
-	c = l1/(l1+l2);	// зµђеђ€з‚№гЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«еЂ¤
+	// ѓRЃ[ѓh’·‚р’І‚Ч‚й
+	double s=0,e=NORM_KNOT_VAL,c=0;			// ЉJЋnЃCЏI—№ЃCAЊ‹•”ѓmѓbѓgѓxѓNѓgѓ‹
+	double l1=0,l2=0;						// Љe‹Иђь‚МѓmѓbѓgѓxѓNѓgѓ‹‚МѓRЃ[ѓh’·
+	for(int i=0;i<C1->N-1;i++) {
+//		l1 += CalcDistance(CalcNurbsCCoord(C1,C1->T[i+1]),CalcNurbsCCoord(C1,C1->T[i]));	// C1‚МѓRЃ[ѓh’·
+		l1 += CalcDistance(C1->CalcNurbsCCoord(C1->T[i+1]),C1->CalcNurbsCCoord(C1->T[i]));	// C1‚МѓRЃ[ѓh’·
+	}
+	for(int i=0;i<C2->N-1;i++) {
+//		l2 += CalcDistance(CalcNurbsCCoord(C2,C2->T[i+1]),CalcNurbsCCoord(C2,C2->T[i]));	// C2‚МѓRЃ[ѓh’·
+		l2 += CalcDistance(C2->CalcNurbsCCoord(C2->T[i+1]),C2->CalcNurbsCCoord(C2->T[i]));	// C2‚МѓRЃ[ѓh’·
+	}
+	c = l1/(l1+l2);	// Њ‹Ќ‡“_‚МѓmѓbѓgѓxѓNѓgѓ‹’l
 
-	// C_гЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«зЇ„е›Іг‚’еѕ—г‚‹
+	// C_‚МѓmѓbѓgѓxѓNѓgѓ‹”Н€Н‚р“ѕ‚й
 	Vector T1 = NewVector(C1->N);	
 	Vector T2 = NewVector(C2->N);	
-	CopyVector(C1->T,C1->N,T1);		// C1гЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«г‚’T1гЃ«г‚ігѓ”гѓј
-	CopyVector(C2->T,C2->N,T2);		// C2гЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«г‚’T2гЃ«г‚ігѓ”гѓј
-	ChangeKnotVecRange(T1,C1->N,C1->M,C1->K,s,c);	// C1(T1)гЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®зЇ„е›Іг‚’е¤‰ж›ґ
-	ChangeKnotVecRange(T2,C2->N,C2->M,C2->K,c,e);	// C2(U2)гЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®зЇ„е›Іг‚’е¤‰ж›ґ
-	C_->V[0] = s;						// C_гЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«гЃ®зЇ„е›І
+	CopyVector(C1->T,C1->N,T1);		// C1‚МѓmѓbѓgѓxѓNѓgѓ‹‚рT1‚ЙѓRѓsЃ[
+	CopyVector(C2->T,C2->N,T2);		// C2‚МѓmѓbѓgѓxѓNѓgѓ‹‚рT2‚ЙѓRѓsЃ[
+//	CopyVector(C1->T.get(),C1->N,T1);		// C1‚МѓmѓbѓgѓxѓNѓgѓ‹‚рT1‚ЙѓRѓsЃ[
+//	CopyVector(C2->T.get(),C2->N,T2);		// C2‚МѓmѓbѓgѓxѓNѓgѓ‹‚рT2‚ЙѓRѓsЃ[
+	ChangeKnotVecRange(T1,C1->N,C1->M,C1->K,s,c);	// C1(T1)‚МѓmѓbѓgѓxѓNѓgѓ‹‚М”Н€Н‚р•ПЌX
+	ChangeKnotVecRange(T2,C2->N,C2->M,C2->K,c,e);	// C2(U2)‚МѓmѓbѓgѓxѓNѓgѓ‹‚М”Н€Н‚р•ПЌX
+	C_->V[0] = s;						// C_‚МѓmѓbѓgѓxѓNѓgѓ‹‚М”Н€Н
 	C_->V[1] = e;
-	C_->N = C1->N + C2->N - C2->M - 1;	// C_гЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«ж•°
+	C_->N = C1->N + C2->N - C2->M - 1;	// C_‚МѓmѓbѓgѓxѓNѓgѓ‹ђ”
 
-	// C_гЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«г‚’еѕ—г‚‹
+	// C_‚МѓmѓbѓgѓxѓNѓgѓ‹‚р“ѕ‚й
 	for(int i=0;i<C1->K;i++)
 		C_->T[i] = T1[i];
 	for(int i=1;i<C2->N;i++)
@@ -7131,11 +7636,11 @@ void NURBS_Func::SetKnotVecC_ConnectC(NURBSC *C1,NURBSC *C2,NURBSC *C_)
 }
 
 // Function: SetCPC_ConnectC
-// (private)2жњ¬гЃ®ж›Із·љг‚’з№‹гЃ’гЃџгЃЁгЃЌгЃ®г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃЁг‚¦г‚§г‚¤гѓ€г‚’иЁ­е®љгЃ™г‚‹
+// (private)2–{‚М‹Иђь‚рЊq‚°‚Ѕ‚Ж‚«‚МѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚ЖѓEѓFѓCѓg‚рђЭ’и‚·‚й
 // 
 // Parameters:
-// *C1, *C2 - йЂЈзµђгЃ™г‚‹2гЃ¤гЃ®NURBSж›Із·љ
-// *C_ - йЂЈзµђеѕЊгЃ®NURBSж›Із·љ
+// *C1, *C2 - AЊ‹‚·‚й2‚В‚МNURBS‹Иђь
+// *C_ - AЊ‹Њг‚МNURBS‹Иђь
 void NURBS_Func::SetCPC_ConnectC(NURBSC *C1,NURBSC *C2,NURBSC *C_)
 {
 	C_->K = C1->K + C2->K - 1;
@@ -7151,31 +7656,31 @@ void NURBS_Func::SetCPC_ConnectC(NURBSC *C1,NURBSC *C2,NURBSC *C_)
 }
 
 // Function: InsertNewKnotOnNurbsC
-// (private)NURBSж›Із·љгЃ«ж–°гЃџгЃЄгѓЋгѓѓгѓ€г‚’жЊїе…ҐгЃ™г‚‹
+// (private)NURBS‹Иђь‚ЙђV‚Ѕ‚Иѓmѓbѓg‚р‘}“ь‚·‚й
 //
 // Parameters:
-// *C - е…ѓгЃ®NURBSж›Із·љ  
-// *C_ - жЊїе…ҐеЇѕи±ЎгЃ®NURBSж›Із·љ     
-// t - жЊїе…ҐгЃ™г‚‹гѓЋгѓѓгѓ€     
-// deg - е¤љй‡Ќеє¦
+// *C - Њі‚МNURBS‹Иђь  
+// *C_ - ‘}“ь‘ОЏЫ‚МNURBS‹Иђь     
+// t - ‘}“ь‚·‚йѓmѓbѓg     
+// deg - ‘ЅЏd“x
 //
 // Return:
-// ж–°гЃџгЃЄгѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«е€—гЃ«гЃЉгЃ‘г‚‹tгЃ®жЊїе…ҐдЅЌзЅ®
+// ђV‚Ѕ‚ИѓmѓbѓgѓxѓNѓgѓ‹—с‚Й‚Ё‚Ї‚йt‚М‘}“ь€К’u
 int NURBS_Func::InsertNewKnotOnNurbsC(NURBSC *C,NURBSC *C_,double t,int deg)
 {
-	int k=0;					// tгЃ®жЊїе…ҐдЅЌзЅ®
-	int m = C->M;				// йљЋж•°
-	int n = C->K;				// г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃ®ж•°
+	int k=0;					// t‚М‘}“ь€К’u
+	int m = C->M;				// ЉKђ”
+	int n = C->K;				// ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚Мђ”
 
-	double *T_buf = NewVector(C->K+C->M+deg);	// гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«дёЂж™‚ж јзґЌз”Ёгѓђгѓѓгѓ•г‚Ў
-	Coord *cp_buf = NewCoord1(C->K+deg);			// г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€дёЂж™‚ж јзґЌз”Ёгѓђгѓѓгѓ•г‚Ў
-	double *W_buf = NewVector(C->K+deg);		// г‚¦г‚§г‚¤гѓ€дёЂж™‚ж јзґЌз”Ёгѓђгѓѓгѓ•г‚Ў
+	double *T_buf = NewVector(C->K+C->M+deg);	// ѓmѓbѓgѓxѓNѓgѓ‹€кЋћЉi”[—pѓoѓbѓtѓ@
+	Coord *cp_buf = NewCoord1(C->K+deg);			// ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg€кЋћЉi”[—pѓoѓbѓtѓ@
+	double *W_buf = NewVector(C->K+deg);		// ѓEѓFѓCѓg€кЋћЉi”[—pѓoѓbѓtѓ@
 	//double T_buf[C->K+C->M+deg];
 	//Coord  cp_buf[C->K+deg];
 	//double W_buf[C->K+deg];
 
 
-	// C_гЃ«е…ѓгЃ®NURBSж›Із·љгЃ®T,cp,Wг‚’е€ќжњџеЂ¤гЃЁгЃ—гЃ¦д»Је…Ґ
+	// C_‚ЙЊі‚МNURBS‹Иђь‚МT,cp,W‚рЏ‰Љъ’l‚Ж‚µ‚Д‘г“ь
 	for(int i=0;i<m+n;i++)
 		C_->T[i] = C->T[i];
 	for(int i=0;i<n;i++)
@@ -7183,9 +7688,9 @@ int NURBS_Func::InsertNewKnotOnNurbsC(NURBSC *C,NURBSC *C_,double t,int deg)
 	for(int i=0;i<n;i++)
 		C_->W[i] = C->W[i];
 
-	// е¤љй‡Ќеє¦е€†пјЊtгЃ®жЊїе…Ґг‚’з№°г‚Љиї”гЃ™
+	// ‘ЅЏd“x•ЄЃCt‚М‘}“ь‚рЊJ‚и•Ф‚·
 	for(int count=0;count<deg;count++){
-		// еђ„bufгЃ«C_гЃ®T,cp,Wг‚’д»Је…Ґ
+		// Љebuf‚ЙC_‚МT,cp,W‚р‘г“ь
 		for(int i=0;i<n+m;i++)
 			T_buf[i] = C_->T[i];
 		for(int i=0;i<n;i++)
@@ -7193,7 +7698,7 @@ int NURBS_Func::InsertNewKnotOnNurbsC(NURBSC *C,NURBSC *C_,double t,int deg)
 		for(int i=0;i<n;i++)
 			W_buf[i] = C_->W[i];
 
-		// tгЃ®жЊїе…ҐдЅЌзЅ®kг‚’иЄїгЃ№г‚‹
+		// t‚М‘}“ь€К’uk‚р’І‚Ч‚й
 		k=0;
 		for(int i=0;i<n+m-1;i++){
 			if(t >= T_buf[i] && t < T_buf[i+1]){
@@ -7202,14 +7707,14 @@ int NURBS_Func::InsertNewKnotOnNurbsC(NURBSC *C,NURBSC *C_,double t,int deg)
 			}
 		}
 
-		// C_гЃ®гѓЋгѓѓгѓ€гѓ™г‚Їгѓ€гѓ«г‚’ж›ґж–°
+		// C_‚МѓmѓbѓgѓxѓNѓgѓ‹‚рЌXђV
 		for(int i=0;i<=k;i++)
 			C_->T[i] = T_buf[i];
 		C_->T[k+1] = t;
 		for(int i=k+2;i<=n+m;i++)
 			C_->T[i] = T_buf[i-1];
 
-		// г‚ігѓігѓ€гѓ­гѓјгѓ«гѓќг‚¤гѓігѓ€гЃЁг‚¦г‚§г‚¤гѓ€гЃ®ж›ґж–°
+		// ѓRѓ“ѓgѓЌЃ[ѓ‹ѓ|ѓCѓ“ѓg‚ЖѓEѓFѓCѓg‚МЌXђV
 		for(int i=0;i<=k-m+1;i++){
 			C_->cp[i] = SetCoord(cp_buf[i]);
 			C_->W[i] = W_buf[i];

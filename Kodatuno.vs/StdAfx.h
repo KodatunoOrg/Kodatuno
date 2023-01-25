@@ -1,34 +1,72 @@
-ï»¿#ifndef _STD_AFX_H_
-#define _STD_AFX_H_
+// stdafx.h : •W€‚ÌƒVƒXƒeƒ€ ƒCƒ“ƒNƒ‹[ƒh ƒtƒ@ƒCƒ‹‚ÌƒCƒ“ƒNƒ‹[ƒh ƒtƒ@ƒCƒ‹A‚Ü‚½‚Í
+// QÆ‰ñ”‚ª‘½‚­A‚©‚Â‚ ‚Ü‚è•ÏX‚³‚ê‚È‚¢AƒvƒƒWƒFƒNƒgê—p‚ÌƒCƒ“ƒNƒ‹[ƒh ƒtƒ@ƒCƒ‹
+// ‚ğ‹Lq‚µ‚Ü‚·B
+//
 
-#include "Kutil.h"
+#pragma once
+
+#include "targetver.h"
+
+#ifdef _MSC_VER
+#define WIN32_LEAN_AND_MEAN             // Windows ƒwƒbƒ_[‚©‚çg—p‚³‚ê‚Ä‚¢‚È‚¢•”•ª‚ğœŠO‚µ‚Ü‚·B
+#define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS      // ˆê•”‚Ì CString ƒRƒ“ƒXƒgƒ‰ƒNƒ^[‚Í–¾¦“I‚Å‚·B
+//#define _AFX_NO_MFC_CONTROLS_IN_DIALOGS         // ƒ_ƒCƒAƒƒO“à‚Ì MFC ƒRƒ“ƒgƒ[ƒ‹‚ÌƒTƒ|[ƒg‚ğíœ‚µ‚Ü‚·B
+#ifndef VC_EXTRALEAN
+#define VC_EXTRALEAN            // Windows ƒwƒbƒ_[‚©‚çg—p‚³‚ê‚Ä‚¢‚È‚¢•”•ª‚ğœŠO‚µ‚Ü‚·B
+#endif
+#define	NO_WARN_MBCS_MFC_DEPRECATION	// VS2015`
+#define _CRT_SECURE_NO_WARNINGS			// ‚Æ‚è‚ ‚¦‚¸ƒRƒ“ƒpƒCƒ‹‚ğ’Ê‚·
+#include <afx.h>
+#include <afxwin.h>         // MFC ‚ÌƒRƒA‚¨‚æ‚Ñ•W€ƒRƒ“ƒ|[ƒlƒ“ƒg
+#endif
+
+#define	GLEW_STATIC			// GLEW static link
+#include <gl/glew.h>		// OpenGL Extention
+#include <gl/wglew.h>
+#include <gl/gl.h>			// OpenGL
+
+
+// TODO: ƒvƒƒOƒ‰ƒ€‚É•K—v‚È’Ç‰Áƒwƒbƒ_[‚ğ‚±‚±‚ÅQÆ‚µ‚Ä‚­‚¾‚³‚¢
+
+
+// GUIƒCƒ“ƒ^[ƒtƒF[ƒX‚ÉˆË‘¶‚µ‚½ƒ‰ƒbƒvŠÖ”W
+// Wide Studioƒo[ƒWƒ‡ƒ“
+class GUI_Interface
+{
+public:
+	int SetMessage(char *);					// ƒRƒ“ƒ\[ƒ‹‚ÉƒƒbƒZ[ƒW‚ğo—Í
+	int SetCommand(char *);					// ƒRƒ“ƒ\[ƒ‹‚ÉƒRƒ}ƒ“ƒh‚ğo—Í
+	void AddBodyNameToWin(const char *);		// V‚½‚É“o˜^‚µ‚½BODY‚Ì–¼‘O‚ğƒEƒBƒ“ƒhƒEƒŠƒXƒg‚É•\¦‚·‚é
+};
+extern GUI_Interface GuiIF;		// ƒNƒ‰ƒXGUI_Interface‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğƒOƒ[ƒoƒ‹‚ÅéŒ¾
+
 
 // Constants: General Defines
-// KOD_ERR -					ERRORã®ã‚·ãƒ³ãƒœãƒ«(-1)
-// KOD_FALSE -					å½ã®ã‚·ãƒ³ãƒœãƒ«(0)
-// KOD_TRUE -					çœŸã®ã‚·ãƒ³ãƒœãƒ«(1)
-// KOD_DONE -					å®Ÿè¡Œæ¸ˆã¿ã‚’ç¤ºã™ã‚·ãƒ³ãƒœãƒ«(2)
-// KOD_ONEDGE -					ç‚¹ãŒã‚¨ãƒƒã‚¸ä¸Šã«ã‚ã‚‹ã“ã¨ã‚’ç¤ºã™ã‚·ãƒ³ãƒœãƒ«(2)
-// KOD_LARGE -					a > bã€€ã®ã‚·ãƒ³ãƒœãƒ«(0)
-// KOD_SMALL -					a < bã€€ã®ã‚·ãƒ³ãƒœãƒ«(1)
-// KOD_EQUAL -					a = bã€€ã®ã‚·ãƒ³ãƒœãƒ«(2)
-// KOD_LARGE_EQ -				a >= bã€€ã®ã‚·ãƒ³ãƒœãƒ«(3)
-// KOD_SMALL_EQ -				a <= bã€€ã®ã‚·ãƒ³ãƒœãƒ«(4)
-// LOW_LOW_ACCURACY -			ä½ä½ç²¾åº¦ã®ã‚·ãƒ³ãƒœãƒ«(-1)
-// LOW_ACCURACY -				ä½ç²¾åº¦ã®ã‚·ãƒ³ãƒœãƒ«(0)
-// MID_ACCURACY -				æ™®é€šç²¾åº¦ã®ã‚·ãƒ³ãƒœãƒ«(1)
-// HIGH_ACCURACY -				é«˜ç²¾åº¦ã®ã‚·ãƒ³ãƒœãƒ«(2)
-// FNAMEMAX -					ãƒ•ã‚¡ã‚¤ãƒ«åã®æœ€å¤§æ–‡å­—æ•°(256)
-// PI -							å††å‘¨ç‡(3.141592653589793)
-// APPROX_ZERO_L_L -			ã‚¼ãƒ­ã¨è¦‹ãªã›ã‚‹å€¤(ä½ä½ç²¾åº¦)(1.0e-3)
-// APPROX_ZERO_L -				ã‚¼ãƒ­ã¨è¦‹ãªã›ã‚‹å€¤(ä½ç²¾åº¦)(1.0e-6)
-// APPROX_ZERO -				ã‚¼ãƒ­ã¨è¦‹ãªã›ã‚‹å€¤(æ™®é€šç²¾åº¦)(1.0e-9)
-// APPROX_ZERO_H -				ã‚¼ãƒ­ã¨è¦‹ãªã›ã‚‹å€¤(é«˜ç²¾åº¦)(1.0e-12)
-// LOOPCOUNTMAX -				åæŸè¨ˆç®—å›æ•°ã®æ¡ä»¶(10000)
-// COORDINDEX -					3æ¬¡å…ƒåº§æ¨™ã‚’ç¤ºã™ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹æ•°(3)
-// QUADINDEX -					3æ¬¡å…ƒåŒæ¬¡åº§æ¨™ã‚’ç¤ºã™ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹æ•°(4)
-// CW -							æ­£è»¢ã®ã‚·ãƒ³ãƒœãƒ«(0)
-// CCW -						é€†è»¢ã®ã‚·ãƒ³ãƒœãƒ«(1)
+// KOD_ERR -					ERROR‚ÌƒVƒ“ƒ{ƒ‹(-1)
+// KOD_FALSE -					‹U‚ÌƒVƒ“ƒ{ƒ‹(0)
+// KOD_TRUE -					^‚ÌƒVƒ“ƒ{ƒ‹(1)
+// KOD_DONE -					ÀsÏ‚İ‚ğ¦‚·ƒVƒ“ƒ{ƒ‹(2)
+// KOD_ONEDGE -					“_‚ªƒGƒbƒWã‚É‚ ‚é‚±‚Æ‚ğ¦‚·ƒVƒ“ƒ{ƒ‹(2)
+// KOD_LARGE -					a > b@‚ÌƒVƒ“ƒ{ƒ‹(0)
+// KOD_SMALL -					a < b@‚ÌƒVƒ“ƒ{ƒ‹(1)
+// KOD_EQUAL -					a = b@‚ÌƒVƒ“ƒ{ƒ‹(2)
+// KOD_LARGE_EQ -				a >= b@‚ÌƒVƒ“ƒ{ƒ‹(3)
+// KOD_SMALL_EQ -				a <= b@‚ÌƒVƒ“ƒ{ƒ‹(4)
+// LOW_LOW_ACCURACY -			’á’á¸“x‚ÌƒVƒ“ƒ{ƒ‹(-1)
+// LOW_ACCURACY -				’á¸“x‚ÌƒVƒ“ƒ{ƒ‹(0)
+// MID_ACCURACY -				•’Ê¸“x‚ÌƒVƒ“ƒ{ƒ‹(1)
+// HIGH_ACCURACY -				‚¸“x‚ÌƒVƒ“ƒ{ƒ‹(2)
+// FNAMEMAX -					ƒtƒ@ƒCƒ‹–¼‚ÌÅ‘å•¶š”(256)
+// PI -							‰~ü—¦(3.141592653589793)
+// APPROX_ZERO_L_L -			ƒ[ƒ‚ÆŒ©‚È‚¹‚é’l(’á’á¸“x)(1.0e-3)
+// APPROX_ZERO_L -				ƒ[ƒ‚ÆŒ©‚È‚¹‚é’l(’á¸“x)(1.0e-6)
+// APPROX_ZERO -				ƒ[ƒ‚ÆŒ©‚È‚¹‚é’l(•’Ê¸“x)(1.0e-9)
+// APPROX_ZERO_H -				ƒ[ƒ‚ÆŒ©‚È‚¹‚é’l(‚¸“x)(1.0e-12)
+// LOOPCOUNTMAX -				û‘©ŒvZ‰ñ”‚ÌğŒ(10000)
+// COORDINDEX -					3ŸŒ³À•W‚ğ¦‚·ƒCƒ“ƒfƒbƒNƒX”(3)
+// QUADINDEX -					3ŸŒ³“¯ŸÀ•W‚ğ¦‚·ƒCƒ“ƒfƒbƒNƒX”(4)
+// CW -							³“]‚ÌƒVƒ“ƒ{ƒ‹(0)
+// CCW -						‹t“]‚ÌƒVƒ“ƒ{ƒ‹(1)
 #define KOD_ERR	-1
 #define KOD_FALSE	0
 #define KOD_TRUE	1
@@ -44,7 +82,7 @@
 #define MID_ACCURACY  1
 #define HIGH_ACCURACY 2
 #define FNAMEMAX	256
-#define PI 3.141592653589793
+#define PAI 3.141592653589793
 #define APPROX_ZERO_L_L 1.0e-3
 #define APPROX_ZERO_L 1.0e-6
 #define APPROX_ZERO	1.0e-9
@@ -56,63 +94,67 @@
 #define CCW 1
 
 // Typedef: double **
-// Matrix - doubleå½¢ã®2æ¬¡å…ƒé…åˆ—ã‚’Matrixã¨ã—ã¦å®šç¾©
+// Matrix - doubleŒ`‚Ì2ŸŒ³”z—ñ‚ğMatrix‚Æ‚µ‚Ä’è‹`
 typedef double **Matrix;
 
 // Typedef: double *
-// Vector - doubleå½¢ã®1æ¬¡å…ƒé…åˆ—ã‚’Vectorã¨ã—ã¦å®šç¾©
+// Vector - doubleŒ`‚Ì1ŸŒ³”z—ñ‚ğVector‚Æ‚µ‚Ä’è‹`
 typedef double *Vector;
 
 // Class: Coord 
-// åº§æ¨™å€¤ç”¨ã‚¯ãƒ©ã‚¹ã‚’å®šç¾©
+// À•W’l—pƒNƒ‰ƒX‚ğ’è‹`
 class Coord
 {
 public:
 
 	// Variables: x,y,z,dmy
-	// ä¸‰æ¬¡å…ƒåº§æ¨™å€¤(x, y, z)åŠã³ï¼Œæ±ç”¨ã¨ã—ã¦dmyã‚’ç”¨æ„
+	// OŸŒ³À•W’l(x, y, z)‹y‚ÑC”Ä—p‚Æ‚µ‚Ädmy‚ğ—pˆÓ
 	double x,y,z,dmy;
 
 	// Operator: +
-	// CoordåŒå£«ã®è¶³ã—ç®—(AddCoord())
+	// Coord“¯m‚Ì‘«‚µZ(AddCoord())
 	Coord operator +(Coord);
 
 	// Oeprator: -
-	// CoordåŒå£«ã®å¼•ãç®—(SubCoord())
+	// Coord“¯m‚Ìˆø‚«Z(SubCoord())
 	Coord operator -(Coord);	
 
 	// Oeprator: *
-	// CoordåŒå£«ã®æ›ã‘ç®—(MulCoord())
+	// Coord“¯m‚ÌŠ|‚¯Z(MulCoord())
 	Coord operator *(Coord);
 
 	// Oeprator: *
-	// Coordã¨doubleã¨ã®æ›ã‘ç®—ï¼ˆã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰ï¼‰
+	// Coord‚Ædouble‚Æ‚ÌŠ|‚¯ZiƒI[ƒo[ƒ[ƒhj
 	Coord operator *(double);
 
 	// Operator: /
-	// CoordåŒå£«ã®å‰²ã‚Šç®—(DivCoord())
+	// Coord“¯m‚ÌŠ„‚èZ(DivCoord())
 	Coord operator /(Coord);
 
 	// Operator: /
-	// Coordã¨doubleã¨ã®å‰²ã‚Šç®—ï¼ˆã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰ï¼‰
-	Coord operator /(double);	// ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰
+	// Coord‚Ædouble‚Æ‚ÌŠ„‚èZiƒI[ƒo[ƒ[ƒhj
+	Coord operator /(double);	// ƒI[ƒo[ƒ[ƒh
 
 	// Operator: &
-	// CoordåŒå£«ã®å†…ç©(CalcInnerProduct())
+	// Coord“¯m‚Ì“àÏ(CalcInnerProduct())
 	double operator &(Coord);
 
 	// Operator: &&
-	// CoordåŒå£«ã®å¤–ç©(CalcOuterProduct())
+	// Coord“¯m‚ÌŠOÏ(CalcOuterProduct())
 	Coord operator &&(Coord);
+
+	// Add by K.Magara
+	void	SetMinCoord(const Coord&);
+	void	SetMaxCoord(const Coord&);
 };
 
 
 // Structure: FRAME
-// åŒæ¬¡å¤‰æ›è¡Œåˆ—ç”¨æ§‹é€ ä½“
+// “¯Ÿ•ÏŠ·s—ñ—p\‘¢‘Ì
 //
 // Variables:
-// Coord Rot[COORINDEX] -	// å›è»¢è¡Œåˆ—
-// Coord Trl -				// ä¸¦é€²æˆåˆ†
+// Coord Rot[COORINDEX] -	// ‰ñ“]s—ñ
+// Coord Trl -				// •Ài¬•ª
 typedef struct{
 	Coord Rot[COORDINDEX];		
 	Coord Trl;
@@ -120,563 +162,565 @@ typedef struct{
 
 
 // Structure: DispStat
-// è¡¨ç¤ºå±æ€§ç”¨æ§‹é€ ä½“
+// •\¦‘®«—p\‘¢‘Ì
 //
 // Variables:
-// float Color[4] -	// è‰²(r,g,b,?)
-typedef struct{
+// float Color[4] -	// F(r,g,b,?)
+struct DispStat
+{
 	float Color[4];	
-	// è¡¨ç¤ºå±æ€§ã®è¿½åŠ ã¯ã“ã“ã«è¨˜è¿°
-}DispStat;
+	DispStat() {
+		Color[0] = Color[1] = Color[2] = Color[3] = 0.0f;
+	}
+	// •\¦‘®«‚Ì’Ç‰Á‚Í‚±‚±‚É‹Lq
+};
 
 
-// Package: ã‚°ãƒ­ãƒ¼ãƒãƒ«ãªé–¢æ•°ã®å®šç¾©
+// Package: ƒOƒ[ƒoƒ‹‚ÈŠÖ”‚Ì’è‹`
 
-// Group: Functions(3æ¬¡å…ƒãƒ™ã‚¯ãƒˆãƒ«å¹¾ä½•æ¼”ç®—)
+// Group: Functions(3ŸŒ³ƒxƒNƒgƒ‹Šô‰½‰‰Z)
 
 // Function: InitCoord
-// åº§æ¨™å€¤ã®åˆæœŸåŒ–
+// À•W’l‚Ì‰Šú‰»
 void InitCoord(Coord *);
 
 // Function: InitCoord
-// åº§æ¨™å€¤ã®åˆæœŸåŒ–(ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰)
+// À•W’l‚Ì‰Šú‰»(ƒI[ƒo[ƒ[ƒh)
 void InitCoord(Coord *,int);				
 
 // Function: InitCoord
-// åº§æ¨™å€¤ã®åˆæœŸåŒ–(ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰)
+// À•W’l‚Ì‰Šú‰»(ƒI[ƒo[ƒ[ƒh)
 Coord InitCoord();
 
 // Function: AddCoord
-// åº§æ¨™å€¤ã®è¶³ã—ç®—
+// À•W’l‚Ì‘«‚µZ
 Coord AddCoord(Coord,Coord);					
 
 // Function: AddCoord
-// åº§æ¨™å€¤ã®è¶³ã—ç®—(ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰)
+// À•W’l‚Ì‘«‚µZ(ƒI[ƒo[ƒ[ƒh)
 Coord AddCoord(Coord,double);					
 
 // Function: AddCoord
-//  åº§æ¨™å€¤ã®è¶³ã—ç®—(ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰)
+//  À•W’l‚Ì‘«‚µZ(ƒI[ƒo[ƒ[ƒh)
 Coord AddCoord(Coord,double,double,double);		
 
 // Function: DivCoord
-// åº§æ¨™å€¤ã®å‰²ã‚Šç®—
+// À•W’l‚ÌŠ„‚èZ
 Coord DivCoord(Coord,Coord);					
 
 // Function: DivCoord
-// åº§æ¨™å€¤ã®å‰²ã‚Šç®—(ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰)
+// À•W’l‚ÌŠ„‚èZ(ƒI[ƒo[ƒ[ƒh)
 Coord DivCoord(Coord,double);					
 
 // Function: DivCoord
-// åº§æ¨™å€¤ã®å‰²ã‚Šç®—(ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰)
+// À•W’l‚ÌŠ„‚èZ(ƒI[ƒo[ƒ[ƒh)
 Coord DivCoord(Coord,double,double,double);		
 
 // Function: MulCoord
-// åº§æ¨™å€¤ã®æ›ã‘ç®—(ãƒ™ã‚¯ãƒˆãƒ«ã®å†…ç©,å¤–ç©ã§ã¯ãªã„ã®ã§æ³¨æ„)
+// À•W’l‚ÌŠ|‚¯Z(ƒxƒNƒgƒ‹‚Ì“àÏ,ŠOÏ‚Å‚Í‚È‚¢‚Ì‚Å’ˆÓ)
 Coord MulCoord(Coord,Coord);					
 
 // Function: MulCoord
-// åº§æ¨™å€¤ã®æ›ã‘ç®—(ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰)
+// À•W’l‚ÌŠ|‚¯Z(ƒI[ƒo[ƒ[ƒh)
 Coord MulCoord(Coord,double);					
 
 // Function: MulCoord
-// åº§æ¨™å€¤ã®æ›ã‘ç®—(ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰)
+// À•W’l‚ÌŠ|‚¯Z(ƒI[ƒo[ƒ[ƒh)
 Coord MulCoord(Coord,double,double,double);		
 
 // Function: SubCoord
-// åº§æ¨™å€¤ã®å¼•ãç®—
+// À•W’l‚Ìˆø‚«Z
 Coord SubCoord(Coord,Coord);					
 
 // Function: SubCoord
-// åº§æ¨™å€¤ã®å¼•ãç®—(ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰)
+// À•W’l‚Ìˆø‚«Z(ƒI[ƒo[ƒ[ƒh)
 Coord SubCoord(Coord,double);					
 
 // Function: SubCoord
-// åº§æ¨™å€¤ã®å¼•ãç®—(ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰)
+// À•W’l‚Ìˆø‚«Z(ƒI[ƒo[ƒ[ƒh)
 Coord SubCoord(Coord,double,double,double);
 
 // Function: SetCoord
-// åº§æ¨™å€¤ã‚’ä»£å…¥
+// À•W’l‚ğ‘ã“ü
 Coord SetCoord(Coord);							
 
 // Function: SetCoord
-// åº§æ¨™å€¤ã‚’ä»£å…¥(ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰)
+// À•W’l‚ğ‘ã“ü(ƒI[ƒo[ƒ[ƒh)
 Coord SetCoord(double,double,double);			
 
 // Function: CopyCoord
-// åº§æ¨™å€¤ç¾¤ã‚’ã‚³ãƒ”ãƒ¼
+// À•W’lŒQ‚ğƒRƒs[
 void CopyCoord(Coord *,int,Coord *);			
 
 // Function: DiffCoord
-// åº§æ¨™å€¤ãŒåŒã˜ãªã‚‰KOD_TRUEã€ç•°ãªã£ã¦ã„ã‚‹ãªã‚‰KOD_FALSEã‚’è¿”ã™
+// À•W’l‚ª“¯‚¶‚È‚çKOD_TRUEAˆÙ‚È‚Á‚Ä‚¢‚é‚È‚çKOD_FALSE‚ğ•Ô‚·
 int DiffCoord(Coord,Coord);						
 
 // Function: DiffCoord
-// åº§æ¨™å€¤ãŒåŒã˜ãªã‚‰KOD_TRUEã€ç•°ãªã£ã¦ã„ã‚‹ãªã‚‰KOD_FALSEã‚’è¿”ã™(ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰(ç²¾åº¦æŒ‡å®š))
+// À•W’l‚ª“¯‚¶‚È‚çKOD_TRUEAˆÙ‚È‚Á‚Ä‚¢‚é‚È‚çKOD_FALSE‚ğ•Ô‚·(ƒI[ƒo[ƒ[ƒh(¸“xw’è))
 int DiffCoord(Coord,Coord,double);				
 
 // Function: AbsCoord
-// åº§æ¨™å€¤ã®çµ¶å¯¾å€¤ã‚’è¿”ã™
+// À•W’l‚Ìâ‘Î’l‚ğ•Ô‚·
 Coord AbsCoord(Coord);							
 
 // Function: ZoroCoord
-// (0,0,0)ã®å ´åˆã«KOD_TRUEã‚’è¿”ã™
+// (0,0,0)‚Ìê‡‚ÉKOD_TRUE‚ğ•Ô‚·
 int ZoroCoord(Coord);							
 
 // Function: CalcEuclid
-// ãƒ¦ãƒ¼ã‚¯ãƒªãƒƒãƒ‰è·é›¢ã‚’ã‚‚ã¨ã‚ã‚‹
+// ƒ†[ƒNƒŠƒbƒh‹——£‚ğ‚à‚Æ‚ß‚é
 double CalcEuclid(Coord);						
 
 // Function: CalcDistance
-// 2ç‚¹é–“ã®ãƒ¦ãƒ¼ã‚¯ãƒªãƒƒãƒ‰è·é›¢ã‚’æ±‚ã‚ã‚‹
+// 2“_ŠÔ‚Ìƒ†[ƒNƒŠƒbƒh‹——£‚ğ‹‚ß‚é
 double CalcDistance(Coord,Coord);				
 
 // Function: CalcRotVec
-// ä»»æ„ã®ãƒ™ã‚¯ãƒˆãƒ«ã‚’åŸç‚¹ã‚’é€šã‚‹ä»»æ„è»¸å‘¨ã‚Šã«å›è»¢ã•ã›ãŸãƒ™ã‚¯ãƒˆãƒ«ã‚’æ±‚ã‚ã‚‹(3Då¹³é¢)
+// ”CˆÓ‚ÌƒxƒNƒgƒ‹‚ğŒ´“_‚ğ’Ê‚é”CˆÓ²ü‚è‚É‰ñ“]‚³‚¹‚½ƒxƒNƒgƒ‹‚ğ‹‚ß‚é(3D•½–Ê)
 Coord CalcRotVec(Coord,Coord,double);			
 
 // Function: CalcVecAngle
-// 2ã¤ã®ãƒ™ã‚¯ãƒˆãƒ«ã®ãªã™è§’ã‚’æ±‚ã‚ã‚‹
+// 2‚Â‚ÌƒxƒNƒgƒ‹‚Ì‚È‚·Šp‚ğ‹‚ß‚é
 double CalcVecAngle(Coord,Coord);				
 
 // Function: CalcAnglePlaneVec
-// å¹³é¢ã¨ç›´ç·šã¨ã®ãªã™è§’ã‚’æ±‚ã‚ã‚‹
+// •½–Ê‚Æ’¼ü‚Æ‚Ì‚È‚·Šp‚ğ‹‚ß‚é
 double CalcAnglePlaneVec(Coord,Coord);			
 
 // Function: NormalizeVec
-// 3æ¬¡å…ƒãƒ™ã‚¯ãƒˆãƒ«ã‚’æ­£è¦åŒ–(å˜ä½ãƒ™ã‚¯ãƒˆãƒ«åŒ–)
+// 3ŸŒ³ƒxƒNƒgƒ‹‚ğ³‹K‰»(’PˆÊƒxƒNƒgƒ‹‰»)
 Coord NormalizeVec(Coord);						
 
 // Function: NormalizeVec
-// 3æ¬¡å…ƒãƒ™ã‚¯ãƒˆãƒ«ã‚’æ­£è¦åŒ–(å˜ä½ãƒ™ã‚¯ãƒˆãƒ«åŒ–)(ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰)
+// 3ŸŒ³ƒxƒNƒgƒ‹‚ğ³‹K‰»(’PˆÊƒxƒNƒgƒ‹‰»)(ƒI[ƒo[ƒ[ƒh)
 Coord NormalizeVec(double,double,double);		
 
 // Function: CalcInnerProduct
-// å†…ç©ã‚’æ±‚ã‚ã‚‹
+// “àÏ‚ğ‹‚ß‚é
 double CalcInnerProduct(Coord,Coord);			
 
 // Function: CalcInnerProduct
-// å†…ç©ã‚’æ±‚ã‚ã‚‹(ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰)
+// “àÏ‚ğ‹‚ß‚é(ƒI[ƒo[ƒ[ƒh)
 double CalcInnerProduct(Coord,double,double,double);	
 
 // Function: CalcOuterProduct
-// å¤–ç©ã‚’æ±‚ã‚ã‚‹
+// ŠOÏ‚ğ‹‚ß‚é
 Coord CalcOuterProduct(Coord,Coord);			
 
 // Function: CalcInterDivPt
-// 2ç‚¹é–“ã®å†…åˆ†ç‚¹ã‚’æ±‚ã‚ã‚‹
+// 2“_ŠÔ‚Ì“à•ª“_‚ğ‹‚ß‚é
 Coord CalcInterDivPt(Coord,Coord,double);		
 
 // Function: CalcOrthoProjection
-// ä»»æ„ã®ç‚¹ã‚’ä»»æ„ã®å¹³é¢ã¸æ­£å°„å½±ã™ã‚‹
+// ”CˆÓ‚Ì“_‚ğ”CˆÓ‚Ì•½–Ê‚Ö³Ë‰e‚·‚é
 Coord CalcOrthoProjection(Coord,Coord,Coord);	
 
 // Function: CalcDistPtToPlane
-// ä»»æ„ã®ç‚¹ã‹ã‚‰ä»»æ„ã®å¹³é¢ã¾ã§ã®è·é›¢ã‚’æ±‚ã‚ã‚‹
+// ”CˆÓ‚Ì“_‚©‚ç”CˆÓ‚Ì•½–Ê‚Ü‚Å‚Ì‹——£‚ğ‹‚ß‚é
 double CalcDistPtToPlane(Coord,Coord,Coord);	
 
 // Function: CalcScalarTriProduct
-// ã‚¹ã‚«ãƒ©ãƒ¼ä¸‰é‡ç©ã‚’æ±‚ã‚ã‚‹
+// ƒXƒJƒ‰[OdÏ‚ğ‹‚ß‚é
 double CalcScalarTriProduct(Coord,Coord,Coord);	
 
 // Function: CalcNormalLine
-// ä»»æ„ã®ç‚¹ã‹ã‚‰ä»»æ„ã®ç›´ç·šã¸ä¸‹ã‚ã—ãŸç‚¹ã‚’æ±‚ã‚ã‚‹
+// ”CˆÓ‚Ì“_‚©‚ç”CˆÓ‚Ì’¼ü‚Ö‰º‚ë‚µ‚½“_‚ğ‹‚ß‚é
 Coord CalcNormalLine(Coord,Coord,Coord);		
 
 // Function: Arc_CP
-// å††ã®ä¸­å¿ƒç‚¹(vec[0])ã‹ã‚‰å††ä¸Šã«æ¥ã™ã‚‹ä»»æ„ã®2æœ¬ã®æ¥ç·šãŒäº¤ã‚ã‚‹ç‚¹ã¸ã®ãƒ™ã‚¯ãƒˆãƒ«(ä¸­å¿ƒè§’0<Î¸<Ï€)
+// ‰~‚Ì’†S“_(vec[0])‚©‚ç‰~ã‚ÉÚ‚·‚é”CˆÓ‚Ì2–{‚ÌÚü‚ªŒğ‚í‚é“_‚Ö‚ÌƒxƒNƒgƒ‹(’†SŠp0<ƒÆ<ƒÎ)
 Coord Arc_CP(Coord,Coord,double);				
 
 // Function: IsPointInPolygon
-// æ³¨ç›®ç‚¹ã®å¤šè§’å½¢å†…å¤–åˆ¤åˆ¥
+// ’–Ú“_‚Ì‘½ŠpŒ`“àŠO”»•Ê
 int IsPointInPolygon(Coord,Coord *,int);		
 
 // Function: CalcNormVecFrom3Pts
-// ç©ºé–“ä¸Šã®3ç‚¹ã‹ã‚‰ãªã‚‹å¹³é¢ã®æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã‚’æ±‚ã‚ã‚‹
+// ‹óŠÔã‚Ì3“_‚©‚ç‚È‚é•½–Ê‚Ì–@üƒxƒNƒgƒ‹‚ğ‹‚ß‚é
 Coord CalcNormVecFrom3Pts(Coord,Coord,Coord);	
 
 
-// Group: Functions(2æ¬¡å…ƒãƒ™ã‚¯ãƒˆãƒ«å¹¾ä½•æ¼”ç®—)
+// Group: Functions(2ŸŒ³ƒxƒNƒgƒ‹Šô‰½‰‰Z)
 
 // Function: AddCoord2D
-// åº§æ¨™å€¤ã®è¶³ã—ç®— (2D Ver.)
+// À•W’l‚Ì‘«‚µZ (2D Ver.)
 Coord AddCoord2D(Coord,Coord);
 
 // Function: AddCoord2D
-// åº§æ¨™å€¤ã®è¶³ã—ç®—(ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰) (2D Ver.)
+// À•W’l‚Ì‘«‚µZ(ƒI[ƒo[ƒ[ƒh) (2D Ver.)
 Coord AddCoord2D(Coord,double);					
 
 // Function: AddCoord2D
-// åº§æ¨™å€¤ã®è¶³ã—ç®—(ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰) (2D Ver.)
+// À•W’l‚Ì‘«‚µZ(ƒI[ƒo[ƒ[ƒh) (2D Ver.)
 Coord AddCoord2D(Coord,double,double);			
 
 // Function: DivCoord2D
-// åº§æ¨™å€¤ã®å‰²ã‚Šç®— (2D Ver.)
+// À•W’l‚ÌŠ„‚èZ (2D Ver.)
 Coord DivCoord2D(Coord,Coord);					
 
 // Function: DivCoord2D
-// åº§æ¨™å€¤ã®å‰²ã‚Šç®—(ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰) (2D Ver.)
+// À•W’l‚ÌŠ„‚èZ(ƒI[ƒo[ƒ[ƒh) (2D Ver.)
 Coord DivCoord2D(Coord,double);					
 
 // Function: DivCoord2D
-// åº§æ¨™å€¤ã®å‰²ã‚Šç®—(ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰) (2D Ver.)
+// À•W’l‚ÌŠ„‚èZ(ƒI[ƒo[ƒ[ƒh) (2D Ver.)
 Coord DivCoord2D(Coord,double,double);			
 
 // Function: MulCoord2D
-// åº§æ¨™å€¤ã®æ›ã‘ç®—(ãƒ™ã‚¯ãƒˆãƒ«ã®å†…ç©,å¤–ç©ã§ã¯ãªã„ã®ã§æ³¨æ„) (2D Ver.)
+// À•W’l‚ÌŠ|‚¯Z(ƒxƒNƒgƒ‹‚Ì“àÏ,ŠOÏ‚Å‚Í‚È‚¢‚Ì‚Å’ˆÓ) (2D Ver.)
 Coord MulCoord2D(Coord,Coord);					
 
 // Function: MulCoord2D
-// åº§æ¨™å€¤ã®æ›ã‘ç®—(ãƒ™ã‚¯ãƒˆãƒ«ã®å†…ç©,å¤–ç©ã§ã¯ãªã„ã®ã§æ³¨æ„)(ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰) (2D Ver.)
+// À•W’l‚ÌŠ|‚¯Z(ƒxƒNƒgƒ‹‚Ì“àÏ,ŠOÏ‚Å‚Í‚È‚¢‚Ì‚Å’ˆÓ)(ƒI[ƒo[ƒ[ƒh) (2D Ver.)
 Coord MulCoord2D(Coord,double);					
 
 // Function: MulCoord2D
-// åº§æ¨™å€¤ã®æ›ã‘ç®—(ãƒ™ã‚¯ãƒˆãƒ«ã®å†…ç©,å¤–ç©ã§ã¯ãªã„ã®ã§æ³¨æ„)(ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰) (2D Ver.)
+// À•W’l‚ÌŠ|‚¯Z(ƒxƒNƒgƒ‹‚Ì“àÏ,ŠOÏ‚Å‚Í‚È‚¢‚Ì‚Å’ˆÓ)(ƒI[ƒo[ƒ[ƒh) (2D Ver.)
 Coord MulCoord2D(Coord,double,double);			
 
 // Function: SubCoord2D
-// åº§æ¨™å€¤ã®å¼•ãç®— (2D Ver.)
+// À•W’l‚Ìˆø‚«Z (2D Ver.)
 Coord SubCoord2D(Coord,Coord);					
 
 // Function: SubCoord2D
-// åº§æ¨™å€¤ã®å¼•ãç®—(ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰) (2D Ver.)
+// À•W’l‚Ìˆø‚«Z(ƒI[ƒo[ƒ[ƒh) (2D Ver.)
 Coord SubCoord2D(Coord,double);					
 
 // Function: SubCoord2D
-// åº§æ¨™å€¤ã®å¼•ãç®—(ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰) (2D Ver.)
+// À•W’l‚Ìˆø‚«Z(ƒI[ƒo[ƒ[ƒh) (2D Ver.)
 Coord SubCoord2D(Coord,double,double);			
 
 // Function: SetCoord2D
-// åº§æ¨™å€¤ã‚’ä»£å…¥ (2D Ver.)
+// À•W’l‚ğ‘ã“ü (2D Ver.)
 Coord SetCoord2D(Coord);						
 
 // Function: SetCoord2D
-// ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰ (2D Ver.)
+// ƒI[ƒo[ƒ[ƒh (2D Ver.)
 Coord SetCoord2D(double,double);				
 
 // Function: CopyCoord2D
-// åº§æ¨™å€¤ç¾¤ã‚’ã‚³ãƒ”ãƒ¼ (2D Ver.)
+// À•W’lŒQ‚ğƒRƒs[ (2D Ver.)
 void CopyCoord2D(Coord *,int,Coord *);			
 
 // Function: DiffCoord2D
-// åº§æ¨™å€¤ãŒåŒã˜ãªã‚‰KOD_TRUEã€ç•°ãªã£ã¦ã„ã‚‹ãªã‚‰KOD_FALSEã‚’è¿”ã™ (2D Ver.)
+// À•W’l‚ª“¯‚¶‚È‚çKOD_TRUEAˆÙ‚È‚Á‚Ä‚¢‚é‚È‚çKOD_FALSE‚ğ•Ô‚· (2D Ver.)
 int DiffCoord2D(Coord,Coord);					
 
 // Function: DiffCoord2D
-// åº§æ¨™å€¤ãŒåŒã˜ãªã‚‰KOD_TRUEã€ç•°ãªã£ã¦ã„ã‚‹ãªã‚‰KOD_FALSEã‚’è¿”ã™(ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰(ç²¾åº¦æŒ‡å®š)) (2D Ver.)
+// À•W’l‚ª“¯‚¶‚È‚çKOD_TRUEAˆÙ‚È‚Á‚Ä‚¢‚é‚È‚çKOD_FALSE‚ğ•Ô‚·(ƒI[ƒo[ƒ[ƒh(¸“xw’è)) (2D Ver.)
 int DiffCoord2D(Coord,Coord,double);			
 
 // Function: AbsCoord2D
-// åº§æ¨™å€¤ã®çµ¶å¯¾å€¤ã‚’è¿”ã™ (2D Ver.)
+// À•W’l‚Ìâ‘Î’l‚ğ•Ô‚· (2D Ver.)
 Coord AbsCoord2D(Coord);						
 
 // Function: ZoroCoord2D
-// (0,0,0)ã®å ´åˆã«KOD_TRUEã‚’è¿”ã™ (2D Ver.)
+// (0,0,0)‚Ìê‡‚ÉKOD_TRUE‚ğ•Ô‚· (2D Ver.)
 int ZoroCoord2D(Coord);							
 
 // Function: CalcEuclid2D
-// ãƒ¦ãƒ¼ã‚¯ãƒªãƒƒãƒ‰è·é›¢ã‚’ã‚‚ã¨ã‚ã‚‹ (2D Ver.)
+// ƒ†[ƒNƒŠƒbƒh‹——£‚ğ‚à‚Æ‚ß‚é (2D Ver.)
 double CalcEuclid2D(double,double);				
 
 // Function: CalcDistance2D
-// 2æ¬¡å…ƒåº§æ¨™ä¸Šã§ã®2ç‚¹é–“ã®ãƒ¦ãƒ¼ã‚¯ãƒªãƒƒãƒ‰è·é›¢ã‚’ç®—å‡º (2D Ver.)
+// 2ŸŒ³À•Wã‚Å‚Ì2“_ŠÔ‚Ìƒ†[ƒNƒŠƒbƒh‹——£‚ğZo (2D Ver.)
 double CalcDistance2D(Coord,Coord);				
 
 // Function: CalcVecAngle2D
-// 2ã¤ã®ãƒ™ã‚¯ãƒˆãƒ«ã®ãªã™è§’ã‚’æ±‚ã‚ã‚‹ (2D Ver.)
+// 2‚Â‚ÌƒxƒNƒgƒ‹‚Ì‚È‚·Šp‚ğ‹‚ß‚é (2D Ver.)
 double CalcVecAngle2D(Coord,Coord);				
 
 // Function: CalcRotVec2D
-// ä»»æ„ã®ãƒ™ã‚¯ãƒˆãƒ«ã‚’å›è»¢ã•ã›ãŸãƒ™ã‚¯ãƒˆãƒ«ã‚’æ±‚ã‚ã‚‹(2Då¹³é¢)
+// ”CˆÓ‚ÌƒxƒNƒgƒ‹‚ğ‰ñ“]‚³‚¹‚½ƒxƒNƒgƒ‹‚ğ‹‚ß‚é(2D•½–Ê)
 Coord CalcRotVec2D(Coord,double);				
 
 // Function: CalcOuterProduct2D
-// å¤–ç©ã‚’æ±‚ã‚ã‚‹ (2D Ver.)
+// ŠOÏ‚ğ‹‚ß‚é (2D Ver.)
 double CalcOuterProduct2D(Coord,Coord);			
 
 // Function: ClacPolygonArea2D
-// 2Då¹³é¢ä¸Šã®å¤šè§’å½¢ã®ç¬¦å·ä»˜ãé¢ç©ã‚’å¾—ã‚‹
+// 2D•½–Êã‚Ì‘½ŠpŒ`‚Ì•„†•t‚«–ÊÏ‚ğ“¾‚é
 double ClacPolygonArea2D(Coord [],int);			
 
 // Function: DiscriminateCW2D
-// 2Då¹³é¢ä¸Šã®å¤šè§’å½¢ãŒæ™‚è¨ˆå›ã‚Šã‹åæ™‚è¨ˆå›ã‚Šã‹ã‚’åˆ¤åˆ¥ã™ã‚‹
+// 2D•½–Êã‚Ì‘½ŠpŒ`‚ªŒv‰ñ‚è‚©”½Œv‰ñ‚è‚©‚ğ”»•Ê‚·‚é
 int DiscriminateCW2D(Coord [],int);				
 
 
-// Group: Functions(åŒæ¬¡å¤‰æ›è¡Œåˆ—ã€å›è»¢è¡Œåˆ—ã®æ¼”ç®—)
+// Group: Functions(“¯Ÿ•ÏŠ·s—ñA‰ñ“]s—ñ‚Ì‰‰Z)
 
 // Function: MulFrameCoord
-// åŒæ¬¡å¤‰æ›è¡Œåˆ—ã¨åº§æ¨™å€¤(3Dãƒ™ã‚¯ãƒˆãƒ«)ã¨ã®æ›ã‘ç®—
+// “¯Ÿ•ÏŠ·s—ñ‚ÆÀ•W’l(3DƒxƒNƒgƒ‹)‚Æ‚ÌŠ|‚¯Z
 Coord MulFrameCoord(double[][3],double[],Coord);	
 
 // Function: MulFrameCoord
-// åŒæ¬¡å¤‰æ›è¡Œåˆ—ã¨åº§æ¨™å€¤(3Dãƒ™ã‚¯ãƒˆãƒ«)ã¨ã®æ›ã‘ç®—(ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰)
+// “¯Ÿ•ÏŠ·s—ñ‚ÆÀ•W’l(3DƒxƒNƒgƒ‹)‚Æ‚ÌŠ|‚¯Z(ƒI[ƒo[ƒ[ƒh)
 Coord MulFrameCoord(FRAME,Coord);				 
 
 // Function: MulFrame
-// åŒæ¬¡å¤‰æ›è¡Œåˆ—ã®æ›ã‘ç®—
+// “¯Ÿ•ÏŠ·s—ñ‚ÌŠ|‚¯Z
 FRAME MulFrame(FRAME ,FRAME);					
 
 // Function: InvFrame
-// åŒæ¬¡å¤‰æ›è¡Œåˆ—ã®é€†è¡Œåˆ—ã‚’å¾—ã‚‹
+// “¯Ÿ•ÏŠ·s—ñ‚Ì‹ts—ñ‚ğ“¾‚é
 FRAME InvFrame(FRAME);							
 
 // Function: RotToZYZEuler
-// å›è»¢è¡Œåˆ—ã‚’ZYZã‚ªã‚¤ãƒ©ãƒ¼è§’ã¸å¤‰æ›
+// ‰ñ“]s—ñ‚ğZYZƒIƒCƒ‰[Šp‚Ö•ÏŠ·
 Coord RotToZYZEuler(Coord []);					
 
 // Function: InitFrame
-// FRAMEã®åˆæœŸåŒ–
+// FRAME‚Ì‰Šú‰»
 void InitFrame(FRAME *);						
 
 
-// Group: Functions(å¤šæ¬¡å…ƒãƒ™ã‚¯ãƒˆãƒ«ã€å¤šæ¬¡å…ƒè¡Œåˆ—ã®æ¼”ç®—)
+// Group: Functions(‘½ŸŒ³ƒxƒNƒgƒ‹A‘½ŸŒ³s—ñ‚Ì‰‰Z)
 
 // Function: InitVector
-// 1æ¬¡å…ƒé…åˆ—ã®åˆæœŸåŒ–(å¼•æ•°:ãƒ™ã‚¯ãƒˆãƒ«,é…åˆ—é•·)
+// 1ŸŒ³”z—ñ‚Ì‰Šú‰»(ˆø”:ƒxƒNƒgƒ‹,”z—ñ’·)
 void InitVector(Vector,int);					
 
 // Function: InitMatrix
-// 2æ¬¡å…ƒé…åˆ—ã®åˆæœŸåŒ–
+// 2ŸŒ³”z—ñ‚Ì‰Šú‰»
 void InitMatrix(Matrix,int,int);				
 
 // Function: CopyVector
-// ãƒ™ã‚¯ãƒˆãƒ«ã®ã‚³ãƒ”ãƒ¼
+// ƒxƒNƒgƒ‹‚ÌƒRƒs[
 void CopyVector(Vector,int,Vector);				
 
 // Function: AddMxMx
-// è¡Œåˆ—åŒå£«ã®è¶³ã—ç®—
+// s—ñ“¯m‚Ì‘«‚µZ
 void AddMxMx(Matrix,Matrix,Matrix,int,int);		
 
 // Function: MulMxMx
-// è¡Œåˆ—åŒå£«ã®æ›ã‘ç®—
+// s—ñ“¯m‚ÌŠ|‚¯Z
 void MulMxMx(Matrix,int,int,Matrix,int,int,Matrix);	
 
 // Function: MulMxVec
-// è¡Œåˆ—ã¨ãƒ™ã‚¯ãƒˆãƒ«ã®æ›ã‘ç®—
+// s—ñ‚ÆƒxƒNƒgƒ‹‚ÌŠ|‚¯Z
 void MulMxVec(Matrix,int,int,Vector,int,Vector);	
 
 // Function: MulMxVec
-// è¡Œåˆ—ã¨åº§æ¨™å€¤ãƒ™ã‚¯ãƒˆãƒ«ã®æ›ã‘ç®—
+// s—ñ‚ÆÀ•W’lƒxƒNƒgƒ‹‚ÌŠ|‚¯Z
 void MulMxVec(Matrix,int,int,Coord *,Coord *);	
 
 // Function: MulMxCoord
-// Coordã§è¡¨ç¾ã•ã‚Œã‚‹3x3è¡Œåˆ—ã¨Coordãƒ™ã‚¯ãƒˆãƒ«ã¨ã®æ›ã‘ç®—
+// Coord‚Å•\Œ»‚³‚ê‚é3x3s—ñ‚ÆCoordƒxƒNƒgƒ‹‚Æ‚ÌŠ|‚¯Z
 Coord MulMxCoord(Coord [],Coord);				
 
 // Function: MulMxCoord
-// 3x3è¡Œåˆ—ã¨Coordãƒ™ã‚¯ãƒˆãƒ«ã¨ã®æ›ã‘ç®—
+// 3x3s—ñ‚ÆCoordƒxƒNƒgƒ‹‚Æ‚ÌŠ|‚¯Z
 Coord MulMxCoord(Matrix,Coord);					
 
 // Function: TranMx
-// è»¢ç½®è¡Œåˆ—ã‚’å¾—ã‚‹
+// “]’us—ñ‚ğ“¾‚é
 void TranMx(Matrix,int,int,Matrix);				
 
 // Function: TranMx
-// è»¢ç½®è¡Œåˆ—ã‚’å¾—ã‚‹(ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰)
+// “]’us—ñ‚ğ“¾‚é(ƒI[ƒo[ƒ[ƒh)
 void TranMx(Coord **,int,int,Coord **);			
 
 // Function: TranMx
-// è»¢ç½®è¡Œåˆ—ã‚’å¾—ã‚‹(ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰)
+// “]’us—ñ‚ğ“¾‚é(ƒI[ƒo[ƒ[ƒh)
 void TranMx(Coord [],Coord []);					
 
 // Function: Gauss
-// é€£ç«‹1æ¬¡æ–¹ç¨‹å¼ã®è§£ã‚’æ±‚ã‚ã‚‹
+// ˜A—§1Ÿ•û’ö®‚Ì‰ğ‚ğ‹‚ß‚é
 double Gauss(int,Matrix,Vector,Vector);			
 
 // Function: Gauss
-// é€£ç«‹1æ¬¡æ–¹ç¨‹å¼ã®è§£ã‚’æ±‚ã‚ã‚‹(ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰)
+// ˜A—§1Ÿ•û’ö®‚Ì‰ğ‚ğ‹‚ß‚é(ƒI[ƒo[ƒ[ƒh)
 double Gauss(int,Matrix,Coord *,Coord *);		
 
 // Function: LU_Solver
-// LUåˆ†è§£ã®çµæœã‹ã‚‰é€£ç«‹1æ¬¡æ–¹ç¨‹å¼ã‚’è§£ã
+// LU•ª‰ğ‚ÌŒ‹‰Ê‚©‚ç˜A—§1Ÿ•û’ö®‚ğ‰ğ‚­
 void LU_Solver(int,Matrix,Vector,int *,Vector);	
 
 // Function: LU_Solver
-// LUåˆ†è§£ã®çµæœã‹ã‚‰é€£ç«‹1æ¬¡æ–¹ç¨‹å¼ã‚’è§£ã(ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰)
+// LU•ª‰ğ‚ÌŒ‹‰Ê‚©‚ç˜A—§1Ÿ•û’ö®‚ğ‰ğ‚­(ƒI[ƒo[ƒ[ƒh)
 void LU_Solver(int,Matrix,Coord *,int *,Coord *);
 
 // Function: LU
-// LUåˆ†è§£
+// LU•ª‰ğ
 double LU(int,Matrix,int *);					
 
 // Function: MatInv
-// é€†è¡Œåˆ—ã‚’æ±‚ã‚ã‚‹
+// ‹ts—ñ‚ğ‹‚ß‚é
 double MatInv(int,Matrix,Matrix);				
 
 // Function: MatInv3
-// 3x3ã®é€†è¡Œåˆ—
+// 3x3‚Ì‹ts—ñ
 double MatInv3(Matrix,Matrix);					
 
 // Function: MatInv2
-// 2x2ã®é€†è¡Œåˆ—
+// 2x2‚Ì‹ts—ñ
 double MatInv2(Matrix,Matrix);					
 
 
-// Group: Functions(æ•°å€¤è¨ˆç®—)
+// Group: Functions(”’lŒvZ)
 
 // Function: DegToRad
-// è§’åº¦å˜ä½ã‚’degreeã‹ã‚‰radianã¸
+// Šp“x’PˆÊ‚ğdegree‚©‚çradian‚Ö
 double DegToRad(double degree);					
 
 // Function: RadToDeg
-// è§’åº¦å˜ä½ã‚’radianã‹ã‚‰degreeã¸
+// Šp“x’PˆÊ‚ğradian‚©‚çdegree‚Ö
 double RadToDeg(double radian);					
 
 // Function: CalcCubicEquation
-// 3æ¬¡æ–¹ç¨‹å¼ã®è§£ã‚’æ±‚ã‚ã‚‹
+// 3Ÿ•û’ö®‚Ì‰ğ‚ğ‹‚ß‚é
 int CalcCubicEquation(double *,double *);		
 
 // Function: CalcQuadraticEquation
-// 2æ¬¡æ–¹ç¨‹å¼ã®è§£ã‚’æ±‚ã‚ã‚‹
+// 2Ÿ•û’ö®‚Ì‰ğ‚ğ‹‚ß‚é
 int CalcQuadraticEquation(double *,double *);	
 
 // Function: CalcLinearEquation
-// 1æ¬¡æ–¹ç¨‹å¼ã®è§£ã‚’æ±‚ã‚ã‚‹
+// 1Ÿ•û’ö®‚Ì‰ğ‚ğ‹‚ß‚é
 int CalcLinearEquation(double *,double *);		
 
 // Function: nCr
-// 2é …ä¿‚æ•°(nCrã®çµ„åˆã›ç·æ•°)ã‚’æ±‚ã‚ã‚‹
+// 2€ŒW”(nCr‚Ì‘g‡‚¹‘”)‚ğ‹‚ß‚é
 int nCr(int n,int r);							
 
 // Function: Factorial
-// è‡ªç„¶æ•°nã®éšä¹—ã‚’æ±‚ã‚ã‚‹
+// ©‘R”n‚ÌŠKæ‚ğ‹‚ß‚é
 int Factorial(int n);							
 
 // Function: Round
-// å››æ¨äº”å…¥
+// lÌŒÜ“ü
 double Round(double);							
 
 
-// Group: Functions(æç”»é–¢é€£)
+// Group: Functions(•`‰æŠÖ˜A)
 
 // Function: DrawPoint
-// ç‚¹ã‚’æç”»
+// “_‚ğ•`‰æ
 void DrawPoint(Coord,double,double,double []);			
 
 // Function: DrawPoints
-// ç‚¹ç¾¤ã‚’æç”»
+// “_ŒQ‚ğ•`‰æ
 void DrawPoints(Coord *,int,double,double,double []);	
 
 // Function: DrawVector
-// ãƒ™ã‚¯ãƒˆãƒ«ã‚’æç”»
+// ƒxƒNƒgƒ‹‚ğ•`‰æ
 void DrawVector(Coord,Coord,double,double,double []);	
 
 // Function: DrawLine
-// 2ç‚¹é–“ã«ç·šåˆ†ã‚’æç”»
+// 2“_ŠÔ‚Éü•ª‚ğ•`‰æ
 void DrawLine(Coord,Coord,double,double []);			
 
 // Function: SetColorStat
-// ã‚«ãƒ©ãƒ¼ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’å¤‰æ›´
+// ƒJƒ‰[ƒXƒe[ƒ^ƒX‚ğ•ÏX
 void SetColorStat(DispStat *ds,float r, float g, float b, float a=0.5);	
 
 // Function: DrawSolidCone
-// å››è§’éŒã‚’æç”»ã™ã‚‹
+// lŠp‚ğ•`‰æ‚·‚é
 void DrawSolidCone(double,double);		
 
 
-// Group: Functions(ãƒ¡ãƒ¢ãƒªãƒ¼é–¢é€£)
+// Group: Functions(ƒƒ‚ƒŠ[ŠÖ˜A)
 
 // Function: NewMatrix
-// 2æ¬¡å…ƒdoubleå‹é…åˆ—ã®ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿
+// 2ŸŒ³doubleŒ^”z—ñ‚Ìƒƒ‚ƒŠ[Šm•Û
 Matrix NewMatrix(int,int);			
 
 // Function: NewVector
-// 1æ¬¡å…ƒdoubleå‹é…åˆ—ã®ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿
+// 1ŸŒ³doubleŒ^”z—ñ‚Ìƒƒ‚ƒŠ[Šm•Û
 Vector NewVector(int);				
 
 // Function: FreeMatrix
-// 2æ¬¡å…ƒdoubleå‹é…åˆ—ã®ãƒ¡ãƒ¢ãƒªãƒ¼è§£æ”¾
+// 2ŸŒ³doubleŒ^”z—ñ‚Ìƒƒ‚ƒŠ[‰ğ•ú
 void FreeMatrix(Matrix,int);		
 
 // Function: FreeVector
-// 1æ¬¡å…ƒdoubleå‹é…åˆ—ã®ãƒ¡ãƒ¢ãƒªãƒ¼è§£æ”¾
+// 1ŸŒ³doubleŒ^”z—ñ‚Ìƒƒ‚ƒŠ[‰ğ•ú
 void FreeVector(Vector);			
 
 // Function: NewCoord1
-// 1æ¬¡å…ƒCoordå‹é…åˆ—ã®ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿
+// 1ŸŒ³CoordŒ^”z—ñ‚Ìƒƒ‚ƒŠ[Šm•Û
 Coord *NewCoord1(int);				
 
 // Function: FreeCoord1
-// 1æ¬¡å…ƒCoordå‹é…åˆ—ã®ãƒ¡ãƒ¢ãƒªãƒ¼è§£æ”¾
+// 1ŸŒ³CoordŒ^”z—ñ‚Ìƒƒ‚ƒŠ[‰ğ•ú
 void FreeCoord1(Coord *);			
 
 // Function: NewCoord2
-// 2æ¬¡å…ƒCoordå‹é…åˆ—ã®ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿
+// 2ŸŒ³CoordŒ^”z—ñ‚Ìƒƒ‚ƒŠ[Šm•Û
 Coord **NewCoord2(int,int);			
 
 // Function: FreeCoord2
-// 2æ¬¡å…ƒCoordå‹é…åˆ—ã®ãƒ¡ãƒ¢ãƒªãƒ¼è§£æ”¾
+// 2ŸŒ³CoordŒ^”z—ñ‚Ìƒƒ‚ƒŠ[‰ğ•ú
 void FreeCoord2(Coord **,int);		
 
 // Function: NewCoord3
-// 3æ¬¡å…ƒCoordå‹é…åˆ—ã®ãƒ¡ãƒ¢ãƒªãƒ¼ç¢ºä¿
+// 3ŸŒ³CoordŒ^”z—ñ‚Ìƒƒ‚ƒŠ[Šm•Û
 Coord ***NewCoord3(int,int,int);	
 
 // Function: FreeCoord3
-// 3æ¬¡å…ƒCoordå‹é…åˆ—ã®ãƒ¡ãƒ¢ãƒªãƒ¼è§£æ”¾
+// 3ŸŒ³CoordŒ^”z—ñ‚Ìƒƒ‚ƒŠ[‰ğ•ú
 void FreeCoord3(Coord ***,int,int);	
 
 
-// Group: Functions(ãã®ä»–)
+// Group: Functions(‚»‚Ì‘¼)
 
 // Function: sgn
-// ç¬¦å·åˆ¤å®š
+// •„†”»’è
 double sgn(double);						
 
 // Function: CheckZero
-// å€¤ãŒAPPROX_ZEROã®ç¯„å›²ã§0ã§ã‚ã‚‹ã‹ãƒã‚§ãƒƒã‚¯
+// ’l‚ªAPPROX_ZERO‚Ì”ÍˆÍ‚Å0‚Å‚ ‚é‚©ƒ`ƒFƒbƒN
 int CheckZero(double,int);				
 
 // Function: CheckRange
-// æŒ‡å®šã—ãŸå€¤ãŒæŒ‡å®šã—ãŸç¯„å›²å†…ã§ã‚ã‚‹ã‹ã‚’ãƒã‚§ãƒƒã‚¯
+// w’è‚µ‚½’l‚ªw’è‚µ‚½”ÍˆÍ“à‚Å‚ ‚é‚©‚ğƒ`ƒFƒbƒN
 int CheckRange(double,double,double,int);	
 
 // Function: CheckMag
-// 2ã¤ã®å€¤ã®å¤§å°æ¯”è¼ƒ 
+// 2‚Â‚Ì’l‚Ì‘å¬”äŠr 
 int CheckMag(double,double,int);		
 
 // Function: BubbleSort
-// ãƒãƒ–ãƒ«ã‚½ãƒ¼ãƒˆ(åŸºæœ¬äº¤æ›æ³•)
+// ƒoƒuƒ‹ƒ\[ƒg(Šî–{ŒğŠ·–@)
 void BubbleSort(int[],int);				
 
 // Function: BubbleSort
-// ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰
+// ƒI[ƒo[ƒ[ƒh
 void BubbleSort(double[],int);			
 
 // Function: QCmp
-// ã‚¯ã‚¤ãƒƒã‚¯ã‚½ãƒ¼ãƒˆ 
+// ƒNƒCƒbƒNƒ\[ƒg 
 int QCmp(const void *,const void *);	
 
 // Function: Reverse
-// Coordé…åˆ—ã®åè»¢æ“ä½œ
+// Coord”z—ñ‚Ì”½“]‘€ì
 void Reverse(Coord [],int);				
 
 // Function: Reverse
-// doubleé…åˆ—ã®åè»¢æ“ä½œ
+// double”z—ñ‚Ì”½“]‘€ì
 void Reverse(double [],int);			
 
 // Function: CatCoord
-// ã‚ã‚‹é…åˆ—ã®å¾Œã‚ã«æ–°ãŸãªé…åˆ—ã‚’ç¹‹ã’ã‚‹
+// ‚ ‚é”z—ñ‚ÌŒã‚ë‚ÉV‚½‚È”z—ñ‚ğŒq‚°‚é
 int CatCoord(Coord [],Coord [],int,int,int);	
 
 // Function: CheckTheSamePoints
-// åŒä¸€ç‚¹ã‚’é™¤å»ã™ã‚‹
+// “¯ˆê“_‚ğœ‹‚·‚é
 int CheckTheSamePoints(Coord *,int);	
 
 // Function: CheckTheSamePoints
-// åŒä¸€ç‚¹ã‚’é™¤å»ã™ã‚‹
+// “¯ˆê“_‚ğœ‹‚·‚é
 int CheckTheSamePoints(double *,int);	
 
 // Function: CheckTheSamePoints2D
-// 2Då¹³é¢å†…ã®åŒä¸€ç‚¹ã‚’é™¤å»ã™ã‚‹
+// 2D•½–Ê“à‚Ì“¯ˆê“_‚ğœ‹‚·‚é
 int CheckTheSamePoints2D(Coord *,int);	
 
 // Function: CoordToArray
-// Coordã‚’doubleé…åˆ—ã«ä»£å…¥
+// Coord‚ğdouble”z—ñ‚É‘ã“ü
 void CoordToArray(Coord,double []);		
 
 // Function: CoordToArray2D
-// Coordã‚’doubleé…åˆ—ã«ä»£å…¥
+// Coord‚ğdouble”z—ñ‚É‘ã“ü
 void CoordToArray2D(Coord,double []);	
-
-#endif
