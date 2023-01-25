@@ -7,11 +7,11 @@
 #OUTPUT
 KOD_Test
 #STOUTPUT
-Kodatuno
+KOD_Test
 #DBG_OUTPUT
 KOD_Test_d
 #DBG_STOUTPUT
-Kodatunod
+KOD_Test_d
 #DTHICKNESS
 2
 #GRIDX

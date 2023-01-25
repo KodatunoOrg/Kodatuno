@@ -321,8 +321,47 @@ void CmdChBkCol(int argc, char *argv[])
 	}
 }
 
-// Mesh情報を出力
-void CmdMeshInf(int argc, char *argv[])
+// コントロールポイントをダンプする
+void CmdDumpCP(int argc, char *argv[])
 {
-	Kodatuno.GetMeshInfo();
+	Kodatuno.DumpCP();
+}
+
+// 円を生成する
+void CmdGenCircle(int argc, char *argv[])
+{
+	char *p;
+
+	// オプションなし
+	if(!argc){
+		SetMessage("Command Error: Set -r (r-val) (g-val) (b-val)");
+		return;
+	}
+
+	double r=1;
+	double c[3] = {0,0,0};
+	double n[3] = {0,0,1};
+
+	argv++;
+	while(argc > 0 && (p=argv[0])[0] == '-' && *++p != '\0'){
+		do{
+			switch(*p){
+			case 'R':
+			case 'r':
+				if(argc==1) return;
+				for(int i=0;i<7;i++){
+					argc--; argv++;
+					if(i==0)
+						r = atof(argv[0]);
+					else if(1 <= i && i < 4)
+						c[i-1] = atof(argv[0]);
+					else
+						n[i-4] = atof(argv[0]);
+				}
+				Kodatuno.GenCircle(r,SetCoord(c[0],c[1],c[2]),SetCoord(n[0],n[1],n[2]));
+				break;
+			}
+		}while(*++p);
+		argv++; argc--;
+	}
 }

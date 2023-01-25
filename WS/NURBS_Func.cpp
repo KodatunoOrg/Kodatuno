@@ -1342,9 +1342,9 @@ int NURBS_Func::CalcIntersecPtsPlaneV(NURBSS *nurbss,Coord pt,Coord nvec,int v_d
 
 	// vパラメータを区間内で分割し、各vパラメータ上のNURBS曲線C(u)と平面(pt,nvec)との交点を求める
 	for(int v=0;v<=v_divnum;v++){
-		v_const = (nurbss->V[1] - nurbss->V[0])*(double)v/(double)v_divnum;		// 適当なv方向パラメータを設定
-		GenIsoparamCurveV(nurbss,v_const,&nurbsc);								// v_constでのアイソパラ曲線を取得
-		ansnum = CalcIntersecCurve(&nurbsc,pt,nvec,v_divnum,ansbuf,ansbufsize);	// アイソパラ曲線と曲面の交点群を算出
+		v_const = (nurbss->V[1] - nurbss->V[0])*(double)v/(double)v_divnum;			// 適当なv方向パラメータを設定
+		GenIsoparamCurveV(nurbss,v_const,&nurbsc);									// v_constでのアイソパラ曲線を取得
+		ansnum = CalcIntersecCurve(&nurbsc,pt,nvec,v_divnum,ansbuf,ansbufsize,1);	// アイソパラ曲線と曲面の交点群を算出
 		if(ansnum == KOD_ERR)	goto EXIT;
 		for(int i=0;i<ansnum;i++){
 			ans[allansnum+i] = SetCoord(ansbuf[i],v_const,0);					// 解を登録
@@ -1375,9 +1375,9 @@ int NURBS_Func::CalcIntersecPtsPlaneU(NURBSS *nurbss,Coord pt,Coord nvec,int u_d
 
 	// uパラメータを区間内で分割し、各uパラメータ上のアイソパラ曲線C(v)と平面(pt,nvec)との交点を求める
 	for(int u=0;u<=u_divnum;u++){
-		u_const = (nurbss->U[1] - nurbss->U[0])*(double)u/(double)u_divnum;		// 適当なu方向パラメータを設定
-		GenIsoparamCurveU(nurbss,u_const,&nurbsc);								// u_constでのアイソパラ曲線を取得
-		ansnum = CalcIntersecCurve(&nurbsc,pt,nvec,u_divnum,ansbuf,ansbufsize);	// アイソパラ曲線と曲面の交点群を算出
+		u_const = (nurbss->U[1] - nurbss->U[0])*(double)u/(double)u_divnum;			// 適当なu方向パラメータを設定
+		GenIsoparamCurveU(nurbss,u_const,&nurbsc);									// u_constでのアイソパラ曲線を取得
+		ansnum = CalcIntersecCurve(&nurbsc,pt,nvec,u_divnum,ansbuf,ansbufsize,1);	// アイソパラ曲線と曲面の交点群を算出
 		if(ansnum == KOD_ERR)	goto EXIT;
 		for(int i=0;i<ansnum;i++){
 			ans[allansnum+i] = SetCoord(u_const,ansbuf[i],0);					// 解を登録
@@ -1398,13 +1398,15 @@ int NURBS_Func::CalcIntersecPtsPlaneGeom(NURBSS *nurb,Coord pt,Coord nf,int u_di
 {
 	Coord init_pt;
 	int ansnum=0;
+	double pcolor[3] = {0,1,1};		// 表示の色
 
-	for(int u=0;u<u_divnum;u++){
-		for(int v=0;v<v_divnum;v++){
+	for(int u=0;u<=u_divnum;u++){
+		for(int v=0;v<=v_divnum;v++){
 			double u0 = nurb->U[0] + (nurb->U[1] - nurb->U[0])*(double)u/(double)u_divnum;
 			double v0 = nurb->V[0] + (nurb->V[1] - nurb->V[0])*(double)v/(double)v_divnum;
 			for(int i=0;i<LOOPCOUNTMAX;i++){
 				Coord p0 = CalcNurbsSCoord(nurb,u0,v0);						// S(u0,v0)となる点(初期点)の座標
+//				DrawPoint(p0,1,5,pcolor);				
 				Coord su = CalcDiffuNurbsS(nurb,u0,v0);						// 点S(u0,v0)のu偏微分(基本ベクトル)
 				Coord sv = CalcDiffvNurbsS(nurb,u0,v0);						// 点S(u0,v0)のv偏微分(基本ベクトル)
 				if(ZoroCoord(su) == KOD_FALSE || ZoroCoord(sv) == KOD_FALSE) break;
@@ -1418,27 +1420,29 @@ int NURBS_Func::CalcIntersecPtsPlaneGeom(NURBSS *nurb,Coord pt,Coord nf,int u_di
 				Coord cross_nnf = CalcOuterProduct(nn,nf);					// 単位法線ベクトルnn,nfのベクトル積
 				Coord cross_nft = CalcOuterProduct(nf,nt);					// 単位法線ベクトルnf,ntのベクトル積
 				Coord nume_p1_sub =  AddCoord(MulCoord(cross_ntn,df),MulCoord(cross_nnf,dt));	// 3平面F,Ft,Fnの交点p1の分子の最初の2項を計算
-				Coord nume_p1 = AddCoord(nume_p1_sub,MulCoord(cross_nft,dn));					// p1の分子を算出
-				double denom_p1 = CalcScalarTriProduct(nf,nt,nn);			// p1の分母を算出
+				Coord nume_p1 = AddCoord(nume_p1_sub,MulCoord(cross_nft,dn));			// p1の分子を算出
+				double denom_p1 = CalcScalarTriProduct(nf,nt,nn);				// p1の分母を算出
 				Coord p1 = DivCoord(nume_p1,denom_p1);						// p1を算出
-				Coord deltap = SubCoord(p1,p0);								// 点p1と点p0の距離を算出
+				Coord deltap = SubCoord(p1,p0);							// 点p1と点p0の距離を算出
 				double deltap_dis = CalcEuclid(deltap);						// Δpの距離を算出
 				double tri_su = CalcScalarTriProduct(su,sv,nf);
 				double tri_sv = CalcScalarTriProduct(su,sv,nf);
 				if(CheckZero(tri_sv,HIGH_ACCURACY) || CheckZero(tri_su,HIGH_ACCURACY)) break;
 				double du = CalcScalarTriProduct(deltap,sv,nf)/CalcScalarTriProduct(su,sv,nf);	// 新しい点s(u0+du,v0+dv)を与えるためのduを算出
 				double dv = -CalcScalarTriProduct(deltap,su,nf)/CalcScalarTriProduct(su,sv,nf);	// 新しい点s(u0+du,v0+dv)を与えるためのdvを算出
-				u0 += du;													// 新しい点のuパラメータを得る
-				v0 += dv;													// 新しい点のvパラメータを得る
+//				fprintf(stderr,"delta = %lf\n",deltap_dis);
+//				fprintf(stderr,"du = %lf dv = %lf\n",du,dv);
+				u0 += du;									// 新しい点のuパラメータを得る
+				v0 += dv;									// 新しい点のvパラメータを得る
 				if(u0 < nurb->U[0] || u0 > nurb->U[1] || v0 < nurb->V[0] || v0 > nurb->V[1]){	// 追跡点がパラメータ領域外に出た
 				//	fprintf(stderr,"NURBS ERROR:曲面Rのパラメータが領域外に出ました\n");
 					break;
 				}
-				if(deltap_dis < CONVERG_GAP){								// Δpが収束したら
-					// fprintf(stderr,"   %d:%lf,%lf\n",ansnum,u0,v0);		// debug
-					ans[ansnum] = SetCoord(u0,v0,0);						// 解として登録
-					ansnum++;												// 解をカウント
-					//if(ansnum == ans_size)								// 解の数が制限を越えた
+				if(deltap_dis < CONVERG_GAP){							// Δpが収束したら
+					// fprintf(stderr,"   %d:%lf,%lf\n",ansnum,u0,v0);	// debug
+					ans[ansnum] = SetCoord(u0,v0,0);					// 解として登録
+					ansnum++;								// 解をカウント
+					//if(ansnum == ans_size)					// 解の数が制限を越えた
 						//return ansnum;
 					break;
 				}
@@ -1446,66 +1450,6 @@ int NURBS_Func::CalcIntersecPtsPlaneGeom(NURBSS *nurb,Coord pt,Coord nf,int u_di
 		}
 	}
 	
-	return ansnum;
-}
-
-// オフセットNURBS曲面と平面との交点群を交点追跡法にて求める
-// 引数　NURBSS:NURBS曲面  os:オフセット量  pt:平面上の1点  nvec:平面の法線ベクトル  ds:交線(交点群)の粗さ(密0.1～2疎)  initdivnum:初期点探索の荒さ(密10～1疎)
-//       ans:解  ans_size:解の数
-// 返値　KOD_FALSE:NURBS曲面と平面が交差していない　KOD_ERR:特異点または発散により処理を中断
-int NURBS_Func::CalcIntersecPtsOffsetPlaneSearch(NURBSS *nurb,double os,Coord pt,Coord nvec,double ds,int initdivnum,Coord *ans,int ans_size)
-{
-	pt.dmy = os;
-	return CalcIntersecPtsPlaneSearch(nurb,pt,nvec,ds,initdivnum,ans,ans_size,CALC_OFFSET);
-}
-
-// 平面とオフセットNURBS曲面との交点を補助平面を用いて数点求める
-int NURBS_Func::CalcIntersecPtsOffsetPlaneGeom(NURBSS *S,double d,Coord pt,Coord nf,int divnum,Coord *ans,int ans_size)
-{
-	int ansnum = 0;
-
-	for(int u=0;u<divnum;u++){
-		for(int v=0;v<divnum;v++){
-			double u0 = S->U[0] + (S->U[1] - S->U[0])*(double)u/(double)divnum;
-			double v0 = S->V[0] + (S->V[1] - S->V[0])*(double)v/(double)divnum;
-			for(int i=0;i<LOOPCOUNTMAX;i++){
-				Coord Su = CalcDiffuNurbsS(S,u0,v0);
-				Coord Sv = CalcDiffvNurbsS(S,u0,v0);
-				SFQuant sfq(S,u0,v0);					// S(u0,v0)上の曲面基本量を得る
-				double H = sfq.E*sfq.G-sfq.F*sfq.F;
-				double H2 = H*H;
-				if(CheckZero(H,HIGH_ACCURACY) == KOD_TRUE){		// 0割り禁止
-					//SetMessage("NURBS KOD_ERROR:The process is stoped by detecting singular point.");
-					//return KOD_ERR;		
-					break;
-				}
-				Coord nu = AddCoord(MulCoord(Su,(sfq.M*sfq.F-sfq.L*sfq.G)/H2),MulCoord(Sv,(sfq.L*sfq.F-sfq.M*sfq.E)/H2));	// Sの法線ベクトルｎのu方向微分
-				Coord nv = AddCoord(MulCoord(Su,(sfq.N*sfq.F-sfq.M*sfq.G)/H2),MulCoord(Sv,(sfq.M*sfq.F-sfq.N*sfq.E)/H2));	// Sの法線ベクトルｎのv方向微分
-				Coord Su_ = AddCoord(Su,MulCoord(nu,d));	// Sのオフセット曲面S_のu方向微分
-				Coord Sv_ = AddCoord(Sv,MulCoord(nv,d));	// Sのオフセット曲面S_のv方向微分
-				Coord nt = CalcNormVecOnNurbsS(S,u0,v0);
-				Coord nn = DivCoord(CalcOuterProduct(nf,nt),CalcEuclid(CalcOuterProduct(nf,nt)));	// 平面Fと平面Ftに直交する平面Fnの単位法線ベクトル
-				Coord p0 = AddCoord(CalcNurbsSCoord(S,u0,v0),MulCoord(nt,d));						// S(u0,v0)の座標値
-				double d = nf&pt;
-				double dt = nt&p0;
-				double dn = nn&p0;
-				Coord p1 = ((((nt&&nn)*d) + ((nn&&nf)*dt)) + ((nf&&nt)*dn))/CalcScalarTriProduct(nf,nt,nn);
-				Coord dp = p1 - p0;
-				double denom = CalcScalarTriProduct(Su_,Sv_,nf);
-				double du = CalcScalarTriProduct(dp,Sv_,nf)/denom;
-				double dv = CalcScalarTriProduct(dp,Su_,nf)/denom;
-				u0 += du;
-				v0 += dv;
-				if(CalcEuclid(dp) < CONVERG_GAP){
-					ans[ansnum].x = u0;
-					ans[ansnum].y = v0;
-					ansnum++;
-					break;
-				}
-			}
-		}
-	}
-
 	return ansnum;
 }
 
@@ -1534,6 +1478,8 @@ int NURBS_Func::CalcIntersecPtsPlaneSearch(NURBSS *nurb,Coord pt,Coord nvec,doub
 	int  inverse_flag = KOD_FALSE;				// 交線追跡方向逆転フラグ
 	double color[3] = {0,1,1};
 
+	//FILE *fp = fopen("debug.csv","w");
+
 	// 初期点通過判別フラグを初期化
 	for(int i=0;i<INTERSECPTNUMMAX;i++){
 		init_pt_flag[i] = KOD_FALSE;
@@ -1541,33 +1487,30 @@ int NURBS_Func::CalcIntersecPtsPlaneSearch(NURBSS *nurb,Coord pt,Coord nvec,doub
 	init_pt_flag[0] = KOD_TRUE;
 
 	// まず交線追跡法の初期点として交点をいくつか求める
-	if(method == CALC_OFFSET)
-		init_pt_num = CalcIntersecPtsOffsetPlaneGeom(nurb,pt.dmy,pt,nvec,initdivnum,init_pt,INTERSECPTNUMMAX);
-	else{
-		init_pt_num = CalcIntersecPtsPlaneGeom(nurb,pt,nvec,initdivnum,initdivnum,init_pt,INTERSECPTNUMMAX);
+	init_pt_num = CalcIntersecPtsPlaneGeom(nurb,pt,nvec,initdivnum,initdivnum,init_pt,INTERSECPTNUMMAX);
 
-		if(init_pt_num<=0){
-			init_pt_num = CalcIntersecPtsPlaneU(nurb,pt,nvec,initdivnum,init_pt,INTERSECPTNUMMAX);		// 交点が見つからなかった場合はサーチ法を変えて再トライ
-		}
-		if(init_pt_num<=0)
-			init_pt_num = CalcIntersecPtsPlaneV(nurb,pt,nvec,initdivnum,init_pt,INTERSECPTNUMMAX);		// それでも交点が見つからなかった場合は方向を変えてサーチ
+	if(init_pt_num<=0){
+		init_pt_num = CalcIntersecPtsPlaneU(nurb,pt,nvec,initdivnum,init_pt,INTERSECPTNUMMAX);		// 交点が見つからなかった場合はサーチ法を変えて再トライ
 	}
+	if(init_pt_num<=0)
+		init_pt_num = CalcIntersecPtsPlaneV(nurb,pt,nvec,initdivnum,init_pt,INTERSECPTNUMMAX);		// それでも交点が見つからなかった場合は方向を変えてサーチ
+
 	init_pt_num = CheckTheSamePoints(init_pt,init_pt_num);		// 同一点は除去する
 	if(!init_pt_num){		// 見つからない場合は、交差していないとみなす
 		SetMessage("NURBS KOD_ERROR:Init intersection point is noexistence");
-		return KOD_FALSE;					
+		return KOD_FALSE;
 	}
 	else if(init_pt_num == KOD_ERR) return KOD_ERR;			// init_pt_numがinit_ptの配列長を超えた
 
 	for(int i=0;i<init_pt_num;i++){
 		init_pt_Coord[i] = CalcNurbsSCoord(nurb,init_pt[i].x,init_pt[i].y);		// 交点のuvパラメータをxyz座標値に変換したものを保持しておく
-		//fprintf(stderr,"%d:%lf,%lf,%lf\n",i,init_pt_Coord[i].x,init_pt_Coord[i].y,init_pt_Coord[i].z);	// debug
+		//fprintf(stderr,"%d,%.12lf,%.12lf,%.12lf,%.12lf,%.12lf\n",i,init_pt_Coord[i].x,init_pt_Coord[i].y,init_pt_Coord[i].z,init_pt[i].x,init_pt[i].y);	// debug
 		//DrawPoint(init_pt_Coord[i],1,5,color);	// debug
 	}
 
 	// 初期点を全て通過するまで交線追跡法を繰り返す
 	while(init_allpt_flag == KOD_FALSE){
-		//fprintf(stderr,"Init%d:%lf,%lf,%lf\n",pcount+1,init_pt_Coord[pcount].x,init_pt_Coord[pcount].y,init_pt_Coord[pcount].z);		// debug
+		//fprintf(stderr,"Init%d,%lf,%lf,%lf\n",pcount,init_pt_Coord[pcount].x,init_pt_Coord[pcount].y,init_pt_Coord[pcount].z);		// debug
 		// 交線追跡のための始点(u,v)をセット
 		u = oldp.x = init_pt[pcount].x;
 		v = oldp.y = init_pt[pcount].y;
@@ -1575,51 +1518,81 @@ int NURBS_Func::CalcIntersecPtsPlaneSearch(NURBSS *nurb,Coord pt,Coord nvec,doub
 		anscount++;
 		init_pt_flag[pcount] = KOD_TRUE;
 		init_pt_flag_count++;
-		if(init_pt_flag_count == init_pt_num && init_pt_num > 1)	break;
+		//if(init_pt_flag_count == init_pt_num && init_pt_num > 1)	break;
 
 		if(inverse_flag == KOD_TRUE){	// 逆方向への交線追跡も終了していたら
 			inverse_flag = KOD_FALSE;	// 交線追跡方向を順方向に戻す
 		}
+
 		// 交線追跡開始
 		loop_count = 0;
 		while(loop_count < ans_size){
 			// 順方向に交線追跡
-			//fprintf(stderr,"%d:%lf,%lf--->",loop_count,u,v);
 			if(inverse_flag == KOD_FALSE){
 				if(method == RUNGE_KUTTA)	search_flag = SearchIntersectPt_RKM(nurb,pt,nvec,ds,&u,&v,FORWARD);	// 順方向の交点算出
 				else if(method == BULIRSH_STOER)	search_flag = SearchIntersectPt_BS(nurb,pt,nvec,ds,&u,&v,FORWARD);
 				else search_flag = SearchIntersectPt_OS(nurb,pt,nvec,ds,&u,&v,FORWARD);
-				if(search_flag != KOD_TRUE){						// 順方向追跡に失敗した場合は
+				if(search_flag == KOD_ERR){							// 順方向追跡に失敗した場合は
 					inverse_flag = KOD_TRUE;						// 逆方向追跡フラグをON
+					//fprintf(stderr,"a,%d,%d,%lf,%lf\n",search_flag,inverse_flag,u,v);	// for debug
 					u = init_pt[pcount].x;							// 交点追跡の初期点をセットしなおす
 					v = init_pt[pcount].y;
 				}
+				//fprintf(stderr,"e,%d,%d,%lf,%lf\n",search_flag,inverse_flag,u,v);	// for debug
 			}
 			// 逆方向追跡フラグがONなら
 			if(inverse_flag == KOD_TRUE){
 				if(method == RUNGE_KUTTA)	search_flag = SearchIntersectPt_RKM(nurb,pt,nvec,ds,&u,&v,INVERSE);	// 逆方向の交点算出
 				else if(method == BULIRSH_STOER)	search_flag = SearchIntersectPt_BS(nurb,pt,nvec,ds,&u,&v,INVERSE);
 				else search_flag = SearchIntersectPt_OS(nurb,pt,nvec,ds,&u,&v,INVERSE);
- 			}
+				if(search_flag == KOD_ERR){					// 特異点検出により処理を継続できない場合
+					//fprintf(stderr,"b,%d,%d,%lf,%lf\n",search_flag,inverse_flag,u,v);	// for debug
+					SetMessage("NURBS_FUNC CAUTION: Singler point was ditected.");
+					break;
+				}
+				//fprintf(stderr,"f,%d,%d,%lf,%lf\n",search_flag,inverse_flag,u,v);	// for debug
+			}
 
-			if(search_flag == KOD_ERR){					// 特異点検出などにより処理を継続できない場合
-				//return KOD_ERR;
-				//return anscount;
-				SetMessage("NURBS_FUNC CAUTION: Singler point was ditected.");
-				break;
+			// パラメータ範囲外の場合
+			if(search_flag == KOD_FALSE){
+				if(CalcIntersecPtsPlaneSearch_Sub(nurb,u,v,pt,nvec,newp) == KOD_TRUE){		// 面から飛び出した(u,v)を参考に面のエッジ部(new_u,new_v)を得る
+					//fprintf(stderr,"c,%d,%d,%.12lf,%.12lf\n",search_flag,inverse_flag,newp.x,newp.y);	// for debug
+					ans[anscount] = SetCoord(newp);		// 得られたu,vを交線(交点群)として登録
+					anscount++;							// 交点群の数をインクリメント
+				}
+				// 初期点が交線追跡法によって全て通過したか調べる
+				for(int i=0;i<init_pt_num;i++){
+					if(CheckClossedPoints(nurb,oldp,newp,init_pt[i]) == KOD_TRUE){ // 新たに算出された交点と1つ前の交点を対角とする立方体の中に初期点が含まれていたら
+						if(init_pt_flag[i] == KOD_FALSE){		// まだ通過していない初期点で交点もu,v範囲内だったら
+							init_pt_flag[i] = KOD_TRUE;			// 通過したこととして登録
+							init_pt_flag_count++;				// 通過済み初期点数をカウントアップ
+							//fprintf(stderr,"%d OK!\n",i);			// debug
+						}
+					}
+				}
+				if(inverse_flag == KOD_FALSE){		// 今が順方向なら
+					inverse_flag = KOD_TRUE;		// 次のサーチは逆方向にする
+					u = init_pt[pcount].x;			// 交点追跡の初期点をセットしなおす
+					v = init_pt[pcount].y;
+					oldp = SetCoord(init_pt[pcount]);
+					continue;						// 逆方向ループへ
+				}
+				break;								// 今が逆方向ならループ終わり
 			}
-			else if(search_flag == KOD_FALSE){
-				break;
+
+			// 例外なしで解が得られた
+			else{
+				Coord cd = CalcNurbsSCoord(nurb,u,v);
+				//fprintf(stderr,"d,%d,%d,%.12lf,%.12lf,%.12lf,%d\n",search_flag,inverse_flag,cd.x,cd.y,cd.z,anscount);			// for debug
+				newp.x = u;					
+				newp.y = v;
 			}
-			//fprintf(stderr,"%lf,%lf\n",u,v);
-			// とりあえず何らかの解が得られた(この時点ではu,v範囲外であっても通す)
-			newp.x = u;								
-			newp.y = v;
 
 			// 初期点が交線追跡法によって全て通過したか調べる
 			for(int i=0;i<init_pt_num;i++){
 				// 新たに算出された交点と1つ前の交点を対角とする立方体の中に初期点が含まれていたら
-				if(CalcDistance(init_pt_Coord[i],CalcNurbsSCoord(nurb,u,v)) < 1.2*ds){
+				//if(CalcDistance(init_pt_Coord[i],CalcNurbsSCoord(nurb,u,v)) < 1.9*ds){
+				if(CheckClossedPoints(nurb,oldp,newp,init_pt[i]) == KOD_TRUE){
 					if(loop_count && i==pcount && inverse_flag == KOD_FALSE){	// 閉ループに対して一周して戻ってきた場合はループを抜ける
 						loopbreak_flag = KOD_TRUE;	
 						//fprintf(stderr,"%d loop break OK\n",i);		// debug
@@ -1638,10 +1611,6 @@ int NURBS_Func::CalcIntersecPtsPlaneSearch(NURBSS *nurb,Coord pt,Coord nvec,doub
 				loopbreak_flag = KOD_FALSE;
 				break;
 			}
-
-			// debug
-			//Coord buf = CalcNurbsSCoord(nurb,newp.x,newp.y);
-			//fprintf(stderr,"   %d:%lf,%lf\n",anscount+1,buf.x,buf.y);
 
 			ans[anscount] = SetCoord(newp);	// 得られたu,vを交線(交点群)として登録
 			anscount++;				// 交点群の数をインクリメント
@@ -1670,8 +1639,128 @@ int NURBS_Func::CalcIntersecPtsPlaneSearch(NURBSS *nurb,Coord pt,Coord nvec,doub
 		}
 		//fprintf(stderr,"loop count:%d\n",loop_count);	// debug
 	}
+	anscount = RemoveTheSamePoints(nurb,ans,anscount);
+	//anscount = CheckTheSamePoints(ans,anscount);
+
+	//fclose(fp);
 
 	return anscount;
+}
+
+// 指定した点が他の2点を対角とする立方体の中に存在するかを調べる
+int NURBS_Func::CheckClossedPoints(NURBSS *nurb,Coord A,Coord B,Coord P)
+{
+	Coord a = CalcNurbsSCoord(nurb,A.x,A.y);
+	Coord b = CalcNurbsSCoord(nurb,B.x,B.y);
+	Coord p = CalcNurbsSCoord(nurb,P.x,P.y);
+
+	int ap = LOW_ACCURACY;
+
+	if((CheckMag(a.x,p.x,ap) != KOD_LARGE) && (CheckMag(p.x,b.x,ap) != KOD_LARGE) && (CheckMag(a.y,p.y,ap) != KOD_LARGE)
+		&& (CheckMag(p.y,b.y,ap) != KOD_LARGE) && (CheckMag(a.z,p.z,ap) != KOD_LARGE) && (CheckMag(p.z,b.z,ap) != KOD_LARGE))
+		return KOD_TRUE;
+
+	else if((CheckMag(b.x,p.x,ap) != KOD_LARGE) && (CheckMag(p.x,a.x,ap) != KOD_LARGE) && (CheckMag(b.y,p.y,ap) != KOD_LARGE)
+		&& (CheckMag(p.y,a.y,ap) != KOD_LARGE) && (CheckMag(a.z,p.z,ap) != KOD_LARGE) && (CheckMag(p.z,b.z,ap) != KOD_LARGE))
+		return KOD_TRUE;
+
+	else if((CheckMag(a.x,p.x,ap) != KOD_LARGE) && (CheckMag(p.x,b.x,ap) != KOD_LARGE) && (CheckMag(b.y,p.y,ap) != KOD_LARGE)
+		&& (CheckMag(p.y,a.y,ap) != KOD_LARGE) && (CheckMag(a.z,p.z,ap) != KOD_LARGE) && (CheckMag(p.z,b.z,ap) != KOD_LARGE))
+			return KOD_TRUE;
+
+	else if((CheckMag(b.x,p.x,ap) != KOD_LARGE) && (CheckMag(p.x,a.x,ap) != KOD_LARGE) && (CheckMag(a.y,p.y,ap) != KOD_LARGE)
+		&& (CheckMag(p.y,b.y,ap) != KOD_LARGE) && (CheckMag(a.z,p.z,ap) != KOD_LARGE) && (CheckMag(p.z,b.z,ap) != KOD_LARGE))
+			return KOD_TRUE;
+
+	else if((CheckMag(a.x,p.x,ap) != KOD_LARGE) && (CheckMag(p.x,b.x,ap) != KOD_LARGE) && (CheckMag(a.y,p.y,ap) != KOD_LARGE)
+		&& (CheckMag(p.y,b.y,ap) != KOD_LARGE) && (CheckMag(b.z,p.z,ap) != KOD_LARGE) && (CheckMag(p.z,a.z,ap) != KOD_LARGE))
+			return KOD_TRUE;
+
+	else if((CheckMag(b.x,p.x,ap) != KOD_LARGE) && (CheckMag(p.x,a.x,ap) != KOD_LARGE) && (CheckMag(b.y,p.y,ap) != KOD_LARGE)
+		&& (CheckMag(p.y,a.y,ap) != KOD_LARGE) && (CheckMag(b.z,p.z,ap) != KOD_LARGE) && (CheckMag(p.z,a.z,ap) != KOD_LARGE))
+			return KOD_TRUE;
+
+	else if((CheckMag(a.x,p.x,ap) != KOD_LARGE) && (CheckMag(p.x,b.x,ap) != KOD_LARGE) && (CheckMag(b.y,p.y,ap) != KOD_LARGE)
+		&& (CheckMag(p.y,a.y,ap) != KOD_LARGE) && (CheckMag(b.z,p.z,ap) != KOD_LARGE) && (CheckMag(p.z,a.z,ap) != KOD_LARGE))
+			return KOD_TRUE;
+
+	else if((CheckMag(b.x,p.x,ap) != KOD_LARGE) && (CheckMag(p.x,a.x,ap) != KOD_LARGE) && (CheckMag(a.y,p.y,ap) != KOD_LARGE)
+		&& (CheckMag(p.y,b.y,ap) != KOD_LARGE) && (CheckMag(b.z,p.z,ap) != KOD_LARGE) && (CheckMag(p.z,a.z,ap) != KOD_LARGE))
+			return KOD_TRUE;
+
+
+	return KOD_FALSE;
+}
+	
+
+// 面から飛び出した(u,v)を参考に面のエッジ部(new_u,new_v)を得る
+int NURBS_Func::CalcIntersecPtsPlaneSearch_Sub(NURBSS *nurb,double u, double v,Coord pt,Coord nvec,Coord newp)
+{
+	Coord old = SetCoord(u,v,0);
+	Coord min;
+	double a[INTERSECPTNUMMAX];
+	Coord cod_a[INTERSECPTNUMMAX];
+	int n;
+	bool uflag = false;
+	bool vflag = false;
+
+	// どこを飛び出したか調べる
+	if(u < nurb->U[0]){
+		uflag = true;
+		u = nurb->U[0];			// エッジをuとする
+	}
+	else if(u > nurb->U[1]){
+		uflag = true;
+		u = nurb->U[1];
+	}
+
+	if(v < nurb->V[0]){
+		vflag = true;
+		v = nurb->V[0];
+	}
+	else if(v > nurb->V[1]){
+		vflag = true;
+		v = nurb->V[1];
+	}
+
+	if(uflag == true && vflag == false){
+		n = CalcIntersecIsparaCurveV(nurb,u,pt,nvec,5,a,INTERSECPTNUMMAX);	// uを固定したアイソパラ曲線に対して平面との交点を得る
+		for(int i=0;i<n;i++)
+			cod_a[i] = SetCoord(u,a[i],0);
+	}
+	else if(uflag == false && vflag == true){
+		n = CalcIntersecIsparaCurveU(nurb,v,pt,nvec,5,a,INTERSECPTNUMMAX);	// vを固定したアイソパラ曲線に対して平面との交点を得る
+		for(int i=0;i<n;i++)
+			cod_a[i] = SetCoord(a[i],v,0);
+	}
+	else if(uflag == true && uflag == true){
+		n = CalcIntersecIsparaCurveV(nurb,u,pt,nvec,5,a,INTERSECPTNUMMAX);		// uを固定したアイソパラ曲線に対して平面との交点を得る
+		if(n <= 0)
+			n = CalcIntersecIsparaCurveU(nurb,v,pt,nvec,5,a,INTERSECPTNUMMAX);	// vを固定したアイソパラ曲線に対して平面との交点を得る
+		for(int i=0;i<n;i++)
+			cod_a[i] = SetCoord(a[i],v,0);
+	}
+
+	if(n == KOD_ERR){
+		newp = SetCoord(u,v,0);
+		return KOD_ERR;
+	}
+
+	newp = GetMinDistance(old,cod_a,n);
+
+	return KOD_TRUE;
+}
+
+
+
+// オフセットNURBS曲面と平面との交点群を交点追跡法にて求める
+// 引数　NURBSS:NURBS曲面  os:オフセット量  pt:平面上の1点  nvec:平面の法線ベクトル  ds:交線(交点群)の粗さ(密0.1～2疎)  initdivnum:初期点探索の荒さ(密10～1疎)
+//       ans:解  ans_size:解の数   method:交点算出時の数値解析法の選択(Runge-Kutta or Bulirsch-Stoer)
+// 返値　KOD_FALSE:NURBS曲面と平面が交差していない　KOD_ERR:特異点または発散により処理を中断
+int NURBS_Func::CalcIntersecPtsOffsetPlaneSearch(NURBSS *nurb,double os,Coord pt,Coord nvec,double ds,int initdivnum,Coord *ans,int ans_size,int method)
+{
+	pt.dmy = os;
+	return CalcIntersecPtsPlaneSearch(nurb,pt,nvec,ds,initdivnum,ans,ans_size,CALC_OFFSET);
 }
 
 // Bulirsch-Stoer法により交点を収束させる(NURBS曲面と平面)
@@ -1695,21 +1784,39 @@ int NURBS_Func::SearchIntersectPt_BS(NURBSS *S,Coord pt,Coord nvec,double H,doub
 	// 各分割数における刻み幅を求めておく
 	for(int i=0;i<11;i++)
 		h[i] = H/n[i];
-	
+
 	// 刻み幅を小さい方から順に変更しながら、B-S法による外挿値を計算していく
 	for(int i=0;i<11;i++){
 		// まず、u(s+H)の値を修正中点法により計算する
 		z[0] = SetCoord(*u0,*v0,1);										// z0とz1の算出は別処理
-		if(GetSIPParam1(S,*u0,*v0,pt,nvec,direction,&f) == KOD_FALSE)	// z0での微分方程式の右辺を計算
+		if(z[0].x < S->U[0] || z[0].x > S->U[1] || z[0].y < S->V[0] || z[0].y > S->V[1]){	// パラメータ範囲外
+			*u0 = z[0].x;
+			*v0 = z[0].y;
 			return KOD_FALSE;
+		}
+		if(GetSIPParam1(S,*u0,*v0,pt,nvec,direction,&f) == KOD_ERR){	// z0での微分方程式の右辺を計算
+			return KOD_ERR;
+		}
 		z[1] = AddCoord2D(z[0],MulCoord2D(f,h[i]));							// z0とz1の算出は別処理
 		for(int j=1;j<n[i];j++){
-			if(GetSIPParam1(S,z[j].x,z[j].y,pt,nvec,direction,&f) == KOD_FALSE)	// zjでの微分方程式の右辺を計算
+			if(z[j].x < S->U[0] || z[j].x > S->U[1] || z[j].y < S->V[0] || z[j].y > S->V[1]){	// パラメータ範囲外
+				*u0 = z[j].x;
+				*v0 = z[j].y;
 				return KOD_FALSE;
+			}
+			if(GetSIPParam1(S,z[j].x,z[j].y,pt,nvec,direction,&f) == KOD_ERR){	// zjでの微分方程式の右辺を計算
+				return KOD_ERR;
+			}
 			z[j+1] = AddCoord2D(z[j-1],MulCoord2D(f,2*h[i]));				// z2～znまでを算出
 		}
-		if(GetSIPParam1(S,z[n[i]].x,z[n[i]].y,pt,nvec,direction,&f) == KOD_FALSE)	// znでの微分方程式の右辺を計算
+		if(z[n[i]].x < S->U[0] || z[n[i]].x > S->U[1] || z[n[i]].y < S->V[0] || z[n[i]].y > S->V[1]){	// パラメータ範囲外
+			*u0 = z[n[i]].x;
+			*v0 = z[n[i]].y;
 			return KOD_FALSE;
+		}
+		if(GetSIPParam1(S,z[n[i]].x,z[n[i]].y,pt,nvec,direction,&f) == KOD_ERR){	// znでの微分方程式の右辺を計算
+			return KOD_ERR;
+		}
 		C[0][i] = DivCoord(AddCoord2D(AddCoord2D(z[n[i]],z[n[i]-1]),MulCoord2D(f,h[i])),2);		// u(s+H)
 		D[0][i] = SetCoord(C[0][i]);
 		if(i==0) continue;
@@ -1729,6 +1836,12 @@ int NURBS_Func::SearchIntersectPt_BS(NURBSS *S,Coord pt,Coord nvec,double H,doub
 			R = AddCoord2D(R,D[k][m]);		// 外挿値
 		}
 		// fprintf(stderr,"%d,%lf (%lf,%lf)\n",i,h[i],D[0][i].x,D[0][i].y);			// debug
+
+		if(R.x < S->U[0] || R.x > S->U[1] || R.y < S->V[0] || R.y > S->V[1]){	// パラメータ範囲外
+			*u0 = R.x;
+			*v0 = R.y;
+			return KOD_FALSE;
+		}
 
 		// D[0][i-1]が所定の閾値よりも小さくなったか、ステップサイズが最小になった場合、そのときの外挿値を解として演算処理を終了する
 		if(i > 0 && CalcEuclid2D((D[0][i].x-D[0][i-1].x),(D[0][i].y-D[0][i-1].y)) < APPROX_ZERO_L || i==10){
@@ -1751,16 +1864,15 @@ int NURBS_Func::GetSIPParam1(NURBSS *S,double u,double v,Coord pt,Coord nvec,int
 	Coord Sv = CalcDiffvNurbsS(S,u,v);
 	double fu = CalcInnerProduct(nvec,Su);	// nf・Su
 	double fv = CalcInnerProduct(nvec,Sv);	// nf・Sv
+	if(CheckZero(fu,HIGH_ACCURACY) == KOD_TRUE && CheckZero(fv,HIGH_ACCURACY) == KOD_TRUE){			// 特異点
+		SetMessage("NURBS KOD_ERROR:The process is stoped by detected singular point.");
+		return KOD_ERR;				
+	}
 	double E = CalcInnerProduct(Su,Su);		// 1次規格量
 	double F = CalcInnerProduct(Su,Sv);		// 1次規格量
 	double G = CalcInnerProduct(Sv,Sv);		// 1次規格量
-		double f__ = E*fv*fv - 2*F*fu*fv + G*fu*fu;
-		if(f__==0.0){
-			SetMessage("NURBS_Func CAUTION:The process is stoped by detecting singular point.");
-			return KOD_FALSE;				
-		}
-		double f_ = 1/sqrt(f__);
-		*f = SetCoord(f_*fv*(double)direction, -f_*fu*(double)direction, 0);
+	double f_ = 1/sqrt(E*fv*fv - 2*F*fu*fv + G*fu*fu);
+	*f = SetCoord(f_*fv*(double)direction, -f_*fu*(double)direction, 0);
 
 	return KOD_TRUE;
 }
@@ -1789,6 +1901,9 @@ int NURBS_Func::SearchIntersectPt_RKM(NURBSS *S,Coord pt,Coord n,double delta,do
 			*u = u0 + p[i-1];
 			*v = v0 + q[i-1];
 		}
+		if(*u < S->U[0] || *u > S->U[1] || *v < S->V[0] || *v > S->V[1])	// パラメータ範囲外
+			return KOD_FALSE;
+
 		Coord Su = CalcDiffuNurbsS(S,*u,*v);
 		Coord Sv = CalcDiffvNurbsS(S,*u,*v);
 		double fu = CalcInnerProduct(n,Su);
@@ -1847,18 +1962,12 @@ int NURBS_Func::SearchIntersectPt_OS(NURBSS *S,Coord pt,Coord n,double delta,dou
 
 		SFQuant sfq(S,*u,*v);
 		double H = sfq.E*sfq.G-sfq.F*sfq.F;
-		double H2 = H*H;
 		if(CheckZero(H,HIGH_ACCURACY) == KOD_TRUE){			// 特異点
 			//SetMessage("NURBS KOD_ERROR:The process is stoped by detected singular point.");
 			return KOD_ERR;				
 		}
-
-		double alpha = (sfq.M*sfq.F-sfq.L*sfq.G)/H2;
-		double beta  = (sfq.L*sfq.F-sfq.M*sfq.E)/H2;
-		double alpha_ = (sfq.N*sfq.F-sfq.M*sfq.G)/H2;
-		double beta_ = (sfq.M*sfq.F-sfq.N*sfq.E)/H2;
-		Coord nu = AddCoord(MulCoord(Su,alpha),MulCoord(Sv,beta));
-		Coord nv = AddCoord(MulCoord(Su,alpha_),MulCoord(Sv,beta_));
+		Coord nu = MulCoord(Su,(sfq.N*sfq.F-sfq.M*sfq.G)/(H*H));
+		Coord nv = MulCoord(Sv,(sfq.L*sfq.F-sfq.M*sfq.E)/(H*H));
 
 		double fut = CalcInnerProduct(n,AddCoord(Su,MulCoord(nu,d)));
 		double fvt = CalcInnerProduct(n,AddCoord(Sv,MulCoord(nv,d)));
@@ -2621,11 +2730,12 @@ int NURBS_Func::CalcIntersecPtsNurbsCNurbsCParam(NURBSC *NurbA,NURBSC *NurbB,int
 
 // NURBS曲線と平面との交点を求める(ニュートン法)
 // 引数  *nurb:NURBS曲線  pt:平面上の一点  nvec:平面の法線ベクトル   Divnum:NURBS曲線のパラメータ分割数  *ans:算出された交点のtパラメータ値を格納,  ans_size:ansの配列長
+//       LoD:詳細度（ニュートン法の更新パラメータを足しこむときに，LoDで割ることで，急激なパラメータ変更を避ける．通常は1でよいが，解が得られない場合は値を大きくする．2とか3とか）
 // 返値  交点の個数     KOD_ERR:交点の数がans_sizeを超えた
 // F(t) = nvec・(C(t)-pt) = 0をニュートン法を用いて求める
 // 交点は最大で(M-1)*(K-M+1)点得られる.  (例：4階でコントロールポイントの数8個の場合、(4-1)*(8-4+1)=15点)
 // よって引数*ansは(M-1)*(K-M+1)個の配列を用意することが望ましい.
-int NURBS_Func::CalcIntersecCurve(NURBSC *nurb,Coord pt,Coord nvec,int Divnum,double *ans,int ans_size)
+int NURBS_Func::CalcIntersecCurve(NURBSC *nurb,Coord pt,Coord nvec,int Divnum,double *ans,int ans_size,int LoD)
 {
 	double t = nurb->V[0];		// 現在のNURBS曲線のパラメータ値
 	double d = 0;				// ニュートン法によるパラメータの更新量
@@ -2635,9 +2745,13 @@ int NURBS_Func::CalcIntersecCurve(NURBSC *nurb,Coord pt,Coord nvec,int Divnum,do
 	int loopcount = 0;			// ループ回数
 	bool flag = false;			// 収束フラグ
 	int anscount = 0;			// 交点の数をカウント
-	
 
-	for(int i=0;i<Divnum;i++){
+	if(!LoD){
+		SetMessage("NURBS_Func ERROR: LoD is changed 0 to 1");
+		LoD = 1;
+	}
+
+	for(int i=0;i<=Divnum;i++){
 		flag = false;
 		loopcount = 0;
 		t = nurb->V[0] + (double)i*dt;		// 初期値更新
@@ -2645,11 +2759,11 @@ int NURBS_Func::CalcIntersecCurve(NURBSC *nurb,Coord pt,Coord nvec,int Divnum,do
 			F = CalcInnerProduct(nvec,SubCoord(CalcNurbsCCoord(nurb,t),pt));
 			Ft = CalcInnerProduct(nvec,CalcDiffNurbsC(nurb,t));
 			d = -F/Ft;		// 更新値
-			if(CheckZero(d,MID_ACCURACY) == KOD_TRUE){		// 更新値が閾値以下になったら、whileを抜け、解として登録
+			if(CheckZero(d,HIGH_ACCURACY) == KOD_TRUE){		// 更新値が閾値以下になったら、whileを抜け、解として登録
 				flag = true;
 				break;
 			}
-			t += d;		// パラメータ値更新
+			t += d/(double)LoD;		// パラメータ値更新
 			if(t < nurb->V[0] || t > nurb->V[1]){		// パラメータ範囲を超えたら、whileを抜け、次の初期値へ移行
 				flag = false;
 				break;
@@ -2671,6 +2785,115 @@ int NURBS_Func::CalcIntersecCurve(NURBSC *nurb,Coord pt,Coord nvec,int Divnum,do
 	return anscount;
 }
 
+// NURBS曲面のU方向アイソパラ曲線(Vパラメータを固定)と平面との交点を求める(ニュートン法)
+// 引数  *nurb:NURBS曲面  V:vの固定値  pt:平面上の一点  nvec:平面の法線ベクトル  
+//       Divnum:NURBS曲線のパラメータ分割数  *ans:算出された交点のtパラメータ値を格納,  ans_size:ansの配列長
+// 返値  交点の個数     KOD_ERR:交点の数がans_sizeを超えた
+// F(t) = nvec・(C(t)-pt) = 0をニュートン法を用いて求める
+// 交点は最大で(M-1)*(K-M+1)点得られる.  (例：4階でコントロールポイントの数8個の場合、(4-1)*(8-4+1)=15点)
+// よって引数*ansは(M-1)*(K-M+1)個の配列を用意することが望ましい.
+int NURBS_Func::CalcIntersecIsparaCurveU(NURBSS *nurb,double V,Coord pt,Coord nvec,int Divnum,double *ans,int ans_size)
+{
+	double d = 0;				// ニュートン法によるパラメータの更新量
+	double F;					// ニュートン法の対象とする方程式
+	double Fu;					// Fのuによる微分値
+	int loopcount = 0;			// ループ回数
+	bool flag = false;			// 収束フラグ
+	int anscount = 0;			// 交点の数をカウント
+	double u = nurb->U[0];		// 現在のNURBS曲線のパラメータ値
+	double du = (nurb->U[1] - nurb->U[0])/(double)Divnum;	// 初期点の増分値
+
+	for(int i=0;i<=Divnum;i++){
+		flag = false;
+		loopcount = 0;
+		u = nurb->U[0] + (double)i*du;		// 初期値更新
+		while(loopcount < LOOPCOUNTMAX){
+			F = CalcInnerProduct(nvec,SubCoord(CalcNurbsSCoord(nurb,u,V),pt));
+			Fu = CalcInnerProduct(nvec,CalcDiffuNurbsS(nurb,u,V));
+			if(CheckZero(Fu,MID_ACCURACY) == KOD_TRUE){
+				return KOD_ERR;
+			}
+			d = -F/Fu;		// 更新値
+			if(CheckZero(d,MID_ACCURACY) == KOD_TRUE){		// 更新値が閾値以下になったら、whileを抜け、解として登録
+				flag = true;
+				break;
+			}
+			u += d;		// パラメータ値更新
+			if(u < nurb->U[0] || u > nurb->U[1]){		// パラメータ範囲を超えたら、whileを抜け、次の初期値へ移行
+				flag = false;
+				break;
+			}
+			loopcount++;
+		}// end of wihle
+		if(flag == true){
+			ans[anscount] = u;		// 解として登録
+			anscount++;
+			if(anscount == ans_size){	// 解の個数がans_sizeを超えたら、ERRをリターン
+				SetMessage("NURBS_Func ERROR: Ans_size overflow");
+				return KOD_ERR;
+			}
+		}
+	}// end of i loop
+
+	anscount = CheckTheSamePoints(ans,anscount);		// 同一点は除去する
+
+	return anscount;
+}
+// NURBS曲面のV方向アイソパラ曲線(Uパラメータを固定)と平面との交点を求める(ニュートン法)
+// 引数  *nurb:NURBS曲面  U:uの固定値   pt:平面上の一点  nvec:平面の法線ベクトル
+//       Divnum:NURBS曲線のパラメータ分割数  *ans:算出された交点のtパラメータ値を格納,  ans_size:ansの配列長
+// 返値  交点の個数     KOD_ERR:交点の数がans_sizeを超えた
+// F(t) = nvec・(C(t)-pt) = 0をニュートン法を用いて求める
+// 交点は最大で(M-1)*(K-M+1)点得られる.  (例：4階でコントロールポイントの数8個の場合、(4-1)*(8-4+1)=15点)
+// よって引数*ansは(M-1)*(K-M+1)個の配列を用意することが望ましい.
+int NURBS_Func::CalcIntersecIsparaCurveV(NURBSS *nurb,double U,Coord pt,Coord nvec,int Divnum,double *ans,int ans_size)
+{
+	double d = 0;				// ニュートン法によるパラメータの更新量
+	double F;					// ニュートン法の対象とする方程式
+	double Fv;					// Fのvによる微分値
+	int loopcount = 0;			// ループ回数
+	bool flag = false;			// 収束フラグ
+	int anscount = 0;			// 交点の数をカウント
+	double v = nurb->V[0];		// 現在のNURBS曲線のパラメータ値
+	double dv = (nurb->V[1] - nurb->V[0])/(double)Divnum;	// 初期点の増分値
+
+	for(int i=0;i<=Divnum;i++){
+		flag = false;
+		loopcount = 0;
+		v = nurb->V[0] + (double)i*dv;		// 初期値更新
+		while(loopcount < LOOPCOUNTMAX){
+			F = CalcInnerProduct(nvec,SubCoord(CalcNurbsSCoord(nurb,U,v),pt));
+			Fv = CalcInnerProduct(nvec,CalcDiffvNurbsS(nurb,U,v));
+			if(CheckZero(Fv,MID_ACCURACY) == KOD_TRUE){
+				return KOD_ERR;
+			}
+			d = -F/Fv;		// 更新値
+			if(CheckZero(d,MID_ACCURACY) == KOD_TRUE){		// 更新値が閾値以下になったら、whileを抜け、解として登録
+				flag = true;
+				break;
+			}
+			//fprintf(stderr,"   %d,%lf,%lf,%lf,%lf\n",loopcount,v,d,F,Fv); //for debug
+			v += d;		// パラメータ値更新
+			if(v < nurb->V[0] || v > nurb->V[1]){		// パラメータ範囲を超えたら、whileを抜け、次の初期値へ移行
+				flag = false;
+				break;
+			}
+			loopcount++;
+		}// end of wihle
+		if(flag == true){
+			ans[anscount] = v;		// 解として登録
+			anscount++;
+			if(anscount == ans_size){	// 解の個数がans_sizeを超えたら、ERRをリターン
+				SetMessage("NURBS_Func ERROR: Ans_size overflow");
+				return KOD_ERR;
+			}
+		}
+	}// end of i loop
+
+	anscount = CheckTheSamePoints(ans,anscount);		// 同一点は除去する
+
+	return anscount;
+}
 
 // NURBS曲線と平面との交点を求める(3次まで対応)
 // 引数  *nurb:NURBS曲線  pt:平面上の一点  nvec:平面の法線ベクトル  *ans:算出された交点のtパラメータ値を格納,  ans_size:ansの配列長
@@ -3897,9 +4120,14 @@ EXIT:
 // 返値   点数
 int NURBS_Func::CalcDeltaPtsOnNurbsC(NURBSC *Nurb,double D,Coord *Pts)
 {
+	if(D == 0){
+		SetMessage("NURBS_Func ERROR: Set Correct Interval Value");
+		return KOD_ERR;
+	}
+
 	double L = CalcNurbsCLength(Nurb);		// NURBS曲線の線分長を得る
 	double T = Nurb->V[1] - Nurb->V[0];	// パラメトリック空間内での線分長を得る
-	double t = T/L*D;
+	double t = T/D;
 	double now=0;	// パラメトリック空間内での現在の注目点
 
 	int i=0;
@@ -3915,100 +4143,86 @@ int NURBS_Func::CalcDeltaPtsOnNurbsC(NURBSC *Nurb,double D,Coord *Pts)
 	return i;
 }
 
-// 指定した分割数でNURBS曲線上の座標値を出力する
-// 引数
-// *Nurb:NURBSへのポインタ  D:分割数  *Pts:出力される座標値を格納
-// 返値   点数
-int NURBS_Func::CalcDeltaPtsOnNurbsC(NURBSC *Nurb,int D,Coord *Pts)
+// 同一点を除去する
+// 引数   *S:曲面 *P:曲面上の(u,v)パラメータ群(変更後の点群もここに格納される)   N:点数
+// 返値   変更後の点数
+int NURBS_Func::RemoveTheSamePoints(NURBSS *S,Coord *Q,int N)
 {
-	double T = (Nurb->V[1] - Nurb->V[0])/D;	// パラメトリック空間内での線分長を得る
+	Coord *P = NewCoord1(N);
 
-	for(int i=0;i<=D;i++){
-		Pts[i] = CalcNurbsCCoord(Nurb, Nurb->V[0] + T*(double)i);
+	for(int i=0;i<N;i++){
+		P[i] = CalcNurbsSCoord(S,Q[i].x,Q[i].y);
+		P[i].dmy = KOD_FALSE;
 	}
-
-	return D+2;
-}
-
-// 指定した分割数でNURBS曲面上の座標値を求める
-// 引数
-// *S:NURBSSへのポインタ  Du,Dv:u方向，v方向の分割数  **Pts:出力される座標値を格納
-// 返値   点数
-int NURBS_Func::CalcDeltaPtsOnNurbsS(NURBSS *S,int Du,int Dv,Coord **Pts)
-{
-	double u_val = (S->U[1] - S->U[0])/Du;		// パラメトリック空間内でのu方向線分長を得る
-	double v_val = (S->V[1] - S->V[0])/Dv;		// パラメトリック空間内でのv方向線分長を得る
-
-	// u方向，v方向の各分割点における座標値を求める
-	int num=0;
-	for(int i=0;i<=Du;i++){
-		for(int j=0;j<=Dv;j++){
-			Pts[i][j] = CalcNurbsSCoord(S,S->U[0]+u_val*i,S->V[0]+v_val*j);	// 指定した(u,v)の座標値を求める
-			num++;
+	for(int i=0;i<N;i++){
+		if(P[i].dmy == KOD_FALSE){
+			for(int j=i+1;j<N;j++){
+				if(DiffCoord(P[i],P[j],APPROX_ZERO_L) == KOD_TRUE){
+					P[j].dmy = KOD_TRUE;
+				}
+			}
 		}
 	}
-	
-	return num;
-}
+	int k=0;
+	for(int i=0;i<N;i++){
+		if(P[i].dmy != KOD_TRUE){
+			Q[k] = SetCoord(Q[i]);
+			k++;
+		}
+	}
 
+	return k;
+}
 
 // 同一点を除去する
 // 引数   *P:点群(変更後の点群もここに格納される)   N:点数
 // 返値   変更後の点数
 int NURBS_Func::CheckTheSamePoints(Coord *P,int N)
 {
-	if(N <= 0) return N;
-
-	Coord *Q = NewCoord1(N);
-
 	for(int i=0;i<N;i++)
 		P[i].dmy = KOD_FALSE;
 
-	int k=0;
 	for(int i=0;i<N;i++){
 		if(P[i].dmy == KOD_FALSE){
-			Q[k] = SetCoord(P[i]);
-			for(int j=0;j<N;j++){
-				if(DiffCoord(Q[k],P[j]) == KOD_TRUE){
+			for(int j=i+1;j<N;j++){
+				if(DiffCoord(P[i],P[j],APPROX_ZERO_L) == KOD_TRUE){
 					P[j].dmy = KOD_TRUE;
 				}
 			}
+		}
+	}
+	int k=0;
+	for(int i=0;i<N;i++){
+		if(P[i].dmy != KOD_TRUE){
+			P[k] = SetCoord(P[i]);
 			k++;
 		}
 	}
-
-	for(int i=0;i<k;i++)
-		P[i] = SetCoord(Q[i]);
-
-	FreeCoord1(Q);
-
 	return k;
 }
 int NURBS_Func::CheckTheSamePoints(double *P,int N)
 {
-	double *Q = NewVector(N);
 	bool *flag = (bool *)malloc(sizeof(bool)*N);
 
 	for(int i=0;i<N;i++)
 		flag[i] = false;
 
-	int k=0;
 	for(int i=0;i<N;i++){
 		if(flag[i] == false){
-			Q[k] = P[i];
-			for(int j=0;j<N;j++){
-				if(CheckZero(Q[k]-P[j],MID_ACCURACY) == KOD_TRUE){
+			for(int j=i+1;j<N;j++){
+				if(CheckZero(P[i]-P[j],MID_ACCURACY) == KOD_TRUE){
 					flag[j] = true;
 				}
 			}
+		}
+	}
+	int k=0;
+	for(int i=0;i<N;i++){
+		if(flag[i] != KOD_TRUE){
+			P[k] = P[i];
 			k++;
 		}
 	}
-
-	for(int i=0;i<k;i++)
-		P[i] = Q[i];
-
-	FreeVector(Q);
 	free(flag);
 
 	return k;
@@ -4180,117 +4394,6 @@ int NURBS_Func::TrimNurbsSPlane(TRMS *Trm,Coord pt,Coord nvec)
 	return KOD_TRUE;
 }
 
-
-// Bulirsch-Stoer法により極地探索を行う(微分方程式：du(s)/ds = fu(u,v) と、dv(s)/ds = fv(u,v)の解探索)
-// 引数  *S:極値探索されるNURBS曲面へのポインタ, nf:平面の法線ベクトル, u0,v0:開始点,  H:探索幅
-//       param:u方向の1階微分が0となる極値の探索(PARAM_U) or v方向探索(PARAM_V)の選択, direction:順方向探索or逆方向探索
-//       *ans:更新されたu,vパラメータ(ans.x = u, ans.y = v)
-// 返値  KOD_TRUE:正常終了,  KOD_FALSE:特異点により処理を中断,  KOD_ERR:パラメータの指定ミスにより処理を中断
-int NURBS_Func::SearchExtremum_BS(NURBSS *S,Coord nf,double u0,double v0,double H,int param,int direction,Coord *ans)
-{
-	// 引数指定ミス
-	if(direction != FORWARD && direction != INVERSE){
-		SetMessage("NURBS ERROR: selected wrong direction");
-		return KOD_ERR;
-	}
-
-	int    n[11] = {2,4,6,8,12,16,24,32,48,64,96};		// B-S法の分割数群を指定
-	Coord  z[97];							// 修正中点法の中間値を格納(z.x = u, z.y = v)
-	Coord  f;								// f.x = fu(u,v), f.y = fv(u,v)
-	Coord  D[10][10],C[10][10],P[11];		// B-S法の中間パラメータ
-	double h[11];							// B-S法の刻み幅
-	Coord  R;								// h=0の外挿値
-	int    conv_flag = KOD_FALSE;			// 収束フラグ
-
-	// 各分割数における刻み幅を求めておく
-	for(int i=0;i<11;i++)
-		h[i] = H/n[i];
-	
-	// 刻み幅を小さい方から順に変更しながら、B-S法による外挿値を計算していく
-	for(int i=0;i<11;i++){
-
-		// まず、u(s+H)の値を修正中点法により計算する
-		z[0] = SetCoord(u0,v0,0);										// z0とz1の算出は別処理
-		if(GetSECParam1(S,u0,v0,nf,param,direction,&f) == KOD_FALSE)	// z0での微分方程式の右辺を計算
-			return KOD_FALSE;
-			//fprintf(stderr,"f%d=(%lf,%lf)\n",i,f.x,f.y);
-		z[1] = AddCoord(z[0],MulCoord(f,h[i]));							// z0とz1の算出は別処理
-		for(int j=1;j<n[i];j++){
-			if(GetSECParam1(S,z[j].x,z[j].y,nf,param,direction,&f) == KOD_FALSE)	// zjでの微分方程式の右辺を計算
-				return KOD_FALSE;
-			z[j+1] = AddCoord(z[j-1],MulCoord(f,2*h[i]));				// z2～znまでを算出
-		}
-		if(GetSECParam1(S,z[n[i]].x,z[n[i]].y,nf,param,direction,&f) == KOD_FALSE)	// znでの微分方程式の右辺を計算
-			return KOD_FALSE;
-		P[i] = DivCoord(AddCoord(AddCoord(z[n[i]],z[n[i]-1]),MulCoord(f,h[i])),2);		// u(s+H)
-			//fprintf(stderr,"P%d=(%lf,%lf)\n",i,P[i].x,P[i].y);
-
-		// B-S法の差分表を順次求めていく
-		if(i > 0)	R = SetCoord(P[i-1]);
-		for(int k=i-1;k>=0;k--){
-			double x1 = h[k]*h[k];
-			double x2 = h[k+1]*h[k+1];
-			if(k == i-1){
-				C[k][i-1-k] = MulCoord(SubCoord(P[k+1],P[k]),x1/(x1-x2));
-				D[k][i-1-k] = MulCoord(SubCoord(P[k+1],P[k]),x2/(x1-x2));
-			}
-			else{
-				C[k][i-1-k] = MulCoord(SubCoord(C[k+1][i-2-k],D[k][i-2-k]),x1/(x1-x2));
-				D[k][i-1-k] = MulCoord(SubCoord(C[k+1][i-2-k],D[k][i-2-k]),x2/(x1-x2));
-			}
-			R = AddCoord(R,D[k][i-1-k]);		// 外挿値
-			//fprintf(stderr,"%d,D%d=(%lf,%lf)\n",i,k,D[k][i-1-k].x,D[k][i-1-k].y);
-		}
-
-		// fprintf(stderr,"%d,%lf,%.16lf\n",i,h[i],CalcEuclid2D(D[0][i-1].x,D[0][i-1].y));
-
-		// D[0][i-1]が所定の閾値よりも小さくなったら、そのときの外挿値を解として演算処理を終了する
-		if(i > 0 && CalcEuclid2D(D[0][i-1].x,D[0][i-1].y) < APPROX_ZERO_L){
-			ans->x = R.x;
-			ans->y = R.y;
-			conv_flag = KOD_TRUE;
-			break;
-		}
-	}
-
-	return conv_flag;
-}
-
-
-// 極値探索線Sub関数1
-int NURBS_Func::GetSECParam1(NURBSS *S,double u,double v,Coord nf,int param,int direction,Coord *f)
-{
-	double fuu = CalcInnerProduct(nf,CalcDiffNNurbsS(S,2,0,u,v));	// nf・Suu
-	double fuv = CalcInnerProduct(nf,CalcDiffNNurbsS(S,1,1,u,v));	// nf・Suv
-	double fvv = CalcInnerProduct(nf,CalcDiffNNurbsS(S,0,2,u,v));	// nf・Svv
-	Coord Su = CalcDiffuNurbsS(S,u,v);		// 曲面のu方向1階微分
-	Coord Sv = CalcDiffvNurbsS(S,u,v);		// 曲面のv方向1階微分
-	double E = CalcInnerProduct(Su,Su);		// 1次規格量
-	double F = CalcInnerProduct(Su,Sv);		// 1次規格量
-	double G = CalcInnerProduct(Sv,Sv);		// 1次規格量
-	if(param == PARAM_U){
-		double f__ = E*fvv*fvv - 2*F*fuv*fvv + G*fuv*fuv;
-		if(f__==0.0){
-			SetMessage("NURBS KOD_ERROR:The process is stoped by detecting singular point.");
-			return KOD_FALSE;				
-		}
-		double f_ = 1/sqrt(f__);
-		*f = SetCoord(-f_*fvv*(double)direction,f_*fuv*(double)direction,0);
-	}
-	else if(param == PARAM_V){
-		double f__ = E*fuv*fuv - 2*F*fuv*fuu + G*fuu*fuu; 
-		if(f__==0.0){
-			SetMessage("NURBS KOD_ERROR:The process is stoped by detecting singular point.");
-			return KOD_FALSE;				
-		}
-		double f_ = 1/sqrt(f__);
-		*f = SetCoord(-f_*fuv*(double)direction,f_*fuu*(double)direction,0);
-	}
-
-	return KOD_TRUE;
-}
-
-
 // TrimNurbsSPlaneのサブ関数(2直線の交点をもとめる)
 Coord NURBS_Func::TrimNurbsSPlaneSub1(double a,double b,double x0,double y0,double x1,double y1)
 {
@@ -4429,6 +4532,21 @@ void NURBS_Func::GetApproximatedKnot(Vector T_,int N,int M,int K,Vector T)
 		T[j+M-1] = (1-a)*T_[i-1] + a*T_[i];
 		T[j+M-1] += 0.0001;					// 肝!  TとT_が同値になると、最小２乗法がうまくいかないので、便宜的に同値にならないようにしている。
 	}
+}
+
+// 曲線/曲面パラメータの定義域を変更する
+// 引数 T:変更したいノットベクトル列, N:Tの配列長, M:階数, K:コントロールポイントの数, Tst:開始ノットベクトル, Te:終了ノットベクトル
+void NURBS_Func::ChangeKnotVecRange(Vector T, int N, int M, int K, double Ts, double Te)
+{
+	Vector T_ = NewVector(N);
+	
+	for(int i=0;i<N;i++)
+		T_[i] = (Te-Ts)/(T[K]-T[M-1])*T[i] + (Ts*T[K]-Te*T[M-1])/(T[K]-T[M-1]);
+
+	for(int i=0;i<N;i++)
+		T[i] = T_[i];
+
+	FreeVector(T_);
 }
 
 // 最小2乗法で近似コントロールポイントを求める
@@ -4914,4 +5032,27 @@ double NURBS_Func::CalcNurbsCLength(NURBSC *Nurb)
 		len += w[i]*(CalcEuclid(CalcDiffNurbsC(Nurb,xi)));
 	}
 	return(B*len);
+}
+
+// 最小距離を持つ座標値を返す
+Coord NURBS_Func::GetMinDistance(Coord a,Coord *b,int n)
+{
+	Vector d = NewVector(n);
+
+	for(int i=0;i<n;i++){
+		d[i] = CalcDistance(a,b[i]);
+	}
+
+	double min = 1.0E+12;
+	int min_num;
+	for(int i=0;i<n;i++){
+		if(d[i] < min){
+			min = d[i];
+			min_num = i;
+		}
+	}
+
+	FreeVector(d);
+
+	return b[min_num];
 }

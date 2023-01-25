@@ -37,7 +37,7 @@ int SmpContourLine(BODYList *BodyList,OBJECTList *ObjList, int PickCount, double
 		sprintf(mes,"z=%.3lf  calculating...",z);
 		SetMessage(mes);
 
-		int num = nfunc.CalcIntersecPtsPlaneSearch(S,pt,nvec,feed,10,t,5000,RUNGE_KUTTA);		// NURBS曲面と平面との交点群を交線追跡法で求める
+		int num = nfunc.CalcIntersecPtsPlaneSearch(S,pt,nvec,feed,3,t,5000,RUNGE_KUTTA);		// NURBS曲面と平面との交点群を交線追跡法で求める
 
 		for(int i=0;i<num;i++){		// 交点の数だけループ
 			Coord p = nfunc.CalcNurbsSCoord(S,t[i].x,t[i].y);			// 交点をパラメータ値から座標値へ変換

@@ -54,9 +54,9 @@ public:
 	void ChangeViewZ();						// Z軸上の視点に切り替える
 	void ChangeViewXYZ();					// 鳥瞰視点に切り替える
 	WSCbool ChangeViewUp();					// 上矢印キーが押された場合のBODY回転
-	WSCbool ChangeViewDown();				// 下矢印キーが押された場合のBODY回転
-	WSCbool ChangeViewLeft();				// 左矢印キーが押された場合のBODY回転
-	WSCbool ChangeViewRight();				// 右矢印キーが押された場合のBODY回転
+	WSCbool ChangeViewDown();					// 下矢印キーが押された場合のBODY回転
+	WSCbool ChangeViewLeft();					// 左矢印キーが押された場合のBODY回転
+	WSCbool ChangeViewRight();					// 右矢印キーが押された場合のBODY回転
 	void FitView();							// 倍率をデフォルトに戻す
 	void SolidView();						// Solid表示
 	void NoEdgeView();						// Edgeを非表示にする
@@ -83,8 +83,9 @@ public:
 	void GetSurfInfo();						// 選択されている曲面の情報をコンソール出力する
 	void ChangeRank(int []);				// 選択されている曲面のRankを変更する
 	void ChangeBackColor(double []);		// 背景の色を変更する
+	int GenCircle(double,Coord,Coord);		// 円を生成する
 	BODY *SearchBodyList(BODYList *,int);	// セレクションされているBODY番号を得る
-	void GetMeshInfo();						// Mesh情報を出力
+	void DumpCP();							// 選択されているNURBS曲線/曲面のコントロールポイントをダンプする
 
 // private関数の定義
 private:
@@ -191,5 +192,6 @@ void CmdSurfInfo(int,char *[]);			// コマンド(曲面情報を出力)
 void CmdExpand(int,char *[]);			// コマンド(BODYの拡大)
 void CmdChRank(int,char *[]);			// コマンド(NURBS Rnakの変更)
 void CmdChBkCol(int,char *[]);			// コマンド(背景色変更)
-void CmdMeshInf(int,char *[]);			// コマンド(Mesh情報出力)
+void CmdDumpCP(int,char *[]);			// コマンド(コントロールポイントのダンプ)
+void CmdGenCircle(int,char *[]);		// コマンド(円を生成する)
 #endif

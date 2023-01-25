@@ -23,10 +23,6 @@ Coord Coord::operator /(Coord a)
 {
 	return(DivCoord(*this,a));
 }
-Coord Coord::operator /(double a)
-{
-	return(DivCoord(*this,a));
-}
 double Coord::operator &(Coord a)
 {
 	return(CalcInnerProduct(*this,a));
@@ -1050,6 +1046,23 @@ int CheckZero(double val,int flag)
 
 	return KOD_FALSE;
 }
+int CheckZero(Coord cod,int flag)
+{
+	double ap;
+	if(flag == LOW_ACCURACY)
+		ap = APPROX_ZERO_L;
+	else if(flag == HIGH_ACCURACY)
+		ap = APPROX_ZERO_H;
+	else if(flag == MID_ACCURACY)
+		ap = APPROX_ZERO;
+	else
+		return KOD_ERR;
+
+	if(fabs(cod.x) < ap && fabs(cod.y) < ap && fabs(cod.z) < ap)
+		return KOD_TRUE;
+
+	return KOD_FALSE;
+}
 
 // 指定した値が指定した範囲内であるかをチェック
 // 引数  low:下限  up:上限   val:調べたい値
@@ -1106,8 +1119,8 @@ int CheckRange(double low,double up,double val,int flag)
 // 2つの値の大小比較
 // 引数  val1,val2:入力値   flag:精度(HIGH_ACCURACY or or MID_ACCURACY or LOW_ACCURACY)
 // 返値　KOD_EQUAL: val1 = val2 (|va1-val2| < APPROX_ZERO)
-//       KOD_TRUE:  val1 > val2 ()
-//       KOD_FALSE: val1 < val2 ()
+//       KOD_LARGE:  val1 > val2 ()
+//       KOD_SMALL: val1 < val2 ()
 int CheckMag(double val1,double val2,int flag)
 {
 	double ap;
@@ -1124,9 +1137,9 @@ int CheckMag(double val1,double val2,int flag)
 	if(fabs(d) < ap)
 		return KOD_EQUAL;
 	else if(d < 0)
-		return KOD_FALSE;
+		return KOD_SMALL;
 	else
-		return KOD_TRUE;
+		return KOD_LARGE;
 }
 
 // 注目点の多角形内外判別(x-y平面内)

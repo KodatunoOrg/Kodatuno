@@ -8,7 +8,6 @@ BODY::BODY()
 		TypeNum[i] = 0;
 	}
 	Mesh = NULL;
-	Mom = NULL;
 
 	MaxCoord = 1;
 }
@@ -190,9 +189,9 @@ void BODY::RotBody(Coord Axis,double deg)
 {
 	NURBS_Func NFunc;
 
-	for(int i=0;i<TypeNum[_NURBSS];i++)			// NURBS曲面のシフト
+	for(int i=0;i<TypeNum[_NURBSS];i++)			// NURBS曲面の回転
 		NFunc.RotNurbsS(&NurbsS[i],Axis,deg);
-	for(int i=0;i<TypeNum[_NURBSC];i++){			// NURBS曲線のシフト
+	for(int i=0;i<TypeNum[_NURBSC];i++){		// NURBS曲線の回転
 		if(NurbsC[i].EntUseFlag == GEOMTRYELEM)	// NURBS曲面のパラメトリック要素としてのNURBS曲線に関しては何もしない
 			NFunc.RotNurbsC(&NurbsC[i],Axis,deg);
 	}
@@ -231,13 +230,6 @@ void BODY::RegistBody(BODYList *BodyList, char BodyName[])
 	strcpy(Name,BodyName);					// ファイル名をbody名として登録
 }
 
-// 自分自身を消去する
-void BODY::DeleteBody(BODYList *BodyList)
-{
-	BodyList->delData(Mom);			// リストから読み込んだBODYをはずす
-	DelBodyElem();					// BODY内で確保しているメモリーの解放
-}
-
 // 1つのNURBS曲線を新たなBODYとして登録する
 void BODY::RegistNurbsCtoBody(BODYList *BodyList,NURBSC Nurb,char BodyName[])
 {
@@ -246,7 +238,7 @@ void BODY::RegistNurbsCtoBody(BODYList *BodyList,NURBSC Nurb,char BodyName[])
 	TypeNum[_NURBSC] = 1;											// NURBS曲面の数1にする
 	ChangeStatColor(this->NurbsC[0].Dstat.Color,0.2,0.2,1.0,0.5);		// 青色
 	BodyList->add(this);										// リストに新しいBODYを登録
-	//SetBodyNameToWin(BodyName);											// BodyリストウィンドウにBODY名を登録
+	SetBodyNameToWin(BodyName);											// BodyリストウィンドウにBODY名を登録
 	strcpy(Name,BodyName);										// 新しいBODY名を登録
 }
 
@@ -260,7 +252,7 @@ void BODY::RegistNurbsCtoBodyN(BODYList *BodyList,NURBSC Nurb[],char BodyName[],
 		ChangeStatColor(this->NurbsC[i].Dstat.Color,0.2,0.2,1.0,0.5);	// 青色
 	}
 	BodyList->add((void *)this);										// リストに新しいBODYを登録
-	//SetBodyNameToWin(BodyName);											// BodyリストウィンドウにBODY名を登録
+	SetBodyNameToWin(BodyName);											// BodyリストウィンドウにBODY名を登録
 	strcpy(Name,BodyName);										// 新しいBODY名を登録
 }
 
@@ -270,12 +262,12 @@ void BODY::RegistNurbsStoBody(BODYList *BodyList,NURBSS Nurb,char BodyName[])
 {
 	NurbsS = (NURBSS *)malloc(sizeof(NURBSS));
 	NurbsS[0] = Nurb;												// NURBS曲面の実体を代入
-	NurbsS[0].TrmdSurfFlag = KOD_FALSE;								// トリムのない単純なNURBS曲面であることを明示
+	NurbsS[0].TrmdSurfFlag = KOD_FALSE;							// トリムのない単純なNURBS曲面であることを明示
 	TypeNum[_NURBSS] = 1;											// NURBS曲面の数1にする
-	ChangeStatColor(this->NurbsS[0].Dstat.Color,0.2,0.2,1.0,0.5);	// 青色
-	this->Mom = BodyList->add((void *)this);						// リストに新しいBODYを登録
-	//SetBodyNameToWin(BodyName);										// BodyリストウィンドウにBODY名を登録
-	strcpy(Name,BodyName);											// 新しいBODY名を登録
+	ChangeStatColor(this->NurbsS[0].Dstat.Color,0.2,0.2,1.0,0.5);		// 青色
+	BodyList->add((void *)this);										// リストに新しいBODYを登録
+	SetBodyNameToWin(BodyName);											// BodyリストウィンドウにBODY名を登録
+	strcpy(Name,BodyName);										// 新しいBODY名を登録
 }
 
 // N個のNURBS曲面を新たなBODYとして登録する
@@ -284,13 +276,13 @@ void BODY::RegistNurbsStoBodyN(BODYList *BodyList,NURBSS Nurb[],char BodyName[],
 	NurbsS = (NURBSS *)malloc(sizeof(NURBSS)*N);
 	for(int i=0;i<N;i++){
 		NurbsS[i] = Nurb[i];										// NURBS曲面の実体を代入
-		NurbsS[i].TrmdSurfFlag = KOD_FALSE;							// トリムのない単純なNURBS曲面であることを明示
+		NurbsS[i].TrmdSurfFlag = KOD_FALSE;						// トリムのない単純なNURBS曲面であることを明示
 		TypeNum[_NURBSS] = N;										// NURBS曲面の数1にする
 		ChangeStatColor(this->NurbsS[i].Dstat.Color,0.2,0.2,1.0,0.5);	// 青色
 	}
-	this->Mom = BodyList->add((void *)this);						// リストに新しいBODYを登録
-	//SetBodyNameToWin(BodyName);										// BodyリストウィンドウにBODY名を登録
-	strcpy(Name,BodyName);											// 新しいBODY名を登録
+	BodyList->add((void *)this);										// リストに新しいBODYを登録
+	SetBodyNameToWin(BodyName);											// BodyリストウィンドウにBODY名を登録
+	strcpy(Name,BodyName);										// 新しいBODY名を登録
 }
 
 // エンティティのステータスで定義されている色を変更

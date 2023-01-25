@@ -59,7 +59,9 @@ int IGES_PARSER::IGES_Parser_Main(BODY *body,char IGES_fname[])
 			return(KOD_ERR);
 		}
 	}
+
 	ChangeEntityforNurbs(dpara,*body,line[SECTION_DIRECTORY]);	// 内部表現を全てNURBSに変更する
+
 	flag = SearchMaxCoord(body,body->TypeNum);		// 立体の最大座標値を探索(初期表示での表示倍率を決定するため)
 
 	fclose(fp);
@@ -311,64 +313,71 @@ int IGES_PARSER::CheckCWforTrim(BODY *body)
 
 	// トリム面
 	for(int i=0;i<body->TypeNum[_TRIMMED_SURFACE];i++){
+		int otrmnum = body->TrmS[i].pTO->pB->CompC.N;
 
-		// トリム面のパラメトリック平面における外側トリム曲線の変更
-		p = NewCoord1(body->TrmS[i].pTO->pB->CompC.N);
+		if(otrmnum > 2){
+			// トリム面のパラメトリック平面における外側トリム曲線の変更
+			p = NewCoord1(otrmnum);
 
-		// 外側トリムを構成する各NURBS曲線の始点を取り出す
-		for(int j=0;j<body->TrmS[i].pTO->pB->CompC.N;j++){
-			NURBSC *nc = (NURBSC *)body->TrmS[i].pTO->pB->CompC.pDE[j];
-			p[j] = SetCoord(nc->cp[0]);		
-		}
-		flag = DiscriminateCW2D(p,body->TrmS[i].pTO->pB->CompC.N);	// 時計・反時計周りを調べる
-
-		// 外側トリムが時計回りだったら、反時計回りに変更する
-		if(flag == KOD_FALSE){
-			for(int j=0;j<body->TrmS[i].pTO->pB->CompC.N;j++){
+			// 外側トリムを構成する各NURBS曲線の始点を取り出す
+			for(int j=0;j<otrmnum;j++){
 				NURBSC *nc = (NURBSC *)body->TrmS[i].pTO->pB->CompC.pDE[j];
-				Reverse(nc->cp,nc->K);		// コントロールポイント列の反転
-				// ノットベクトル列を反転
-				for(int k=0;k<nc->N;k++){
-					nc->T[k] *= -1;
-					nc->T[k] += nc->V[0]+nc->V[1];
-				}
-				Reverse(nc->T,nc->N);
+				p[j] = SetCoord(nc->cp[0]);		
 			}
-			// COMPELEMを反転
-			ReverseCOMPELEM(&body->TrmS[i].pTO->pB->CompC);
-		}
+			flag = DiscriminateCW2D(p,otrmnum);	// 時計・反時計周りを調べる
 
-		FreeCoord1(p);
-		// 外側トリムここまで
-
-		// トリム面のパラメトリック平面における内側トリム曲線の変更
-		for(int j=0;j<body->TrmS[i].n2;j++){
-			p = NewCoord1(body->TrmS[i].pTI[j]->pB->CompC.N);
-
-			// 内側トリムを構成する各NURBS曲線の始点を取り出す
-			for(int k=0;k<body->TrmS[i].pTI[j]->pB->CompC.N;k++){
-				NURBSC *nc = (NURBSC *)body->TrmS[i].pTI[j]->pB->CompC.pDE[k];
-				p[k] = SetCoord(nc->cp[0]);
-			}
-			flag = DiscriminateCW2D(p,body->TrmS[i].pTI[j]->pB->CompC.N);	// 時計・反時計周りを調べる
-
-			// 内側トリムが反時計回りだったら、時計回りに変更する
-			if(flag == KOD_TRUE){
-				for(int k=0;k<body->TrmS[i].pTI[j]->pB->CompC.N;k++){
-					NURBSC *nc = (NURBSC *)body->TrmS[i].pTI[j]->pB->CompC.pDE[k];
+			// 外側トリムが時計回りだったら、反時計回りに変更する
+			if(flag == KOD_FALSE){
+				for(int j=0;j<otrmnum;j++){
+					NURBSC *nc = (NURBSC *)body->TrmS[i].pTO->pB->CompC.pDE[j];
 					Reverse(nc->cp,nc->K);		// コントロールポイント列の反転
 					// ノットベクトル列を反転
-					for(int l=0;l<nc->N;l++){
-						nc->T[l] *= -1;
-						nc->T[l] += nc->V[0]+nc->V[1];
+					for(int k=0;k<nc->N;k++){
+						nc->T[k] *= -1;
+						nc->T[k] += nc->V[0]+nc->V[1];
 					}
 					Reverse(nc->T,nc->N);
 				}
 				// COMPELEMを反転
-				ReverseCOMPELEM(&body->TrmS[i].pTI[j]->pB->CompC);
+				ReverseCOMPELEM(&body->TrmS[i].pTO->pB->CompC);
 			}
 
 			FreeCoord1(p);
+			// 外側トリムここまで
+		}
+
+		// トリム面のパラメトリック平面における内側トリム曲線の変更
+		for(int j=0;j<body->TrmS[i].n2;j++){
+			otrmnum = body->TrmS[i].pTI[j]->pB->CompC.N;
+
+			if(otrmnum > 2){
+				p = NewCoord1(otrmnum);
+
+				// 内側トリムを構成する各NURBS曲線の始点を取り出す
+				for(int k=0;k<otrmnum;k++){
+					NURBSC *nc = (NURBSC *)body->TrmS[i].pTI[j]->pB->CompC.pDE[k];
+					p[k] = SetCoord(nc->cp[0]);
+				}
+				flag = DiscriminateCW2D(p,otrmnum);	// 時計・反時計周りを調べる
+
+				// 内側トリムが反時計回りだったら、時計回りに変更する
+				if(flag == KOD_TRUE){
+					for(int k=0;k<otrmnum;k++){
+						NURBSC *nc = (NURBSC *)body->TrmS[i].pTI[j]->pB->CompC.pDE[k];
+						Reverse(nc->cp,nc->K);		// コントロールポイント列の反転
+						// ノットベクトル列を反転
+						for(int l=0;l<nc->N;l++){
+							nc->T[l] *= -1;
+							nc->T[l] += nc->V[0]+nc->V[1];
+						}
+						Reverse(nc->T,nc->N);
+					}
+					// COMPELEMを反転
+					ReverseCOMPELEM(&body->TrmS[i].pTI[j]->pB->CompC);
+				}
+
+				FreeCoord1(p);
+			}
 		}
 	}
 

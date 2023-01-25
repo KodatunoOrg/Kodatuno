@@ -31,7 +31,8 @@ void KODatUNO::InitializeWin()
 	SetCmdList(CmdMap,"exp","r",13,CmdExpand);				// Command Bodyを拡大する
 	SetCmdList(CmdMap,"chrank","r",14,CmdChRank);			// Command 指定したNURBS曲面のRankを変更する
 	SetCmdList(CmdMap,"chbkcol","r",15,CmdChBkCol);			// Command 背景の色を変更する
-	SetCmdList(CmdMap,"meshinf","",16,CmdMeshInf);			// Command 指定したMeshの情報を出力
+	SetCmdList(CmdMap,"dumpcp","",16,CmdDumpCP);			// Command コントロールポイントをダンプする
+	SetCmdList(CmdMap,"circle","r",17,CmdGenCircle);		// Command 円を生成する（準備中）
 
 	// Userコマンドの登録
 	User.RegistUserCommand(CmdMap);
@@ -409,7 +410,7 @@ int KODatUNO::OpenFile()
 		int flag;
 		if(ext == ext_igs){				// 拡張子が"igs"
 			IGES_PARSER Iges;
-			flag = Iges.IGES_Parser_Main(body,full_name);	// IGESデータを読み込んで、bodyに格納
+			flag = Iges.IGES_Parser_Main(body,full_name);			// IGESデータを読み込んで、bodyに格納
 			if(flag == KOD_TRUE){
 				Iges.Optimize4OpenGL(body);					// 読み込んだIGESファイルをOpenGL用に最適化する
 			}
@@ -428,7 +429,7 @@ int KODatUNO::OpenFile()
 			return KOD_ERR;
 		}
 		strcpy(body->Name,fname);			// ファイル名をbody名として登録
-		body->Mom = BodyList.add(body);		// リストに読み込んだbodyを登録
+		BodyList.add(body);					// リストに読み込んだbodyを登録
 		Body_List_Win->addItem(fname);		// Bodyリストウィンドウに新たに読み込んだBODY名を付加
 		SetMessage("Finished");
 	}
@@ -473,8 +474,7 @@ int KODatUNO::OpenFile(char *Fname)
 		return KOD_ERR;
 	}
 	strcpy(body->Name,fname);				// ファイル名をbody名として登録
-	body->Mom = BodyList.add(body);			// リストに読み込んだbodyを登録
-	Body_List_Win->addItem(fname);			// Bodyリストウィンドウに新たに読み込んだBODY名を付加
+	BodyList.add(body);						// リストに読み込んだbodyを登録
 	SetMessage("Finished");
 
 	DrawBODYFlag = KOD_TRUE;				// BODY描画してもOKフラグON
@@ -639,7 +639,7 @@ void KODatUNO::SetOpenGLStat()
 {
 	if(OpenGLInitFlag == KOD_FALSE){
 		GLfloat diffuse[] = { 0.9, 0.9, 0.9, 1.0 };
-		GLfloat specular[] = { 0.5, 0.5, 0.5, 1.0 };
+		GLfloat specular[] = { 0.2, 0.2, 0.2, 1.0 };
 		GLfloat ambient[] = { 1.0, 1.0, 1.0, 1.0 };
 		GLfloat mat_diffuse[] = { 0.7, 0.7, 0.7, 1.0 };
 		GLfloat mat_specular[] = { 0.5, 0.5, 0.5, 1.0 };
@@ -1129,7 +1129,7 @@ WSCbool KODatUNO::ChangeViewUp()
 	StartQ = QFunc.QCopy(TargetQ);						// 更新
 	Describe_Form->execEventProc(WSEV_EXPOSE,NULL);		// 再描画指令
 
-	return KOD_FALSE;
+	return False;
 }
 
 // Ctrlキー＋下矢印キーが押された場合のBODY回転
@@ -1143,7 +1143,7 @@ WSCbool KODatUNO::ChangeViewDown()
 	StartQ = QFunc.QCopy(TargetQ);						// 更新
 	Describe_Form->execEventProc(WSEV_EXPOSE,NULL);		// 再描画指令
 
-	return KOD_FALSE;
+	return False;
 }
 
 
@@ -1158,7 +1158,7 @@ WSCbool KODatUNO::ChangeViewLeft()
 	StartQ = QFunc.QCopy(TargetQ);						// 更新
 	Describe_Form->execEventProc(WSEV_EXPOSE,NULL);		// 再描画指令
 
-	return KOD_FALSE;
+	return False;
 }
 
 
@@ -1173,7 +1173,7 @@ WSCbool KODatUNO::ChangeViewRight()
 	StartQ = QFunc.QCopy(TargetQ);						// 更新
 	Describe_Form->execEventProc(WSEV_EXPOSE,NULL);		// 再描画指令
 
-	return KOD_FALSE;
+	return False;
 }
 
 
@@ -1278,10 +1278,8 @@ void KODatUNO::ReDrawUserCommand()
 			glNewList(COMMAND_DRAW_USER_COMMAND+i,GL_COMPILE_AND_EXECUTE);		// User関数iをメモリーリストに登録
 			User.Command(&BodyList,&SeldEntList,SeldEntList.getNum(),i+SYSCOMMANDNUM,argc,argv);	// Userコマンドを実行
 			glEndList();												// メモリーリスト登録終了
-			SetModelScale();				// モデルスケール再取得
 			ReDrawBODYFlag = KOD_FALSE;		// BODY描画メモリリスト再設定フラグON
 			Describe_Form->redraw();		// 描画領域に再描画を指示
-			Describe_Form->execEventProc(WSEV_EXPOSE,NULL);		// 再描画指令
 			OpenDelBtn();					// Delボタン属性の変更
 			return;
 		}
@@ -1293,7 +1291,6 @@ void KODatUNO::ReDrawUserCommand()
 			glCallList(COMMAND_DRAW_USER_COMMAND+i);			// User関数iのメモリーリストを呼び出す(User関数i内で呼び出されたOpenGL描画を実行)
 		}
 	}
-
 }
 
 // UserFunc実行時の再描画呼び出し(OpenGL描画ループ内)
@@ -1310,7 +1307,7 @@ void KODatUNO::ReDrawUserFunc()
 				ExecUserFuncFlag[i]  = KOD_DONE;
 			}
 			glEndList();												// メモリーリスト登録終了
-			SetModelScale();				// モデルスケール再取得
+			//SetModelScale();				// モデルスケール再取得
 			ReDrawBODYFlag = KOD_FALSE;		// BODY描画メモリリスト再設定フラグON
 			DrawBODYFlag = KOD_TRUE;		// BODY描画してもOKフラグON
 			Describe_Form->redraw();		// 描画領域に再描画を指示
@@ -1534,9 +1531,19 @@ void KODatUNO::ExpandBody(Coord r)
 	OBJECT *obj;
 	BODY *body;
 
-	obj = (OBJECT *)SeldEntList.getData(0);			// そのセレクションされているエンティティ情報を得る
-	body = SearchBodyList(&BodyList,obj->Body);		// BODYの実体を得る
-	body->ExpandBody(r);
+	for(int i=0;i<SeldEntList.getNum();i++){					// セレクションされている全てのエンティティに対して
+		obj = (OBJECT *)SeldEntList.getData(i);					// そのセレクションされているエンティティ情報を得る
+		body = SearchBodyList(&BodyList,obj->Body);				// BODYの実体を得る
+		if(obj->Type == _NURBSC){								// エンティティがNURBS曲線なら
+			NFunc.ChRatioNurbsC(&body->NurbsC[obj->Num],r);		// NURBS曲線の拡大
+		}
+		else if(obj->Type == _NURBSS){
+			NFunc.ChRatioNurbsS(&body->NurbsS[obj->Num],r);
+		}
+		else if(obj->Type == _TRIMMED_SURFACE){
+			NFunc.ChRatioNurbsS(body->TrmS[obj->Num].pts,r);
+		}
+	}
 
 	DrawBODYFlag = KOD_TRUE;				// BODY描画してもOKフラグON
 	ReDrawBODYFlag = KOD_FALSE;				// BODYのメモリリストを再取得
@@ -1568,7 +1575,7 @@ int KODatUNO::GenSurface(Coord Axis,double Prop,int Flag)
 			newbody->NurbsS[0].TrmdSurfFlag = KOD_FALSE;							// トリムのない単純なNURBS曲面であることを明示
 			newbody->TypeNum[_NURBSS] = 1;											// NURBS曲面の数1にする
 			newbody->ChangeStatColor(newbody->NurbsS[0].Dstat.Color,0.2,0.2,1.0,0.5);		// 青色
-			newbody->Mom = BodyList.add(newbody);									// リストにnewbodyを登録
+			BodyList.add(newbody);													// リストにnewbodyを登録
 			Body_List_Win->addItem("NewBody");										// Bodyリストウィンドウにもnewbodyを登録
 			strcpy(newbody->Name,"NewBody");										// とりあえずnewbodyの名前は"NewBody"としておく
 		}
@@ -1653,6 +1660,12 @@ int KODatUNO::GenNurbsCurve(int Val,char *Fname,int M)
 
 EXIT:
 	return KOD_ERR;
+}
+
+// 円を生成する（準備中）
+int KODatUNO::GenCircle(double R,Coord C,Coord N)
+{
+	return KOD_TRUE;
 }
 
 // NURBS曲面を生成
@@ -1873,53 +1886,6 @@ void KODatUNO::GetSurfInfo()
 	}
 }
 
-// 選択されているMeshの情報をコンソール出力する
-void KODatUNO::GetMeshInfo()
-{
-	if(!BodyList.getNum())	return;		// セレクションされていなかったら、何もしない
-
-	BODY *body;
-	OBJECT *obj;
-	MESH *m;
-	char buf[256];
-
-
-	// セレクションされた数だけループ
-	for(int pnum=0;pnum<SeldEntList.getNum();pnum++){
-		obj = (OBJECT *)SeldEntList.getData(pnum);
-		body = (BODY *)BodyList.getData(obj->Body);
-
-		// セレクションされたエンティティがメッシュ
-		if(obj->Type == _MESH){
-			m = body->Mesh;
-			sprintf(buf,"Face Num:%d\n",m->FaceNum);
-			SetMessage(buf);
-			sprintf(buf,"Edge Num:%d\n",m->EdgeNum);
-			SetMessage(buf);
-			sprintf(buf,"Vert Num:%d\n",m->VertNum);
-			SetMessage(buf);
-
-			HEface *f = (HEface *)m->Face.getData(obj->Num);
-			int vnum = f->GetVetexNum();
-			sprintf(buf,"Face index:%d\n",f->GetIndex());
-			SetMessage(buf);
-			sprintf(buf,"Vert Num:%d\n",vnum);
-			SetMessage(buf);
-			Coord n = f->GetNormVec();
-			sprintf(buf,"Norm Vec:(%.3lf,%.3lf,%.3lf)\n",n.x,n.y,n.z);
-			SetMessage(buf);
-			SetMessage("Vert Coord:");
-			HEedge *e = f->GetStartHE();
-			for(int i=0;i<vnum;i++){
-				Coord p = e->GetStartVcoord();
-				sprintf(buf,"	e%d-v%d:(%.3lf,%.3lf,%.3lf)",e->GetIndex(),e->GetStartVindex(),p.x,p.y,p.z);
-				SetMessage(buf);
-				e = e->GetNextHE();
-			}
-		}
-	}
-}
-
 // 選択されている曲面のRankを変更する
 void KODatUNO::ChangeRank(int Newrank[2])
 {
@@ -2011,4 +1977,56 @@ void KODatUNO::ChangeBackColor(double rgb[3])
 	BkCol[2] = rgb[2];
 	OpenGLInitFlag = KOD_FALSE;		// OpenGLステータス再設定フラグON
 
+}
+
+// 選択されている曲線/曲面のコントロールポイント情報をダンプする
+void KODatUNO::DumpCP()
+{
+	if(!BodyList.getNum())	return;
+
+	FILE *fp;
+	BODY *body;
+	OBJECT *obj;
+	NURBSS *ns;
+	NURBSC *nc;
+	char buf[256];
+
+	if((fp = fopen("DumcCP.csv","w")) == NULL){
+		SetMessage("Error: fopen DumpCP.csv");
+		return;
+	}
+
+	for(int pnum=0;pnum<SeldEntList.getNum();pnum++){
+		ns = NULL;
+		nc = NULL;
+		obj = (OBJECT *)SeldEntList.getData(pnum);
+		body = (BODY *)BodyList.getData(obj->Body);
+		if(obj->Type == _NURBSS){
+			ns=&body->NurbsS[obj->Num];
+		}
+		else if(obj->Type == _TRIMMED_SURFACE){
+			ns=body->TrmS[obj->Num].pts;
+		}
+		else if(obj->Type == _NURBSC){
+			nc = &body->NurbsC[obj->Num];
+		}
+	
+		if(ns != NULL){
+			fprintf(fp,"#%d,%d,%d\n",pnum+1,ns->K[0],ns->K[1]);
+			for(int i=0;i<ns->K[0];i++){
+				for(int j=0;j<ns->K[1];j++){
+					fprintf(fp,"%d,%d,%lf,%lf,%lf\n",i+1,j+1,ns->cp[i][j].x,ns->cp[i][j].y,ns->cp[i][j].z);
+				}
+			}
+		}
+		else if(nc != NULL){
+			fprintf(fp,"#%d,%d\n",pnum+1,nc->K);
+			for(int i=0;i<nc->K;i++){
+				fprintf(fp,"%d,%lf,%lf,%lf\n",i+1,nc->cp[i].x,nc->cp[i].y,nc->cp[i].z);
+			}
+		}
+	}
+	fclose(fp);
+
+	SetMessage("Finished");
 }

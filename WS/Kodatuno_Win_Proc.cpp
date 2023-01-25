@@ -11,9 +11,9 @@ KODatUNO Kodatuno;		// Kodatunoクラスのインスタンスをグローバルで宣言
 // グローバルキーフック
 WSCbool keyhook(long key,WSCbool onoff)
 {
-	if(onoff == KOD_FALSE)	return KOD_TRUE;	// ボタンリリース時は何もしない
+	if(onoff == False)	return True;	// ボタンリリース時は何もしない
 
-	WSCbool flag=KOD_TRUE;
+	WSCbool flag=True;
 
 	switch(key){
 		case WSK_Up:
@@ -29,7 +29,7 @@ WSCbool keyhook(long key,WSCbool onoff)
 			flag = Kodatuno.ChangeViewRight();
 			break;
 		default:
-			return KOD_TRUE;
+			return True;
 	}
 
 	// コントロールキーが押されていない場合はTrueをリターンし、キーイベントを配る
@@ -58,4 +58,3 @@ void Kodatuno_Win_Proc(WSCbase* object)
 	}
 }
 static WSCfunctionRegister  op("Kodatuno_Win_Proc",(void*)Kodatuno_Win_Proc);
-
