@@ -1,0 +1,613 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>QtMainWindow</class>
+ <widget class="QMainWindow" name="QtMainWindow">
+  <property name="windowModality">
+   <enum>Qt::NonModal</enum>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>830</width>
+    <height>660</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>830</width>
+    <height>660</height>
+   </size>
+  </property>
+  <property name="contextMenuPolicy">
+   <enum>Qt::DefaultContextMenu</enum>
+  </property>
+  <property name="windowTitle">
+   <string>Kodatuno</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="icons.qrc">
+    <normaloff>:/new/prefix1/icons/main.ico</normaloff>:/new/prefix1/icons/main.ico</iconset>
+  </property>
+  <property name="toolButtonStyle">
+   <enum>Qt::ToolButtonIconOnly</enum>
+  </property>
+  <property name="dockOptions">
+   <set>QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks|QMainWindow::ForceTabbedDocks|QMainWindow::VerticalTabs</set>
+  </property>
+  <property name="unifiedTitleAndToolBarOnMac">
+   <bool>false</bool>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QGridLayout" name="gridLayout_3">
+    <property name="leftMargin">
+     <number>2</number>
+    </property>
+    <property name="topMargin">
+     <number>2</number>
+    </property>
+    <property name="rightMargin">
+     <number>2</number>
+    </property>
+    <property name="bottomMargin">
+     <number>2</number>
+    </property>
+    <item row="0" column="0">
+     <widget class="QFrame" name="frame">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Sunken</enum>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_4">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item row="0" column="0">
+        <widget class="QtDescribeView" name="describeWidget" native="true"/>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>830</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="defaultUp">
+    <bool>false</bool>
+   </property>
+   <property name="nativeMenuBar">
+    <bool>true</bool>
+   </property>
+   <widget class="QMenu" name="menuFile_F">
+    <property name="title">
+     <string>File (&amp;F)</string>
+    </property>
+    <addaction name="actionOpenBody"/>
+    <addaction name="actionQuit"/>
+   </widget>
+   <widget class="QMenu" name="menuUser_U">
+    <property name="title">
+     <string>User (&amp;U)</string>
+    </property>
+    <addaction name="actionUserStatus"/>
+    <addaction name="separator"/>
+    <addaction name="actionUserFunc1"/>
+    <addaction name="actionUserFunc2"/>
+    <addaction name="actionUserFunc3"/>
+    <addaction name="actionUserFunc4"/>
+    <addaction name="actionUserFunc5"/>
+    <addaction name="actionUserFunc6"/>
+    <addaction name="actionUserFunc7"/>
+    <addaction name="actionUserFunc8"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp_H">
+    <property name="title">
+     <string>Help (&amp;H)</string>
+    </property>
+    <addaction name="actionAboutKodatuno"/>
+   </widget>
+   <widget class="QMenu" name="menuView_V">
+    <property name="title">
+     <string>View (&amp;V)</string>
+    </property>
+    <addaction name="actionViewScale"/>
+    <addaction name="actionTolerance"/>
+    <addaction name="actionCPView"/>
+    <addaction name="actionSurfaceInfo"/>
+    <addaction name="separator"/>
+    <addaction name="actionShowConsole"/>
+    <addaction name="actionShowBodyList"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit_E">
+    <property name="title">
+     <string>Edit (&amp;E)</string>
+    </property>
+    <addaction name="actionScalingBODY"/>
+    <addaction name="actionTranslation"/>
+    <addaction name="actionNURBSRank"/>
+    <addaction name="actionDeleteBody"/>
+   </widget>
+   <widget class="QMenu" name="menuSurface">
+    <property name="title">
+     <string>Create (&amp;C)</string>
+    </property>
+    <addaction name="actionRotationSurface"/>
+    <addaction name="actionSweepSurface"/>
+    <addaction name="actionNURBSCurve"/>
+    <addaction name="actionNURBSSarface"/>
+   </widget>
+   <addaction name="menuFile_F"/>
+   <addaction name="menuEdit_E"/>
+   <addaction name="menuSurface"/>
+   <addaction name="menuView_V"/>
+   <addaction name="menuUser_U"/>
+   <addaction name="menuHelp_H"/>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionViewOnX"/>
+   <addaction name="actionViewOnY"/>
+   <addaction name="actionViewOnZ"/>
+   <addaction name="actionViewOnXYZ"/>
+   <addaction name="actionViewFit"/>
+   <addaction name="separator"/>
+   <addaction name="actionViewSolid"/>
+   <addaction name="actionViewNoEdge"/>
+   <addaction name="actionViewWireFlame"/>
+   <addaction name="actionViewVoid"/>
+   <addaction name="separator"/>
+   <addaction name="actionSelectAll"/>
+   <addaction name="actionSelect_Cancel"/>
+   <addaction name="actionViewErase"/>
+   <addaction name="separator"/>
+   <addaction name="actionViewBlend"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QDockWidget" name="bodyListDock">
+   <property name="features">
+    <set>QDockWidget::AllDockWidgetFeatures</set>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::AllDockWidgetAreas</set>
+   </property>
+   <property name="windowTitle">
+    <string>BODY List</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QGridLayout" name="gridLayout">
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <item row="2" column="0">
+      <widget class="QListWidget" name="bodyList">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="sizeIncrement">
+        <size>
+         <width>40</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>40</width>
+         <height>0</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="consoleDock">
+   <property name="floating">
+    <bool>false</bool>
+   </property>
+   <property name="features">
+    <set>QDockWidget::AllDockWidgetFeatures</set>
+   </property>
+   <property name="windowTitle">
+    <string>Console</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_2">
+    <layout class="QGridLayout" name="gridLayout_2">
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <property name="spacing">
+      <number>6</number>
+     </property>
+     <item row="0" column="0">
+      <widget class="QtConsole" name="consoleText">
+       <property name="frameShape">
+        <enum>QFrame::Panel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Sunken</enum>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <action name="actionViewOnX">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/new/prefix1/icons/ViewOnX.png</normaloff>:/new/prefix1/icons/ViewOnX.png</iconset>
+   </property>
+   <property name="text">
+    <string>View On X</string>
+   </property>
+  </action>
+  <action name="actionViewOnY">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/new/prefix1/icons/ViewOnY.png</normaloff>:/new/prefix1/icons/ViewOnY.png</iconset>
+   </property>
+   <property name="text">
+    <string>View On Y</string>
+   </property>
+   <property name="toolTip">
+    <string>View On Y</string>
+   </property>
+  </action>
+  <action name="actionViewOnZ">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/new/prefix1/icons/ViewOnZ.png</normaloff>:/new/prefix1/icons/ViewOnZ.png</iconset>
+   </property>
+   <property name="text">
+    <string>View On Z</string>
+   </property>
+   <property name="toolTip">
+    <string>View On Z</string>
+   </property>
+  </action>
+  <action name="actionViewOnXYZ">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/new/prefix1/icons/ViewOnXYZ.png</normaloff>:/new/prefix1/icons/ViewOnXYZ.png</iconset>
+   </property>
+   <property name="text">
+    <string>View On XYZ</string>
+   </property>
+   <property name="toolTip">
+    <string>View On XYZ</string>
+   </property>
+  </action>
+  <action name="actionViewFit">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/new/prefix1/icons/ViewFit.png</normaloff>:/new/prefix1/icons/ViewFit.png</iconset>
+   </property>
+   <property name="text">
+    <string>View Fit</string>
+   </property>
+   <property name="toolTip">
+    <string>View Fit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F</string>
+   </property>
+  </action>
+  <action name="actionViewSolid">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/new/prefix1/icons/ViewSolid.png</normaloff>:/new/prefix1/icons/ViewSolid.png</iconset>
+   </property>
+   <property name="text">
+    <string>View Solid</string>
+   </property>
+   <property name="toolTip">
+    <string>View Solid</string>
+   </property>
+  </action>
+  <action name="actionViewNoEdge">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/new/prefix1/icons/ViewSolid_NoEdge.png</normaloff>:/new/prefix1/icons/ViewSolid_NoEdge.png</iconset>
+   </property>
+   <property name="text">
+    <string>View No Edge</string>
+   </property>
+   <property name="toolTip">
+    <string>View No Edge</string>
+   </property>
+  </action>
+  <action name="actionViewWireFlame">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/new/prefix1/icons/ViewWierFrame.png</normaloff>:/new/prefix1/icons/ViewWierFrame.png</iconset>
+   </property>
+   <property name="text">
+    <string>View Wire Flame</string>
+   </property>
+   <property name="toolTip">
+    <string>View Wire Flame</string>
+   </property>
+  </action>
+  <action name="actionViewVoid">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/new/prefix1/icons/ViewVoid.png</normaloff>:/new/prefix1/icons/ViewVoid.png</iconset>
+   </property>
+   <property name="text">
+    <string>View Void</string>
+   </property>
+   <property name="toolTip">
+    <string>View Void</string>
+   </property>
+  </action>
+  <action name="actionSelectAll">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/new/prefix1/icons/SelectAll.png</normaloff>:/new/prefix1/icons/SelectAll.png</iconset>
+   </property>
+   <property name="text">
+    <string>Select All</string>
+   </property>
+   <property name="toolTip">
+    <string>Select All</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+A</string>
+   </property>
+  </action>
+  <action name="actionSelect_Cancel">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/new/prefix1/icons/SelectCancel.png</normaloff>:/new/prefix1/icons/SelectCancel.png</iconset>
+   </property>
+   <property name="text">
+    <string>Select Cancel</string>
+   </property>
+   <property name="toolTip">
+    <string>Select Cancel</string>
+   </property>
+  </action>
+  <action name="actionViewErase">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/new/prefix1/icons/ViewErase.png</normaloff>:/new/prefix1/icons/ViewErase.png</iconset>
+   </property>
+   <property name="text">
+    <string>View Erase</string>
+   </property>
+   <property name="toolTip">
+    <string>View Erase</string>
+   </property>
+  </action>
+  <action name="actionViewBlend">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/new/prefix1/icons/ViewBlend.png</normaloff>:/new/prefix1/icons/ViewBlend.png</iconset>
+   </property>
+   <property name="text">
+    <string>View Blend</string>
+   </property>
+  </action>
+  <action name="actionOpenBody">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/new/prefix1/icons/pload.ico</normaloff>:/new/prefix1/icons/pload.ico</iconset>
+   </property>
+   <property name="text">
+    <string>Open File (&amp;O)</string>
+   </property>
+  </action>
+  <action name="actionUserFunc1">
+   <property name="text">
+    <string>User Func 1</string>
+   </property>
+  </action>
+  <action name="actionUserFunc2">
+   <property name="text">
+    <string>User Func 2</string>
+   </property>
+  </action>
+  <action name="actionUserFunc3">
+   <property name="text">
+    <string>User Func 3</string>
+   </property>
+  </action>
+  <action name="actionUserFunc4">
+   <property name="text">
+    <string>User Func 4</string>
+   </property>
+  </action>
+  <action name="actionUserFunc5">
+   <property name="text">
+    <string>User Func 5</string>
+   </property>
+  </action>
+  <action name="actionAboutKodatuno">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/new/prefix1/icons/help.ico</normaloff>:/new/prefix1/icons/help.ico</iconset>
+   </property>
+   <property name="text">
+    <string>About Kodatuno(&amp;K)</string>
+   </property>
+  </action>
+  <action name="actionViewScale">
+   <property name="text">
+    <string>View Scale (&amp;S)</string>
+   </property>
+  </action>
+  <action name="actionTolerance">
+   <property name="text">
+    <string>Tolerance (&amp;T)</string>
+   </property>
+  </action>
+  <action name="actionCPView">
+   <property name="text">
+    <string>Control Point View (&amp;C)</string>
+   </property>
+  </action>
+  <action name="actionSurfaceInfo">
+   <property name="text">
+    <string>Surface Info (&amp;S)</string>
+   </property>
+  </action>
+  <action name="actionScalingBODY">
+   <property name="text">
+    <string>Scaling (&amp;S)</string>
+   </property>
+  </action>
+  <action name="actionTranslation">
+   <property name="text">
+    <string>Translation (&amp;T)</string>
+   </property>
+  </action>
+  <action name="actionRotationSurface">
+   <property name="text">
+    <string>Rotation (&amp;R)</string>
+   </property>
+  </action>
+  <action name="actionSweepSurface">
+   <property name="text">
+    <string>Sweep (&amp;S)</string>
+   </property>
+  </action>
+  <action name="actionNURBSCurve">
+   <property name="text">
+    <string>NURBS Curve</string>
+   </property>
+  </action>
+  <action name="actionNURBSSarface">
+   <property name="text">
+    <string>NURBS Sarface</string>
+   </property>
+  </action>
+  <action name="actionNURBSRank">
+   <property name="text">
+    <string>NURBS Rank(&amp;R)</string>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="text">
+    <string>Quit (&amp;Q)</string>
+   </property>
+  </action>
+  <action name="actionShowConsole">
+   <property name="text">
+    <string>Show Console</string>
+   </property>
+  </action>
+  <action name="actionDeleteBody">
+   <property name="text">
+    <string>Delete Body (&amp;D)</string>
+   </property>
+  </action>
+  <action name="actionShowBodyList">
+   <property name="text">
+    <string>Show BODY List</string>
+   </property>
+   <property name="toolTip">
+    <string>Show BODY List</string>
+   </property>
+  </action>
+  <action name="actionUserStatus">
+   <property name="text">
+    <string>User Status</string>
+   </property>
+   <property name="toolTip">
+    <string>User Status</string>
+   </property>
+  </action>
+  <action name="actionUserFunc6">
+   <property name="text">
+    <string>User Func 6</string>
+   </property>
+  </action>
+  <action name="actionUserFunc7">
+   <property name="text">
+    <string>User Func 7</string>
+   </property>
+  </action>
+  <action name="actionUserFunc8">
+   <property name="text">
+    <string>User Func 8</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>QtConsole</class>
+   <extends>QTextEdit</extends>
+   <header>QtConsole.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QtDescribeView</class>
+   <extends>QWidget</extends>
+   <header>QtDescribeView.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="icons.qrc"/>
+ </resources>
+ <connections/>
+</ui>
