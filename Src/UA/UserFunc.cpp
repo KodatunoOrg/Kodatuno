@@ -242,10 +242,10 @@ void USER::SetMenuLabelName()
 	strcpy(MenuLabel2,"Sample Func 1");
 	strcpy(MenuLabel3,"Sample Func 2");
 	strcpy(MenuLabel4,"Sample Func 3");
-	strcpy(MenuLabel5,"User Func 5");
-    strcpy(MenuLabel6,"User Func 6");
-    strcpy(MenuLabel7,"User Func 7");
-    strcpy(MenuLabel8,"User Func 8");
+    strcpy(MenuLabel5,"User Func 4");
+    strcpy(MenuLabel6,"User Func 5");
+    strcpy(MenuLabel7,"User Func 6");
+    strcpy(MenuLabel8,"User Func 7");
 }
 
 // Function: RegistUserCommand

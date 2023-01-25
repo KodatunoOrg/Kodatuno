@@ -23,6 +23,10 @@ public:
 	// S(u,v)での基本量を得る
 	int SetSFQ(NURBSS *S,double u, double v);
 
+    // Function: SetSFQ1
+    // S(u,v)での第一基本量を得る
+    int SetSFQ1(NURBSS *S,double u, double v);
+
 public:
 
 	// Variables: U,V

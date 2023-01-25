@@ -44,7 +44,6 @@ int SmpContourLine(BODYList *BodyList,OBJECTList *ObjList, int PickCount, double
 	int step = fabs(upper - under)/delta + 1;	// 等高線の本数を算出
 
     Coord nvec = SetCoord(0,0,1);	// 平面の法線ベクトルを指定(X-Y平面とする)
-FILE *fp = fopen("deb.csv","w");
 	// 平面をZ方向にシフトしていきながら，等高線を算出する
 	for(int i=0;i<step;i++){
 		double z = under + delta*(double)i;	// 現在の平面のZ位置
@@ -61,13 +60,10 @@ FILE *fp = fopen("deb.csv","w");
 			nt = MulCoord(nt,-2);											// 外向き法線ベクトルへ変換し適当な長さにする
 			DrawPoint(p,1,3,blue);			// 交点を描画
 			DrawVector(p,nt,1,1,red);		// 法線ベクトルを描画
-            fprintf(fp,"%lf,%lf,%lf\n",p.x,p.y,p.z);
 		}
-        fprintf(fp,"\n");
 	}
 	GuiIF.SetMessage("END");
 
-fclose(fp);
 	return KOD_TRUE;
 }
 

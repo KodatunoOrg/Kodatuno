@@ -116,10 +116,6 @@ private slots:
 // Function: on_actionOpenBody_triggered
 // BODYファイルのオープン
     void on_actionOpenBody_triggered();         
-
-// Function: on_actionNURBSSurface_triggered
-// NURBS曲面生成
-    void on_actionNURBSSurface_triggered();     
 	
 // Function: on_actionNURBSCurve_triggered
 // NURBS曲線生成
@@ -180,6 +176,10 @@ private slots:
 // FUnction: on_actionAboutKodatuno_triggered
 // AboutBOXの表示
     void on_actionAboutKodatuno_triggered();    
+
+// Function: on_actionNURBSSurface_triggered
+// NURBS曲面生成
+    void on_actionNURBSSarface_triggered();
 
 protected:
 // Function: closeEvent

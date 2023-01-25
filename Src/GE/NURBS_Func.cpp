@@ -2265,6 +2265,7 @@ int NURBS_Func::CalcIntersecPtsPlaneSearch(NURBSS *nurb,Coord pt,Coord nvec,doub
 			if(anscount >= ans_size){
                 GuiIF.SetMessage("NURBS KOD_ERROR:Intersection points exceeded the allocated array length");
                 GuiIF.SetMessage("There is a possibility that you set large ds.");
+                anscount = RemoveTheSamePoints(nurb,ans,anscount);
 				return anscount;
 			}
 
@@ -5452,6 +5453,38 @@ void NURBS_Func::CalcIntersecPtNurbsPtDescrete(NURBSS *S,Coord P,int Divnum,int 
 
 }
 
+// Function: CalcIntersecPtNurbsPtDescrete
+// 空間上の1点PからNURBS曲線C上の最近傍点Qを求める(離散的)
+//
+// Parameters:
+// *C - NURBS曲線
+// P - 空間上の1点
+// Divnum - 曲面分割数
+// LoD - 詳細度
+// Ts - t方向パラメータの探索開始値
+// Te - t方向パラメータの探索終了値
+// *Q - 解（C上の点をtパラメータで格納）
+void NURBS_Func::CalcIntersecPtNurbsPtDescrete(NURBSC *C,Coord P,int Divnum,int LoD,double Ts,double Te, double *Q)
+{
+    if(!LoD)    return;
+
+    double mind = 1E+38;
+    Coord minp;
+    double dt = (Te-Ts)/(double)Divnum;
+
+    for(int i=0;i<=Divnum;i++){
+        double t = Ts + (double)i*dt;
+        if(t < C->V[0] || t > C->V[1]) continue;
+        Coord p = CalcNurbsCCoord(C,t);
+        double d = CalcDistance(p,P);
+        if(d < mind){
+            mind = d;
+            *Q = t;
+        }
+    }
+
+    CalcIntersecPtNurbsPtDescrete(C,P,Divnum,LoD-1,*Q-dt,*Q+dt,Q);
+}
 
 
 // Function: DetermPtOnTRMSurf
@@ -5860,6 +5893,7 @@ int NURBS_Func::RemoveTheSamePoints(NURBSS *S,Coord *Q,int N)
 		}
 	}
 
+    FreeCoord1(P);
 	return k;
 }
 
@@ -6553,6 +6587,8 @@ void NURBS_Func::DebugForNurbsS(NURBSS *nurbs)
 // 線分長
 double NURBS_Func::CalcNurbsCLength(NURBSC *Nurb,double a,double b)
 {
+    if(a == b) return 0;
+
 	double g[80] = {-0.9995538226516306298800804990945671849917
 		,-0.997649864398237688899494208183122985331
 		,-0.994227540965688277892063503664911698088
@@ -7292,4 +7328,103 @@ int NURBS_Func::InsertNewKnotOnNurbsC(NURBSC *C,NURBSC *C_,double t,int deg)
 	FreeCoord1(cp_buf);
 
 	return k+2;
+}
+
+// Function: CalcConstScallop
+// 等スキャロップ点を算出
+//
+// Parameters:
+// *S - NURBS曲面
+// *C - U-V上で定義された参照元NURBS曲線
+// t - 現在のCパラメータ
+// g - ピックフィード
+// *u - 生成された点のu座標値
+// *v - 生成された点のv座標値
+// direct - 解の追跡方向（KOD_TRUE or KDO_FALSEで指示）
+//
+// Retrun:
+// 成功：KOD_TRUE,  境界外：KOD_FALSE
+int NURBS_Func::CalcConstScallop(NURBSS *S, NURBSC *C, double t, double g, double *u, double *v, int direct)
+{
+    double p[4] = {0,0,0,0};
+    double q[4] = {0,0,0,0};
+
+    double g_ = (direct > KOD_FALSE) ? g : -g;
+
+    Coord C_ = CalcNurbsCCoord(C,t);
+    Coord Ct = CalcDiffNurbsC(C,t);
+
+    double u0 = *u = C_.x;
+    double v0 = *v = C_.y;
+
+
+    // ルンゲクッタ法
+    for(int i=0;i<4;i++){
+        if(i==1 || i==2){
+            *u = u0 + p[i-1]/2;
+            *v = v0 + q[i-1]/2;
+        }
+        else if(i==3){
+            *u = u0 + p[i-1];
+            *v = v0 + q[i-1];
+        }
+        if(*u < S->U[0] || *u > S->U[1] || *v < S->V[0] || *v > S->V[1]){	// (u,v)境界を越えたら抜ける
+            return KOD_FALSE;
+        }
+        SFQuant sfq(S,*u,*v);
+        double f = sqrt(sfq.E*sfq.G-sfq.F*sfq.F)*sqrt(sfq.E*Ct.x*Ct.x+2*sfq.F*Ct.x*Ct.y+sfq.G*Ct.y*Ct.y);
+
+        p[i] = g_*(sfq.F*Ct.x+sfq.G*Ct.y)/f;
+        q[i] = -g_*(sfq.E*Ct.x+sfq.F*Ct.y)/f;
+
+    }
+
+    *u = u0+(p[0]+2*p[1]+2*p[2]+p[3])/6;
+    *v = v0+(q[0]+2*q[1]+2*q[2]+q[3])/6;
+
+    return KOD_TRUE;
+}
+
+// Function: CalcConstPitch
+// 等ピッチ点を算出
+//
+// Parameters:
+// *S - NURBS曲面
+// *C - U-V上で定義された参照元NURBS曲線
+// t0 - C上の現在のtパラメータ
+// ds - ピックフィード
+// *t - 生成された点のtパラメータ
+// direct - 解の追跡方向（KOD_TRUE or KDO_FALSEで指示）
+// Retrun:
+// 成功：KOD_TRUE,  境界外：KOD_FALSE
+int NURBS_Func::CalcConstPitch(NURBSS *S,NURBSC *C, double t0, double ds, double *t,int direct)
+{
+    double o[4] = {0,0,0,0};			// ルンゲクッタ法パラメータ
+
+    double ds_ = (direct > KOD_FALSE) ? ds : -ds;
+
+    *t = t0;
+
+    // ルンゲクッタ法
+    for(int i=0;i<4;i++){
+        if(i==1 || i==2)
+            *t = t0 + o[i-1]/2;
+        else if(i==3)
+            *t = t0 + o[i-1];
+        if(*t > C->V[1]){
+            return KOD_FALSE;
+        }
+        Coord P = CalcNurbsCCoord(C,*t);
+        Coord Su = CalcDiffuNurbsS(S,P.x,P.y);
+        Coord Sv = CalcDiffvNurbsS(S,P.x,P.y);
+        Coord Ct = CalcDiffNurbsC(C,*t);
+        double denom = CalcEuclid(AddCoord(MulCoord(Sv,Ct.y),MulCoord(Su,Ct.x)));
+        double g = Ct.x/denom;
+        double h = Ct.y/denom;
+        o[i] = ds_*sqrt(g*g+h*h)/CalcEuclid(Ct);
+    }
+
+    *t = t0 + (o[0]+2*o[1]+2*o[2]+o[3])/6;
+
+    return KOD_TRUE;
 }

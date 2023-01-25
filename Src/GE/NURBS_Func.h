@@ -200,6 +200,10 @@ public:
     // 空間上の1点からNURBS曲面上の最近傍点を求める(離散的)
     void CalcIntersecPtNurbsPtDescrete(NURBSS *,Coord ,int ,int ,double ,double ,double ,double , Coord *);
 
+    // Function: CalcIntersecPtNurbsPtDescrete
+    // 空間上の1点からNURBS曲線上の最近傍点を求める(離散的)
+    void CalcIntersecPtNurbsPtDescrete(NURBSC *,Coord ,int ,int ,double ,double ,double *);
+
 	// Function: CalcIntersecIsparaCurveU
 	// u方向アイソパラ曲線と平面との交点を求める(ニュートン法)
 	int CalcIntersecIsparaCurveU(NURBSS *,double,Coord,Coord,int,double *,int);	
@@ -510,6 +514,14 @@ public:
 	// Function: CalcDeltaPtsOnNurbsC
 	// 指定した間隔でNURBS曲線上の座標値を求める
 	int CalcDeltaPtsOnNurbsC(NURBSC *,double,Coord *);			
+
+    // Function: CalcConstScallop
+    // 等スキャロップ点を算出
+    int CalcConstScallop(NURBSS *, NURBSC *, double, double, double *, double *, int);
+
+    // Function: CalcConstPitch
+    // 等ピッチ点を算出
+    int CalcConstPitch(NURBSS *,NURBSC *, double, double, double *, int);
 
 private:
 

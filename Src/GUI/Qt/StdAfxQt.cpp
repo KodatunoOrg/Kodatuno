@@ -192,8 +192,8 @@ int GUI_Interface::SetCommand(const char *cmd)
 // Function: ExecCommand
 // コマンドを実行する
 // Parameters:
-// 実行するコマンド文字列
-int GUI_Interface::ExecCommand(const char *cmd)
+// cmd - 実行するコマンド文字列
+void GUI_Interface::ExecCommand(const char *cmd)
 {
     QString text = consoleText->toPlainText() + QString(cmd);
     consoleText->setText(text);
@@ -280,7 +280,7 @@ int GUI_Interface::GetBodyListSelectedPos()
 std::string GUI_Interface::OpenBodyFileDlg()
 {
     // ファイルのフィルタリスト
-    QString fileFilter = QObject::tr("IGS (*.igs);; STL (*.stl)");
+    QString fileFilter = QObject::tr("IGS (*.igs);; STL (*.stl);; VRML (*.wrl);; DXF (*.dxf)");
 
     QString fileName = QFileDialog::getOpenFileName(
         0,                          //　親widget

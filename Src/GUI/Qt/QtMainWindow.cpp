@@ -142,15 +142,6 @@ void QtMainWindow::on_actionNURBSCurve_triggered()
     ui->describeWidget->repaint();
 }
 
-// Function: on_actionNURBSSurface_triggered
-// メニュー：Create->NURBS Surface
-void QtMainWindow::on_actionNURBSSurface_triggered()
-{
-    QtNurbsSurfDialog* dlg = new QtNurbsSurfDialog (this);
-    dlg->exec();
-    ui->describeWidget->repaint();
-}
-
 // Function: on_actionOpenBody_triggered
 // メニュー：File->Open File
 void QtMainWindow::on_actionOpenBody_triggered()
@@ -378,4 +369,13 @@ void QtMainWindow::on_actionAboutKodatuno_triggered()
                                 tr("About Kodatuno"),
                                 tr("Kodatuno R%1.%2 alpha").arg(KODATUNO_MAJOR_VER).arg(KODATUNO_MINOR_VER)
                                 );
+}
+
+// Function: on_actionNURBSSurface_triggered
+// メニュー：Create->NURBS Surface
+void QtMainWindow::on_actionNURBSSarface_triggered()
+{
+    QtNurbsSurfDialog* dlg = new QtNurbsSurfDialog (this);
+    dlg->exec();
+    ui->describeWidget->repaint();
 }

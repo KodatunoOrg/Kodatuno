@@ -4,7 +4,7 @@
 
 // Constant: title
 // タイトルの設定
-const QString QtNurbsSurfDialog::title = QString("NURBS Curve Generator");
+const QString QtNurbsSurfDialog::title = QString("NURBS Surface Generator");
 
 // Function: QtNurbsSurfDialog
 // NurbsSurfダイアログがオープンしたときに呼び出される
