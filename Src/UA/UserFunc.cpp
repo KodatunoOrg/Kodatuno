@@ -31,7 +31,7 @@ USER::USER()
 	}
 
 	// Userステータスの初期化
-	UserStat.Mode = 0;
+    UserStat.Mode = 0;
 	for(int i=0;i<USERPROPNUM;i++)
 		UserStat.Prop[i] = 0;
 }

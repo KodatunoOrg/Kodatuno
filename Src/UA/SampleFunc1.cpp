@@ -82,10 +82,10 @@ int SmpDivCurves(BODYList *BodyList,OBJECTList *ObjList, int PickCount, double P
 	if(!PickCount)	return KOD_ERR;		// セレクションされていなかったら、何もしない
 
 	NURBS_Func	nfunc;					// NURBSを扱う関数集を呼び出す
-	Coord div_pt[102];					// 分割点の座標値を格納する
 	double green[3] = {0,1,0};			// 分割点表示の色(緑)
 
-	int divnum = (int)Prop[0];			// ユーザーステータスのprop1を分割数として読み込み
+    int divnum = (int)Prop[0];          	// ユーザーステータスのprop1を分割数として読み込み
+    Coord *div_pt = NewCoord1(divnum+2);	// 分割点の座標値を格納する変数の宣言とメモリー確保
 
 	// セレクションした数だけループ
 	for(int i=0;i<PickCount;i++){
@@ -93,11 +93,13 @@ int SmpDivCurves(BODYList *BodyList,OBJECTList *ObjList, int PickCount, double P
 		BODY *body = (BODY *)BodyList->getData(obj->Body);		// i番目にセレクションされたBODYの実体を得る
 		if(obj->Type == _NURBSC){								// i番目にセレクションされたエンティティがNURBS曲線なら
 			int ptnum = nfunc.CalcDeltaPtsOnNurbsC(&body->NurbsC[obj->Num],divnum,div_pt);		// 分割点を求める
-			for(int j=0;j<ptnum;j++){
-				DrawPoint(div_pt[j],1,3,green);					// 分割点を表示
+            for(int j=0;j<ptnum;j++){
+                DrawPoint(div_pt[j],1,3,green);					// 分割点を表示
 			}
 		}
 	}
+
+    FreeCoord1(div_pt);     // 確保メモリーの解放
 
 	return KOD_TRUE;
 }
@@ -150,7 +152,7 @@ int SmpNearestPt(BODYList *BodyList,OBJECTList *ObjList, int PickCount, double P
 	// 近傍点を得る
 	for(int i=0;i<3;i++){
 		DrawPoint(P[i],1,3,red);									// 任意点を描画
-		int flag = nfunc.CalcIntersecPtNurbsPt(S,P[i],3,0.2,&Q);	// 最近傍点算出
+        int flag = nfunc.CalcIntersecPtNurbsPt(S,P[i],3,5,&Q);  	// 最近傍点算出
 		if(flag == KOD_TRUE){										// 最近傍点が見つかったら
 			Q_ = nfunc.CalcNurbsSCoord(S,Q.x,Q.y);					// 実空間座標へ変換し保存
 			DrawPoint(Q_,1,3,blue);									// 最近傍点を描画

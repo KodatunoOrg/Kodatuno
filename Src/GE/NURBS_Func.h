@@ -196,6 +196,10 @@ public:
 	// 空間上の1点からNURBS曲線上の最近傍点を求める(ニュートン法)(オーバーロード)
 	int CalcIntersecPtNurbsPt(NURBSC *,Coord,int,int,double *);			
 
+    // Function: CalcIntersecPtNurbsPtDescrete
+    // 空間上の1点からNURBS曲面上の最近傍点を求める(離散的)
+    void CalcIntersecPtNurbsPtDescrete(NURBSS *,Coord ,int ,int ,double ,double ,double ,double , Coord *);
+
 	// Function: CalcIntersecIsparaCurveU
 	// u方向アイソパラ曲線と平面との交点を求める(ニュートン法)
 	int CalcIntersecIsparaCurveU(NURBSS *,double,Coord,Coord,int,double *,int);	

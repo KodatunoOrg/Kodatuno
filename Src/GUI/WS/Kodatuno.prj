@@ -27,7 +27,7 @@ Kodatunod
 #WINC_NAME
 WSCmainWindow
 #OBJS
-Describe_Proc.o ../../Sys/Kodatuno_Main.o ../../GE/IGES_Parser.o ../../GE/KodListFunc.o StdAfxWS.o ../../GE/StdAfx.o ../../GE/Quaternion.o ../../GE/Describe_BODY.o ../../GE/NURBS_Func.o ../../Sys/Command.o ../../Sys/Kodatuno_CMD.o ../../GE/STL_Parser.o ../../GE/VRML_Parser.o ../../GE/DXF_Parser.o ../../GE/MESH.o ../../GE/BODY.o ../../GE/SFQuant.o  ../../UA/UserFunc.o ../../UA/SampleFunc1.o ../../UA/SampleFunc2.o ../../UA/DEMO.o
+Describe_Proc.o ../../Sys/Kodatuno_Main.o ../../GE/IGES_Parser.o ../../GE/KodListFunc.o StdAfxWS.o ../../GE/StdAfx.o ../../GE/Quaternion.o ../../GE/Describe_BODY.o ../../GE/NURBS_Func.o ../../Sys/Command.o ../../Sys/Kodatuno_CMD.o ../../GE/STL_Parser.o ../../GE/VRML_Parser.o ../../GE/DXF_Parser.o ../../GE/MESH.o ../../GE/BODY.o ../../GE/SFQuant.o  ../../UA/UserFunc.o ../../UA/SampleFunc1.o ../../UA/SampleFunc2.o ../../UA/SampleFunc3.o
 #COMPAT
 0
 #WS_FILES

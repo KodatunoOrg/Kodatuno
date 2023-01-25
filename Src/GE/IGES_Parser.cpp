@@ -571,6 +571,7 @@ int IGES_PARSER::GetParameterSection(FILE *fp,DirectoryParam *dpara,BODY body,in
 		// 円・円弧(NURBS曲線としてのエンティティ情報も同時に得る)
 		if(dpara[i].entity_type == CIRCLE_ARC){							
 			if(GetCirAPara(str,pD,dpara,body) == KOD_ERR)  return KOD_ERR;					// 円/円弧パラメータの取得
+            body.CirA[TypeCount[_CIRCLE_ARC]].BlankStat = dpara[i].blank_stat;      // ディレクトリ部の情報"Blank Status"を得る
 			body.CirA[TypeCount[_CIRCLE_ARC]].EntUseFlag = dpara[i].useflag_stat;	// ディレクトリ部の情報"Entity Use Flag"を得る
 			dpara[i].entity_count = TypeCount[_CIRCLE_ARC];							// dparaとbodyを関連付ける
 			TypeCount[_CIRCLE_ARC]++;					// 円・円弧タイプの数をインクリメント
@@ -589,6 +590,7 @@ int IGES_PARSER::GetParameterSection(FILE *fp,DirectoryParam *dpara,BODY body,in
 		// 線分(NURBS曲線としてのエンティティ情報も同時に得る)
 		else if(dpara[i].entity_type == LINE){									
 			if(GetLinePara(str,pD,dpara,body) == KOD_ERR)  return KOD_ERR;				// 線分パラメータの取得
+            body.Line[TypeCount[_LINE]].BlankStat = dpara[i].blank_stat;		// ディレクトリ部の情報"Blank Status"を得る
 			body.Line[TypeCount[_LINE]].EntUseFlag = dpara[i].useflag_stat;		// ディレクトリ部の情報"Entity Use Flag"を得る(LINE)
 			dpara[i].entity_count = TypeCount[_LINE];							// dparaとbodyを関連付ける
 			TypeCount[_LINE]++;							// 線分タイプの数をインクリメント
@@ -602,6 +604,7 @@ int IGES_PARSER::GetParameterSection(FILE *fp,DirectoryParam *dpara,BODY body,in
 		// NURBS曲線
 		else if(dpara[i].entity_type == NURBS_CURVE){		
 			if(GetNurbsCPara(str,pD,dpara,body) == KOD_ERR)  return KOD_ERR;
+            body.NurbsC[TypeCount[_NURBSC]].BlankStat = dpara[i].blank_stat;	// ディレクトリ部の情報"Blank Status"を得る
 			body.NurbsC[TypeCount[_NURBSC]].EntUseFlag = dpara[i].useflag_stat;	// ディレクトリ部の情報"Entity Use Flag"を得る
 			body.NurbsC[TypeCount[_NURBSC]].OriginEnt = NURBS_CURVE;			// 元からNURBS曲線要素であることを明示
 			body.NurbsC[TypeCount[_NURBSC]].pOriginEnt = NULL;					// 参照元はNULL

@@ -185,6 +185,7 @@ int DXF_PARSER::GetArcData(FILE *fp,BODY *body)
 	CalcUVvec(&body->CirA[Count[_CIRCLE_ARC]]);					// CIRAのUV直交座標を設定する
 
 	InitDisplayStat(&body->CirA[Count[_CIRCLE_ARC]].Dstat);		// 色指定
+    body->CirA[Count[_CIRCLE_ARC]].BlankStat = DISPLAY;         // 描画対象であることを宣言
 	body->CirA[Count[_CIRCLE_ARC]].EntUseFlag = GEOMTRYELEM;	// 幾何要素であることを宣言
 	body->CirA[Count[_CIRCLE_ARC]].pD = NULL;					// IGESでないので関係なし
 
@@ -276,6 +277,7 @@ int DXF_PARSER::GetCircleData(FILE *fp,BODY *body)
 	CalcUVvec(&body->CirA[Count[_CIRCLE_ARC]]);					// CIRAのUV直交座標を設定する
 
 	InitDisplayStat(&body->CirA[Count[_CIRCLE_ARC]].Dstat);
+    body->CirA[Count[_CIRCLE_ARC]].BlankStat = DISPLAY;         // 描画対象であることを宣言
 	body->CirA[Count[_CIRCLE_ARC]].EntUseFlag = GEOMTRYELEM;
 	body->CirA[Count[_CIRCLE_ARC]].pD = NULL;
 
@@ -329,6 +331,7 @@ int DXF_PARSER::GetLineData(FILE *fp,BODY *body)
 	//	body->Line[Count[_LINE]].cp[1].z);
 
 	InitDisplayStat(&body->Line[Count[_LINE]].Dstat);
+    body->Line[Count[_LINE]].BlankStat = DISPLAY;
 	body->Line[Count[_LINE]].EntUseFlag = GEOMTRYELEM;
 	body->Line[Count[_LINE]].pD = NULL;
 
