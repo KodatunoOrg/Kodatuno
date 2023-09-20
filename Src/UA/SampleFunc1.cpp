@@ -95,8 +95,6 @@ int SmpDivCurves(BODYList *BodyList,OBJECTList *ObjList, int PickCount, double P
 			int ptnum = nfunc.CalcDeltaPtsOnNurbsC(&body->NurbsC[obj->Num],divnum,div_pt);		// 分割点を求める
             for(int j=0;j<ptnum;j++){
                 DrawPoint(div_pt[j],1,3,green);					// 分割点を表示
-                double dist = CalcDistance(div_pt[j],div_pt[j+1]);
-                qDebug("%lf",dist);
 			}
 		}
 	}

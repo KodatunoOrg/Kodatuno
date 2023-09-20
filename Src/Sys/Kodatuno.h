@@ -33,8 +33,8 @@
 // KDT_MOD_SHIFT -					Shift修飾(2001)
 // KDT_MOD_ALT -					Alt修飾(2002)
 // KDT_MOD_NONE -					どの修飾もない(2003)
-#define KODATUNO_MAJOR_VER  3  				
-#define KODATUNO_MINOR_VER  4
+#define KODATUNO_MAJOR_VER  3
+#define KODATUNO_MINOR_VER  5
 
 #define EXT_IGES	1						
 #define EXT_STL		2						

@@ -2818,15 +2818,15 @@ int NURBS_Func::CalcIntersecPtsNurbsSNurbsC(NURBSS *NurbsS,NURBSC *NurbsC,int Di
 			Ft = CalcDiffNurbsC(NurbsC,t);				// Ft = dF/dt = dC/dt
 			A[0][0] = Fu.x;				// Fu,Fv,Ftを3x3行列Aに代入
 			A[0][1] = Fv.x;				//     |Fu.x Fv.x Ft.x|       |du|       |F.x|
-			A[0][2] = Ft.x;				// A = |Fu.y Fv.y Ft.y| , d = |dv| , F = |F.y|
+            A[0][2] = -Ft.x;			// A = |Fu.y Fv.y Ft.y| , d = |dv| , F = |F.y|
 			A[1][0] = Fu.y;				//     |Fu.z Fv.z Ft.z|       |dt|       |F.z|
 			A[1][1] = Fv.y;
-			A[1][2] = Ft.y;				// A・d = F   --->   d = A_・F
+            A[1][2] = -Ft.y;			// A・d = F   --->   d = A_・F
 			A[2][0] = Fu.z;
 			A[2][1] = Fv.z;
-			A[2][2] = Ft.z;	
-			if(MatInv3(A,A_) == KOD_FALSE)	break;		// 逆行列を求める
-			d = MulCoord(MulMxCoord(A_,F),-1);			// dを算出
+            A[2][2] = -Ft.z;
+            if(CheckZero(MatInv3(A,A_),LOW_ACCURACY) == KOD_TRUE)	break;		// 逆行列を求める
+            d = MulCoord(MulMxCoord(A_,F),-1);			// dを算出
 
 			if(fabs(d.x) <= APPROX_ZERO && fabs(d.y) <= APPROX_ZERO && fabs(d.z) <= APPROX_ZERO){	// 真値に収束したらloopを抜ける
 				flag = true;		// 収束フラグtrue

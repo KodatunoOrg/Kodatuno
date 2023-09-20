@@ -36,39 +36,6 @@ USER::USER()
 		UserStat.Prop[i] = 0;
 }
 
-int USER::ExecSampleFunc0(BODYList *BodyList,OBJECTList *ObjList,int PickCount)
-{
-    Coord p1,p2,p3,q2,q1,q3;
-    Coord n = SetCoord(0,0.707107,-0.707107);
-    Coord g = SetCoord(0.793604,138.12471,145.195778);
-    p1 = SetCoord(3.095203,138.12471,145.195778);
-    p2 = SetCoord(-0.357196,139.534146,146.605213);
-    p3 = SetCoord(-0.357196,136.715274,143.786342);
-    Coord V = SetCoord(-0.004767,-0.428104,-0.903717);
-    q1 = SetCoord(0.637727,137.906583,144.977651);
-    q2 = SetCoord(-1.57427,135.496772,138.284594);
-    q3 = SetCoord(-1.57427,135.496772,138.284594);
-
-    double red[3] = {1,0,0};
-    double blu[3] = {0,0,1};
-    double grn[3] = {0,1,0};
-
-    DrawLine(p1,p2,1,red);
-    DrawLine(p2,p3,1,red);
-    DrawLine(p3,p1,1,red);
-    DrawVector(SetCoord(0.5,0,200),V,-1000,1,blu);
-    DrawPoint(g,1,1,grn);
-    DrawVector(g,n,10,1,blu);
-
-
-    DrawLine(q1,q2,1,red);
-    DrawLine(q2,q3,1,red);
-    DrawLine(q3,q1,1,red);
-
-    return KOD_TRUE;
-}
-
-
 // Function: ExecSampleFunc0
 // Userボタン登録関数0の実体を記述
 //
@@ -79,40 +46,40 @@ int USER::ExecSampleFunc0(BODYList *BodyList,OBJECTList *ObjList,int PickCount)
 //
 // Return:
 // KOD_TRUE
-//int USER::ExecSampleFunc0(BODYList *BodyList,OBJECTList *ObjList,int PickCount)
-//{
-//    char mes[256];
+int USER::ExecSampleFunc0(BODYList *BodyList,OBJECTList *ObjList,int PickCount)
+{
+    char mes[256];
 
-//    // ユーザーステータスでの選択されたモード番号をコンソール出力
-//    sprintf(mes,"Selected Mode : %d",UserStat.Mode);
-//    GuiIF.SetMessage(mes);
+    // ユーザーステータスでの選択されたモード番号をコンソール出力
+    sprintf(mes,"Selected Mode : %d",UserStat.Mode);
+    GuiIF.SetMessage(mes);
 
-//    // ユーザーステータスでのプロパティ値(最初の2つ)をコンソール出力
-//    sprintf(mes,"User Property 1: %lf",UserStat.Prop[0]);
-//    GuiIF.SetMessage(mes);
-//    sprintf(mes,"User Property 2: %lf",UserStat.Prop[1]);
-//    GuiIF.SetMessage(mes);
+    // ユーザーステータスでのプロパティ値(最初の2つ)をコンソール出力
+    sprintf(mes,"User Property 1: %lf",UserStat.Prop[0]);
+    GuiIF.SetMessage(mes);
+    sprintf(mes,"User Property 2: %lf",UserStat.Prop[1]);
+    GuiIF.SetMessage(mes);
 
-//    GuiIF.SetMessage("....");
+    GuiIF.SetMessage("....");
 
-//    // セレクション数をコンソール出力
-//    sprintf(mes,"All Pick Count : %d",PickCount);
-//    GuiIF.SetMessage(mes);
+    // セレクション数をコンソール出力
+    sprintf(mes,"All Pick Count : %d",PickCount);
+    GuiIF.SetMessage(mes);
 
-//    for(int i=0;i<PickCount;i++){
-//        OBJECT *obj = (OBJECT *)ObjList->getData(i);			// i番目にセレクションされたエンティティの情報を得る
-//        sprintf(mes,"#%d",i+1);
-//        GuiIF.SetMessage(mes);
-//        sprintf(mes,"Body No. : %d",obj->Body);
-//        GuiIF.SetMessage(mes);
-//        sprintf(mes,"Selected Object Type : %d",obj->Type);
-//        GuiIF.SetMessage(mes);
-//        sprintf(mes,"Selected Object No. : %d",obj->Num);
-//        GuiIF.SetMessage(mes);
-//    }
+    for(int i=0;i<PickCount;i++){
+        OBJECT *obj = (OBJECT *)ObjList->getData(i);			// i番目にセレクションされたエンティティの情報を得る
+        sprintf(mes,"#%d",i+1);
+        GuiIF.SetMessage(mes);
+        sprintf(mes,"Body No. : %d",obj->Body);
+        GuiIF.SetMessage(mes);
+        sprintf(mes,"Selected Object Type : %d",obj->Type);
+        GuiIF.SetMessage(mes);
+        sprintf(mes,"Selected Object No. : %d",obj->Num);
+        GuiIF.SetMessage(mes);
+    }
 
-//    return KOD_TRUE;
-//}
+    return KOD_TRUE;
+}
 
 // Function: ExecSampleFunc1
 // Userボタン登録関数1の実体を記述
