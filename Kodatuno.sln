@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Kodatuno.vs", "Kodatuno.vs\Kodatuno.vs.vcxproj", "{DE3CC314-1ACF-45E5-B9A8-F26968EFC29F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Kodatuno.vs", "Kodatuno.vs\Kodatuno.vs.vcxproj", "{40B21277-19B5-4F8C-AF0C-3FCD0E378729}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,14 +13,13 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{DE3CC314-1ACF-45E5-B9A8-F26968EFC29F}.Debug|x64.ActiveCfg = Debug|x64
-		{DE3CC314-1ACF-45E5-B9A8-F26968EFC29F}.Debug|x64.Build.0 = Debug|x64
-		{DE3CC314-1ACF-45E5-B9A8-F26968EFC29F}.Debug|x86.ActiveCfg = Debug|Win32
-		{DE3CC314-1ACF-45E5-B9A8-F26968EFC29F}.Debug|x86.Build.0 = Debug|Win32
-		{DE3CC314-1ACF-45E5-B9A8-F26968EFC29F}.Release|x64.ActiveCfg = Release|x64
-		{DE3CC314-1ACF-45E5-B9A8-F26968EFC29F}.Release|x64.Build.0 = Release|x64
-		{DE3CC314-1ACF-45E5-B9A8-F26968EFC29F}.Release|x86.ActiveCfg = Release|Win32
-		{DE3CC314-1ACF-45E5-B9A8-F26968EFC29F}.Release|x86.Build.0 = Release|Win32
+		{40B21277-19B5-4F8C-AF0C-3FCD0E378729}.Debug|x64.ActiveCfg = Debug|x64
+		{40B21277-19B5-4F8C-AF0C-3FCD0E378729}.Debug|x64.Build.0 = Debug|x64
+		{40B21277-19B5-4F8C-AF0C-3FCD0E378729}.Debug|x86.ActiveCfg = Debug|x64
+		{40B21277-19B5-4F8C-AF0C-3FCD0E378729}.Release|x64.ActiveCfg = Release|x64
+		{40B21277-19B5-4F8C-AF0C-3FCD0E378729}.Release|x64.Build.0 = Release|x64
+		{40B21277-19B5-4F8C-AF0C-3FCD0E378729}.Release|x86.ActiveCfg = Release|Win32
+		{40B21277-19B5-4F8C-AF0C-3FCD0E378729}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
