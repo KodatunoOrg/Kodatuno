@@ -14,8 +14,8 @@
 #include "Command.h"
 
 // Constants : General Defines
-// KODATUNO_MAJOR_VER - 			kodatunoのメジャーバージョン(3)
-// KODATUNO_MINOR_VER - 			kodatunoのマイナーバージョン(0)
+// KODATUNO_MAJOR_VER - 			kodatunoのメジャーバージョン
+// KODATUNO_MINOR_VER - 			kodatunoのマイナーバージョン
 // EXT_IGES -						拡張子判別用(IGES)(1)
 // EXT_STL -						拡張子判別用(STL)(2)
 // CONSOLE_CHAR_NUMMAX -			コンソールに出力可能な文字数(2048)
@@ -34,7 +34,7 @@
 // KDT_MOD_ALT -					Alt修飾(2002)
 // KDT_MOD_NONE -					どの修飾もない(2003)
 #define KODATUNO_MAJOR_VER  3
-#define KODATUNO_MINOR_VER  5
+#define KODATUNO_MINOR_VER  7
 
 #define EXT_IGES	1						
 #define EXT_STL		2						

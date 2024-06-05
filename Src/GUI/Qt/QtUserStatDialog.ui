@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>432</width>
-    <height>389</height>
+    <height>414</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -716,6 +716,38 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>mode1RadBtn</tabstop>
+  <tabstop>mode2RadBtn</tabstop>
+  <tabstop>mode3RadBtn</tabstop>
+  <tabstop>mode4RadBtn</tabstop>
+  <tabstop>mode5RadBtn</tabstop>
+  <tabstop>mode6RadBtn</tabstop>
+  <tabstop>mode7RadBtn</tabstop>
+  <tabstop>mode8RadBtn</tabstop>
+  <tabstop>mode9RadBtn</tabstop>
+  <tabstop>mode10RadBtn</tabstop>
+  <tabstop>mode11RadBtn</tabstop>
+  <tabstop>mode12RadBtn</tabstop>
+  <tabstop>mode13RadBtn</tabstop>
+  <tabstop>mode14RadBtn</tabstop>
+  <tabstop>mode15RadBtn</tabstop>
+  <tabstop>doubleSpinBox_1</tabstop>
+  <tabstop>doubleSpinBox_2</tabstop>
+  <tabstop>doubleSpinBox_3</tabstop>
+  <tabstop>doubleSpinBox_4</tabstop>
+  <tabstop>doubleSpinBox_5</tabstop>
+  <tabstop>doubleSpinBox_6</tabstop>
+  <tabstop>doubleSpinBox_7</tabstop>
+  <tabstop>doubleSpinBox_8</tabstop>
+  <tabstop>doubleSpinBox_9</tabstop>
+  <tabstop>doubleSpinBox_10</tabstop>
+  <tabstop>doubleSpinBox_11</tabstop>
+  <tabstop>doubleSpinBox_12</tabstop>
+  <tabstop>doubleSpinBox_13</tabstop>
+  <tabstop>doubleSpinBox_14</tabstop>
+  <tabstop>doubleSpinBox_15</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

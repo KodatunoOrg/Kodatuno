@@ -1198,15 +1198,15 @@ int IGES_PARSER::GetGlobalSection(FILE *fp,GlobalParam *gpara,int gline)
 		// グローバル部の情報が必要な場合は以下にコードを記入
 		if(i == MODEL_SCALE){				// モデルスケール読み込み
 			gpara->scale = atof(str);
-			fprintf(stderr,"%lf\n",gpara->scale);	// debug
+            //fprintf(stderr,"%lf\n",gpara->scale);	// debug
 		}
 		else if(i == UNIT_FLAG){			// 単位フラグ読み込み
 			gpara->unit_flag = atoi(str);
-			fprintf(stderr,"%d\n",gpara->unit_flag);	// debug
+            //fprintf(stderr,"%d\n",gpara->unit_flag);	// debug
 		}
 		else if(i == MODEL_SPACE_SIZE){		// モデル空間の大きさ読み込み
 			gpara->space_size = atof(str);
-			fprintf(stderr,"%lf\n",gpara->space_size);	// debug
+            //fprintf(stderr,"%lf\n",gpara->space_size);	// debug
 		}
 		p++;
 		p_ = p;
